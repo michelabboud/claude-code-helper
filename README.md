@@ -2,40 +2,6 @@
 
 This bundle contains all the best scripts and configurations we created for optimizing your Claude Code experience.
 
-claude-config-bundle/
-├── 📘 README.md              # Complete documentation
-├── ⚡ QUICKSTART.md           # 5-minute setup guide
-│
-├── global-config/
-│   ├── settings.json         # Main Claude Code settings
-│   └── CLAUDE.md            # Global instructions
-│
-├── statuslines/
-│   ├── model-display.sh     # Simple status indicator
-│   └── detailed-status.sh   # With git branch info
-│
-├── commands/
-│   ├── plan.md             # /plan workflow command
-│   └── observability.sh    # /observability toggle
-│
-├── skills/
-│   └── auto-plan/
-│       └── SKILL.md        # Auto model-switching intelligence
-│
-├── agents/
-│   ├── planner.json        # Dedicated planning agent
-│   └── implementer.json    # Dedicated coding agent
-│
-├── scripts/
-│   ├── install-all.sh      # One-command installation
-│   ├── setup-api-key.sh    # API key configuration
-│   └── test-setup.sh       # Verify installation
-│
-└── wsl-setup/
-    ├── create-users.sh     # Create claude-api & claude-pro users
-    ├── setup-api-user.sh   # Configure API user
-    └── setup-pro-user.sh   # Configure subscription user
-
 ## 📦 What's Included
 
 - **Global Configuration**: settings.json and CLAUDE.md
