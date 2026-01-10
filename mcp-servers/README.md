@@ -18,7 +18,24 @@ Five specialized MCP (Model Context Protocol) servers that work together to crea
 | **[QUICKGUIDE.md](QUICKGUIDE.md)** | Get started in 15 minutes with examples |
 | **[ARCHITECTURE.md](ARCHITECTURE.md)** | Technical deep dive and design decisions |
 | **[CONTRIBUTING.md](CONTRIBUTING.md)** | How to extend and customize |
-| **[example-agents/](example-agents/)** | Pre-configured specialized agents |
+
+### 🤖 Example Agent Configurations
+
+Ready-to-use agent configurations demonstrating how to use these MCP servers:
+
+👉 **[Example MCP Agents](../examples/agents/mcp-agents/)** - 8 specialized agents with complete documentation
+
+Agents include:
+- 🔒 **Security Reviewer** - Vulnerability scanning and remediation
+- 🧪 **Test Quality Enforcer** - Coverage and quality enforcement
+- 🎨 **Design System Guardian** - UI consistency and accessibility
+- ⚡ **Performance Optimizer** - Performance analysis and optimization
+- 🔍 **Full Stack Reviewer** - Comprehensive multi-phase code review
+- 🔌 **API Specialist** - API testing, validation, and documentation
+- 🎭 **UI/UX Reviewer** - Design review from screenshots
+- 🎭 **UI/UX Design Critic** - Expert design critique
+
+Each configuration includes installation instructions, usage examples, workflow patterns, and customization guides.
 
 ---
 

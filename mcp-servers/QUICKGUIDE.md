@@ -461,6 +461,37 @@ alias security-audit="claude-code --agent security-reviewer 'Full security scan'
 
 ---
 
+## 🤖 Example Agent Configurations
+
+Want pre-configured agents that use these MCP tools? Check out our example agents:
+
+👉 **[Example MCP Agents](../examples/agents/mcp-agents/)** - 8 ready-to-use agent configurations
+
+Quick install:
+```bash
+# Install example agents
+cp ../examples/agents/mcp-agents/*.json ~/.claude/agents/
+
+# Use them
+claude --agent security-reviewer
+claude --agent test-quality-enforcer
+claude --agent api-specialist
+```
+
+Available agents:
+- **Security Reviewer** - Automated security scanning
+- **Test Quality Enforcer** - Test coverage and quality gates
+- **Design System Guardian** - UI consistency validation
+- **Performance Optimizer** - Performance analysis
+- **Full Stack Reviewer** - Comprehensive code review
+- **API Specialist** - API testing and validation
+- **UI/UX Reviewer** - Design review from screenshots
+- **UI/UX Design Critic** - Expert design critique
+
+Each includes complete usage examples and customization guides.
+
+---
+
 ## 📚 Next Steps
 
 ✅ Now you're ready to use the system!
@@ -469,11 +500,13 @@ alias security-audit="claude-code --agent security-reviewer 'Full security scan'
 - [README.md](./README.md) - Detailed features and workflows
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - Technical deep dive
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Extend and customize
+- [Example Agents](../examples/agents/mcp-agents/) - Pre-configured agent examples
 
 **Practice workflows:**
 1. Start with simple single-tool commands
-2. Progress to multi-step reviews
-3. Create custom agents for your workflow
-4. Build orchestrated multi-agent pipelines
+2. Try example agent configurations
+3. Progress to multi-step reviews
+4. Create custom agents for your workflow
+5. Build orchestrated multi-agent pipelines
 
 Happy coding! 🚀

@@ -34,7 +34,6 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
   - [Advanced Patterns](#advanced-patterns)
 - [Config Bundle (Production-Ready)](#config-bundle-production-ready)
 - [Installation Scripts](#installation-scripts)
-- [MCP Server Example Agents](#mcp-server-example-agents)
 - [MCP Concept Documentation](#mcp-concept-documentation)
 
 ---
@@ -507,22 +506,6 @@ Ready-to-deploy Claude Code configuration.
 | Script | Location | Description |
 |--------|----------|-------------|
 | Install All Agents | [`guides/subagents-guide/install-all-agents.sh`](guides/subagents-guide/install-all-agents.sh) | Interactive agent installation |
-
----
-
-## MCP Server Example Agents
-
-**Location:** [`mcp-servers/example-agents/`](mcp-servers/example-agents/)
-
-Pre-configured agent examples that demonstrate MCP server usage.
-
-| Agent | File | Description |
-|-------|------|-------------|
-| Security Reviewer | [`security-reviewer.json`](mcp-servers/example-agents/security-reviewer.json) | Security scanning with MCP tools |
-| Test Quality Enforcer | [`test-quality-enforcer.json`](mcp-servers/example-agents/test-quality-enforcer.json) | Test coverage enforcement |
-| Design System Guardian | [`design-system-guardian.json`](mcp-servers/example-agents/design-system-guardian.json) | Design system compliance |
-| Performance Optimizer | [`performance-optimizer.json`](mcp-servers/example-agents/performance-optimizer.json) | Performance analysis |
-| API Specialist | [`api-specialist.json`](mcp-servers/example-agents/api-specialist.json) | API testing and validation |
 
 ---
 

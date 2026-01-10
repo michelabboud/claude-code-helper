@@ -119,7 +119,7 @@ Pre-configured specialized agents for common workflows:
 - Temperature: 0.4
 - Best for: Complete PR reviews, production readiness
 
-Plus: `example-agents/README.md` with usage instructions
+**Note:** Example agents are located in `../examples/agents/mcp-agents/` for consistency with repository structure.
 
 ---
 
@@ -177,23 +177,17 @@ mcp-multi-agent-system/
 │   ├── tsconfig.json                  # TypeScript config (NodeNext)
 │   └── .gitignore
 │
-├── design-system-mcp/                 # Design System MCP Server
-│   ├── src/
-│   │   └── index.ts                   # TypeScript source (700+ lines)
-│   ├── build/                         # Compiled output (generated)
-│   │   └── index.js
-│   ├── package.json                   # Dependencies & scripts
-│   ├── tsconfig.json                  # TypeScript config (NodeNext)
-│   └── .gitignore
-│
-└── example-agents/                    # Pre-configured agents
-    ├── README.md                      # Agent usage guide
-    ├── security-reviewer.json
-    ├── test-quality-enforcer.json
-    ├── design-system-guardian.json
-    ├── performance-optimizer.json
-    └── full-stack-reviewer.json
+└── design-system-mcp/                 # Design System MCP Server
+    ├── src/
+    │   └── index.ts                   # TypeScript source (700+ lines)
+    ├── build/                         # Compiled output (generated)
+    │   └── index.js
+    ├── package.json                   # Dependencies & scripts
+    ├── tsconfig.json                  # TypeScript config (NodeNext)
+    └── .gitignore
 ```
+
+**Note:** Example agent configurations are located in `../examples/agents/mcp-agents/` with comprehensive documentation.
 
 ---
 
