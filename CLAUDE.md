@@ -18,7 +18,8 @@ This is **claude-code-helper** - a comprehensive toolkit and learning resource f
 claude-code-helper/
 ├── guides/                    # Learning documentation
 │   ├── complete-guide/        # Zero-to-hero learning path
-│   └── subagents-guide/       # Advanced agent patterns
+│   ├── subagents-guide/       # Advanced agent patterns
+│   └── advanced-patterns/     # Advanced usage patterns
 ├── mcp-servers/               # 5 MCP servers (TypeScript/Node.js)
 ├── examples/                  # Ready-to-use examples
 │   ├── agents/               # MCP agents + sub-agents
@@ -26,7 +27,9 @@ claude-code-helper/
 │   ├── commands/             # Slash commands
 │   ├── hooks/                # Event automation
 │   ├── plugins/              # Complete packages
-│   └── mcp/                  # MCP configurations
+│   ├── mcp/                  # MCP configurations
+│   ├── integrations/         # Integration examples
+│   └── sub-agents/           # Sub-agent examples
 ├── templates/                 # Starter templates
 ├── config-bundle/            # Production-ready global config
 └── scripts/                  # Installation utilities

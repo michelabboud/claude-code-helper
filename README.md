@@ -191,7 +191,6 @@ Starter templates for creating your own tools.
 - **Agent Template** - Create custom agents
 - **Skill Template** - Build reusable skills
 - **Command Template** - Design slash commands
-- **Plugin Template** - Bundle complete workflows
 
 ### Usage
 ```bash
@@ -248,7 +247,8 @@ claude-code-helper/
 │
 ├── guides/                    # Learning resources
 │   ├── complete-guide/        # Zero to hero path
-│   └── subagents-guide/       # Advanced agents guide
+│   ├── subagents-guide/       # Advanced agents guide
+│   └── advanced-patterns/     # Advanced usage patterns
 │
 ├── mcp-servers/               # 5 MCP servers (30 tools)
 │   ├── api-specialist-mcp/
@@ -263,13 +263,14 @@ claude-code-helper/
 │   ├── commands/             # Slash commands
 │   ├── hooks/                # Event automation
 │   ├── plugins/              # Complete packages
-│   └── mcp/                  # MCP configs
+│   ├── mcp/                  # MCP configs
+│   ├── integrations/         # Integration examples
+│   └── sub-agents/           # Sub-agent examples
 │
 ├── templates/                 # Starter templates
 │   ├── agent/
 │   ├── skill/
-│   ├── command/
-│   └── plugin/
+│   └── command/
 │
 ├── config-bundle/             # Production config
 │   ├── global-config/

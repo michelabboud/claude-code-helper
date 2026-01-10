@@ -55,6 +55,13 @@ Comprehensive learning resources for mastering Claude Code from beginner to expe
 
 ---
 
+### 3. [Advanced Patterns](./advanced-patterns/)
+**Advanced usage patterns and techniques**
+
+Additional patterns and advanced techniques for power users who want to push Claude Code to its limits.
+
+---
+
 ## 🎯 Which Guide Should I Use?
 
 ### Choose Complete Guide if you want to:

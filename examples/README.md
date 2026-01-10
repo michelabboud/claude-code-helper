@@ -117,7 +117,7 @@ cp -r plugins/example-plugin ~/.claude/plugins/
 
 ---
 
-### 6. [MCP Servers](./mcp/) 🌐
+### 6. [MCP Configs](./mcp/) 🌐
 Model Context Protocol server configurations.
 
 **What is MCP?**
@@ -141,6 +141,16 @@ MCP servers extend Claude's capabilities with external tools and services.
   }
 }
 ```
+
+---
+
+### 7. [Integrations](./integrations/) 🔗
+Integration examples showing how to connect Claude Code with external services and tools.
+
+---
+
+### 8. [Sub-Agents](./sub-agents/) 🤖
+Additional sub-agent examples demonstrating specialized autonomous agents.
 
 ---
 
