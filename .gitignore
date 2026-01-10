@@ -1,0 +1,46 @@
+# Archive folder (temporary holding area - will be empty)
+archive/
+
+# Node modules (for MCP servers)
+node_modules/
+package-lock.json
+
+# Build outputs
+build/
+dist/
+*.js.map
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# API keys and secrets
+**/secrets/
+**/*secret*
+**/*.key
+**/*.pem
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS files
+Thumbs.db
+.DS_Store

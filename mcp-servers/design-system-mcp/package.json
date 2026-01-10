@@ -1,0 +1,30 @@
+{
+  "name": "design-system-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for design system validation and UI consistency checks",
+  "type": "module",
+  "bin": {
+    "design-system-mcp": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
+  "keywords": ["mcp", "design-system", "ui", "consistency"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.23.8",
+    "css": "^3.0.0",
+    "jsdom": "^25.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/css": "^0.0.37",
+    "@types/jsdom": "^21.1.7",
+    "typescript": "^5.7.2"
+  }
+}
