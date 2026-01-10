@@ -13,14 +13,14 @@ Real-world example of building a complete e-commerce platform using multiple age
 
 ### Architecture
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+┌─────────────┐     ┌──────────────┐      ┌─────────────┐
 │   Next.js   │────▶│   API Layer  │────▶│  Database   │
-│  Frontend   │     │  (NestJS)    │     │ (Postgres)  │
-└─────────────┘     └──────────────┘     └─────────────┘
-       │                    │                     │
-       │                    ▼                     │
-       │            ┌──────────────┐              │
-       │            │   Payment    │              │
+│  Frontend   │     │  (NestJS)    │      │ (Postgres)  │
+└─────────────┘     └──────────────┘      └─────────────┘
+       │                    │                      │
+       │                    ▼                      │
+       │            ┌──────────────┐               │
+       │            │   Payment    │               │
        └───────────▶│   Gateway    │◀─────────────┘
                     └──────────────┘
 ```
