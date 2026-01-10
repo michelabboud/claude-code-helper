@@ -14,6 +14,52 @@ Safe, systematic refactoring with automated testing and rollback support.
 
 **Note**: Claude Code v2.1+ unifies commands and skills under a single mental model. This command supports all skill frontmatter options including hooks, context forking, and agent specification. You can convert this to a skill format or keep it as a command - both work identically.
 
+## Installation
+
+### Option 1: Global Installation (Available in All Projects)
+
+Copy this file to your Claude Code commands directory:
+
+```bash
+# Create the commands directory if it doesn't exist
+mkdir -p ~/.claude/commands
+
+# Copy the command file
+cp refactor.md ~/.claude/commands/refactor.md
+```
+
+### Option 2: Project-Specific Installation
+
+Copy this file to your project's `.claude/commands` directory:
+
+```bash
+# From your project root
+mkdir -p .claude/commands
+
+# Copy the command file
+cp /path/to/refactor.md .claude/commands/refactor.md
+```
+
+### Option 3: Quick One-Liner
+
+```bash
+# Global install
+curl -o ~/.claude/commands/refactor.md https://raw.githubusercontent.com/michelabboud/claude-code-helper/main/examples/commands/refactor.md
+
+# Or project-specific
+mkdir -p .claude/commands && curl -o .claude/commands/refactor.md https://raw.githubusercontent.com/michelabboud/claude-code-helper/main/examples/commands/refactor.md
+```
+
+### Verify Installation
+
+After installation, the command will be available immediately (no restart required). Verify by typing:
+
+```
+/refactor
+```
+
+Claude Code will recognize the command and show its description.
+
 ## Usage
 
 ```
