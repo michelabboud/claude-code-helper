@@ -249,6 +249,11 @@ Complete suite of advanced testing patterns and frameworks, bringing comprehensi
   - Context forking for cleaner conversations
   - Extended hook timeout (10 minutes) for comprehensive workflows
   - Automatic skill hot-reload for faster development
+- **Documentation Discoverability** - Added TOOLS-INDEX.md references throughout main README
+  - Quick Reference section at top with catalog overview
+  - Included in Documentation Structure tree
+  - Repository Documentation section in Resources
+  - Easy access to comprehensive tools catalog (44+ agents, 35+ MCP tools, 15+ skills)
 
 ---
 
