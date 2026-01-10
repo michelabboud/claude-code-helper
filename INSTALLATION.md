@@ -608,7 +608,7 @@ claude-code-helper/
 **AI Assistance:** Created with Claude Code (Anthropic)
 **License:** MIT
 
-**Version:** 2.0.0
+**Version:** 1.3.0
 **Last Updated:** 2026-01-10
 
 ---

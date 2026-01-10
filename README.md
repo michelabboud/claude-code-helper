@@ -12,8 +12,8 @@
 
 **📋 [TOOLS-INDEX.md](TOOLS-INDEX.md)** - Complete catalog of every tool, agent, skill, command, hook, and plugin in this repository. Use this as your master reference when exploring the toolkit.
 
-- **44+ Agents** (MCP agents, sub-agents, technology specialists)
-- **35+ MCP Tools** across 6 production servers
+- **44+ Agents** (12 MCP agents, sub-agents, technology specialists)
+- **52+ MCP Tools** across 9 servers (5 production + 4 experimental)
 - **15+ Skills** (workflow and testing patterns)
 - **6 Plugins** (complete feature packages)
 - **Comprehensive guides, templates, and integration examples**
@@ -27,7 +27,7 @@ This repository contains everything you need to become productive with Claude Co
 | Component | Description | Best For |
 |-----------|-------------|----------|
 | **[Guides](#-guides)** | Complete learning paths from zero to hero | Learning & Reference |
-| **[MCP Servers](#-mcp-servers)** | 5 specialized servers for code quality | Automation & CI/CD |
+| **[MCP Servers](#-mcp-servers)** | 9 specialized servers for code quality & automation | Automation & CI/CD |
 | **[Examples](#-examples)** | Ready-to-use examples for all tool types | Quick Start & Templates |
 | **[Templates](#-templates)** | Starter templates for creating your own | Building Custom Tools |
 | **[Config Bundle](#-config-bundle)** | Production-ready global configuration | Setup & Optimization |
@@ -108,9 +108,9 @@ Advanced guide with production-ready agent examples and orchestration patterns.
 
 **[🔌 Navigate to MCP Servers →](./mcp-servers/)**
 
-Five specialized Model Context Protocol servers for automated code quality and testing.
+Nine specialized Model Context Protocol servers for automated code quality, testing, and DevOps workflows.
 
-### Available Servers
+### Production Servers (5)
 
 | Server | Tools | Purpose |
 |--------|-------|---------|
@@ -120,7 +120,18 @@ Five specialized Model Context Protocol servers for automated code quality and t
 | **Testing** | 4 tools | Test execution, coverage, quality analysis |
 | **UI/UX Review** | 9 tools | Design review, accessibility, wireframes |
 
-**Total: 30 specialized tools**
+**Total: 30 production tools**
+
+### Experimental Servers (4) 🧪
+
+| Server | Purpose |
+|--------|---------|
+| **CI/CD Pipeline** | Pipeline generation, optimization, troubleshooting |
+| **Database Operations** | Migrations, queries, schema management |
+| **Dependency Management** | Security scanning, updates, license compliance |
+| **n8n Automation** | Workflow automation and integration |
+
+**Total: 52+ tools across all servers**
 
 ### Quick Install
 ```bash
@@ -152,8 +163,8 @@ Ready-to-use examples for all Claude Code tool types. Copy, customize, and deplo
 ### What's Included
 
 #### [Agents](./examples/agents/) 🤖
-- **MCP Agents** (8 configs) - Use MCP servers for specialized tasks
-- **Sub-Agents** (6+ agents) - Autonomous domain experts
+- **MCP Agents** (12 configs) - Use MCP servers for specialized tasks (8 production + 4 experimental)
+- **Sub-Agents** (32+ agents) - Autonomous domain experts
 
 #### [Skills](./examples/skills/) ✨
 - **Workflows:** Code review, refactoring, TDD, release management, CI best practices
