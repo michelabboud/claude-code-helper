@@ -20,7 +20,7 @@ claude-code-helper/
 │   ├── complete-guide/        # Zero-to-hero learning path
 │   ├── subagents-guide/       # Advanced agent patterns
 │   └── advanced-patterns/     # Advanced usage patterns
-├── mcp-servers/               # 5 MCP servers (TypeScript/Node.js)
+├── mcp-servers/               # 9 MCP servers (TypeScript/Node.js)
 ├── examples/                  # Ready-to-use examples
 │   ├── agents/               # MCP agents + sub-agents
 │   ├── skills/               # Reusable skills
@@ -68,12 +68,20 @@ MCP servers are TypeScript/Node.js projects that provide specialized tools:
 - Output to `build/index.js`
 - Configured in Claude Desktop's `claude_desktop_config.json`
 
-Available MCP servers (30 total tools):
+Available MCP servers (9 total, 30+ tools):
+
+**Production-Ready Servers** (5 servers with agent configs):
 - **api-specialist-mcp** (8 tools): API testing, validation, security, docs
 - **code-review-mcp** (4 tools): Linting, security scanning, complexity
 - **design-system-mcp** (5 tools): Token validation, component checks, accessibility
 - **testing-mcp** (4 tools): Test execution, coverage, quality analysis
 - **uiux-review-mcp** (9 tools): Design review, accessibility, wireframes
+
+**Experimental Servers** (4 servers):
+- **cicd-pipeline**: CI/CD pipeline automation and workflow management
+- **database-operations**: Database migrations, queries, and schema management
+- **dependency-management**: Dependency analysis, updates, and vulnerability scanning
+- **n8n-automation**: n8n workflow automation and integration
 
 ## Common Development Commands
 

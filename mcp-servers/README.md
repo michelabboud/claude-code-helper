@@ -2,7 +2,9 @@
 
 **Complete toolkit for automated code quality, testing, and design system validation using Claude AI**
 
-Five specialized MCP (Model Context Protocol) servers that work together to create a comprehensive code review and quality assurance pipeline. Perfect for use with Claude Desktop and Claude Code's multi-agent workflows!
+Nine specialized MCP (Model Context Protocol) servers that work together to create a comprehensive code review and quality assurance pipeline. Perfect for use with Claude Desktop and Claude Code's multi-agent workflows!
+
+**Includes:** 5 production-ready servers (30 tools) with full agent configs + 4 experimental servers for advanced workflows.
 
 [![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/typescript-5.7.2-blue.svg)](https://www.typescriptlang.org)
@@ -115,7 +117,45 @@ Expert UI/UX design review from screenshots with accessibility audits and wirefr
 - `compare_designs` - A/B test comparison
 - `check_usability` - Nielsen's heuristics evaluation
 
-**Total:** 30 specialized tools across 5 servers
+**Production-Ready Total:** 30 specialized tools across 5 servers
+
+### 6. **CI/CD Pipeline MCP** (`cicd-pipeline`) 🧪 Experimental
+Automates CI/CD pipeline operations, workflow management, and deployment processes.
+
+**Features:**
+- Pipeline configuration and validation
+- Build and deployment automation
+- Workflow orchestration
+- CI/CD best practices enforcement
+
+### 7. **Database Operations MCP** (`database-operations`) 🧪 Experimental
+Database migrations, queries, schema management, and optimization.
+
+**Features:**
+- Migration management (up/down/status)
+- Query execution and analysis
+- Schema validation and changes
+- Performance optimization
+
+### 8. **Dependency Management MCP** (`dependency-management`) 🧪 Experimental
+Dependency analysis, updates, vulnerability scanning, and license compliance.
+
+**Features:**
+- Dependency updates and version management
+- Vulnerability scanning and remediation
+- License compliance checking
+- Dependency graph analysis
+
+### 9. **n8n Automation MCP** (`n8n-automation`) 🧪 Experimental
+n8n workflow automation, integration management, and workflow orchestration.
+
+**Features:**
+- Workflow creation and management
+- Integration with external services
+- Automation triggers and actions
+- Workflow monitoring
+
+**Total:** 30+ specialized tools across 9 servers (5 production + 4 experimental)
 
 ---
 
@@ -124,7 +164,10 @@ Expert UI/UX design review from screenshots with accessibility audits and wirefr
 ### Installation
 
 ```bash
-# Install all five MCP servers
+# Install all production MCP servers (recommended)
+./install-all.sh
+
+# Or install individually:
 cd api-specialist-mcp && npm install && npm run build && cd ..
 cd code-review-mcp && npm install && npm run build && cd ..
 cd design-system-mcp && npm install && npm run build && cd ..

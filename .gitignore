@@ -44,3 +44,4 @@ temp/
 # OS files
 Thumbs.db
 .DS_Store
+mcp-servers/claude_desktop_config.json

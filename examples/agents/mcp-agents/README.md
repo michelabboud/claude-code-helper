@@ -2,9 +2,13 @@
 
 Pre-configured specialized agents for common workflows.
 
+**12 specialized agents** for different aspects of software development:
+- **8 Production agents** (fully tested with agent configs)
+- **4 Experimental agents** (new, under active development)
+
 ---
 
-## Available Agents
+## Production Agents (8)
 
 ### 🔒 Security Reviewer
 **File:** `security-reviewer.json`
@@ -134,6 +138,142 @@ claude-code --agent api-specialist
 
 ---
 
+### 🎭 UI/UX Reviewer
+**File:** `uiux-reviewer.json`
+
+**Purpose:** Comprehensive UI/UX design review from screenshots
+
+**Uses:** UI/UX Review MCP (all tools)
+
+**Best for:**
+- Design review from screenshots
+- WCAG accessibility audits
+- Typography and spacing analysis
+- Color scheme validation
+- Usability heuristics evaluation
+
+**Example usage:**
+```bash
+claude-code --agent uiux-reviewer
+# Prompt: "Review this design screenshot for accessibility"
+```
+
+---
+
+### 🎨 UI/UX Design Critic
+**File:** `uiux-design-critic.json`
+
+**Purpose:** Expert design critique with actionable recommendations
+
+**Uses:** UI/UX Review MCP (all tools)
+
+**Best for:**
+- Professional design critique
+- Wireframe generation
+- Design comparison (A/B testing)
+- Comprehensive improvement suggestions
+- Design system validation
+
+**Example usage:**
+```bash
+claude-code --agent uiux-design-critic
+# Prompt: "Critique this landing page design and suggest improvements"
+```
+
+---
+
+## Experimental Agents (4) 🧪
+
+These agents are newly created for experimental MCP servers. Full documentation and testing coming soon.
+
+### 🚀 CI/CD Engineer
+**File:** `cicd-engineer.json`
+
+**Purpose:** CI/CD pipeline generation, optimization, and troubleshooting
+
+**Uses:** CI/CD Pipeline MCP (8 tools)
+
+**Best for:**
+- Generating CI/CD configs (GitHub Actions, GitLab CI, Jenkins)
+- Pipeline optimization and cost reduction
+- Troubleshooting failed builds
+- Security scanning integration
+- Deployment strategies (blue-green, canary, rolling)
+
+**Example usage:**
+```bash
+claude-code --agent cicd-engineer
+# Prompt: "Generate a GitHub Actions pipeline for my Node.js app"
+```
+
+---
+
+### 🗄️ Database Engineer
+**File:** `database-engineer.json`
+
+**Purpose:** Database schema management, migrations, and query optimization
+
+**Uses:** Database Operations MCP (8 tools)
+
+**Best for:**
+- Writing and optimizing SQL queries
+- Generating and validating migrations
+- Schema analysis and design
+- Database backup strategies
+- Query performance tuning
+
+**Example usage:**
+```bash
+claude-code --agent database-engineer
+# Prompt: "Generate a migration to add user_roles table"
+```
+
+---
+
+### 📦 Dependency Manager
+**File:** `dependency-manager.json`
+
+**Purpose:** Dependency security, updates, licenses, and optimization
+
+**Uses:** Dependency Management MCP (8 tools)
+
+**Best for:**
+- Security vulnerability scanning
+- Dependency update recommendations
+- License compliance checking
+- Bundle size optimization
+- Removing unused dependencies
+
+**Example usage:**
+```bash
+claude-code --agent dependency-manager
+# Prompt: "Scan my dependencies for security vulnerabilities"
+```
+
+---
+
+### 🔄 Automation Architect
+**File:** `automation-architect.json`
+
+**Purpose:** n8n workflow automation design and optimization
+
+**Uses:** n8n Automation MCP (6 tools)
+
+**Best for:**
+- Designing n8n workflows
+- Optimizing automation performance
+- Troubleshooting workflow failures
+- Data transformation workflows
+- Service integration suggestions
+
+**Example usage:**
+```bash
+claude-code --agent automation-architect
+# Prompt: "Create an n8n workflow to sync data from Airtable to Notion"
+```
+
+---
+
 ## Using Agents
 
 ### With Claude Code
@@ -162,13 +302,22 @@ Claude: [Uses security tools automatically]
 
 **Structure:**
 ```
-~/.claude-code/
+~/.claude/
 └── agents/
-    ├── security-reviewer.json
-    ├── test-quality-enforcer.json
-    ├── design-system-guardian.json
-    ├── performance-optimizer.json
-    └── full-stack-reviewer.json
+    ├── Production Agents (8):
+    │   ├── security-reviewer.json
+    │   ├── test-quality-enforcer.json
+    │   ├── design-system-guardian.json
+    │   ├── performance-optimizer.json
+    │   ├── full-stack-reviewer.json
+    │   ├── api-specialist.json
+    │   ├── uiux-reviewer.json
+    │   └── uiux-design-critic.json
+    └── Experimental Agents (4):
+        ├── cicd-engineer.json
+        ├── database-engineer.json
+        ├── dependency-manager.json
+        └── automation-architect.json
 ```
 
 ---

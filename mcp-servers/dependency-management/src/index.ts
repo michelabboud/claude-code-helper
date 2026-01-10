@@ -693,7 +693,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             };
           }
 
-          const deps = { ...packageJson.dependencies, ...packageJson.devDependencies } || {};
+          const deps = { ...(packageJson.dependencies || {}), ...(packageJson.devDependencies || {}) };
           const vulns = checkVulnerabilities(deps, severity_threshold || "low");
 
           return {

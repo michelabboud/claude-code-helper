@@ -6,21 +6,23 @@ Complete Multi-Agent MCP System - Everything you need to get started!
 
 ## 📦 What's Included
 
-### Core MCP Servers (3)
+### Production-Ready MCP Servers (5)
 
-#### 1. `code-review-mcp/`
+#### 1. `api-specialist-mcp/`
+Comprehensive API testing, validation, security auditing, and documentation
+- **8 tools:** validate_openapi, test_endpoint, check_api_security, analyze_api_structure, load_test, generate_api_docs, suggest_improvements, validate_api_response
+- **Supports:** OpenAPI/Swagger, REST APIs, GraphQL, authentication testing
+- **Build:** TypeScript → JavaScript
+- **Size:** ~2 MB (with dependencies)
+- **Status:** ✅ Production-ready with agent config
+
+#### 2. `code-review-mcp/`
 Linting, security scanning, and code quality analysis
 - **4 tools:** lint_file, security_scan, analyze_complexity, find_duplicates
 - **Supports:** ESLint, Pylint, Rubocop, Semgrep, Bandit, Snyk
 - **Build:** TypeScript → JavaScript
 - **Size:** ~2 MB (with dependencies)
-
-#### 2. `testing-mcp/`
-Test execution, coverage analysis, and quality metrics
-- **4 tools:** run_tests, get_coverage, analyze_test_quality, generate_test_report
-- **Supports:** Jest, Pytest, Mocha, Vitest
-- **Build:** TypeScript → JavaScript
-- **Size:** ~2 MB (with dependencies)
+- **Status:** ✅ Production-ready with agent config
 
 #### 3. `design-system-mcp/`
 UI consistency, design tokens, and accessibility validation
@@ -28,8 +30,61 @@ UI consistency, design tokens, and accessibility validation
 - **Supports:** WCAG AA/AAA, Design tokens, React/Vue components
 - **Build:** TypeScript → JavaScript
 - **Size:** ~3 MB (with dependencies, includes jsdom for HTML parsing)
+- **Status:** ✅ Production-ready with agent config
 
-**Total:** 13 specialized tools across 3 servers
+#### 4. `testing-mcp/`
+Test execution, coverage analysis, and quality metrics
+- **4 tools:** run_tests, get_coverage, analyze_test_quality, generate_test_report
+- **Supports:** Jest, Pytest, Mocha, Vitest
+- **Build:** TypeScript → JavaScript
+- **Size:** ~2 MB (with dependencies)
+- **Status:** ✅ Production-ready with agent config
+
+#### 5. `uiux-review-mcp/`
+Expert UI/UX design review from screenshots with accessibility audits
+- **9 tools:** analyze_design, check_accessibility, review_typography, validate_spacing, check_color_scheme, suggest_improvements, generate_wireframe, compare_designs, check_usability
+- **Supports:** WCAG audits, Nielsen's heuristics, wireframe generation
+- **Build:** TypeScript → JavaScript
+- **Size:** ~3 MB (with dependencies)
+- **Status:** ✅ Production-ready with agent config
+
+**Production Total:** 30 specialized tools across 5 servers
+
+### Experimental MCP Servers (4)
+
+#### 6. `cicd-pipeline/`
+CI/CD pipeline automation and workflow management
+- **Features:** Pipeline configuration, build automation, workflow orchestration
+- **Supports:** Jenkins, GitHub Actions, GitLab CI, CircleCI
+- **Build:** TypeScript → JavaScript
+- **Size:** ~2 MB (with dependencies)
+- **Status:** 🧪 Experimental (agent config coming soon)
+
+#### 7. `database-operations/`
+Database migrations, queries, schema management, and optimization
+- **Features:** Migration management, query execution, schema validation
+- **Supports:** PostgreSQL, MySQL, MongoDB, SQLite
+- **Build:** TypeScript → JavaScript
+- **Size:** ~2 MB (with dependencies)
+- **Status:** 🧪 Experimental (agent config coming soon)
+
+#### 8. `dependency-management/`
+Dependency analysis, updates, vulnerability scanning, and license compliance
+- **Features:** Dependency updates, vulnerability scanning, license checking
+- **Supports:** npm, pip, cargo, gradle, maven
+- **Build:** TypeScript → JavaScript
+- **Size:** ~2 MB (with dependencies)
+- **Status:** 🧪 Experimental (agent config coming soon)
+
+#### 9. `n8n-automation/`
+n8n workflow automation and integration management
+- **Features:** Workflow creation, service integration, automation triggers
+- **Supports:** n8n API, webhook management, workflow monitoring
+- **Build:** TypeScript → JavaScript
+- **Size:** ~2 MB (with dependencies)
+- **Status:** 🧪 Experimental (agent config coming soon)
+
+**Grand Total:** 30+ specialized tools across 9 servers (5 production + 4 experimental)
 
 ---
 
