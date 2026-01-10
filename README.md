@@ -8,6 +8,18 @@
 
 ---
 
+## 📖 Quick Reference
+
+**📋 [TOOLS-INDEX.md](TOOLS-INDEX.md)** - Complete catalog of every tool, agent, skill, command, hook, and plugin in this repository. Use this as your master reference when exploring the toolkit.
+
+- **44+ Agents** (MCP agents, sub-agents, technology specialists)
+- **35+ MCP Tools** across 6 production servers
+- **15+ Skills** (workflow and testing patterns)
+- **6 Plugins** (complete feature packages)
+- **Comprehensive guides, templates, and integration examples**
+
+---
+
 ## 🎯 What's Inside
 
 This repository contains everything you need to become productive with Claude Code:
@@ -244,6 +256,8 @@ claude
 
 ```
 claude-code-helper/
+│
+├── TOOLS-INDEX.md             # 📋 Master catalog of all tools
 │
 ├── guides/                    # Learning resources
 │   ├── complete-guide/        # Zero to hero path
@@ -595,6 +609,12 @@ No attribution is legally required, but it is appreciated!
 ---
 
 ## 🔗 Resources
+
+### Repository Documentation
+- [TOOLS-INDEX.md](TOOLS-INDEX.md) - Complete catalog of all tools and components
+- [CHANGELOG.md](CHANGELOG.md) - Version history and release notes
+- [TODO.md](TODO.md) - Repository roadmap (79/79 items complete)
+- [COMPLETION-SUMMARY.md](COMPLETION-SUMMARY.md) - 100% completion milestone
 
 ### Official Documentation
 - [Claude Code Docs](https://code.claude.com/docs)
