@@ -6,6 +6,25 @@ Comprehensive guide to advanced end-to-end testing patterns covering complex use
 
 Advanced E2E testing goes beyond basic "click and assert" tests to cover realistic user scenarios, error handling, edge cases, and complex interactions that span multiple pages and services.
 
+
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/advanced-e2e-testing
+cp advanced-e2e-testing.md ~/.claude/skills/advanced-e2e-testing/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/advanced-e2e-testing
+cp advanced-e2e-testing.md .claude/skills/advanced-e2e-testing/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
 ## Core Concepts
 
 ### E2E Testing Pyramid

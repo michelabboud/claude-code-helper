@@ -2,7 +2,15 @@
 
 /**
  * Code Review MCP Server
- * Provides linting, security scanning, and code quality analysis tools
+ *
+ * Provides linting, security scanning, and code quality analysis tools for Claude Code
+ * through the Model Context Protocol.
+ *
+ * @author Michel Abboud (https://github.com/michelabboud)
+ * @license MIT
+ * @see https://github.com/michelabboud/claude-code-helper
+ *
+ * Created with assistance from Claude Code (Anthropic)
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";

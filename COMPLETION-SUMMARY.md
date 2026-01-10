@@ -567,3 +567,10 @@ The claude-code-helper repository is now the most comprehensive Claude Code educ
 ---
 
 *"From a collection of examples to a complete educational toolkit - The journey to 100% completion."*
+
+---
+
+**Author**: Michel Abboud (https://github.com/michelabboud)
+**AI Assistance**: Created with Claude Code (Anthropic)
+**License**: MIT
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)

@@ -6,6 +6,25 @@ Comprehensive guide to visual regression testing, covering tools, patterns, and 
 
 Visual regression testing automatically detects visual differences between expected (baseline) and actual UI renderings, catching CSS bugs, layout issues, and unintended visual changes that functional tests might miss.
 
+
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/visual-regression-testing
+cp visual-regression-testing.md ~/.claude/skills/visual-regression-testing/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/visual-regression-testing
+cp visual-regression-testing.md .claude/skills/visual-regression-testing/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
 ## Core Concepts
 
 ### What Visual Regression Testing Detects

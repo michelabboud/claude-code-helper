@@ -4,6 +4,25 @@
 
 Comprehensive guide for database schema design, migration strategies, indexing, query optimization, and scaling patterns for relational and NoSQL databases.
 
+
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/database-design-patterns
+cp database-design-patterns.md ~/.claude/skills/database-design-patterns/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/database-design-patterns
+cp database-design-patterns.md .claude/skills/database-design-patterns/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
 ## Skill Configuration
 
 ```yaml

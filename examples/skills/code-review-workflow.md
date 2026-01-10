@@ -38,6 +38,24 @@ Use the `agent` field to automatically invoke a specific sub-agent when this ski
 ### Skill Hot-Reload
 Skills are now automatically hot-reloaded when changed in `~/.claude/skills/` or `.claude/skills/` - no restart required. This enables rapid iteration during skill development.
 
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/code-review-workflow
+cp code-review-workflow.md ~/.claude/skills/code-review-workflow/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/code-review-workflow
+cp code-review-workflow.md .claude/skills/code-review-workflow/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill when you ask about code reviews or request a PR review.
+
 ## Pre-Review Checklist
 
 Before starting code review:

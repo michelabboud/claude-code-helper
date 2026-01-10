@@ -15,6 +15,73 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [1.2.0] - 2026-01-10
+
+### 🧹 Repository Cleanup and Documentation Enhancement
+
+Comprehensive repository audit and cleanup addressing structural issues, missing documentation, and attribution gaps.
+
+### Fixed
+
+#### Structural Cleanup
+- **Removed 7 duplicate root directories** - Deleted exact duplicates of `config-bundle/` subdirectories
+  - Removed: `agents/`, `commands/`, `global-config/`, `scripts/`, `skills/`, `statuslines/`, `wsl-setup/`
+  - Maintained single source of truth in `config-bundle/`
+  - Eliminates confusion and maintenance burden
+
+#### Documentation
+- **Added comprehensive READMEs for 3 MCP servers** (code-review-mcp, testing-mcp, design-system-mcp)
+  - Complete feature documentation with usage examples
+  - Installation and configuration instructions
+  - Tool-by-tool reference with input/output examples
+  - Troubleshooting and best practices sections
+- **Added installation instructions to 13 skill files** in `examples/skills/`
+  - Global and project-specific installation paths
+  - Hot-reload documentation
+  - Usage guidance for each skill
+- **Added credits to 5 documentation files** (CHANGELOG.md, TODO.md, TOOLS-INDEX.md, COMPLETION-SUMMARY.md, CLAUDE-CODE-V2-UPDATES.md)
+  - Consistent author attribution
+  - AI assistance acknowledgment
+  - License and repository links
+
+#### Attribution
+- **Added author credits to 5 TypeScript MCP server files**
+  - Comprehensive JSDoc headers with @author, @license, @see tags
+  - ai-specialist-mcp, code-review-mcp, testing-mcp, design-system-mcp, uiux-review-mcp
+  - Consistent attribution format across all servers
+
+### Added
+
+#### Templates
+- **Hook Template** (`templates/hook/hook-template.md`)
+  - Comprehensive template for creating Claude Code hooks
+  - Supports all event types (PreToolUse, PostToolUse, SessionStart, etc.)
+  - Bash script and prompt-based examples
+  - Deployment options and troubleshooting guide
+- **Plugin Template** (`templates/plugin/plugin-template.md`)
+  - Complete plugin development template
+  - Multi-component architecture guidance
+  - Installation, configuration, and usage sections
+  - Contributing and testing guidelines
+- **Enhanced Templates README** (`templates/README.md`)
+  - Documentation for all template types
+  - Best practices and naming conventions
+  - Quick start guides for hooks and plugins
+
+#### Archive System
+- **Archive directory structure** (`archive/`)
+  - `archive/session-summaries/` - Development milestone documentation
+  - `archive/deprecated/` - Deprecated components preservation
+  - `archive/old-versions/` - Historical file versions
+  - Comprehensive README with archiving guidelines and policies
+
+### Changed
+
+- **Updated templates/README.md** - Replaced basic overview with comprehensive template system documentation
+- **All skill files** - Added consistent installation sections with hot-reload information
+
+---
+
 ## [1.0.0] - 2026-01-10
 
 ### 🎉 Major Milestone: 100% Completion
@@ -322,3 +389,10 @@ Each release entry should include:
 ---
 
 *This changelog is maintained following the [Keep a Changelog](https://keepachangelog.com/) format.*
+
+---
+
+**Author**: Michel Abboud (https://github.com/michelabboud)
+**AI Assistance**: Created with Claude Code (Anthropic)
+**License**: MIT
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)

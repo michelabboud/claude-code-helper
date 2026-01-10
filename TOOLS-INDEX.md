@@ -629,3 +629,10 @@ When adding new tools:
 
 *Last updated: January 2026*
 *Total documented components: 100+*
+
+---
+
+**Author**: Michel Abboud (https://github.com/michelabboud)
+**AI Assistance**: Created with Claude Code (Anthropic)
+**License**: MIT
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)

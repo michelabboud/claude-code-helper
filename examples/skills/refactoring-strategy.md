@@ -46,6 +46,25 @@ hooks:
 ```
 Enforce safety requirements like test coverage before allowing refactoring operations.
 
+
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/refactoring-strategy
+cp refactoring-strategy.md ~/.claude/skills/refactoring-strategy/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/refactoring-strategy
+cp refactoring-strategy.md .claude/skills/refactoring-strategy/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
 ## Refactoring Principles
 
 ### The Golden Rule

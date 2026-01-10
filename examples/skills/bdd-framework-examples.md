@@ -6,6 +6,25 @@ Comprehensive guide to Behavior-Driven Development (BDD) using Cucumber, Behave,
 
 BDD frameworks enable writing tests in natural language (Gherkin) that describe system behavior from a user's perspective, bridging the gap between technical and non-technical stakeholders.
 
+
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/bdd-framework-examples
+cp bdd-framework-examples.md ~/.claude/skills/bdd-framework-examples/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/bdd-framework-examples
+cp bdd-framework-examples.md .claude/skills/bdd-framework-examples/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
 ## Core Concepts
 
 ### Given-When-Then Pattern

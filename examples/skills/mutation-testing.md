@@ -6,6 +6,25 @@ Comprehensive guide to mutation testing for measuring test suite effectiveness b
 
 Mutation testing evaluates the quality of your tests by deliberately introducing small changes (mutations) to your code and checking if your tests fail. If tests pass despite mutations, it indicates gaps in test coverage or weak test assertions.
 
+
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/mutation-testing
+cp mutation-testing.md ~/.claude/skills/mutation-testing/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/mutation-testing
+cp mutation-testing.md .claude/skills/mutation-testing/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
 ## Core Concepts
 
 ### What is Mutation Testing?

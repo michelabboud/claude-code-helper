@@ -22,6 +22,25 @@ Comprehensive guide to planning, executing, and managing software releases with 
 9. [Monitoring & Validation](#monitoring--validation)
 10. [Best Practices](#best-practices)
 
+
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/release-management
+cp release-management.md ~/.claude/skills/release-management/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/release-management
+cp release-management.md .claude/skills/release-management/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
 ## Semantic Versioning
 
 ### Version Format: MAJOR.MINOR.PATCH

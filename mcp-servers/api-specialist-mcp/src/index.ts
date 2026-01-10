@@ -2,7 +2,15 @@
 
 /**
  * API Specialist MCP Server
- * Comprehensive API testing, validation, security checks, and improvement suggestions
+ *
+ * Provides comprehensive API testing, validation, security auditing, and improvement
+ * suggestions for Claude Code through the Model Context Protocol.
+ *
+ * @author Michel Abboud (https://github.com/michelabboud)
+ * @license MIT
+ * @see https://github.com/michelabboud/claude-code-helper
+ *
+ * Created with assistance from Claude Code (Anthropic)
  */
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";

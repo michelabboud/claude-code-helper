@@ -4,6 +4,25 @@
 
 A comprehensive skill for designing, implementing, and optimizing continuous integration (CI) pipelines. Covers pipeline architecture, parallel execution, caching strategies, automated testing, quality gates, and CI/CD best practices across different platforms.
 
+
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/ci-best-practices
+cp ci-best-practices.md ~/.claude/skills/ci-best-practices/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/ci-best-practices
+cp ci-best-practices.md .claude/skills/ci-best-practices/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
 ## Skill Configuration
 
 ```yaml

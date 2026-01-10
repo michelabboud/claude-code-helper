@@ -21,6 +21,25 @@ Master the Test-Driven Development approach to writing robust, maintainable code
 8. [Tools and Frameworks](#tools-and-frameworks)
 9. [Benefits and Trade-offs](#benefits-and-trade-offs)
 
+
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/tdd-workflow
+cp tdd-workflow.md ~/.claude/skills/tdd-workflow/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/tdd-workflow
+cp tdd-workflow.md .claude/skills/tdd-workflow/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
 ## What is TDD?
 
 **Test-Driven Development (TDD)** is a software development approach where you write tests before writing the actual code. The process follows a simple cycle:

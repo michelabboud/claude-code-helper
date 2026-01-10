@@ -6,6 +6,25 @@ Comprehensive guide to contract testing for microservices, covering consumer-dri
 
 Contract testing ensures that services can communicate correctly by testing the contracts (API interfaces) between them, without requiring both services to be running simultaneously. This is essential for microservices architectures.
 
+
+## 📦 Installation
+
+Copy this skill to your Claude Code skills directory:
+
+```bash
+# Global installation (available to all projects)
+mkdir -p ~/.claude/skills/contract-testing
+cp contract-testing.md ~/.claude/skills/contract-testing/SKILL.md
+
+# Or project-specific installation
+mkdir -p .claude/skills/contract-testing
+cp contract-testing.md .claude/skills/contract-testing/SKILL.md
+```
+
+The skill will be automatically detected and hot-reloaded by Claude Code.
+
+**Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
 ## Core Concepts
 
 ### What is Contract Testing?

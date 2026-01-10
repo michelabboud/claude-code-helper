@@ -373,3 +373,10 @@ Expected: All commands should return matches.
 **Status**: ✅ All updates successfully applied
 **Compatibility**: Backward compatible, additive changes only
 **Ready for**: Production use with Claude Code v2.1.3+
+
+---
+
+**Author**: Michel Abboud (https://github.com/michelabboud)
+**AI Assistance**: Created with Claude Code (Anthropic)
+**License**: MIT
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
