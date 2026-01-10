@@ -1,10 +1,10 @@
 {
-  "name": "database-operations-mcp",
+  "name": "dependency-management-mcp",
   "version": "1.0.0",
-  "description": "MCP server for database operations, migrations, schema inspection, and query optimization",
+  "description": "MCP server for dependency analysis, vulnerability scanning, and update recommendations",
   "type": "module",
   "bin": {
-    "database-operations-mcp": "./build/index.js"
+    "dependency-management-mcp": "./build/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -14,13 +14,13 @@
   },
   "keywords": [
     "mcp",
-    "database",
-    "sql",
-    "migrations",
-    "postgresql",
-    "mysql",
-    "mongodb",
-    "sqlite"
+    "dependencies",
+    "npm",
+    "pip",
+    "maven",
+    "vulnerability",
+    "license",
+    "sbom"
   ],
   "author": "Claude Code Helper",
   "license": "MIT",

@@ -142,6 +142,7 @@ await mcp.call('generate_sbom', {
 ```bash
 cd mcp-servers/dependency-management
 npm install
+npm run build
 ```
 
 ## Configuration
@@ -154,7 +155,7 @@ Add to `~/.claude/config/mcp.json`:
     "dependency-management": {
       "type": "stdio",
       "command": "node",
-      "args": ["/path/to/dependency-management/index.js"]
+      "args": ["/path/to/dependency-management/build/index.js"]
     }
   }
 }

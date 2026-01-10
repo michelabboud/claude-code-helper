@@ -92,18 +92,18 @@ Create database backups with compression and verification.
 
 ### Prerequisites
 - Node.js 18+
-- Database client libraries (pg, mysql2, sqlite3, mongodb)
 
 ### Setup
 
 ```bash
 cd mcp-servers/database-operations
 npm install
+npm run build
 ```
 
 ### Configuration
 
-Create `.env` file:
+Create `.env` file (optional, for database connections):
 
 ```env
 # PostgreSQL
@@ -134,7 +134,7 @@ Add to `~/.claude/config/mcp.json`:
     "database-operations": {
       "type": "stdio",
       "command": "node",
-      "args": ["/path/to/database-operations/index.js"]
+      "args": ["/path/to/database-operations/build/index.js"]
     }
   }
 }

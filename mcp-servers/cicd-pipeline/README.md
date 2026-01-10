@@ -388,6 +388,14 @@ Create rollback procedures for deployment.
 - `rollback_strategy` (string): How to rollback (previous-version, specific-version, snapshot)
 - `automated` (boolean): Enable automated rollback
 
+## Installation
+
+```bash
+cd mcp-servers/cicd-pipeline
+npm install
+npm run build
+```
+
 ## Configuration
 
 ### Claude Desktop
@@ -399,7 +407,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "cicd-pipeline": {
       "command": "node",
-      "args": ["/path/to/cicd-pipeline/dist/index.js"],
+      "args": ["/path/to/cicd-pipeline/build/index.js"],
       "env": {
         "GITHUB_TOKEN": "your_github_token",
         "GITLAB_TOKEN": "your_gitlab_token"

@@ -331,6 +331,14 @@ await mcp.call('generate_data_transformation', {
 })
 ```
 
+## Installation
+
+```bash
+cd mcp-servers/n8n-automation
+npm install
+npm run build
+```
+
 ## Configuration
 
 ### Claude Desktop
@@ -342,7 +350,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "n8n-automation": {
       "command": "node",
-      "args": ["/path/to/n8n-automation/dist/index.js"],
+      "args": ["/path/to/n8n-automation/build/index.js"],
       "env": {
         "N8N_HOST": "http://localhost:5678",
         "N8N_API_KEY": "your_api_key"
