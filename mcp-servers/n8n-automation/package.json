@@ -1,10 +1,10 @@
 {
-  "name": "database-operations-mcp",
+  "name": "n8n-automation-mcp",
   "version": "1.0.0",
-  "description": "MCP server for database operations, migrations, schema inspection, and query optimization",
+  "description": "MCP server for n8n workflow automation, creation, and optimization",
   "type": "module",
   "bin": {
-    "database-operations-mcp": "./build/index.js"
+    "n8n-automation-mcp": "./build/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -14,13 +14,11 @@
   },
   "keywords": [
     "mcp",
-    "database",
-    "sql",
-    "migrations",
-    "postgresql",
-    "mysql",
-    "mongodb",
-    "sqlite"
+    "n8n",
+    "workflow",
+    "automation",
+    "integration",
+    "no-code"
   ],
   "author": "Claude Code Helper",
   "license": "MIT",
