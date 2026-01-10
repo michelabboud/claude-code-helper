@@ -86,19 +86,25 @@ install_server() {
 }
 
 # Install each server
+install_server "API Specialist MCP" "api-specialist-mcp"
 install_server "Code Review MCP" "code-review-mcp"
-install_server "Testing MCP" "testing-mcp"
 install_server "Design System MCP" "design-system-mcp"
+install_server "Testing MCP" "testing-mcp"
+install_server "UI/UX Review MCP" "uiux-review-mcp"
 
 # Get absolute paths
 echo "📍 Installation paths:"
+API_SPECIALIST_PATH="$(cd api-specialist-mcp && pwd)/build/index.js"
 CODE_REVIEW_PATH="$(cd code-review-mcp && pwd)/build/index.js"
-TESTING_PATH="$(cd testing-mcp && pwd)/build/index.js"
 DESIGN_SYSTEM_PATH="$(cd design-system-mcp && pwd)/build/index.js"
+TESTING_PATH="$(cd testing-mcp && pwd)/build/index.js"
+UIUX_REVIEW_PATH="$(cd uiux-review-mcp && pwd)/build/index.js"
 
-echo "  • Code Review MCP:  $CODE_REVIEW_PATH"
-echo "  • Testing MCP:      $TESTING_PATH"
-echo "  • Design System MCP: $DESIGN_SYSTEM_PATH"
+echo "  • API Specialist MCP: $API_SPECIALIST_PATH"
+echo "  • Code Review MCP:    $CODE_REVIEW_PATH"
+echo "  • Design System MCP:  $DESIGN_SYSTEM_PATH"
+echo "  • Testing MCP:        $TESTING_PATH"
+echo "  • UI/UX Review MCP:   $UIUX_REVIEW_PATH"
 echo ""
 
 # Generate configuration
@@ -107,17 +113,25 @@ echo ""
 cat << EOF
 {
   "mcpServers": {
+    "api-specialist": {
+      "command": "node",
+      "args": ["$API_SPECIALIST_PATH"]
+    },
     "code-review": {
       "command": "node",
       "args": ["$CODE_REVIEW_PATH"]
+    },
+    "design-system": {
+      "command": "node",
+      "args": ["$DESIGN_SYSTEM_PATH"]
     },
     "testing": {
       "command": "node",
       "args": ["$TESTING_PATH"]
     },
-    "design-system": {
+    "uiux-review": {
       "command": "node",
-      "args": ["$DESIGN_SYSTEM_PATH"]
+      "args": ["$UIUX_REVIEW_PATH"]
     }
   }
 }
@@ -129,17 +143,25 @@ CONFIG_FILE="claude_desktop_config.json"
 cat > "$CONFIG_FILE" << EOF
 {
   "mcpServers": {
+    "api-specialist": {
+      "command": "node",
+      "args": ["$API_SPECIALIST_PATH"]
+    },
     "code-review": {
       "command": "node",
       "args": ["$CODE_REVIEW_PATH"]
+    },
+    "design-system": {
+      "command": "node",
+      "args": ["$DESIGN_SYSTEM_PATH"]
     },
     "testing": {
       "command": "node",
       "args": ["$TESTING_PATH"]
     },
-    "design-system": {
+    "uiux-review": {
       "command": "node",
-      "args": ["$DESIGN_SYSTEM_PATH"]
+      "args": ["$UIUX_REVIEW_PATH"]
     }
   }
 }

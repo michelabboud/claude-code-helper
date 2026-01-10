@@ -2,7 +2,7 @@
 
 **Complete toolkit for automated code quality, testing, and design system validation using Claude AI**
 
-Three specialized MCP (Model Context Protocol) servers that work together to create a comprehensive code review and quality assurance pipeline. Perfect for use with Claude Desktop and Claude Code's multi-agent workflows!
+Five specialized MCP (Model Context Protocol) servers that work together to create a comprehensive code review and quality assurance pipeline. Perfect for use with Claude Desktop and Claude Code's multi-agent workflows!
 
 [![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/typescript-5.7.2-blue.svg)](https://www.typescriptlang.org)
@@ -107,10 +107,15 @@ Expert UI/UX design review from screenshots with accessibility audits and wirefr
 ### Installation
 
 ```bash
-# Install all three MCP servers
-cd code-review-mcp && npm install && npm run build
-cd ../testing-mcp && npm install && npm run build
-cd ../design-system-mcp && npm install && npm run build
+# Install all five MCP servers
+cd api-specialist-mcp && npm install && npm run build && cd ..
+cd code-review-mcp && npm install && npm run build && cd ..
+cd design-system-mcp && npm install && npm run build && cd ..
+cd testing-mcp && npm install && npm run build && cd ..
+cd uiux-review-mcp && npm install && npm run build && cd ..
+
+# Or use the install script
+./install-all.sh
 ```
 
 ### Configure Claude Desktop
