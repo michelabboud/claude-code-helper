@@ -1,0 +1,26 @@
+{
+  "name": "uiux-review-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for UI/UX design quality checks, accessibility audits, and wireframe generation from screenshots",
+  "type": "module",
+  "bin": {
+    "uiux-review-mcp": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
+  "keywords": ["mcp", "ui", "ux", "design", "accessibility", "wcag", "wireframe"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

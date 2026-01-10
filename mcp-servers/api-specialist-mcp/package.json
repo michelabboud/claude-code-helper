@@ -1,0 +1,26 @@
+{
+  "name": "api-specialist-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for comprehensive API testing, validation, security checks, and improvement suggestions",
+  "type": "module",
+  "bin": {
+    "api-specialist-mcp": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
+  "keywords": ["mcp", "api", "testing", "validation", "security", "openapi", "swagger"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

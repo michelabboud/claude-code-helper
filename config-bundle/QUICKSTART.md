@@ -82,14 +82,6 @@ Always see current model at terminal bottom:
 - `/observability` - Toggle transparency
 - Check all with `/help`
 
-### Comprehensive Testing Suite
-Advanced testing skills available in `examples/skills/`:
-- Visual regression (Percy, Chromatic, BackstopJS)
-- Contract testing (Pact, consumer-driven)
-- Mutation testing (Stryker, PITest, Mutmut)
-- BDD frameworks (Cucumber, Behave, SpecFlow)
-- Advanced E2E (auth flows, API mocking, WebSockets)
-
 ## 🎯 Common Tasks
 
 ### Switch Between Models

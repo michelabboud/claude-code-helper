@@ -1,266 +1,640 @@
-# Claude Code Configuration Bundle
+# Claude Code Helper - Complete Toolkit
 
-This bundle contains all the best scripts and configurations we created for optimizing your Claude Code experience.
+**Your comprehensive resource for mastering Claude Code with guides, examples, MCP servers, and production-ready configurations.**
 
-## 📦 What's Included
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-Latest-purple.svg)](https://code.claude.com)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-- **Global Configuration**: settings.json and CLAUDE.md
-- **Status Lines**: Model display scripts for terminal
-- **Custom Commands**: /plan and other workflow commands
-- **Skills**: Auto-planning intelligence
-- **Agents**: Specialized planner and implementer agents
-- **Scripts**: Setup and utility scripts
-- **WSL Multi-User**: Setup for API vs Subscription separation
+---
+
+## 🎯 What's Inside
+
+This repository contains everything you need to become productive with Claude Code:
+
+| Component | Description | Best For |
+|-----------|-------------|----------|
+| **[Guides](#-guides)** | Complete learning paths from zero to hero | Learning & Reference |
+| **[MCP Servers](#-mcp-servers)** | 5 specialized servers for code quality | Automation & CI/CD |
+| **[Examples](#-examples)** | Ready-to-use examples for all tool types | Quick Start & Templates |
+| **[Templates](#-templates)** | Starter templates for creating your own | Building Custom Tools |
+| **[Config Bundle](#-config-bundle)** | Production-ready global configuration | Setup & Optimization |
+
+---
 
 ## 🚀 Quick Start
 
-### Option 1: Full Installation (Recommended)
+### For Complete Beginners
 ```bash
-cd claude-config-bundle
-chmod +x scripts/install-all.sh
+# 1. Read the zero-to-hero guide
+cat guides/complete-guide/00-ZERO-TO-HERO-GUIDE.md
+
+# 2. Install the config bundle
+cd config-bundle
 ./scripts/install-all.sh
+
+# 3. Start using Claude Code
+claude
 ```
 
-### Option 2: Manual Installation
-Choose what you want to install:
-
+### For Intermediate Users
 ```bash
-# Install global config
-cp global-config/settings.json ~/.claude/
-cp global-config/CLAUDE.md ~/.claude/
+# 1. Explore examples
+cd examples && ls -la
 
-# Install status lines
-mkdir -p ~/.claude/statuslines
-cp statuslines/* ~/.claude/statuslines/
-chmod +x ~/.claude/statuslines/*.sh
+# 2. Install sub-agents
+cd ../guides/subagents-guide
+./install-all-agents.sh
 
-# Install commands
-mkdir -p ~/.claude/commands
-cp commands/* ~/.claude/commands/
-chmod +x ~/.claude/commands/*.sh
-
-# Install skills
-mkdir -p ~/.claude/skills
-cp -r skills/* ~/.claude/skills/
-
-# Install agents
-mkdir -p ~/.claude/agents
-cp agents/* ~/.claude/agents/
+# 3. Set up MCP servers
+cd ../../mcp-servers
+./install-all.sh
 ```
 
-## 📋 Components Overview
+### For Advanced Users
+```bash
+# Build custom agents, integrate MCP, create workflows
+# See: guides/subagents-guide/patterns/
+```
 
-### Global Configuration
-- `settings.json` - Main Claude Code settings with status line
-- `CLAUDE.md` - Global instructions for model transparency
+---
 
-### Status Lines
-- `model-display.sh` - Simple colored model indicator
-- `detailed-status.sh` - Model + auth type + git branch
+## 📚 Guides
 
-### Commands
-- `plan.md` - Planning workflow command
-- `observability.sh` - Toggle model transparency
+**[📖 Navigate to Guides →](./guides/)**
 
-### Skills
-- `auto-plan/SKILL.md` - Automatic model switching intelligence
+Comprehensive documentation to master Claude Code at every level.
 
-### Agents
-- `planner.json` - Dedicated planning agent (opusplan)
-- `implementer.json` - Dedicated implementation agent (sonnet)
+### [Complete Guide](./guides/complete-guide/)
+Zero to hero learning path covering all Claude Code features.
 
-### Scripts
-- `install-all.sh` - One-command installation
-- `setup-api-key.sh` - API key configuration helper
-- `test-setup.sh` - Verify installation
+**Includes:**
+- **Zero-to-Hero Guide** - Structured learning from basics to mastery
+- **Tools Comparison** - Skills vs Agents vs Commands vs Hooks vs MCP
+- **Quick Reference** - Cheat sheet for common operations
+- **Best Practices** - Industry patterns and conventions
+- **Troubleshooting** - Common issues and solutions
 
-### WSL Multi-User Setup
-- `create-users.sh` - Create claude-api and claude-pro users
-- `setup-api-user.sh` - Configure API user
-- `setup-pro-user.sh` - Configure subscription user
+**Start here if:** You're new to Claude Code or want comprehensive documentation.
+
+---
+
+### [Sub-Agents Guide](./guides/subagents-guide/)
+Advanced guide with production-ready agent examples and orchestration patterns.
+
+**Includes:**
+- **6+ Agent Examples** - Android, Database, API, Styling, Git, Performance
+- **12+ Patterns** - Orchestration, parallel execution, sequential workflows
+- **Real-World Example** - Complete authentication system implementation
+- **Custom Agents** - Gradle expert, WSL helper, Tailwind builder
+
+**Start here if:** You want to build specialized agents and multi-agent workflows.
+
+---
+
+## 🌐 MCP Servers
+
+**[🔌 Navigate to MCP Servers →](./mcp-servers/)**
+
+Five specialized Model Context Protocol servers for automated code quality and testing.
+
+### Available Servers
+
+| Server | Tools | Purpose |
+|--------|-------|---------|
+| **API Specialist** | 8 tools | API testing, validation, security, docs |
+| **Code Review** | 4 tools | Linting, security scanning, complexity |
+| **Design System** | 5 tools | Token validation, component checks, a11y |
+| **Testing** | 4 tools | Test execution, coverage, quality analysis |
+| **UI/UX Review** | 9 tools | Design review, accessibility, wireframes |
+
+**Total: 30 specialized tools**
+
+### Quick Install
+```bash
+cd mcp-servers
+./install-all.sh
+
+# Configure Claude Desktop
+# Edit: ~/.config/Claude/claude_desktop_config.json
+# (Paths provided by install script)
+```
+
+### Use Cases
+- **Automated Code Review**: Lint, security scan, complexity check
+- **API Development**: Test endpoints, validate specs, generate docs
+- **Design Systems**: Validate tokens, check components, audit accessibility
+- **Testing**: Run tests, check coverage, analyze quality
+- **UI/UX**: Review designs, check WCAG compliance, generate wireframes
+
+**Learn more:** [MCP Servers Documentation](./mcp-servers/README.md)
+
+---
+
+## 💡 Examples
+
+**[📝 Navigate to Examples →](./examples/)**
+
+Ready-to-use examples for all Claude Code tool types. Copy, customize, and deploy!
+
+### What's Included
+
+#### [Agents](./examples/agents/) 🤖
+- **MCP Agents** (8 configs) - Use MCP servers for specialized tasks
+- **Sub-Agents** (6+ agents) - Autonomous domain experts
+
+#### [Skills](./examples/skills/) ✨
+- **Workflows:** Code review, refactoring, TDD, release management, CI best practices
+- **Testing Suite:** Visual regression, contract testing, mutation testing, BDD, advanced E2E
+- **Architecture:** API design, database design, caching patterns
+
+#### [Commands](./examples/commands/) ⚡
+- Slash commands for quick operations
+- `/plan`, `/review`, `/test`, `/docs`
+
+#### [Hooks](./examples/hooks/) 🎣
+- Event-driven automation
+- PreToolUse, PostToolUse, SessionStart, SessionEnd
+
+#### [Plugins](./examples/plugins/) 🔌
+- Complete packages combining multiple tools
+- Full-stack dev, testing, documentation workflows
+
+#### [MCP Configs](./examples/mcp/) 🌐
+- MCP server configuration examples
+- GitHub, database, API integration
+
+### Installation
+```bash
+# Browse examples
+cd examples && ls -la
+
+# Install specific category
+cp agents/subagents/database-expert.md ~/.claude/agents/
+
+# Install everything
+cd ../guides/subagents-guide
+./install-all-agents.sh
+```
+
+**Learn more:** [Examples Documentation](./examples/README.md)
+
+---
+
+## 📐 Templates
+
+**[🎨 Navigate to Templates →](./templates/)**
+
+Starter templates for creating your own tools.
+
+### Available Templates
+- **Agent Template** - Create custom agents
+- **Skill Template** - Build reusable skills
+- **Command Template** - Design slash commands
+- **Plugin Template** - Bundle complete workflows
+
+### Usage
+```bash
+# Copy template
+cp templates/agent/template.md ~/.claude/agents/my-agent.md
+
+# Customize
+nano ~/.claude/agents/my-agent.md
+
+# Use
+claude
+```
+
+---
+
+## ⚙️ Config Bundle
+
+**[🔧 Navigate to Config Bundle →](./config-bundle/)**
+
+Production-ready global configuration for Claude Code with status lines, commands, skills, and multi-user support.
+
+### What's Included
+- **Global Config** - settings.json + CLAUDE.md
+- **Status Lines** - Model display in terminal
+- **Commands** - /plan, /observability
+- **Skills** - Auto-planning intelligence
+- **Agents** - Planner + Implementer
+- **Scripts** - Installation & setup utilities
+- **WSL Setup** - Multi-user configuration
+
+### Features
+✅ Model transparency (status line + prefixes)
+✅ Automatic planning mode switching
+✅ Custom workflow commands
+✅ Multi-user WSL support (API vs Subscription)
+
+### Quick Install
+```bash
+cd config-bundle
+./scripts/install-all.sh
+
+# Restart Claude Code
+claude
+```
+
+**Learn more:** [Config Bundle Documentation](./config-bundle/README.md)
+
+---
+
+## 📖 Documentation Structure
+
+```
+claude-code-helper/
+│
+├── guides/                    # Learning resources
+│   ├── complete-guide/        # Zero to hero path
+│   └── subagents-guide/       # Advanced agents guide
+│
+├── mcp-servers/               # 5 MCP servers (30 tools)
+│   ├── api-specialist-mcp/
+│   ├── code-review-mcp/
+│   ├── design-system-mcp/
+│   ├── testing-mcp/
+│   └── uiux-review-mcp/
+│
+├── examples/                  # Ready-to-use examples
+│   ├── agents/               # MCP + Sub-agents
+│   ├── skills/               # Reusable workflows
+│   ├── commands/             # Slash commands
+│   ├── hooks/                # Event automation
+│   ├── plugins/              # Complete packages
+│   └── mcp/                  # MCP configs
+│
+├── templates/                 # Starter templates
+│   ├── agent/
+│   ├── skill/
+│   ├── command/
+│   └── plugin/
+│
+├── config-bundle/             # Production config
+│   ├── global-config/
+│   ├── statuslines/
+│   ├── commands/
+│   ├── skills/
+│   ├── agents/
+│   ├── scripts/
+│   └── wsl-setup/
+│
+├── agents/                    # Your custom agents
+├── commands/                  # Your custom commands
+├── skills/                    # Your custom skills
+├── statuslines/               # Your status line scripts
+├── scripts/                   # Utility scripts
+├── global-config/             # Your global config
+└── wsl-setup/                 # WSL configuration
+```
+
+---
+
+## 🎓 Learning Paths
+
+### Path 1: Complete Beginner (Week 1-2)
+1. Read [Zero to Hero Guide](./guides/complete-guide/00-ZERO-TO-HERO-GUIDE.md)
+2. Review [Tools Comparison](./guides/complete-guide/01-TOOLS-COMPARISON.md)
+3. Install [Config Bundle](./config-bundle/)
+4. Try [Basic Examples](./examples/)
+
+### Path 2: Intermediate Developer (Week 3-4)
+5. Study [Sub-Agents Guide](./guides/subagents-guide/README.md)
+6. Install [Sub-Agents](./guides/subagents-guide/install-all-agents.sh)
+7. Try [Integration Example](./guides/subagents-guide/INTEGRATION-EXAMPLE.md)
+8. Experiment with [Agent Examples](./examples/agents/)
+
+### Path 3: Advanced User (Week 5+)
+9. Set up [MCP Servers](./mcp-servers/)
+10. Learn [Coordination Patterns](./guides/subagents-guide/patterns/)
+11. Build custom agents using [Templates](./templates/)
+12. Create multi-agent orchestration workflows
+13. Develop custom MCP servers
+
+---
+
+## 📖 Related Learning Resources
+
+### AI and Claude Code: A Comprehensive Guide for DevOps Engineers
+**Repository**: [michelabboud/ai-and-claude-code-intro](https://github.com/michelabboud/ai-and-claude-code-intro)
+**Author**: Michel Abboud (with assistance of Claude AI)
+**License**: CC BY-NC 4.0
+
+A comprehensive 10-chapter guide covering AI fundamentals through advanced Claude Code usage. This guide provides the theoretical foundation that complements the practical examples in this repository.
+
+**What's Covered**:
+- **Part 1: Foundations** - AI history, LLM mechanics, prompt engineering (CRAFT framework)
+- **Part 2: AI Ecosystem** - Model providers, Claude capabilities, token economics
+- **Part 3: Claude Code Mastery** - Installation, configuration, agent workflows
+- **Part 4: Advanced Topics** - MCP architecture, real-world DevOps applications
+
+**Perfect For**:
+- Understanding the *why* behind Claude Code features
+- Learning AI/LLM fundamentals before diving into tools
+- Structured learning path from beginner to expert
+- Theoretical foundation for DevOps engineers
+
+**Recommended Learning Path**:
+```
+1. 📚 Read the Guide    → AI and Claude Code Intro (Theory)
+2. 🛠️ Practice Here     → claude-code-helper (Hands-On)
+3. 🚀 Build Projects    → Apply to Real-World Scenarios
+```
+
+**How They Complement Each Other**:
+- **AI & Claude Code Guide** teaches *what* Claude Code is and *how* it works
+- **Claude Code Helper** provides *production-ready examples* and *professional configurations*
+
+---
+
+## 💻 Installation
+
+### Prerequisites
+```bash
+# Install Claude Code CLI
+npm install -g @anthropic-ai/claude-code
+
+# Verify installation
+claude --version
+```
+
+### Quick Install Everything
+```bash
+# Clone repository
+git clone https://github.com/yourusername/claude-code-helper.git
+cd claude-code-helper
+
+# Install config bundle
+cd config-bundle && ./scripts/install-all.sh && cd ..
+
+# Install sub-agents
+cd guides/subagents-guide && ./install-all-agents.sh && cd ../..
+
+# Install MCP servers
+cd mcp-servers && ./install-all.sh && cd ..
+
+# Start using
+claude
+```
+
+### Selective Installation
+```bash
+# Just the guides (no installation needed)
+cd guides && cat complete-guide/README.md
+
+# Just the examples
+cp examples/agents/subagents/*.md ~/.claude/agents/
+
+# Just the MCP servers
+cd mcp-servers && ./install-all.sh
+
+# Just the config bundle
+cd config-bundle && ./scripts/install-all.sh
+```
+
+---
+
+## 🎯 Common Use Cases
+
+### Use Case 1: API Development
+**Tools:** API Specialist MCP + API Expert Sub-Agent + Testing MCP
+```bash
+# 1. Install MCP servers
+cd mcp-servers && ./install-all.sh
+
+# 2. Install API expert agent
+cp examples/agents/subagents/api-expert.md ~/.claude/agents/
+
+# 3. Use in project
+claude
+> Build a REST API for user management
+> Test the API endpoints with security validation
+```
+
+---
+
+### Use Case 2: Android Development
+**Tools:** Android Dev Sub-Agent + Performance MCP + Testing MCP
+```bash
+# 1. Install agents
+cp examples/agents/subagents/android-dev.md ~/.claude/agents/
+
+# 2. Use for development
+claude
+> Build a Material 3 login screen with Jetpack Compose
+```
+
+---
+
+### Use Case 3: Full-Stack Code Review
+**Tools:** All MCP Servers + Review Agents
+```bash
+# 1. Install everything
+cd mcp-servers && ./install-all.sh
+cp examples/agents/mcp-agents/*.json ~/.claude/agents/
+
+# 2. Run comprehensive review
+claude
+> Review this pull request for security, testing, and design compliance
+```
+
+---
 
 ## 🔧 Configuration
 
-### Environment Variables
-
-Add to your `~/.zshrc` or `~/.bashrc`:
-
+### Global Configuration
 ```bash
-# API Configuration (only if using API)
-export ANTHROPIC_API_KEY="sk-ant-your-key-here"
+# Location: ~/.claude/
+settings.json       # Main settings
+CLAUDE.md          # Global instructions
+```
 
-# Model preferences (optional)
+### Project Configuration
+```bash
+# Location: ./.claude/ (project root)
+CLAUDE.md          # Project-specific instructions
+config.json        # Project settings
+```
+
+### Environment Variables
+```bash
+# Add to ~/.zshrc or ~/.bashrc
+export ANTHROPIC_API_KEY="sk-ant-your-key"
 export ANTHROPIC_MODEL="sonnet"
-export ANTHROPIC_DEFAULT_OPUS_MODEL="claude-opus-4-5-20251101"
-export ANTHROPIC_DEFAULT_SONNET_MODEL="claude-sonnet-4-5-20250929"
-export ANTHROPIC_DEFAULT_HAIKU_MODEL="claude-haiku-4-5-20251001"
-
-# Disable telemetry (optional)
 export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=true
 ```
 
-### Multi-User WSL Setup
+---
 
-If you want separate users for API vs Subscription:
+## 📊 Features Overview
 
+### ✅ Complete Learning Resources
+- Zero-to-hero guides
+- Tool comparisons
+- Best practices
+- Troubleshooting guides
+
+### ✅ Production-Ready Tools
+- 5 MCP servers (30 tools)
+- 26+ agent examples (all major tech stacks)
+- 13+ skills (workflows, testing, architecture)
+- Commands, hooks, complete plugins
+
+### ✅ Automation & Quality
+- Automated code review
+- Comprehensive testing (visual, contract, mutation, BDD, E2E)
+- API testing & validation
+- Design system compliance
+- Test coverage enforcement
+
+### ✅ Multi-Agent Workflows
+- Orchestration patterns
+- Parallel execution
+- Sequential pipelines
+- Error handling strategies
+
+### ✅ Development Experience
+- Status line indicators
+- Model transparency
+- Custom commands
+- Auto-planning mode
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Claude Code not found**
 ```bash
-cd wsl-setup
-sudo ./create-users.sh
-./setup-api-user.sh "sk-ant-your-api-key"
-./setup-pro-user.sh
-```
-
-Then switch between users:
-```bash
-su - claude-api   # Use API
-su - claude-pro   # Use subscription
-```
-
-## 📊 Features
-
-### ✅ Model Transparency
-- Status line shows current model at bottom of terminal
-- Every response prefixed with [model-name]
-- Color-coded indicators (🟡 Opus, 🔵 Sonnet, 🟢 Haiku)
-
-### ✅ Automatic Planning
-- Claude detects when planning is needed
-- Automatically switches to opusplan
-- Switches back to sonnet for implementation
-
-### ✅ Custom Workflows
-- `/plan` command for structured planning
-- Agents for specialized tasks
-- Observable model switching
-
-### ✅ Multi-User Support
-- Separate WSL users for API vs Subscription
-- Easy cost comparison
-- No accidental auth mixing
-
-## 🧪 Testing
-
-After installation, test your setup:
-
-```bash
-# Test basic installation
+npm install -g @anthropic-ai/claude-code
 claude --version
-
-# Test status line (should see model indicator at bottom)
-claude
-/status
-
-# Test model transparency (should see [sonnet] prefix)
-> Hello Claude
-
-# Test planning (should auto-switch to opusplan)
-> How should we design a REST API?
-
-# Test custom command
-/plan "Build an authentication system"
 ```
 
-## 💡 Usage Examples
-
-### Example 1: Automatic Planning
+**Status line not showing**
 ```bash
-claude
-
-> Design a microservices architecture for e-commerce
-
-# Claude automatically:
-# 1. Detects this is a planning task
-# 2. Switches to opusplan: [opusplan] I'll create a comprehensive plan...
-# 3. After planning, suggests: "Ready to implement? Switching to sonnet."
-```
-
-### Example 2: Custom Plan Command
-```bash
-claude
-
-/plan Create a CI/CD pipeline
-
-# Starts with structured planning workflow
-# Uses opusplan automatically
-```
-
-### Example 3: Multi-User Cost Comparison
-```bash
-# Use API for one week
-su - claude-api
-claude
-# ... do your work ...
-
-# Check API costs in console.anthropic.com
-
-# Use subscription for comparison
-su - claude-pro
-claude
-# ... do your work ...
-
-# Compare which is more cost-effective
-```
-
-## 🔍 Troubleshooting
-
-### Status line not showing
-```bash
-# Check settings
-cat ~/.claude/settings.json
-
-# Verify script is executable
-ls -la ~/.claude/statuslines/
 chmod +x ~/.claude/statuslines/*.sh
+# Restart Claude
 ```
 
-### Model not switching automatically
+**MCP servers not loading**
 ```bash
-# Check if CLAUDE.md exists
-cat ~/.claude/CLAUDE.md
-
-# Check if skill is installed
-ls ~/.claude/skills/auto-plan/
+# Check config
+cat ~/.config/Claude/claude_desktop_config.json
+# Verify server paths are correct
 ```
 
-### API key not working
+**Agents not triggering**
 ```bash
-# Check if it's set
-echo $ANTHROPIC_API_KEY
-
-# Check Claude Code status
-claude
-/status
-# Should show "Authentication: API usage billing"
+# Verify installation
+ls ~/.claude/agents/
+# Check agent description is clear
 ```
 
-## 📚 Resources
+**More help:** See [Troubleshooting Guide](./guides/complete-guide/04-TROUBLESHOOTING.md)
 
-- [Claude Code Documentation](https://code.claude.com/docs)
-- [Anthropic API Console](https://console.anthropic.com/)
-- [Claude Pricing](https://www.anthropic.com/pricing)
+---
 
-## 🤝 Support
+## 🤝 Contributing
 
-If you encounter issues:
-1. Check the troubleshooting section
-2. Verify all scripts are executable (`chmod +x`)
-3. Ensure Claude Code is up to date (`claude update`)
-4. Check logs with `claude doctor`
+Contributions are welcome! Whether you have:
+- New agent examples
+- Improved documentation
+- Bug fixes
+- Feature requests
 
-## 📝 Notes
+Please:
+1. Fork the repository
+2. Create a feature branch
+3. Test your changes
+4. Submit a pull request
 
-- Always test in a non-production environment first
-- Back up existing configurations before installing
-- API keys are sensitive - never commit them to git
-- Status line scripts require bash (default in most systems)
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
-## 🎯 Next Steps
+---
 
-After installation:
-1. Configure your API key (if using API)
-2. Test the setup with sample queries
-3. Customize CLAUDE.md for your workflow
-4. Create project-specific `.claude/CLAUDE.md` files
-5. Explore creating custom commands for your needs
+## 📝 License
 
-Enjoy your optimized Claude Code experience! 🚀
+**MIT License** - Free for personal and commercial use
+
+This project is licensed under the MIT License, which means you are free to:
+- ✅ Use for personal projects
+- ✅ Use for commercial projects
+- ✅ Modify and adapt the code
+- ✅ Distribute and sell
+- ✅ Use in proprietary software
+
+**No restrictions, no attribution required** (though attribution is appreciated!)
+
+See the [LICENSE](./LICENSE) file for complete details.
+
+### Attribution & Transparency
+
+**Author**: Michel Abboud
+**AI Assistance**: Claude Code (Anthropic)
+
+This project was created with AI collaboration, combining human expertise in DevOps engineering with Claude's capabilities in documentation, code generation, and architectural design. All design decisions, content curation, and architectural choices were made by the human author.
+
+---
+
+## 🔗 Resources
+
+### Official Documentation
+- [Claude Code Docs](https://code.claude.com/docs)
+- [Anthropic API Docs](https://docs.anthropic.com)
+- [MCP Protocol](https://modelcontextprotocol.io)
+
+### Community
+- [Claude AI Reddit](https://reddit.com/r/ClaudeAI)
+- [Anthropic Discord](https://discord.gg/anthropic)
+- [Skills Repository](https://github.com/anthropics/skills)
+
+### Additional Tools
+- [MCP Servers Registry](https://github.com/modelcontextprotocol/servers)
+- [Awesome Claude Code](https://github.com/awesome-claude-code)
+
+---
+
+## 🙏 Acknowledgments
+
+- Anthropic team for Claude Code
+- MCP community for protocol development
+- Contributors and community members
+- Open source examples and patterns
+
+---
+
+## 📞 Support
+
+Need help?
+1. Check [Guides](./guides/) for learning resources
+2. Review [Examples](./examples/) for working code
+3. Read [Troubleshooting](./guides/complete-guide/04-TROUBLESHOOTING.md)
+4. Ask in [Community Forums](https://reddit.com/r/ClaudeAI)
+5. Open an [Issue](https://github.com/yourusername/claude-code-helper/issues)
+
+---
+
+## 🎉 Get Started Now!
+
+```bash
+# Choose your path:
+
+# 🌱 Beginner: Learn the basics
+cd guides/complete-guide && cat 00-ZERO-TO-HERO-GUIDE.md
+
+# 🚀 Intermediate: Install and explore
+cd config-bundle && ./scripts/install-all.sh
+
+# ⚡ Advanced: Build custom workflows
+cd guides/subagents-guide && cat patterns/coordination-patterns.md
+```
+
+---
+
+**Happy Coding with Claude!** 🤖✨
+
+*Last Updated: January 2026*
+*Version: 2.0.0*
+*Repository: claude-code-helper*

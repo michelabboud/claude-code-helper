@@ -1,0 +1,26 @@
+{
+  "name": "testing-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for test execution, coverage analysis, and test quality metrics",
+  "type": "module",
+  "bin": {
+    "testing-mcp": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
+  "keywords": ["mcp", "testing", "coverage", "quality"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}
