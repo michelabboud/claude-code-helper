@@ -1,5 +1,12 @@
 #!/bin/bash
 # Complete installation script for Claude Code configuration bundle
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# Credits:
+#   Author: Michel Abboud (https://github.com/michelabboud)
+#   AI Assistance: Created with the help of Claude Code (Anthropic)
+#   License: MIT - Free to use for personal and commercial projects
+# ─────────────────────────────────────────────────────────────────────────────
 
 set -e  # Exit on error
 

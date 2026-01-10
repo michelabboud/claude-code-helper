@@ -83,3 +83,12 @@ For the complete list of all 33+ sub-agents across both directories, see:
 
 **Created**: 2026-01-10 (v1.0.0 - P3 completion)
 **Updated**: 2026-01-10 (v1.1.0)
+
+---
+
+## 👤 Credits
+
+**Author:** [Michel Abboud](https://github.com/michelabboud)
+**AI Assistance:** Created with the help of Claude Code (Anthropic)
+
+This project is open source under the MIT License. Free to use for personal and commercial projects.

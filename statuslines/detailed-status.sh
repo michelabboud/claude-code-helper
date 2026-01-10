@@ -1,5 +1,12 @@
 #!/bin/bash
 # Detailed status line showing model, auth type, and git branch
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# Credits:
+#   Author: Michel Abboud (https://github.com/michelabboud)
+#   AI Assistance: Created with the help of Claude Code (Anthropic)
+#   License: MIT - Free to use for personal and commercial projects
+# ─────────────────────────────────────────────────────────────────────────────
 
 # Get model info
 MODEL=${ANTHROPIC_MODEL:-"sonnet"}

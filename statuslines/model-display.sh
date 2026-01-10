@@ -1,5 +1,12 @@
 #!/bin/bash
 # Simple model display for Claude Code status line
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# Credits:
+#   Author: Michel Abboud (https://github.com/michelabboud)
+#   AI Assistance: Created with the help of Claude Code (Anthropic)
+#   License: MIT - Free to use for personal and commercial projects
+# ─────────────────────────────────────────────────────────────────────────────
 
 MODEL=${ANTHROPIC_MODEL:-"sonnet"}
 AUTH_TYPE=$([[ -n "$ANTHROPIC_API_KEY" ]] && echo "API" || echo "SUB")

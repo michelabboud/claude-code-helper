@@ -92,6 +92,14 @@ For questions:
 
 ---
 
-**Version:** 1.0.0  
-**Last Updated:** January 2026  
-**Author:** Compiled from official documentation and community resources
+**Version:** 1.0.0
+**Last Updated:** January 2026
+
+---
+
+## 👤 Credits
+
+**Author:** [Michel Abboud](https://github.com/michelabboud)
+**AI Assistance:** Created with the help of Claude Code (Anthropic)
+
+This project is open source under the MIT License. Free to use for personal and commercial projects.

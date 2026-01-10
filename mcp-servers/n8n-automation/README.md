@@ -458,3 +458,12 @@ const optimizations = await mcp.call('optimize_workflow', {
 **Last Updated**: 2026-01-10
 **Platform**: n8n
 **Status**: Production Ready ✅
+
+---
+
+## 👤 Credits
+
+**Author:** [Michel Abboud](https://github.com/michelabboud)
+**AI Assistance:** Created with the help of Claude Code (Anthropic)
+
+This project is open source under the MIT License. Free to use for personal and commercial projects.

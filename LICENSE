@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Michel Abboud
+Copyright (c) 2026 Michel Abboud (https://github.com/michelabboud)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +22,20 @@ SOFTWARE.
 
 ---
 
-ATTRIBUTION NOTE:
+## Credits & Transparency
 
-This project was created by Michel Abboud with the assistance of Claude Code AI
-(Anthropic). While AI was used in the development, design decisions, architecture,
-and content curation were driven by human expertise.
+**Author:** Michel Abboud
+**GitHub:** https://github.com/michelabboud
+**AI Assistance:** This project was created with the help of Claude Code (Anthropic)
 
-The MIT License grants you full freedom to use, modify, and distribute this
-software for both personal and commercial purposes without restrictions.
+This project represents a collaboration between human expertise and AI capabilities.
+All design decisions, architecture, and content curation were made by the human author,
+with AI assisting in implementation, documentation, and code generation.
+
+**Free to use** - This is open source software under the MIT License. You are free to:
+- Use for any personal or commercial project
+- Modify, adapt, and extend the code
+- Distribute, sell, or sublicense
+- Use in proprietary software
+
+No attribution is legally required, but it is appreciated!
