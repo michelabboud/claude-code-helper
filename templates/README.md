@@ -10,17 +10,26 @@ Create custom agents that specialize in specific domains or tasks.
 
 **File:** `agent-template.md`
 
+This comprehensive template includes:
+- Frontmatter configuration (name, description, tools, model)
+- Role definition and core competencies
+- Responsibilities and guidelines
+- Communication patterns and tool usage
+- Domain-specific knowledge sections
+- Common patterns and anti-patterns
+- Customization instructions
+
 ```markdown
 ---
-name: agent-name
-description: Agent purpose
-tools: Read, Write
+name: your-agent-name
+description: When the user needs help with [DOMAIN], use this agent...
+tools: Read, Write, Edit, Bash, Glob, Grep
 model: sonnet
 ---
 
-# Agent Instructions
+# Your Agent Name
 
-Your agent content here.
+You are a specialized agent for [DOMAIN/TECHNOLOGY]...
 ```
 
 **Usage:**
@@ -37,15 +46,25 @@ Build reusable skills that teach Claude new workflows and capabilities.
 
 **File:** `SKILL.md`
 
+This comprehensive template includes:
+- Frontmatter with trigger word patterns
+- Overview and core concepts
+- Step-by-step workflow
+- Best practices (do's and don'ts)
+- Detailed examples with context
+- Reusable templates and checklists
+- Common issues and solutions
+- Customization instructions
+
 ```markdown
 ---
 name: your-skill-name
-description: Clear description with trigger words
+description: When the user asks about [TRIGGER WORDS], wants to [ACTION]...
 ---
 
-# Skill Instructions
+# Your Skill Name
 
-Your skill content here.
+This skill teaches Claude how to [PRIMARY CAPABILITY]...
 ```
 
 **Usage:**
@@ -63,15 +82,30 @@ Design slash commands for quick access to common operations.
 
 **File:** `command-template.md`
 
+This comprehensive template includes:
+- Frontmatter with arguments definition
+- Purpose and use cases
+- Usage syntax with examples
+- Step-by-step workflow
+- Implementation guidelines
+- Output format specification
+- Options reference table
+- Error handling patterns
+- Customization instructions
+
 ```markdown
 ---
-description: Command description
-allowed-tools: Read, Write
+description: [Brief description - shown in /help]
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep
+arguments:
+  - name: target
+    description: The target to operate on
+    required: true
 ---
 
-# Command Instructions
+# /your-command-name
 
-Your command content here.
+This command [DESCRIBE PRIMARY PURPOSE]...
 ```
 
 **Usage:**
