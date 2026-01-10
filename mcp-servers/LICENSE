@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Multi-Agent MCP System Contributors
+Copyright (c) 2026 Michel Abboud (https://github.com/michelabboud)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Credits & Transparency
+
+**Author:** Michel Abboud
+**GitHub:** https://github.com/michelabboud
+**AI Assistance:** This project was created with the help of Claude Code (Anthropic)
+
+This project represents a collaboration between human expertise and AI capabilities.
+All design decisions, architecture, and content curation were made by the human author,
+with AI assisting in implementation, documentation, and code generation.
+
+**Free to use** - This is open source software under the MIT License.

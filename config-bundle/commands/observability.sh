@@ -1,5 +1,12 @@
 #!/bin/bash
 # Toggle model observability (response prefixes)
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# Credits:
+#   Author: Michel Abboud (https://github.com/michelabboud)
+#   AI Assistance: Created with the help of Claude Code (Anthropic)
+#   License: MIT - Free to use for personal and commercial projects
+# ─────────────────────────────────────────────────────────────────────────────
 
 MODE=${1:-on}
 

@@ -1,7 +1,13 @@
 #!/bin/bash
-
 # Advanced Sub-Agents Installation Script
 # Installs all agents to ~/.claude/agents/
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# Credits:
+#   Author: Michel Abboud (https://github.com/michelabboud)
+#   AI Assistance: Created with the help of Claude Code (Anthropic)
+#   License: MIT - Free to use for personal and commercial projects
+# ─────────────────────────────────────────────────────────────────────────────
 
 set -e
 

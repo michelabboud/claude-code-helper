@@ -558,23 +558,38 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 **MIT License** - Free for personal and commercial use
 
-This project is licensed under the MIT License, which means you are free to:
+See the [LICENSE](./LICENSE) file for complete details.
+
+---
+
+## 👤 Credits & Transparency
+
+**Author:** [Michel Abboud](https://github.com/michelabboud)
+**GitHub:** https://github.com/michelabboud
+**AI Assistance:** This project was created with the help of Claude Code (Anthropic)
+
+### About This Project
+
+This project represents a collaboration between human expertise and AI capabilities. All design decisions, architecture, content curation, and implementation direction were made by the human author (Michel Abboud), with AI (Claude Code) assisting in:
+- Documentation generation
+- Code implementation
+- Best practices guidance
+- Pattern suggestions
+
+### Why Transparency Matters
+
+I believe in being open about AI assistance in software development. This project demonstrates how humans and AI can work together effectively, with the human maintaining creative control and decision-making authority while leveraging AI capabilities to accelerate development.
+
+### Free to Use
+
+This is open source software under the MIT License. You are free to:
 - ✅ Use for personal projects
 - ✅ Use for commercial projects
 - ✅ Modify and adapt the code
 - ✅ Distribute and sell
 - ✅ Use in proprietary software
 
-**No restrictions, no attribution required** (though attribution is appreciated!)
-
-See the [LICENSE](./LICENSE) file for complete details.
-
-### Attribution & Transparency
-
-**Author**: Michel Abboud
-**AI Assistance**: Claude Code (Anthropic)
-
-This project was created with AI collaboration, combining human expertise in DevOps engineering with Claude's capabilities in documentation, code generation, and architectural design. All design decisions, content curation, and architectural choices were made by the human author.
+No attribution is legally required, but it is appreciated!
 
 ---
 
