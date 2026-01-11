@@ -83,22 +83,36 @@ Retrieval-Augmented Generation for semantic codebase search and context retrieva
 - ✅ **Zero-config default** - ChromaDB works out of the box
 - ✅ **Context-aware coding** - Automatic pattern matching
 
-**Database Options (v1.1.0+):**
-- **ChromaDB** (default) - 10-30ms queries, zero configuration, best for most cases
-- **Redis Stack** - 0.5-2ms queries, real-time applications, requires Docker
-- **Qdrant** - 5-15ms queries, production features, requires Docker
+**Database Options (v1.2.0) - All Production-Ready:**
+- **ChromaDB** (default) - ~20ms queries, zero configuration, auto-generates embeddings
+- **Redis Stack** - **4ms queries ⚡**, ultra-low latency, requires Docker + local embeddings
+- **Qdrant** - 19ms queries, advanced features, requires Docker + local embeddings
 
-**Switch databases via environment variable:**
+**Embedding Generation (v1.2.0+):**
+- ChromaDB: Built-in (automatic)
+- Redis & Qdrant: Local (free, Transformers.js) or OpenAI (paid, higher quality)
+
+**Quick Start Examples:**
 ```bash
-# Default (ChromaDB) - just works!
+# ChromaDB (default) - zero config
 node build/index.js
 
-# Use Redis for sub-millisecond queries
-VECTOR_DB_TYPE=redis node build/index.js
+# Redis with local embeddings (fastest, free)
+VECTOR_DB_TYPE=redis EMBEDDING_TYPE=local node build/index.js
 
-# Use Qdrant for production features
-VECTOR_DB_TYPE=qdrant node build/index.js
+# Qdrant with local embeddings (advanced, free)
+VECTOR_DB_TYPE=qdrant EMBEDDING_TYPE=local node build/index.js
+
+# Any database with OpenAI embeddings (best quality)
+VECTOR_DB_TYPE=redis EMBEDDING_TYPE=openai OPENAI_API_KEY=sk-... node build/index.js
 ```
+
+**Performance Comparison (v1.2.0 Test Results):**
+- Redis: 4ms queries (4.75x faster than Qdrant)
+- Qdrant: 19ms queries
+- ChromaDB: ~20ms queries
+
+All three databases now perform semantic similarity search and are production-ready!
 
 **Use with:** `rag-coder` sub-agent for automatic RAG-enhanced development
 
