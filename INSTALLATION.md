@@ -9,7 +9,7 @@ This guide provides step-by-step instructions for installing and configuring the
 ## Table of Contents
 
 1. [Prerequisites](#prerequisites)
-2. [Quick Start (5 minutes)](#quick-start-5-minutes)
+2. [Quick Start](#quick-start)
 3. [Full Installation](#full-installation)
 4. [Component-Specific Setup](#component-specific-setup)
 5. [Verification](#verification)
@@ -60,11 +60,13 @@ claude --version
 
 ---
 
-## Quick Start (5 minutes)
+## Quick Start
 
-Get up and running with the production-ready MCP servers:
+Choose your installation method:
 
-### Step 1: Clone Repository
+### Option 1: Claude Code CLI (Recommended - 2 minutes)
+
+**Step 1: Clone Repository**
 
 ```bash
 cd ~/projects  # Or your preferred directory
@@ -72,7 +74,7 @@ git clone https://github.com/michelabboud/claude-code-helper.git
 cd claude-code-helper
 ```
 
-### Step 2: Build MCP Servers
+**Step 2: Build MCP Servers**
 
 ```bash
 cd mcp-servers
@@ -86,7 +88,52 @@ This builds all 5 production-ready MCP servers:
 - ✅ testing-mcp
 - ✅ uiux-review-mcp
 
-### Step 3: Configure Claude Desktop
+**Step 3: Add Servers with CLI**
+
+The install script outputs ready-to-run commands. Copy and execute them:
+
+```bash
+claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+```
+
+**Step 4: Verify & Test**
+
+```bash
+# Verify servers are registered
+claude mcp list
+
+# Start Claude Code
+claude
+```
+
+Then test: **"What MCP tools do you have?"**
+
+✅ You should see 30 tools from the 5 servers!
+
+---
+
+### Option 2: Claude Desktop (5 minutes)
+
+**Step 1: Clone Repository**
+
+```bash
+cd ~/projects  # Or your preferred directory
+git clone https://github.com/michelabboud/claude-code-helper.git
+cd claude-code-helper
+```
+
+**Step 2: Build MCP Servers**
+
+```bash
+cd mcp-servers
+./install-all.sh
+```
+
+**Step 3: Configure Claude Desktop**
 
 The install script outputs a configuration. Copy it to your Claude Desktop config:
 
@@ -102,7 +149,7 @@ nano ~/.config/Claude/claude_desktop_config.json
 
 Paste the configuration from install-all.sh output.
 
-### Step 4: Restart & Test
+**Step 4: Restart & Test**
 
 1. Restart Claude Desktop
 2. Open Claude Code: `claude`
@@ -202,7 +249,32 @@ This installs advanced sub-agent examples for learning orchestration patterns.
 
 ### MCP Server Configuration
 
-#### For Claude Desktop
+#### Method 1: Claude Code CLI (Recommended)
+
+The modern, streamlined way to configure MCP servers:
+
+```bash
+# Navigate to mcp-servers directory
+cd /path/to/claude-code-helper/mcp-servers
+
+# Add each server with a single command
+claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+
+# Verify servers are registered
+claude mcp list
+```
+
+**Benefits:**
+- ✅ Single command per server (no JSON editing)
+- ✅ Automatic path resolution with `$(pwd)`
+- ✅ Configuration stored in `~/.claude.json` (managed automatically)
+- ✅ Instant verification with `claude mcp list`
+
+#### Method 2: Claude Desktop (Manual Configuration)
 
 Edit your Claude Desktop config file and add MCP servers:
 
@@ -238,9 +310,7 @@ Edit your Claude Desktop config file and add MCP servers:
 
 **Important:** Replace `/absolute/path/to/` with your actual path (from `pwd` output).
 
-#### For Claude Code CLI
-
-Claude Code CLI uses the same configuration file as Claude Desktop.
+**Note:** After editing, restart Claude Desktop for changes to take effect.
 
 #### Project-Specific MCP Servers
 
@@ -303,6 +373,10 @@ Expected output: All servers showing "✓ BUILT"
 ### Verify Claude Code Setup
 
 ```bash
+# Verify MCP servers (if using CLI method)
+claude mcp list
+# Should show all 5 servers: api-specialist, code-review, design-system, testing, uiux-review
+
 # Check agent files
 ls ~/.claude/agents/*.json | wc -l
 # Should show 12 (8 production + 4 experimental)
@@ -608,8 +682,8 @@ claude-code-helper/
 **AI Assistance:** Created with Claude Code (Anthropic)
 **License:** MIT
 
-**Version:** 1.3.0
-**Last Updated:** 2026-01-10
+**Version:** 1.4.0
+**Last Updated:** 2026-01-11
 
 ---
 
