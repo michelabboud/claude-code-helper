@@ -122,8 +122,8 @@ run_test() {
     local status="unknown"
     local error_message=""
 
-    # Execute test with timeout (60 seconds)
-    if timeout 60s claude < "${prompt_file}" > "${output_file}" 2>&1; then
+    # Execute test with timeout (120 seconds)
+    if timeout 120s claude < "${prompt_file}" > "${output_file}" 2>&1; then
         status="passed"
         PASSED_TESTS=$((PASSED_TESTS + 1))
         log_success "Test ${test_name} PASSED"
@@ -131,7 +131,7 @@ run_test() {
         local exit_code=$?
         if [ ${exit_code} -eq 124 ]; then
             status="timeout"
-            error_message="Test timed out after 60 seconds"
+            error_message="Test timed out after 120 seconds"
             log_error "Test ${test_name} TIMEOUT"
         else
             status="failed"

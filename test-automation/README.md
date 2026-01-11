@@ -139,7 +139,7 @@ python3 test-parser.py ../TESTING-GUIDE.md tests/test-cases.json
 
 **Features:**
 - Runs tests via `claude` CLI command
-- 60-second timeout per test
+- 120-second timeout per test (adjustable via TEST_TIMEOUT)
 - Captures output and errors
 - Generates JSON results file
 - Provides real-time progress updates

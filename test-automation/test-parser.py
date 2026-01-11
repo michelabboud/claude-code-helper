@@ -19,6 +19,8 @@ class TestCaseParser:
     def __init__(self, guide_path: str):
         self.guide_path = Path(guide_path)
         self.test_cases: List[Dict[str, Any]] = []
+        self.checklist_items = 0
+        self.parsing_errors: List[str] = []
 
     def parse(self) -> List[Dict[str, Any]]:
         """Parse the testing guide and extract test cases"""
@@ -40,7 +42,19 @@ class TestCaseParser:
         # Extract command tests
         self._parse_commands(content)
 
+        # Count checklist items
+        self._count_checklist_items(content)
+
         return self.test_cases
+
+    def _count_checklist_items(self, content: str):
+        """Count total checklist items in the testing guide"""
+        # Find the checklist section
+        checklist_match = re.search(r'## 📋 Testing Checklist(.*?)(?=##|$)', content, re.DOTALL)
+        if checklist_match:
+            checklist_content = checklist_match.group(1)
+            # Count checkbox items: - [ ]
+            self.checklist_items = len(re.findall(r'- \[ \]', checklist_content))
 
     def _parse_mcp_tools(self, content: str):
         """Parse MCP tool test cases"""
@@ -251,20 +265,40 @@ class TestCaseParser:
             if test['automated']:
                 automatable += 1
 
-        print("\n" + "="*60)
+        print("\n" + "="*70)
         print("TEST CASE PARSING SUMMARY")
-        print("="*60)
-        print(f"\nTotal Test Cases: {len(self.test_cases)}")
-        print(f"Automatable: {automatable} ({automatable/len(self.test_cases)*100:.1f}%)")
+        print("="*70)
+        print(f"\n📊 Total Test Cases Extracted: {len(self.test_cases)}")
+        print(f"✅ Automatable: {automatable} ({automatable/len(self.test_cases)*100:.1f}%)")
+        print(f"⚠️  Manual: {len(self.test_cases) - automatable} ({(len(self.test_cases) - automatable)/len(self.test_cases)*100:.1f}%)")
 
-        print("\nBy Type:")
+        print("\n📋 By Test Type:")
         for test_type, count in sorted(by_type.items()):
             print(f"  {test_type:15} {count:3}")
 
-        print("\nBy Category:")
+        print("\n🏗️  By Category:")
         for category, count in sorted(by_category.items()):
             print(f"  {category:30} {count:3}")
-        print("="*60 + "\n")
+
+        print("\n💡 Coverage Analysis:")
+        if self.checklist_items > 0:
+            coverage = (len(self.test_cases) / self.checklist_items) * 100
+            print(f"  Total checklist items: {self.checklist_items}")
+            print(f"  Items with detailed tests: {len(self.test_cases)}")
+            print(f"  Test coverage: {coverage:.1f}%")
+            print(f"  Missing detailed tests: {self.checklist_items - len(self.test_cases)}")
+        else:
+            print("  Note: The TESTING-GUIDE.md contains checklist items,")
+            print("  but only tests with complete procedures were extracted.")
+
+        if self.parsing_errors:
+            print(f"\n⚠️  Parsing Warnings: {len(self.parsing_errors)}")
+            for error in self.parsing_errors[:5]:  # Show first 5 errors
+                print(f"  - {error}")
+            if len(self.parsing_errors) > 5:
+                print(f"  ... and {len(self.parsing_errors) - 5} more")
+
+        print("="*70 + "\n")
 
 
 def main():
