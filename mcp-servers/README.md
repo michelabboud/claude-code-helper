@@ -178,52 +178,53 @@ cd uiux-review-mcp && npm install && npm run build && cd ..
 ./install-all.sh
 ```
 
-### Configure Claude Desktop
+### Configure Claude Code CLI (Recommended)
+
+```bash
+# Navigate to mcp-servers directory
+cd /path/to/mcp-servers
+
+# Add all 5 production servers
+claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+
+# Verify servers are registered
+claude mcp list
+```
+
+### Configure Claude Desktop (Alternative)
 
 Add to your `claude_desktop_config.json`:
+- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Linux:** `~/.config/Claude/claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
+    "api-specialist": {
+      "command": "node",
+      "args": ["/absolute/path/to/api-specialist-mcp/build/index.js"]
+    },
     "code-review": {
       "command": "node",
-      "args": ["/path/to/code-review-mcp/build/index.js"]
-    },
-    "testing": {
-      "command": "node",
-      "args": ["/path/to/testing-mcp/build/index.js"]
+      "args": ["/absolute/path/to/code-review-mcp/build/index.js"]
     },
     "design-system": {
       "command": "node",
-      "args": ["/path/to/design-system-mcp/build/index.js"]
+      "args": ["/absolute/path/to/design-system-mcp/build/index.js"]
+    },
+    "testing": {
+      "command": "node",
+      "args": ["/absolute/path/to/testing-mcp/build/index.js"]
+    },
+    "uiux-review": {
+      "command": "node",
+      "args": ["/absolute/path/to/uiux-review-mcp/build/index.js"]
     }
   }
-}
-```
-
-### Configure Claude Code
-
-Add to your `.claude-code/config.json`:
-
-```json
-{
-  "mcp_servers": [
-    {
-      "name": "code-review",
-      "command": "node",
-      "args": ["/path/to/code-review-mcp/build/index.js"]
-    },
-    {
-      "name": "testing",
-      "command": "node",
-      "args": ["/path/to/testing-mcp/build/index.js"]
-    },
-    {
-      "name": "design-system",
-      "command": "node",
-      "args": ["/path/to/design-system-mcp/build/index.js"]
-    }
-  ]
 }
 ```
 

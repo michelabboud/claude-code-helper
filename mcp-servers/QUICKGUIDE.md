@@ -4,7 +4,31 @@ Get up and running with the Multi-Agent MCP System in 15 minutes!
 
 ---
 
-## 🚀 Super Quick Start (5 minutes)
+## 🚀 Super Quick Start
+
+### Option 1: Claude Code CLI (Recommended - 2 minutes)
+
+```bash
+# 1. Install all servers
+./install-all.sh
+
+# 2. Add servers using Claude Code CLI
+cd /path/to/mcp-servers
+claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+
+# 3. Verify installation
+claude mcp list
+
+# 4. Test it!
+# Run: claude
+# Ask: "What MCP tools do you have?"
+```
+
+### Option 2: Claude Desktop (5 minutes)
 
 ```bash
 # 1. Install all servers
@@ -14,21 +38,30 @@ Get up and running with the Multi-Agent MCP System in 15 minutes!
 pwd
 # Example output: /Users/you/projects/mcp-system
 
-# 3. Configure Claude (use YOUR path from step 2)
-# Edit: ~/Library/Application Support/Claude/claude_desktop_config.json
+# 3. Configure Claude Desktop (use YOUR path from step 2)
+# Edit: ~/Library/Application Support/Claude/claude_desktop_config.json (macOS)
+# Or: ~/.config/Claude/claude_desktop_config.json (Linux)
 {
   "mcpServers": {
+    "api-specialist": {
+      "command": "node",
+      "args": ["/Users/you/projects/mcp-system/api-specialist-mcp/build/index.js"]
+    },
     "code-review": {
       "command": "node",
       "args": ["/Users/you/projects/mcp-system/code-review-mcp/build/index.js"]
+    },
+    "design-system": {
+      "command": "node",
+      "args": ["/Users/you/projects/mcp-system/design-system-mcp/build/index.js"]
     },
     "testing": {
       "command": "node",
       "args": ["/Users/you/projects/mcp-system/testing-mcp/build/index.js"]
     },
-    "design-system": {
+    "uiux-review": {
       "command": "node",
-      "args": ["/Users/you/projects/mcp-system/design-system-mcp/build/index.js"]
+      "args": ["/Users/you/projects/mcp-system/uiux-review-mcp/build/index.js"]
     }
   }
 }
@@ -36,7 +69,7 @@ pwd
 # 4. Restart Claude Desktop
 
 # 5. Test it!
-# In Claude: "What tools do you have?"
+# In Claude: "What MCP tools do you have?"
 ```
 
 ---

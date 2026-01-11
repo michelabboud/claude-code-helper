@@ -193,31 +193,26 @@ realpath testing-mcp/build/index.js
 realpath design-system-mcp/build/index.js
 ```
 
-### For Claude Code
+### For Claude Code CLI
 
-**Location:** `~/.claude-code/config.json`
+Claude Code (v2.1+) uses the `claude mcp add` command to configure MCP servers:
 
-```json
-{
-  "mcp_servers": [
-    {
-      "name": "code-review",
-      "command": "node",
-      "args": ["/absolute/path/to/code-review-mcp/build/index.js"]
-    },
-    {
-      "name": "testing",
-      "command": "node",
-      "args": ["/absolute/path/to/testing-mcp/build/index.js"]
-    },
-    {
-      "name": "design-system",
-      "command": "node",
-      "args": ["/absolute/path/to/design-system-mcp/build/index.js"]
-    }
-  ]
-}
+```bash
+# Navigate to the mcp-servers directory
+cd /path/to/mcp-servers
+
+# Add each server using the CLI
+claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+
+# Verify servers are registered
+claude mcp list
 ```
+
+**Configuration is stored in:** `~/.claude.json` (managed automatically)
 
 ### For Custom MCP Clients
 

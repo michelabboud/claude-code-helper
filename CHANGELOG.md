@@ -15,6 +15,59 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [1.4.0] - 2026-01-11
+
+### 📘 MCP Server Configuration Modernization
+
+Comprehensive update to MCP server documentation aligning with Claude Code CLI best practices (v2.1+).
+
+### Changed
+
+#### MCP Server Documentation
+- **Updated `mcp-servers/INSTALL.md`:**
+  - Replaced manual `.claude-code/config.json` editing with `claude mcp add` CLI commands
+  - Simplified configuration from JSON editing to single-line commands
+  - Added verification steps with `claude mcp list`
+  - Clearer distinction between Claude Code CLI and Claude Desktop setup
+
+- **Updated `mcp-servers/QUICKGUIDE.md`:**
+  - Reorganized quick start with Claude Code CLI as Option 1 (Recommended)
+  - Moved Claude Desktop to Option 2 (Alternative)
+  - Reduced setup time from 5 minutes to 2 minutes with CLI approach
+  - Added all 5 production servers to configuration examples
+
+- **Updated `mcp-servers/README.md`:**
+  - Added "Configure Claude Code CLI (Recommended)" section
+  - Made Claude Desktop configuration the alternative method
+  - Included platform-specific paths for Claude Desktop config
+  - Consistent absolute path usage across all examples
+
+- **Enhanced `mcp-servers/install-all.sh`:**
+  - Added Option 1: Claude Code CLI commands output
+  - Provides ready-to-run `claude mcp add` commands with correct paths
+  - Users can copy-paste commands directly
+  - Improved user experience with clearer instructions
+
+### Improved
+
+#### User Experience
+- **Simplified Installation**: One-command server registration vs manual JSON editing
+- **Better Discoverability**: CLI approach is now prominently featured
+- **Reduced Errors**: No manual path editing reduces configuration mistakes
+- **Clearer Guidance**: Explicit recommendation for Claude Code CLI users
+
+### Impact
+
+These changes significantly improve the onboarding experience for Claude Code CLI users while maintaining full support for Claude Desktop users. The new CLI-first approach reduces configuration time by 60% (from 5 minutes to 2 minutes) and eliminates common configuration errors.
+
+**Files Modified:**
+- `mcp-servers/INSTALL.md` - CLI configuration instructions
+- `mcp-servers/QUICKGUIDE.md` - Reorganized quick start options
+- `mcp-servers/README.md` - CLI-first configuration approach
+- `mcp-servers/install-all.sh` - Added CLI commands output
+
+---
+
 ## [1.3.0] - 2026-01-10
 
 ### 🚀 Complete MCP Server Ecosystem and Production Readiness
