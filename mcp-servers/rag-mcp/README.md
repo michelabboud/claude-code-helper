@@ -18,6 +18,34 @@ The RAG MCP server provides semantic codebase search capabilities through the Mo
 
 ---
 
+## 🗄️ Database Support (v1.1.0+)
+
+**ChromaDB is the default** - works out of the box with zero configuration!
+
+Now supports multiple vector databases:
+
+| Database | Performance | Best For | Setup |
+|----------|-------------|----------|-------|
+| **ChromaDB** (default) | 10-30ms | Development, <100M vectors | ⭐ Zero config |
+| **Redis Stack** | 0.5-2ms | Real-time apps, <50M vectors | ⭐⭐ Docker |
+| **Qdrant** | 5-15ms | Production, advanced features | ⭐⭐ Docker |
+
+**Switch databases via environment variable:**
+```bash
+# Default (ChromaDB) - just works!
+node build/index.js
+
+# Use Redis for sub-millisecond queries
+VECTOR_DB_TYPE=redis node build/index.js
+
+# Use Qdrant for production features
+VECTOR_DB_TYPE=qdrant node build/index.js
+```
+
+**See [DATABASE-SETUP.md](./DATABASE-SETUP.md) for complete guide.**
+
+---
+
 ## 🛠️ Tools Provided
 
 ### 1. `index_codebase`

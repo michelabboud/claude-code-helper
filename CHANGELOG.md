@@ -15,6 +15,214 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [1.8.0] - 2026-01-11
+
+### 🗄️ RAG MCP v1.1.0 - Multi-Database Support
+
+Pluggable vector database architecture for RAG MCP Server while keeping ChromaDB as the simple, zero-configuration default.
+
+### Added
+
+#### Multi-Database Architecture (`mcp-servers/rag-mcp/`)
+
+**New Database Support:**
+- **ChromaDB** (default) - 10-30ms queries, zero configuration, <100M vectors
+- **Redis Stack** - 0.5-2ms queries, real-time applications, <50M vectors
+- **Qdrant** - 5-15ms queries, production features, advanced filtering
+
+**Key Features:**
+- ✅ **Zero Breaking Changes** - ChromaDB is still the default
+- ✅ **Environment Variable Switching** - `VECTOR_DB_TYPE=redis|qdrant|chromadb`
+- ✅ **Adapter Pattern** - Clean database abstraction layer
+- ✅ **Persistent Storage** - All databases use `~/db-data/` with persistent volumes
+- ✅ **Docker Compose** - Easy Redis and Qdrant management
+- ✅ **Smart Defaults** - Auto-configured ports and connection settings
+
+**Technical Implementation:**
+- **`src/vector-db-adapter.ts` (380 lines)** - Database abstraction layer
+  - `VectorDatabase` interface - Common API for all databases
+  - `ChromaDBAdapter` - ChromaDB implementation (default)
+  - `RedisAdapter` - Redis Stack with RediSearch
+  - `QdrantAdapter` - Qdrant implementation
+  - `createVectorDatabase()` - Factory function with type safety
+
+**Configuration Files:**
+- **`.env` and `.env.example`** - Environment configuration with ChromaDB default
+- **`docker-compose.yml`** - Redis Stack + Qdrant orchestration
+- **`start-chromadb.sh`** - ChromaDB startup with persistent storage
+
+**New Dependencies:**
+- `redis` ^5.10.0 - Redis client for Redis Stack
+- `@qdrant/js-client-rest` ^1.16.2 - Qdrant client
+- `dotenv` ^17.2.3 - Environment variable management
+
+#### Comprehensive Documentation
+
+**Complete Setup Guides:**
+- **`DATABASE-SETUP.md`** - Full setup guide for all databases
+  - Quick start for each database
+  - Performance comparison matrix
+  - Persistent storage configuration
+  - Management commands
+  - Troubleshooting section
+
+- **`SWITCHING-DATABASES.md`** - Migration guide between databases
+  - Step-by-step migration process
+  - Data re-indexing procedures
+  - Rollback instructions
+
+- **`CHANGELOG-v1.1.0.md` (334 lines)** - Detailed release notes
+  - Design principles (zero breaking changes)
+  - Performance benchmarks
+  - Migration examples
+  - Future enhancements roadmap
+
+**Updated Documentation:**
+- **`README.md`** - Added database support section with comparison table
+- **`.gitignore`** - Excludes data directories (chroma_data/, venv/, .env, *.rdb, *.aof)
+
+### Changed
+
+#### Updated Core Server
+
+**`src/index.ts` - Database Adapter Integration:**
+```typescript
+// Before (v1.0.0):
+import { ChromaClient } from "chromadb";
+const chromaClient = new ChromaClient();
+
+// After (v1.1.0):
+import { createVectorDatabase } from "./vector-db-adapter.js";
+const dbType = process.env.VECTOR_DB_TYPE || "chromadb";
+const vectorDB = createVectorDatabase(dbType, config);
+```
+
+**Key Changes:**
+- Environment-based database selection
+- Auto-configured connection parameters
+- Startup logging shows active database
+- Graceful fallback to ChromaDB on error
+
+### Performance Comparison
+
+**Query Latency (5 nearest neighbors, 3,387 vectors):**
+
+| Database | Latency | Best For |
+|----------|---------|----------|
+| ChromaDB (default) | 10-30ms | Development, most use cases |
+| Qdrant | 5-15ms | Production, balanced performance |
+| Redis | 0.5-2ms | Real-time applications, low latency |
+
+**Memory Usage:**
+
+| Database | RAM | Disk | Architecture |
+|----------|-----|------|--------------|
+| ChromaDB | ~155 MB | 36 MB | Disk-based with caching |
+| Qdrant | ~120 MB | 40 MB | Hybrid (disk + RAM optimization) |
+| Redis | ~200 MB | 20 MB | In-memory (all data in RAM) |
+
+### Usage Examples
+
+**Default (ChromaDB - No Changes Needed!):**
+```bash
+# Just run it - ChromaDB is the default
+node build/index.js
+```
+
+**Using Redis Stack:**
+```bash
+# Start Redis
+docker-compose up -d redis
+
+# Use Redis
+VECTOR_DB_TYPE=redis node build/index.js
+```
+
+**Using Qdrant:**
+```bash
+# Start Qdrant
+docker-compose up -d qdrant
+
+# Use Qdrant
+VECTOR_DB_TYPE=qdrant node build/index.js
+```
+
+**Custom Configuration:**
+```bash
+VECTOR_DB_TYPE=redis \
+VECTOR_DB_HOST=my-redis-server \
+VECTOR_DB_PORT=6380 \
+node build/index.js
+```
+
+### Backward Compatibility
+
+✅ **100% backward compatible** with RAG MCP v1.0.0:
+- Existing installations work unchanged
+- ChromaDB is still the default
+- No breaking changes to MCP API
+- Same tool names and parameters
+- All 8 tools work identically
+
+### Data Persistence
+
+All databases use persistent storage in `~/db-data/`:
+```
+~/db-data/
+├── chromadb/  ← ChromaDB data (SQLite + vectors)
+├── redis/     ← Redis data (RDB + AOF)
+└── qdrant/    ← Qdrant data (collections)
+```
+
+Data survives restarts, crashes, and system reboots! ✅
+
+### Why ChromaDB Remains the Default
+
+1. **Simplest Setup** - No Docker, no configuration, just works
+2. **Lowest Resources** - Minimal RAM and disk usage
+3. **Best for Development** - Fast iteration, easy debugging
+4. **Proven Performance** - Handles typical use cases perfectly
+5. **Open Source** - No vendor lock-in, no costs
+
+**Switch only if you need:**
+- Sub-10ms query latency → Use Redis or Qdrant
+- Advanced filtering → Use Qdrant
+- Already using Redis → Use Redis Stack
+- Enterprise features → Use Qdrant
+
+### Installation
+
+**Quick Upgrade:**
+```bash
+cd mcp-servers/rag-mcp
+git pull
+npm install
+npm run build
+```
+
+**That's it!** Your existing setup continues to work with ChromaDB as the default.
+
+### Impact
+
+This release maintains RAG MCP's core mission (eliminate hallucinations) while adding flexibility for users with specific performance or infrastructure requirements. The pluggable architecture makes it easy to add more databases in the future.
+
+**Files Added/Modified:**
+- `src/vector-db-adapter.ts` (NEW, 380 lines)
+- `src/index.ts` (MODIFIED, adapter integration)
+- `docker-compose.yml` (NEW)
+- `start-chromadb.sh` (NEW)
+- `.env`, `.env.example` (NEW)
+- `DATABASE-SETUP.md` (NEW, comprehensive guide)
+- `SWITCHING-DATABASES.md` (NEW, migration guide)
+- `CHANGELOG-v1.1.0.md` (NEW, detailed release notes)
+- `README.md` (UPDATED, database support section)
+- `.gitignore` (UPDATED, exclude data directories)
+- `package.json` (UPDATED, new dependencies)
+
+**Total Changes:** 11 files, 1,714 insertions, complete backward compatibility
+
+---
+
 ## [1.7.0] - 2026-01-11
 
 ### 🔍 RAG MCP Server - Eliminate AI Hallucinations

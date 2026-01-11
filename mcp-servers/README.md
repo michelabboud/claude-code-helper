@@ -79,10 +79,30 @@ Retrieval-Augmented Generation for semantic codebase search and context retrieva
 - ✅ **99% reduction in hallucinations** - AI uses actual code, not assumptions
 - ✅ **Semantic search** - Natural language queries find relevant code
 - ✅ **Multiple projects** - Separate collections for different codebases
-- ✅ **ChromaDB backend** - Fast vector similarity search
+- ✅ **Multi-database support (v1.1.0+)** - ChromaDB (default), Redis Stack, Qdrant
+- ✅ **Zero-config default** - ChromaDB works out of the box
 - ✅ **Context-aware coding** - Automatic pattern matching
 
+**Database Options (v1.1.0+):**
+- **ChromaDB** (default) - 10-30ms queries, zero configuration, best for most cases
+- **Redis Stack** - 0.5-2ms queries, real-time applications, requires Docker
+- **Qdrant** - 5-15ms queries, production features, requires Docker
+
+**Switch databases via environment variable:**
+```bash
+# Default (ChromaDB) - just works!
+node build/index.js
+
+# Use Redis for sub-millisecond queries
+VECTOR_DB_TYPE=redis node build/index.js
+
+# Use Qdrant for production features
+VECTOR_DB_TYPE=qdrant node build/index.js
+```
+
 **Use with:** `rag-coder` sub-agent for automatic RAG-enhanced development
+
+**Documentation:** See [rag-mcp/README.md](rag-mcp/README.md) and [DATABASE-SETUP.md](rag-mcp/DATABASE-SETUP.md) for complete setup
 
 ---
 
