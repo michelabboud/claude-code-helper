@@ -20,6 +20,7 @@
 | **[🧪 TESTING-GUIDE.md](TESTING-GUIDE.md)** | Validation with 136 test cases | Testing your installation |
 | **[🤖 test-automation/](test-automation/)** | Automated testing framework | Running automated tests |
 | **[📊 INSTALLATION-STATISTICS.md](INSTALLATION-STATISTICS.md)** | Impact analysis & metrics | Understanding resource usage |
+| **[🔄 agent-loop-prevention.md](guides/advanced-patterns/agent-loop-prevention.md)** | Prevent infinite agent loops | Production agent development |
 
 ### What's Available
 
@@ -114,6 +115,22 @@ Advanced guide with production-ready agent examples and orchestration patterns.
 - **Custom Agents** - Gradle expert, WSL helper, Tailwind builder
 
 **Start here if:** You want to build specialized agents and multi-agent workflows.
+
+---
+
+### [Advanced Patterns](./guides/advanced-patterns/)
+Production patterns for robust, reliable agentic systems.
+
+**Includes:**
+- **[Agent Loop Prevention](./guides/advanced-patterns/agent-loop-prevention.md)** - Comprehensive guide to preventing "Ralph Wiggum loops" (2,245 lines)
+  - Zero-to-hero progression with Playwright examples
+  - Real-life scenarios with 3rd party tools (APIs, databases, S3, scraping, CI/CD)
+  - Circuit breaker patterns and progress tracking
+  - Complete production-ready test agent
+- **[Multi-Agent Orchestration](./guides/advanced-patterns/multi-agent-orchestration.md)** - Coordinating multiple agents
+- **[Testing Strategy](./guides/advanced-patterns/testing-strategy.md)** - Comprehensive testing approaches
+
+**Start here if:** You're building production systems and need to prevent infinite loops, handle failures gracefully, and ensure reliability.
 
 ---
 
@@ -366,9 +383,10 @@ claude-code-helper/
 ### Path 3: Advanced User (Week 5+)
 9. Set up [MCP Servers](./mcp-servers/)
 10. Learn [Coordination Patterns](./guides/subagents-guide/patterns/)
-11. Build custom agents using [Templates](./templates/)
-12. Create multi-agent orchestration workflows
-13. Develop custom MCP servers
+11. **Master [Agent Loop Prevention](./guides/advanced-patterns/agent-loop-prevention.md)** - Essential for production
+12. Build custom agents using [Templates](./templates/)
+13. Create multi-agent orchestration workflows
+14. Develop custom MCP servers
 
 ---
 
@@ -565,6 +583,9 @@ export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=true
 - Parallel execution
 - Sequential pipelines
 - Error handling strategies
+- **Loop prevention** (Ralph Wiggum loops)
+- Circuit breaker patterns
+- Progress tracking & timeouts
 
 ### ✅ Development Experience
 - Status line indicators

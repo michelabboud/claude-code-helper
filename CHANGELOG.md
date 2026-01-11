@@ -15,6 +15,76 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [1.5.0] - 2026-01-11
+
+### 🔄 Agent Loop Prevention - Production Reliability Guide
+
+Comprehensive guide for preventing infinite loops and unproductive cycles in agentic workflows ("Ralph Wiggum loops").
+
+### Added
+
+#### Production-Ready Loop Prevention Guide
+- **Created `guides/advanced-patterns/agent-loop-prevention.md` (2,245 lines, 56KB)**
+  - Comprehensive theory on agent loops and their costs
+  - 7 common causes with detailed examples
+  - 4 detection strategies (tool tracking, state monitoring, timeouts, outcome verification)
+  - 6 prevention patterns (max_turns, checkpoints, deduplication, escalation, circuit breakers, context preservation)
+  - Configuration options for Claude Code agents and Task tool
+  - Circuit breaker pattern implementations
+  - Progress tracking strategies
+  - Clear exit condition templates
+
+#### Zero-to-Hero Progression with Playwright
+- **Level 1 (Beginner)**: The Ralph Wiggum trap - what goes wrong
+- **Level 2 (Intermediate)**: Basic protection with timeouts and retry limits
+- **Level 3 (Advanced)**: Circuit breakers and progress tracking
+- **Level 4 (Expert)**: Production system with full observability and metrics
+
+#### Real-Life Scenarios with 3rd Party Tools
+- **API Integration Loop Hell** - Infinite fetch retries with p-retry + circuit breaker
+- **Database Connection Pool Exhaustion** - PostgreSQL pool management with proper cleanup
+- **File Upload/Download Hangs** - AWS S3 uploads with progress tracking and stall detection
+- **Web Scraping Infinite Pagination** - Puppeteer with visited URL tracking and page limits
+- **CI/CD Pipeline Retry Loops** - GitHub Actions with smart retry configuration
+
+#### Complete Production Agent Example
+- **Playwright Test Agent** with comprehensive loop prevention:
+  - Max turns: 20, Timeout: 10 minutes
+  - Circuit breakers per operation type
+  - Loop detection with operation history tracking
+  - Progress verification at each step
+  - Automatic failure screenshots
+  - Event-driven observability
+  - Resource cleanup strategies
+
+### Changed
+
+#### Documentation Updates
+- **Updated `README.md`:**
+  - Added loop prevention guide to Documentation Hub table
+  - Created new "Advanced Patterns" section in Guides
+  - Updated Learning Path 3 to include loop prevention (step 11)
+  - Enhanced Multi-Agent Workflows features list
+
+### Impact
+
+This release addresses critical production concerns:
+- ✅ **Prevents costly infinite loops** in agentic systems
+- ✅ **Provides zero-to-hero learning path** with Playwright examples
+- ✅ **Covers real-world scenarios** with popular tools (AWS S3, PostgreSQL, Playwright, Puppeteer, GitHub Actions)
+- ✅ **Includes production-ready patterns** (circuit breakers, progress tracking, timeouts)
+- ✅ **Complete agent implementation** ready to use
+
+**Files Added:**
+- `guides/advanced-patterns/agent-loop-prevention.md` (2,245 lines)
+
+**Files Modified:**
+- `README.md` - Added loop prevention references and new Advanced Patterns section
+
+**Total Additions:** 2,245 lines of production-critical documentation
+
+---
+
 ## [1.4.0] - 2026-01-11
 
 ### 📘 MCP Server Configuration Modernization
