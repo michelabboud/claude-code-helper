@@ -86,6 +86,7 @@ install_server() {
 }
 
 # Install each server
+install_server "RAG MCP" "rag-mcp"
 install_server "API Specialist MCP" "api-specialist-mcp"
 install_server "Code Review MCP" "code-review-mcp"
 install_server "Design System MCP" "design-system-mcp"
@@ -94,12 +95,14 @@ install_server "UI/UX Review MCP" "uiux-review-mcp"
 
 # Get absolute paths
 echo "📍 Installation paths:"
+RAG_PATH="$(cd rag-mcp && pwd)/build/index.js"
 API_SPECIALIST_PATH="$(cd api-specialist-mcp && pwd)/build/index.js"
 CODE_REVIEW_PATH="$(cd code-review-mcp && pwd)/build/index.js"
 DESIGN_SYSTEM_PATH="$(cd design-system-mcp && pwd)/build/index.js"
 TESTING_PATH="$(cd testing-mcp && pwd)/build/index.js"
 UIUX_REVIEW_PATH="$(cd uiux-review-mcp && pwd)/build/index.js"
 
+echo "  • RAG MCP:            $RAG_PATH"
 echo "  • API Specialist MCP: $API_SPECIALIST_PATH"
 echo "  • Code Review MCP:    $CODE_REVIEW_PATH"
 echo "  • Design System MCP:  $DESIGN_SYSTEM_PATH"
@@ -113,6 +116,10 @@ echo ""
 cat << EOF
 {
   "mcpServers": {
+    "rag": {
+      "command": "node",
+      "args": ["$RAG_PATH"]
+    },
     "api-specialist": {
       "command": "node",
       "args": ["$API_SPECIALIST_PATH"]
@@ -143,6 +150,10 @@ CONFIG_FILE="claude_desktop_config.json"
 cat > "$CONFIG_FILE" << EOF
 {
   "mcpServers": {
+    "rag": {
+      "command": "node",
+      "args": ["$RAG_PATH"]
+    },
     "api-specialist": {
       "command": "node",
       "args": ["$API_SPECIALIST_PATH"]
@@ -177,6 +188,7 @@ echo "=== Option 1: Claude Code CLI (Recommended) ==="
 echo ""
 echo "Run these commands to add MCP servers:"
 echo ""
+echo "  claude mcp add rag -- node \"$RAG_PATH\""
 echo "  claude mcp add api-specialist -- node \"$API_SPECIALIST_PATH\""
 echo "  claude mcp add code-review -- node \"$CODE_REVIEW_PATH\""
 echo "  claude mcp add design-system -- node \"$DESIGN_SYSTEM_PATH\""

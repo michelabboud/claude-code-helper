@@ -25,8 +25,8 @@
 
 ### What's Available
 
-- **48 Agents** (14 MCP agents + 34 sub-agents)
-- **60 MCP Tools** across 9 servers (30 production + 30 experimental)
+- **49 Agents** (14 MCP agents + 35 sub-agents)
+- **68 MCP Tools** across 10 servers (38 production + 30 experimental)
 - **16 Skills** (workflow and testing patterns)
 - **7 Commands** (development workflow automation)
 - **Comprehensive guides, templates, and integration examples**
@@ -145,19 +145,20 @@ Production patterns for robust, reliable agentic systems.
 
 **[🔌 Navigate to MCP Servers →](./mcp-servers/)**
 
-Nine specialized Model Context Protocol servers for automated code quality, testing, and DevOps workflows.
+Ten specialized Model Context Protocol servers for automated code quality, testing, DevOps workflows, and AI-enhanced development.
 
-### Production Servers (5)
+### Production Servers (6)
 
 | Server | Tools | Purpose |
 |--------|-------|---------|
+| **RAG** ⭐ | 8 tools | Semantic codebase search, context retrieval, eliminate hallucinations |
 | **API Specialist** | 8 tools | API testing, validation, security, docs |
 | **Code Review** | 4 tools | Linting, security scanning, complexity |
 | **Design System** | 5 tools | Token validation, component checks, a11y |
 | **Testing** | 4 tools | Test execution, coverage, quality analysis |
 | **UI/UX Review** | 9 tools | Design review, accessibility, wireframes |
 
-**Total: 30 production tools**
+**Total: 38 production tools**
 
 ### Experimental Servers (4) 🧪
 
@@ -168,7 +169,7 @@ Nine specialized Model Context Protocol servers for automated code quality, test
 | **Dependency Management** | Security scanning, updates, license compliance |
 | **n8n Automation** | Workflow automation and integration |
 
-**Total: 52+ tools across all servers**
+**Total: 68+ tools across all servers**
 
 ### Quick Install
 
@@ -178,6 +179,7 @@ cd mcp-servers
 ./install-all.sh
 
 # Add servers with CLI (commands provided by install script)
+claude mcp add rag -- node "$(pwd)/rag-mcp/build/index.js"
 claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
 claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
 claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
@@ -200,6 +202,7 @@ cd mcp-servers
 ```
 
 ### Use Cases
+- **RAG-Enhanced Coding**: Eliminate hallucinations, ground code in reality, semantic search
 - **Automated Code Review**: Lint, security scan, complexity check
 - **API Development**: Test endpoints, validate specs, generate docs
 - **Design Systems**: Validate tokens, check components, audit accessibility

@@ -1,0 +1,6 @@
+node_modules/
+build/
+*.log
+.DS_Store
+chroma_db/
+*.db

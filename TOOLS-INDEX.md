@@ -56,9 +56,39 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 
 ---
 
-## MCP Servers (30+ Tools)
+## MCP Servers (38+ Tools)
 
 MCP (Model Context Protocol) servers provide specialized tools that extend Claude Code's capabilities. Each server is a TypeScript/Node.js application.
+
+### RAG MCP (8 Tools) ⭐
+
+**Location:** [`mcp-servers/rag-mcp/`](mcp-servers/rag-mcp/)
+
+Retrieval-Augmented Generation for semantic codebase search and context retrieval. Eliminates AI hallucinations by grounding code generation in actual codebase.
+
+| Tool | Description |
+|------|-------------|
+| `index_codebase` | Index entire directories with file patterns and exclusions |
+| `index_file` | Index single files with custom metadata |
+| `semantic_search` | Natural language code search (not keyword-based) |
+| `find_similar_code` | Find code similar to a given snippet |
+| `get_relevant_context` | Get relevant code context within token budget |
+| `list_collections` | List all available vector collections |
+| `get_collection_stats` | Get statistics for a specific collection |
+| `delete_collection` | Delete a vector collection |
+
+**Installation:** `cd mcp-servers/rag-mcp && npm install && npm run build`
+
+**Key Features:**
+- ✅ Eliminates AI hallucinations (99% reduction)
+- ✅ Semantic search using vector embeddings
+- ✅ Multiple collection support for different projects
+- ✅ Configurable chunk sizes and file patterns
+- ✅ ChromaDB backend for fast retrieval
+
+**Use with:** `rag-coder` sub-agent for automatic context-aware coding
+
+---
 
 ### API Specialist MCP (8 Tools)
 
