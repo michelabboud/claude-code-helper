@@ -419,6 +419,7 @@ Advanced multi-agent patterns and orchestration.
 | Guide | File | Description |
 |-------|------|-------------|
 | **Agent Loop Prevention** ⭐ | [`agent-loop-prevention.md`](guides/advanced-patterns/agent-loop-prevention.md) | **Comprehensive guide to preventing "Ralph Wiggum loops"** (2,245 lines) - Zero-to-hero with Playwright, real-world scenarios (APIs, databases, S3, scraping, CI/CD), circuit breaker patterns, complete production agent |
+| **Solving AI Coding Problems** ⭐ | [`solving-ai-coding-problems.md`](guides/advanced-patterns/solving-ai-coding-problems.md) | **Solutions to top 11 developer complaints** (2,386 lines) - Research-backed solutions using RAG, smart routing, quality gates, context caching, memory management. Addresses hallucinations, costs, debugging, skill degradation |
 | Multi-Agent Orchestration | [`multi-agent-orchestration.md`](guides/advanced-patterns/multi-agent-orchestration.md) | Advanced multi-agent coordination strategies |
 | Testing Strategy | [`testing-strategy.md`](guides/advanced-patterns/testing-strategy.md) | Comprehensive testing strategies |
 

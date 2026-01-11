@@ -64,12 +64,24 @@ Comprehensive learning resources for mastering Claude Code from beginner to expe
   - Real-life scenarios with 3rd party tools (APIs, databases, S3, scraping, CI/CD)
   - Circuit breaker patterns, progress tracking, timeouts
   - Complete production-ready Playwright test agent
+- `solving-ai-coding-problems.md` - **Solutions to top 11 developer complaints** (2,386 lines, 60KB)
+  - Research-backed solutions from 2025-2026 developer studies
+  - RAG system implementation with ChromaDB
+  - Smart routing for cost optimization (80% savings)
+  - Quality gates, verification agents, context caching
+  - Memory management and session persistence
+  - Complete agent implementations ready to deploy
 - `multi-agent-orchestration.md` - Advanced multi-agent coordination strategies
 - `testing-strategy.md` - Comprehensive testing approaches for different project types
 
 **Best for:**
 - Building production systems
 - Preventing infinite loops and unproductive cycles
+- Solving real developer pain points with AI tools
+- Eliminating hallucinations with RAG systems
+- Optimizing AI costs and performance
+- Implementing quality gates and verification
+- Managing context and memory across sessions
 - Ensuring agent reliability
 - Implementing circuit breakers and error recovery
 - Working with external tools (Playwright, AWS, PostgreSQL, etc.)
@@ -94,6 +106,11 @@ Comprehensive learning resources for mastering Claude Code from beginner to expe
 
 ### Choose Advanced Patterns if you want to:
 - Prevent agent infinite loops (Ralph Wiggum loops)
+- Solve real developer complaints about AI coding tools
+- Implement RAG systems to eliminate hallucinations
+- Optimize AI costs (80% reduction strategies)
+- Build quality gates and verification systems
+- Manage AI memory and context persistence
 - Build production-ready systems
 - Implement circuit breakers and error recovery
 - Work with external tools (Playwright, AWS, databases)
@@ -121,10 +138,12 @@ Comprehensive learning resources for mastering Claude Code from beginner to expe
 
 ### Week 5+: Mastery
 7. **Master [Agent Loop Prevention](./advanced-patterns/agent-loop-prevention.md)** - Essential for production
-8. Learn [Coordination Patterns](./subagents-guide/patterns/)
-9. Study [Multi-Agent Orchestration](./advanced-patterns/multi-agent-orchestration.md)
-10. Build custom agents for your workflow
-11. Create multi-agent orchestration systems
+8. **Study [Solving AI Coding Problems](./advanced-patterns/solving-ai-coding-problems.md)** - Real-world solutions
+9. Learn [Coordination Patterns](./subagents-guide/patterns/)
+10. Study [Multi-Agent Orchestration](./advanced-patterns/multi-agent-orchestration.md)
+11. Build custom agents for your workflow
+12. Create multi-agent orchestration systems
+13. Implement RAG systems and quality gates
 
 ---
 

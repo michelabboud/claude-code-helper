@@ -21,6 +21,7 @@
 | **[🤖 test-automation/](test-automation/)** | Automated testing framework | Running automated tests |
 | **[📊 INSTALLATION-STATISTICS.md](INSTALLATION-STATISTICS.md)** | Impact analysis & metrics | Understanding resource usage |
 | **[🔄 agent-loop-prevention.md](guides/advanced-patterns/agent-loop-prevention.md)** | Prevent infinite agent loops | Production agent development |
+| **[🎯 solving-ai-coding-problems.md](guides/advanced-patterns/solving-ai-coding-problems.md)** | Solutions to top 11 developer complaints | Fixing AI hallucinations, costs, quality |
 
 ### What's Available
 
@@ -127,10 +128,16 @@ Production patterns for robust, reliable agentic systems.
   - Real-life scenarios with 3rd party tools (APIs, databases, S3, scraping, CI/CD)
   - Circuit breaker patterns and progress tracking
   - Complete production-ready test agent
+- **[Solving AI Coding Problems](./guides/advanced-patterns/solving-ai-coding-problems.md)** - Solutions to top 11 developer complaints (2,386 lines)
+  - Research-backed solutions from 2025-2026 studies
+  - RAG system implementation to eliminate hallucinations
+  - Smart routing for 80% cost reduction
+  - Quality gates and verification systems
+  - Memory management and context persistence
 - **[Multi-Agent Orchestration](./guides/advanced-patterns/multi-agent-orchestration.md)** - Coordinating multiple agents
 - **[Testing Strategy](./guides/advanced-patterns/testing-strategy.md)** - Comprehensive testing approaches
 
-**Start here if:** You're building production systems and need to prevent infinite loops, handle failures gracefully, and ensure reliability.
+**Start here if:** You're building production systems and need to prevent infinite loops, eliminate hallucinations, optimize costs, handle failures gracefully, and ensure reliability.
 
 ---
 
@@ -384,9 +391,11 @@ claude-code-helper/
 9. Set up [MCP Servers](./mcp-servers/)
 10. Learn [Coordination Patterns](./guides/subagents-guide/patterns/)
 11. **Master [Agent Loop Prevention](./guides/advanced-patterns/agent-loop-prevention.md)** - Essential for production
-12. Build custom agents using [Templates](./templates/)
-13. Create multi-agent orchestration workflows
-14. Develop custom MCP servers
+12. **Study [Solving AI Coding Problems](./guides/advanced-patterns/solving-ai-coding-problems.md)** - Real-world solutions
+13. Build custom agents using [Templates](./templates/)
+14. Create multi-agent orchestration workflows
+15. Implement RAG systems and quality gates
+16. Develop custom MCP servers
 
 ---
 
