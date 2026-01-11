@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  # Redis with RediSearch for vector search
+  redis:
+    image: redis/redis-stack:latest
+    container_name: rag-redis
+    ports:
+      - "6379:6379"      # Redis protocol
+      - "8001:8001"      # RedisInsight web UI
+    volumes:
+      - ~/db-data/redis:/data
+    environment:
+      - REDIS_ARGS=--save 60 1 --appendonly yes --dir /data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - rag-network
+
+  # Qdrant vector database
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: rag-qdrant
+    ports:
+      - "6333:6333"      # HTTP API
+      - "6334:6334"      # gRPC API
+    volumes:
+      - ~/db-data/qdrant:/qdrant/storage
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - rag-network
+
+  # ChromaDB (optional - currently running natively)
+  # Uncomment if you want to run ChromaDB in Docker too
+  # chromadb:
+  #   image: chromadb/chroma:latest
+  #   container_name: rag-chromadb
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ~/db-data/chromadb:/chroma/chroma
+  #   environment:
+  #     - IS_PERSISTENT=TRUE
+  #     - ANONYMIZED_TELEMETRY=FALSE
+  #   restart: unless-stopped
+  #   networks:
+  #     - rag-network
+
+networks:
+  rag-network:
+    driver: bridge
+
+# Usage:
+#
+# Start all databases:
+#   docker-compose up -d
+#
+# Start specific database:
+#   docker-compose up -d redis
+#   docker-compose up -d qdrant
+#
+# Stop all:
+#   docker-compose down
+#
+# View logs:
+#   docker-compose logs -f redis
+#   docker-compose logs -f qdrant
+#
+# Check status:
+#   docker-compose ps
+#
+# Data locations:
+#   Redis:   ~/db-data/redis/
+#   Qdrant:  ~/db-data/qdrant/
+#
+# Access:
+#   Redis:         localhost:6379
+#   RedisInsight:  http://localhost:8001
+#   Qdrant API:    http://localhost:6333
+#   Qdrant Dashboard: http://localhost:6333/dashboard

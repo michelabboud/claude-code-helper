@@ -23,8 +23,31 @@ import { z } from "zod";
 import { ChromaClient } from "chromadb";
 import * as fs from "fs/promises";
 import * as path from "path";
+import { config } from "dotenv";
+import { createVectorDatabase, type VectorDatabase } from "./vector-db-adapter.js";
 
-// Initialize ChromaDB client
+// Load environment variables
+config();
+
+// Initialize vector database client (defaults to ChromaDB)
+const dbType = (process.env.VECTOR_DB_TYPE || "chromadb") as "chromadb" | "redis" | "qdrant";
+const dbConfig = {
+  host: process.env.VECTOR_DB_HOST || (dbType === "chromadb" ? "localhost" : dbType === "redis" ? "localhost" : "localhost"),
+  port: parseInt(process.env.VECTOR_DB_PORT || (dbType === "chromadb" ? "8000" : dbType === "redis" ? "6379" : "6333")),
+};
+
+console.error(`🔌 Using vector database: ${dbType.toUpperCase()} at ${dbConfig.host}:${dbConfig.port}`);
+
+// Create database adapter (ChromaDB is the default)
+let vectorDB: VectorDatabase;
+try {
+  vectorDB = createVectorDatabase(dbType, dbConfig);
+} catch (error) {
+  console.error(`❌ Failed to initialize ${dbType}:`, error);
+  process.exit(1);
+}
+
+// Keep chromaClient for backward compatibility (will be removed in v2.0.0)
 const chromaClient = new ChromaClient();
 
 // Tool input schemas

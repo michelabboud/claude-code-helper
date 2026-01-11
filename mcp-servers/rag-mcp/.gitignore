@@ -2,5 +2,25 @@ node_modules/
 build/
 *.log
 .DS_Store
+
+# Vector database data directories
+chroma_data/
 chroma_db/
 *.db
+*.sqlite3
+
+# Python virtual environment
+venv/
+__pycache__/
+
+# Environment variables (keep .env.example)
+.env
+
+# Demo files
+demo-*.mjs
+demo-*.js
+
+# Redis persistence
+*.rdb
+*.aof
+appendonlydir/
