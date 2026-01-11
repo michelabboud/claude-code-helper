@@ -10,12 +10,22 @@
 
 ## 📖 Quick Reference
 
-**📋 [TOOLS-INDEX.md](TOOLS-INDEX.md)** - Complete catalog of every tool, agent, skill, command, hook, and plugin in this repository. Use this as your master reference when exploring the toolkit.
+### Documentation Hub
 
-- **44+ Agents** (12 MCP agents, sub-agents, technology specialists)
-- **52+ MCP Tools** across 9 servers (5 production + 4 experimental)
-- **15+ Skills** (workflow and testing patterns)
-- **6 Plugins** (complete feature packages)
+| Document | Purpose | Use When |
+|----------|---------|----------|
+| **[📋 TOOLS-INDEX.md](TOOLS-INDEX.md)** | Complete catalog of all components | Exploring available tools |
+| **[⚡ TOOLS-CHEATSHEET.md](TOOLS-CHEATSHEET.md)** | Quick reference for 131 tools/agents/skills | Need instant lookup |
+| **[🏗️ ECOSYSTEM-DIAGRAM.md](ECOSYSTEM-DIAGRAM.md)** | Visual architecture & workflow diagrams | Understanding how it all works |
+| **[🧪 TESTING-GUIDE.md](TESTING-GUIDE.md)** | Validation with 136 test cases | Testing your installation |
+| **[📊 INSTALLATION-STATISTICS.md](INSTALLATION-STATISTICS.md)** | Impact analysis & metrics | Understanding resource usage |
+
+### What's Available
+
+- **48 Agents** (14 MCP agents + 34 sub-agents)
+- **60 MCP Tools** across 9 servers (30 production + 30 experimental)
+- **16 Skills** (workflow and testing patterns)
+- **7 Commands** (development workflow automation)
 - **Comprehensive guides, templates, and integration examples**
 
 ---
