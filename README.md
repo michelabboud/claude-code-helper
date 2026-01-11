@@ -18,6 +18,7 @@
 | **[⚡ TOOLS-CHEATSHEET.md](TOOLS-CHEATSHEET.md)** | Quick reference for 131 tools/agents/skills | Need instant lookup |
 | **[🏗️ ECOSYSTEM-DIAGRAM.md](ECOSYSTEM-DIAGRAM.md)** | Visual architecture & workflow diagrams | Understanding how it all works |
 | **[🧪 TESTING-GUIDE.md](TESTING-GUIDE.md)** | Validation with 136 test cases | Testing your installation |
+| **[🤖 test-automation/](test-automation/)** | Automated testing framework | Running automated tests |
 | **[📊 INSTALLATION-STATISTICS.md](INSTALLATION-STATISTICS.md)** | Impact analysis & metrics | Understanding resource usage |
 
 ### What's Available
