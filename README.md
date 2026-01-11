@@ -72,6 +72,8 @@ cd ../guides/subagents-guide
 # 3. Set up MCP servers
 cd ../../mcp-servers
 ./install-all.sh
+# Add with CLI (commands provided by script)
+# Or configure Claude Desktop (see QUICKGUIDE.md)
 ```
 
 ### For Advanced Users
@@ -145,12 +147,31 @@ Nine specialized Model Context Protocol servers for automated code quality, test
 **Total: 52+ tools across all servers**
 
 ### Quick Install
+
+**Option 1: Claude Code CLI (Recommended - 2 minutes)**
+```bash
+cd mcp-servers
+./install-all.sh
+
+# Add servers with CLI (commands provided by install script)
+claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+
+# Verify
+claude mcp list
+```
+
+**Option 2: Claude Desktop (5 minutes)**
 ```bash
 cd mcp-servers
 ./install-all.sh
 
 # Configure Claude Desktop
-# Edit: ~/.config/Claude/claude_desktop_config.json
+# macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
+# Linux: ~/.config/Claude/claude_desktop_config.json
 # (Paths provided by install script)
 ```
 
@@ -408,8 +429,20 @@ cd config-bundle && ./scripts/install-all.sh && cd ..
 # Install sub-agents
 cd guides/subagents-guide && ./install-all-agents.sh && cd ../..
 
-# Install MCP servers
-cd mcp-servers && ./install-all.sh && cd ..
+# Install MCP servers (builds all servers)
+cd mcp-servers && ./install-all.sh
+
+# Add MCP servers with CLI (recommended)
+claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+
+cd ..
+
+# Verify MCP servers
+claude mcp list
 
 # Start using
 claude
@@ -425,6 +458,8 @@ cp examples/agents/subagents/*.md ~/.claude/agents/
 
 # Just the MCP servers
 cd mcp-servers && ./install-all.sh
+# Then add with CLI: claude mcp add <name> -- node "$(pwd)/<server>/build/index.js"
+# Or configure Claude Desktop (see mcp-servers/QUICKGUIDE.md)
 
 # Just the config bundle
 cd config-bundle && ./scripts/install-all.sh
