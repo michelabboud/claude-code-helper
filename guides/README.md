@@ -56,9 +56,25 @@ Comprehensive learning resources for mastering Claude Code from beginner to expe
 ---
 
 ### 3. [Advanced Patterns](./advanced-patterns/)
-**Advanced usage patterns and techniques**
+**Production-ready patterns for robust, reliable agentic systems**
 
-Additional patterns and advanced techniques for power users who want to push Claude Code to its limits.
+**Contents:**
+- `agent-loop-prevention.md` - **Comprehensive guide to preventing "Ralph Wiggum loops"** (2,245 lines, 56KB)
+  - Zero-to-hero progression with Playwright examples (Beginner → Expert)
+  - Real-life scenarios with 3rd party tools (APIs, databases, S3, scraping, CI/CD)
+  - Circuit breaker patterns, progress tracking, timeouts
+  - Complete production-ready Playwright test agent
+- `multi-agent-orchestration.md` - Advanced multi-agent coordination strategies
+- `testing-strategy.md` - Comprehensive testing approaches for different project types
+
+**Best for:**
+- Building production systems
+- Preventing infinite loops and unproductive cycles
+- Ensuring agent reliability
+- Implementing circuit breakers and error recovery
+- Working with external tools (Playwright, AWS, PostgreSQL, etc.)
+
+**Start here:** [Agent Loop Prevention Guide](./advanced-patterns/agent-loop-prevention.md) - Essential reading for production development
 
 ---
 
@@ -74,12 +90,19 @@ Additional patterns and advanced techniques for power users who want to push Cla
 - Build specialized agents
 - Implement multi-agent workflows
 - See production-ready examples
-- Learn advanced patterns
+- Learn coordination patterns
 
-### Use Both if you want to:
+### Choose Advanced Patterns if you want to:
+- Prevent agent infinite loops (Ralph Wiggum loops)
+- Build production-ready systems
+- Implement circuit breakers and error recovery
+- Work with external tools (Playwright, AWS, databases)
+- Ensure agent reliability and robustness
+
+### Use All Three if you want to:
 - Master Claude Code completely
 - Build professional workflows
-- Create custom agent ecosystems
+- Create reliable, production-ready systems
 - Become a Claude Code expert
 
 ---
@@ -97,9 +120,11 @@ Additional patterns and advanced techniques for power users who want to push Cla
 6. Explore [Agent Examples](./subagents-guide/examples/)
 
 ### Week 5+: Mastery
-7. Learn [Coordination Patterns](./subagents-guide/patterns/)
-8. Build custom agents for your workflow
-9. Create multi-agent orchestration systems
+7. **Master [Agent Loop Prevention](./advanced-patterns/agent-loop-prevention.md)** - Essential for production
+8. Learn [Coordination Patterns](./subagents-guide/patterns/)
+9. Study [Multi-Agent Orchestration](./advanced-patterns/multi-agent-orchestration.md)
+10. Build custom agents for your workflow
+11. Create multi-agent orchestration systems
 
 ---
 
