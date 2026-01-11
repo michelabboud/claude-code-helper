@@ -18,29 +18,68 @@ The RAG MCP server provides semantic codebase search capabilities through the Mo
 
 ---
 
-## 🗄️ Database Support (v1.1.0+)
+## 🗄️ Database Support (v1.2.0)
 
-**ChromaDB is the default** - works out of the box with zero configuration!
+**All three vector databases are now production-ready!** Choose based on your needs.
 
-Now supports multiple vector databases:
+| Database | Status | Performance | Best For | Setup |
+|----------|--------|-------------|----------|-------|
+| **ChromaDB** (default) | ✅ Production | ~20ms queries | Zero-config, most users | ⭐ Zero config |
+| **Redis Stack** | ✅ Production | 4ms queries ⚡ | Low-latency, real-time apps | ⭐⭐ Docker |
+| **Qdrant** | ✅ Production | 19ms queries | Advanced features, scale | ⭐⭐ Docker |
 
-| Database | Performance | Best For | Setup |
-|----------|-------------|----------|-------|
-| **ChromaDB** (default) | 10-30ms | Development, <100M vectors | ⭐ Zero config |
-| **Redis Stack** | 0.5-2ms | Real-time apps, <50M vectors | ⭐⭐ Docker |
-| **Qdrant** | 5-15ms | Production, advanced features | ⭐⭐ Docker |
+### Quick Start
 
-**Switch databases via environment variable:**
+**ChromaDB (Default - Recommended):**
 ```bash
-# Default (ChromaDB) - just works!
+# Works out of the box - no configuration needed!
 node build/index.js
-
-# Use Redis for sub-millisecond queries
-VECTOR_DB_TYPE=redis node build/index.js
-
-# Use Qdrant for production features
-VECTOR_DB_TYPE=qdrant node build/index.js
 ```
+
+**Redis Stack (Fastest):**
+```bash
+# Start Redis
+docker-compose up -d redis
+
+# Use Redis with local embeddings (free)
+VECTOR_DB_TYPE=redis EMBEDDING_TYPE=local node build/index.js
+```
+
+**Qdrant (Advanced):**
+```bash
+# Start Qdrant
+docker-compose up -d qdrant
+
+# Use Qdrant with local embeddings (free)
+VECTOR_DB_TYPE=qdrant EMBEDDING_TYPE=local node build/index.js
+```
+
+### Embedding Generation (v1.2.0+)
+
+**ChromaDB:** Auto-generates embeddings (no configuration needed)
+
+**Redis & Qdrant:** Choose your embedding model:
+
+```bash
+# Local embeddings (default, free, runs in Node.js)
+EMBEDDING_TYPE=local
+
+# OpenAI embeddings (higher quality, requires API key)
+EMBEDDING_TYPE=openai
+OPENAI_API_KEY=sk-proj-...
+```
+
+**Local Embeddings:**
+- Model: Xenova/all-MiniLM-L6-v2
+- Dimensions: 384
+- Cost: Free (runs locally)
+- Speed: ~5-10s first load, then fast
+
+**OpenAI Embeddings:**
+- Model: text-embedding-3-small
+- Dimensions: 1536
+- Cost: $0.00002 per 1K tokens
+- Speed: Fast API calls
 
 **See [DATABASE-SETUP.md](./DATABASE-SETUP.md) for complete guide.**
 

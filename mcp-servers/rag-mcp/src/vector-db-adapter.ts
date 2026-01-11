@@ -153,18 +153,29 @@ import { QdrantClient } from "@qdrant/js-client-rest";
 
 export class QdrantAdapter implements VectorDatabase {
   private client: QdrantClient;
+  private embedder: EmbeddingGenerator;
 
-  constructor(config?: { host?: string; port?: number }) {
+  constructor(
+    config?: { host?: string; port?: number },
+    embedder?: EmbeddingGenerator
+  ) {
     this.client = new QdrantClient({
       url: `http://${config?.host || "localhost"}:${config?.port || 6333}`,
     });
+
+    if (!embedder) {
+      throw new Error("QdrantAdapter requires an EmbeddingGenerator");
+    }
+    this.embedder = embedder;
   }
 
   async createCollection(name: string): Promise<void> {
     try {
+      const dimension = this.embedder.getDimension();
       await this.client.createCollection(name, {
-        vectors: { size: 384, distance: "Cosine" },
+        vectors: { size: dimension, distance: "Cosine" },
       });
+      console.error(`✅ Qdrant collection created: ${name} (${dimension} dimensions)`);
     } catch (error: any) {
       if (!error.message?.includes("already exists")) {
         throw error;
@@ -193,14 +204,26 @@ export class QdrantAdapter implements VectorDatabase {
     collectionName: string,
     documents: VectorDocument[]
   ): Promise<void> {
-    const points = documents.map((doc, idx) => ({
-      id: idx,
-      vector: doc.embedding || [],
-      payload: {
-        content: doc.content,
-        ...doc.metadata,
-      },
-    }));
+    // Generate embeddings for all documents
+    const points = await Promise.all(
+      documents.map(async (doc, idx) => {
+        // Generate embedding if not provided
+        const embedding = doc.embedding || (await this.embedder.generate(doc.content));
+
+        // Create UUID-based ID from doc.id
+        const id = this.hashStringToNumber(doc.id);
+
+        return {
+          id,
+          vector: embedding,
+          payload: {
+            content: doc.content,
+            docId: doc.id,
+            ...doc.metadata,
+          },
+        };
+      })
+    );
 
     await this.client.upsert(collectionName, {
       wait: true,
@@ -208,14 +231,37 @@ export class QdrantAdapter implements VectorDatabase {
     });
   }
 
+  // Helper to convert string ID to numeric ID for Qdrant
+  private hashStringToNumber(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash);
+  }
+
   async search(
     collectionName: string,
     query: string,
     options: { nResults?: number; filter?: Record<string, any> }
   ): Promise<SearchResult[]> {
-    // Note: Qdrant requires embedding for search, not text query
-    // This is simplified - actual implementation needs embedding function
-    throw new Error("Qdrant adapter requires embedding function - not yet implemented");
+    // Generate query embedding
+    const queryEmbedding = await this.embedder.generate(query);
+
+    // Perform vector search
+    const results = await this.client.search(collectionName, {
+      vector: queryEmbedding,
+      limit: options.nResults || 5,
+      with_payload: true,
+    });
+
+    return results.map((result: any) => ({
+      content: result.payload.content || "",
+      metadata: result.payload,
+      score: result.score,
+    }));
   }
 
   async healthCheck(): Promise<boolean> {
@@ -232,18 +278,28 @@ export class QdrantAdapter implements VectorDatabase {
  * Redis Implementation (with RediSearch)
  */
 import { createClient } from "redis";
+import { EmbeddingGenerator } from "./embeddings.js";
 
 export class RedisAdapter implements VectorDatabase {
   private client: any;
   private connected: boolean = false;
+  private embedder: EmbeddingGenerator;
 
-  constructor(config?: { host?: string; port?: number }) {
+  constructor(
+    config?: { host?: string; port?: number },
+    embedder?: EmbeddingGenerator
+  ) {
     this.client = createClient({
       socket: {
         host: config?.host || "localhost",
         port: config?.port || 6379,
       },
     });
+
+    if (!embedder) {
+      throw new Error("RedisAdapter requires an EmbeddingGenerator");
+    }
+    this.embedder = embedder;
   }
 
   private async ensureConnected(): Promise<void> {
@@ -257,6 +313,7 @@ export class RedisAdapter implements VectorDatabase {
     await this.ensureConnected();
     // Create RediSearch index for this collection
     try {
+      const dimension = this.embedder.getDimension();
       await this.client.ft.create(
         `idx:${name}`,
         {
@@ -265,10 +322,12 @@ export class RedisAdapter implements VectorDatabase {
           },
           embedding: {
             type: "VECTOR",
-            ALGORITHM: "FLAT",
+            ALGORITHM: "HNSW",
             TYPE: "FLOAT32",
-            DIM: 384,
+            DIM: dimension,
             DISTANCE_METRIC: "COSINE",
+            M: 40,
+            EF_CONSTRUCTION: 200,
           },
         },
         {
@@ -276,6 +335,7 @@ export class RedisAdapter implements VectorDatabase {
           PREFIX: `${name}:`,
         }
       );
+      console.error(`✅ Redis index created: idx:${name} (${dimension} dimensions)`);
     } catch (error: any) {
       if (!error.message?.includes("Index already exists")) {
         throw error;
@@ -312,12 +372,17 @@ export class RedisAdapter implements VectorDatabase {
     await this.ensureConnected();
 
     for (const doc of documents) {
+      // Generate embedding if not provided
+      const embedding = doc.embedding || (await this.embedder.generate(doc.content));
+
+      // Convert embedding to buffer
+      const embeddingBuffer = Buffer.from(new Float32Array(embedding).buffer);
+
+      // Store document with embedding
       await this.client.hSet(`${collectionName}:${doc.id}`, {
         content: doc.content,
         ...doc.metadata,
-        embedding: doc.embedding
-          ? Buffer.from(new Float32Array(doc.embedding).buffer)
-          : "",
+        embedding: embeddingBuffer,
       });
     }
   }
@@ -329,23 +394,32 @@ export class RedisAdapter implements VectorDatabase {
   ): Promise<SearchResult[]> {
     await this.ensureConnected();
 
-    // For Redis, we'd need to generate query embedding
-    // This is simplified - actual implementation needs embedding function
+    // Generate query embedding
+    const queryEmbedding = await this.embedder.generate(query);
+    const queryBuffer = Buffer.from(new Float32Array(queryEmbedding).buffer);
+
+    // Perform KNN vector search
     const results = await this.client.ft.search(
       `idx:${collectionName}`,
-      `@content:${query}`,
+      `*=>[KNN ${options.nResults || 5} @embedding $vec AS score]`,
       {
-        LIMIT: {
-          from: 0,
-          size: options.nResults || 5,
+        PARAMS: {
+          vec: queryBuffer,
         },
+        RETURN: ["content", "score"],
+        SORTBY: "score",
+        DIALECT: 2,
       }
     );
 
+    if (!results.documents || results.documents.length === 0) {
+      return [];
+    }
+
     return results.documents.map((doc: any) => ({
-      content: doc.value.content,
+      content: doc.value.content || "",
       metadata: doc.value,
-      score: doc.score,
+      score: parseFloat(doc.value.score) || 0,
     }));
   }
 
@@ -363,17 +437,33 @@ export class RedisAdapter implements VectorDatabase {
 /**
  * Factory function to create the right database adapter
  */
-export function createVectorDatabase(
+export async function createVectorDatabase(
   type: "chromadb" | "redis" | "qdrant" = "chromadb",
-  config?: { host?: string; port?: number }
-): VectorDatabase {
+  config?: { host?: string; port?: number },
+  embeddingType: "local" | "openai" = "local"
+): Promise<VectorDatabase> {
+  // Import embeddings module dynamically
+  const { createEmbeddingGenerator } = await import("./embeddings.js");
+
   switch (type) {
     case "chromadb":
+      // ChromaDB doesn't need embedder (auto-generates)
       return new ChromaDBAdapter(config);
-    case "redis":
-      return new RedisAdapter(config);
-    case "qdrant":
-      return new QdrantAdapter(config);
+
+    case "redis": {
+      // Redis needs embedder
+      const embedder = createEmbeddingGenerator(embeddingType);
+      await (embedder as any).initialize?.();
+      return new RedisAdapter(config, embedder);
+    }
+
+    case "qdrant": {
+      // Qdrant needs embedder
+      const embedder = createEmbeddingGenerator(embeddingType);
+      await (embedder as any).initialize?.();
+      return new QdrantAdapter(config, embedder);
+    }
+
     default:
       throw new Error(`Unsupported database type: ${type}`);
   }

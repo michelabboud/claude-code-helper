@@ -38,14 +38,26 @@ const dbConfig = {
 
 console.error(`🔌 Using vector database: ${dbType.toUpperCase()} at ${dbConfig.host}:${dbConfig.port}`);
 
-// Create database adapter (ChromaDB is the default)
-let vectorDB: VectorDatabase;
-try {
-  vectorDB = createVectorDatabase(dbType, dbConfig);
-} catch (error) {
-  console.error(`❌ Failed to initialize ${dbType}:`, error);
-  process.exit(1);
+// Embedding type configuration
+const embeddingType = (process.env.EMBEDDING_TYPE || "local") as "local" | "openai";
+if (dbType !== "chromadb") {
+  console.error(`🧠 Using embedding model: ${embeddingType.toUpperCase()}`);
 }
+
+// Create database adapter (will be initialized async)
+let vectorDB: VectorDatabase;
+let dbInitPromise: Promise<void>;
+
+// Initialize database async
+dbInitPromise = (async () => {
+  try {
+    vectorDB = await createVectorDatabase(dbType, dbConfig, embeddingType);
+    console.error(`✅ ${dbType.toUpperCase()} database initialized successfully`);
+  } catch (error) {
+    console.error(`❌ Failed to initialize ${dbType}:`, error);
+    process.exit(1);
+  }
+})();
 
 // Keep chromaClient for backward compatibility (will be removed in v2.0.0)
 const chromaClient = new ChromaClient();
@@ -696,6 +708,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
+    // Ensure database is initialized
+    await dbInitPromise;
+
     const { name, arguments: args } = request.params;
 
     switch (name) {
