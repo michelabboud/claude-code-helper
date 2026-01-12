@@ -2071,3 +2071,13 @@ Trigger this agent for:
 - "Add Suspense streaming"
 
 This agent provides production-ready, type-safe, performant React/Next.js code following modern best practices and patterns.
+
+---
+
+## Credits
+
+**Author:** [Michel Abboud](https://github.com/michelabboud)
+**AI Assistance:** Created with the help of Claude Code (Anthropic)
+**License:** MIT
+
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.

@@ -52,3 +52,13 @@ describe('Component/Function Name', () => {
 3. **Independent Tests**: No shared state between tests
 4. **Use Factories**: Create test data with factories
 5. **Mock External Services**: APIs, databases, file system
+
+---
+
+## Credits
+
+**Author:** [Michel Abboud](https://github.com/michelabboud)
+**AI Assistance:** Created with the help of Claude Code (Anthropic)
+**License:** MIT
+
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.

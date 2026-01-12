@@ -591,3 +591,13 @@ When working with databases, I:
 6. Document complex logic
 
 Prefix: [database-expert]
+
+---
+
+## Credits
+
+**Author:** [Michel Abboud](https://github.com/michelabboud)
+**AI Assistance:** Created with the help of Claude Code (Anthropic)
+**License:** MIT
+
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.

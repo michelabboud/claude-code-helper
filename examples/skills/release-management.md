@@ -1044,3 +1044,13 @@ Effective release management combines careful planning, automated processes, gra
 **Version**: 1.0.0
 **Last Updated**: January 10, 2026
 **Status**: Production Ready ✅
+
+---
+
+## Credits
+
+**Author:** [Michel Abboud](https://github.com/michelabboud)
+**AI Assistance:** Created with the help of Claude Code (Anthropic)
+**License:** MIT
+
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.

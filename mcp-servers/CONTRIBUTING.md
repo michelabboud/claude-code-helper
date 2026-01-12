@@ -828,12 +828,85 @@ function getDescription(tool: string, lang: string = 'en'): string {
 
 ---
 
+## Credits Requirements
+
+### All Contributions Must Include Credits
+
+All new resources (skills, agents, MCP servers, guides) **must include a credits section** using the standard format.
+
+**Template:**
+```markdown
+---
+
+## Credits
+
+**Author:** [Your Name](https://github.com/yourusername)
+**AI Assistance:** Created with the help of Claude Code (Anthropic)
+**License:** MIT
+
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+```
+
+### Where to Add Credits
+
+- **✅ Required for:**
+  - All skill files (`.md`)
+  - All agent files (`.md`)
+  - MCP server README files
+  - Guide and documentation files
+  - Example implementations
+
+- **❌ Not required for:**
+  - JSON configuration files
+  - Shell scripts
+  - Test files
+  - Build configuration files
+
+### Placement
+
+- **Markdown files:** Place credits at the very end of the file
+- **TypeScript files:** Use JSDoc `@author` tag at the top
+
+### Example
+
+**For markdown files:**
+```markdown
+[... your content ...]
+
+---
+
+## Credits
+
+**Author:** [Your Name](https://github.com/yourusername)
+**AI Assistance:** Created with the help of Claude Code (Anthropic)
+**License:** MIT
+
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+```
+
+**For TypeScript files:**
+```typescript
+/**
+ * Your MCP Server
+ *
+ * @author Your Name (https://github.com/yourusername)
+ * @license MIT
+ */
+```
+
+### Complete Template
+
+See [templates/CREDITS-TEMPLATE.md](../templates/CREDITS-TEMPLATE.md) for the complete credits template with examples and validation guidelines.
+
+---
+
 ## Resources
 
 - **MCP Specification:** https://modelcontextprotocol.io
 - **TypeScript Handbook:** https://www.typescriptlang.org/docs/
 - **Zod Documentation:** https://zod.dev
 - **Testing Library:** https://vitest.dev
+- **Credits Template:** [templates/CREDITS-TEMPLATE.md](../templates/CREDITS-TEMPLATE.md)
 
 ---
 
