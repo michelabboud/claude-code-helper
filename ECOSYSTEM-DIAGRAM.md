@@ -70,90 +70,90 @@ Last Updated: 2026-01-11
 └──────────────────────────────────────────────────────────────────────┘
 
 ┌─── PRODUCTION (30 tools) ───────────────────────────────────────────┐
-│                                                                       │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐    │
-│  │ API Specialist  │  │  Code Review    │  │ Design System   │    │
-│  │   8 tools       │  │   4 tools       │  │   5 tools       │    │
-│  │                 │  │                 │  │                 │    │
-│  │ • validate_     │  │ • lint_file     │  │ • validate_     │    │
-│  │   openapi       │  │ • security_scan │  │   tokens        │    │
-│  │ • test_endpoint │  │ • analyze_      │  │ • check_        │    │
-│  │ • check_api_    │  │   complexity    │  │   component     │    │
-│  │   security      │  │ • find_         │  │ • validate_     │    │
-│  │ • analyze_api_  │  │   duplicates    │  │   color_palette │    │
-│  │   structure     │  │                 │  │ • analyze_      │    │
-│  │ • load_test     │  │                 │  │   spacing       │    │
-│  │ • generate_     │  │                 │  │ • generate_     │    │
-│  │   api_docs      │  │                 │  │   report        │    │
-│  │ • suggest_      │  │                 │  │                 │    │
-│  │   improvements  │  │                 │  │                 │    │
-│  │ • validate_     │  │                 │  │                 │    │
-│  │   api_response  │  │                 │  │                 │    │
-│  └─────────────────┘  └─────────────────┘  └─────────────────┘    │
-│                                                                       │
-│  ┌─────────────────┐  ┌─────────────────┐                          │
-│  │    Testing      │  │  UI/UX Review   │                          │
-│  │   4 tools       │  │   9 tools       │                          │
-│  │                 │  │                 │                          │
-│  │ • run_tests     │  │ • analyze_design│                          │
-│  │ • get_coverage  │  │ • check_        │                          │
-│  │ • analyze_test_ │  │   accessibility │                          │
-│  │   quality       │  │ • review_       │                          │
-│  │ • generate_     │  │   typography    │                          │
-│  │   test_report   │  │ • validate_     │                          │
-│  │                 │  │   spacing       │                          │
-│  │                 │  │ • check_color_  │                          │
-│  │                 │  │   scheme        │                          │
-│  │                 │  │ • suggest_      │                          │
-│  │                 │  │   improvements  │                          │
-│  │                 │  │ • generate_     │                          │
-│  │                 │  │   wireframe     │                          │
-│  │                 │  │ • compare_      │                          │
-│  │                 │  │   designs       │                          │
-│  │                 │  │ • check_usability│                         │
-│  └─────────────────┘  └─────────────────┘                          │
-│                                                                       │
-└───────────────────────────────────────────────────────────────────────┘
+│                                                                     │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐      │
+│  │ API Specialist  │  │  Code Review    │  │ Design System   │      │
+│  │   8 tools       │  │   4 tools       │  │   5 tools       │      │
+│  │                 │  │                 │  │                 │      │
+│  │ • validate_     │  │ • lint_file     │  │ • validate_     │      │
+│  │   openapi       │  │ • security_scan │  │   tokens        │      │
+│  │ • test_endpoint │  │ • analyze_      │  │ • check_        │      │
+│  │ • check_api_    │  │   complexity    │  │   component     │      │
+│  │   security      │  │ • find_         │  │ • validate_     │      │
+│  │ • analyze_api_  │  │   duplicates    │  │   color_palette │      │
+│  │   structure     │  │                 │  │ • analyze_      │      │
+│  │ • load_test     │  │                 │  │   spacing       │      │
+│  │ • generate_     │  │                 │  │ • generate_     │      │
+│  │   api_docs      │  │                 │  │   report        │      │
+│  │ • suggest_      │  │                 │  │                 │      │
+│  │   improvements  │  │                 │  │                 │      │
+│  │ • validate_     │  │                 │  │                 │      │
+│  │   api_response  │  │                 │  │                 │      │
+│  └─────────────────┘  └─────────────────┘  └─────────────────┘      │
+│                                                                     │
+│  ┌─────────────────┐  ┌─────────────────┐                           │
+│  │    Testing      │  │  UI/UX Review   │                           │
+│  │   4 tools       │  │   9 tools       │                           │
+│  │                 │  │                 │                           │
+│  │ • run_tests     │  │ • analyze_design│                           │
+│  │ • get_coverage  │  │ • check_        │                           │
+│  │ • analyze_test_ │  │   accessibility │                           │
+│  │   quality       │  │ • review_       │                           │
+│  │ • generate_     │  │   typography    │                           │
+│  │   test_report   │  │ • validate_     │                           │
+│  │                 │  │   spacing       │                           │
+│  │                 │  │ • check_color_  │                           │
+│  │                 │  │   scheme        │                           │
+│  │                 │  │ • suggest_      │                           │
+│  │                 │  │   improvements  │                           │
+│  │                 │  │ • generate_     │                           │
+│  │                 │  │   wireframe     │                           │
+│  │                 │  │ • compare_      │                           │
+│  │                 │  │   designs       │                           │
+│  │                 │  │ • check_usability│                          │
+│  └─────────────────┘  └─────────────────┘                           │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
 
-┌─── EXPERIMENTAL 🧪 (30 tools) ──────────────────────────────────────┐
+┌─── EXPERIMENTAL 🧪 (30 tools) ────────────────────────────────────────┐
 │                                                                       │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐    │
-│  │  CI/CD Pipeline │  │    Database     │  │  Dependency     │    │
-│  │   8 tools       │  │   Operations    │  │  Management     │    │
-│  │                 │  │   8 tools       │  │   8 tools       │    │
-│  │ • generate_     │  │ • generate_     │  │ • scan_         │    │
-│  │   workflow      │  │   migration     │  │   vulnerabilities│   │
-│  │ • optimize_     │  │ • analyze_query │  │ • suggest_      │    │
-│  │   pipeline      │  │ • suggest_      │  │   updates       │    │
-│  │ • validate_     │  │   indexes       │  │ • analyze_      │    │
-│  │   config        │  │ • validate_     │  │   licenses      │    │
-│  │ • suggest_      │  │   schema        │  │ • find_         │    │
-│  │   improvements  │  │ • generate_orm_ │  │   alternatives  │    │
-│  │ • analyze_build_│  │   models        │  │ • check_        │    │
-│  │   time          │  │ • optimize_     │  │   deprecations  │    │
-│  │ • generate_     │  │   schema        │  │ • analyze_bundle│    │
-│  │   matrix        │  │ • create_backup_│  │   _size         │    │
-│  │ • setup_secrets │  │   strategy      │  │ • generate_     │    │
-│  │ • create_       │  │ • analyze_growth│  │   upgrade_plan  │    │
-│  │   deployment    │  │                 │  │ • audit_security│    │
-│  └─────────────────┘  └─────────────────┘  └─────────────────┘    │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────────┐       │
+│  │  CI/CD Pipeline │  │    Database     │  │  Dependency      │       │
+│  │   8 tools       │  │   Operations    │  │  Management      │       │
+│  │                 │  │   8 tools       │  │   8 tools        │       │
+│  │ • generate_     │  │ • generate_     │  │ • scan_          │       │
+│  │   workflow      │  │   migration     │  │   vulnerabilities│       │
+│  │ • optimize_     │  │ • analyze_query │  │ • suggest_       │       │
+│  │   pipeline      │  │ • suggest_      │  │   updates        │       │
+│  │ • validate_     │  │   indexes       │  │ • analyze_       │       │
+│  │   config        │  │ • validate_     │  │   licenses       │       │
+│  │ • suggest_      │  │   schema        │  │ • find_          │       │
+│  │   improvements  │  │ • generate_orm_ │  │   alternatives   │       │
+│  │ • analyze_build_│  │   models        │  │ • check_         │       │
+│  │   time          │  │ • optimize_     │  │   deprecations   │       │
+│  │ • generate_     │  │   schema        │  │ • analyze_bundle │       │
+│  │   matrix        │  │ • create_backup_│  │   _size          │       │
+│  │ • setup_secrets │  │   strategy      │  │ • generate_      │       │
+│  │ • create_       │  │ • analyze_growth│  │   upgrade_plan   │       │
+│  │   deployment    │  │                 │  │ • audit_security │       │
+│  └─────────────────┘  └─────────────────┘  └──────────────────┘       │
 │                                                                       │
-│  ┌─────────────────┐                                                 │
-│  │   n8n Auto      │                                                 │
-│  │   6 tools       │                                                 │
-│  │                 │                                                 │
-│  │ • generate_     │                                                 │
-│  │   workflow      │                                                 │
-│  │ • validate_     │                                                 │
-│  │   workflow      │                                                 │
-│  │ • suggest_      │                                                 │
-│  │   optimizations │                                                 │
-│  │ • create_       │                                                 │
-│  │   integration   │                                                 │
-│  │ • debug_workflow│                                                 │
-│  │ • generate_     │                                                 │
-│  │   documentation │                                                 │
-│  └─────────────────┘                                                 │
+│  ┌─────────────────┐                                                  │
+│  │   n8n Auto      │                                                  │
+│  │   6 tools       │                                                  │
+│  │                 │                                                  │
+│  │ • generate_     │                                                  │
+│  │   workflow      │                                                  │
+│  │ • validate_     │                                                  │
+│  │   workflow      │                                                  │
+│  │ • suggest_      │                                                  │
+│  │   optimizations │                                                  │
+│  │ • create_       │                                                  │
+│  │   integration   │                                                  │
+│  │ • debug_workflow│                                                  │
+│  │ • generate_     │                                                  │
+│  │   documentation │                                                  │
+│  └─────────────────┘                                                  │
 │                                                                       │
 └───────────────────────────────────────────────────────────────────────┘
 ```
@@ -173,28 +173,28 @@ User Request → Claude Code → MCP Server → Tool Execution → Results
 └──────────────────────────────────────────────────────────────────────┘
 
 ┌─── MCP AGENTS (14) ────────────────────────────────────────────────┐
-│  Specialized agents that leverage MCP server tools                  │
-│                                                                       │
-│  Production (8):                                                     │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐ │
-│  │ security-reviewer│  │ test-quality-    │  │ api-specialist   │ │
-│  │                  │  │ enforcer         │  │                  │ │
-│  │ Uses: code-review│  │ Uses: testing    │  │ Uses: api-       │ │
-│  │ Focus: CVE scan, │  │ Focus: Coverage, │  │ specialist       │ │
-│  │ secrets, injection│ │ quality metrics  │  │ Focus: REST,     │ │
-│  │                  │  │                  │  │ OpenAPI, testing │ │
-│  └──────────────────┘  └──────────────────┘  └──────────────────┘ │
-│                                                                       │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐ │
-│  │ design-system-   │  │ performance-     │  │ full-stack-      │ │
-│  │ guardian         │  │ optimizer        │  │ reviewer         │ │
-│  │                  │  │                  │  │                  │ │
-│  │ Uses: design-    │  │ Uses: code-review│  │ Uses: ALL servers│ │
-│  │ system           │  │ + testing        │  │ Focus: Complete  │ │
-│  │ Focus: Tokens,   │  │ Focus: Speed,    │  │ multi-phase      │ │
-│  │ components       │  │ complexity       │  │ review           │ │
-│  └──────────────────┘  └──────────────────┘  └──────────────────┘ │
-│                                                                       │
+│  Specialized agents that leverage MCP server tools                 │
+│                                                                    │
+│  Production (8):                                                   │
+│  ┌───────────────────┐  ┌──────────────────┐  ┌──────────────────┐ │
+│  │ security-reviewer │  │ test-quality-    │  │ api-specialist   │ │
+│  │                   │  │ enforcer         │  │                  │ │
+│  │ Uses: code-review │  │ Uses: testing    │  │ Uses: api-       │ │
+│  │ Focus: CVE scan,  │  │ Focus: Coverage, │  │ specialist       │ │
+│  │ secrets, injection│  │ quality metrics  │  │ Focus: REST,     │ │
+│  │                   │  │                  │  │ OpenAPI, testing │ │
+│  └───────────────────┘  └──────────────────┘  └──────────────────┘ │
+│                                                                    │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  │
+│  │ design-system-   │  │ performance-     │  │ full-stack-      │  │
+│  │ guardian         │  │ optimizer        │  │ reviewer         │  │
+│  │                  │  │                  │  │                  │  │
+│  │ Uses: design-    │  │ Uses: code-review│  │ Uses: ALL servers│  │
+│  │ system           │  │ + testing        │  │ Focus: Complete  │  │
+│  │ Focus: Tokens,   │  │ Focus: Speed,    │  │ multi-phase      │  │
+│  │ components       │  │ complexity       │  │ review           │  │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘  │
+│                                                                    │
 │  ┌──────────────────┐  ┌──────────────────┐                        │
 │  │ uiux-reviewer    │  │ uiux-design-     │                        │
 │  │                  │  │ critic           │                        │
@@ -202,68 +202,68 @@ User Request → Claude Code → MCP Server → Tool Execution → Results
 │  │ Focus: UX flows, │  │ Focus: Visual    │                        │
 │  │ navigation       │  │ design critique  │                        │
 │  └──────────────────┘  └──────────────────┘                        │
-│                                                                       │
-│  Experimental (4):                                                   │
-│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐ │
-│  │ cicd-engineer    │  │ database-engineer│  │ dependency-      │ │
-│  │                  │  │                  │  │ manager          │ │
-│  │ Uses: cicd-      │  │ Uses: database-  │  │ Uses: dependency-│ │
-│  │ pipeline         │  │ operations       │  │ management       │ │
-│  └──────────────────┘  └──────────────────┘  └──────────────────┘ │
-│                                                                       │
-│  ┌──────────────────┐                                                │
-│  │ automation-      │                                                │
-│  │ architect        │                                                │
-│  │ Uses: n8n-       │                                                │
-│  │ automation       │                                                │
-│  └──────────────────┘                                                │
-│                                                                       │
-│  Orchestration (2):                                                  │
+│                                                                    │
+│  Experimental (4):                                                 │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  │
+│  │ cicd-engineer    │  │ database-engineer│  │ dependency-      │  │
+│  │                  │  │                  │  │ manager          │  │
+│  │ Uses: cicd-      │  │ Uses: database-  │  │ Uses: dependency-│  │
+│  │ pipeline         │  │ operations       │  │ management       │  │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘  │
+│                                                                    │
+│  ┌──────────────────┐                                              │
+│  │ automation-      │                                              │
+│  │ architect        │                                              │
+│  │ Uses: n8n-       │                                              │
+│  │ automation       │                                              │
+│  └──────────────────┘                                              │
+│                                                                    │
+│  Orchestration (2):                                                │
 │  ┌──────────────────┐  ┌──────────────────┐                        │
 │  │ planner          │  │ implementer      │                        │
 │  │                  │  │                  │                        │
 │  │ Uses: All tools  │  │ Uses: All tools  │                        │
 │  │ Focus: Planning  │  │ Focus: Building  │                        │
 │  └──────────────────┘  └──────────────────┘                        │
-└───────────────────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────────────┘
 
 ┌─── SUB-AGENTS (34) ────────────────────────────────────────────────┐
-│  Technology-specific experts (no MCP tools, pure LLM)               │
-│                                                                       │
-│  Frontend (8):                                                       │
-│  • angular-expert         • react-nextjs-expert                     │
-│  • react-native-mobile    • react-typescript-expert                 │
-│  • react-vite-expert      • svelte-expert                           │
-│  • tailwind-expert        • vue3-expert                             │
-│                                                                       │
-│  Backend (10):                                                       │
-│  • django-expert          • dotnet-expert                           │
-│  • go-backend-expert      • java-spring-expert                      │
-│  • nestjs-expert          • nodejs-typescript-backend-expert        │
-│  • php-expert             • python-backend-expert                   │
-│  • rails-expert           • rust-backend-expert                     │
-│                                                                       │
-│  Mobile (3):                                                         │
-│  • android-dev            • flutter-expert                          │
-│  • ios-dev                                                           │
-│                                                                       │
-│  Full-Stack (4):                                                     │
-│  • cloudflare-pages       • mean-stack-expert                       │
-│  • mern-stack-expert      • t3-stack-expert                         │
-│                                                                       │
-│  DevOps (4):                                                         │
-│  • aws-architect          • azure-devops-expert                     │
-│  • docker-kubernetes-expert • terraform-expert                      │
-│                                                                       │
-│  Data & AI (2):                                                      │
-│  • data-scientist         • machine-learning-expert                 │
-│                                                                       │
-│  Testing (1):                                                        │
-│  • qa-automation-expert                                             │
-│                                                                       │
-│  Specialized (2):                                                    │
-│  • documentation-specialist • technical-writer                      │
-└───────────────────────────────────────────────────────────────────────┘
+│  Technology-specific experts (no MCP tools, pure LLM)              │
+│                                                                    │
+│  Frontend (8):                                                     │
+│  • angular-expert         • react-nextjs-expert                    │
+│  • react-native-mobile    • react-typescript-expert                │
+│  • react-vite-expert      • svelte-expert                          │
+│  • tailwind-expert        • vue3-expert                            │
+│                                                                    │
+│  Backend (10):                                                     │
+│  • django-expert          • dotnet-expert                          │
+│  • go-backend-expert      • java-spring-expert                     │
+│  • nestjs-expert          • nodejs-typescript-backend-expert       │
+│  • php-expert             • python-backend-expert                  │
+│  • rails-expert           • rust-backend-expert                    │
+│                                                                    │
+│  Mobile (3):                                                       │
+│  • android-dev            • flutter-expert                         │
+│  • ios-dev                                                         │
+│                                                                    │
+│  Full-Stack (4):                                                   │
+│  • cloudflare-pages       • mean-stack-expert                      │
+│  • mern-stack-expert      • t3-stack-expert                        │
+│                                                                    │
+│  DevOps (4):                                                       │
+│  • aws-architect          • azure-devops-expert                    │
+│  • docker-kubernetes-expert • terraform-expert                     │
+│                                                                    │
+│  Data & AI (2):                                                    │
+│  • data-scientist         • machine-learning-expert                │
+│                                                                    │
+│  Testing (1):                                                      │
+│  • qa-automation-expert                                            │
+│                                                                    │
+│  Specialized (2):                                                  │
+│  • documentation-specialist • technical-writer                     │
+└────────────────────────────────────────────────────────────────────┘
 ```
 
 **Agent Invocation:**
@@ -281,9 +281,9 @@ User Request → Claude Code → MCP Server → Tool Execution → Results
 └──────────────────────────────────────────────────────────────────────┘
 
 ┌─── SKILLS (16) ───────────────────────────────────────────────────┐
-│  Reusable workflow patterns and methodologies                       │
-│                                                                       │
-│  Code Quality (4):                                                   │
+│  Reusable workflow patterns and methodologies                     │
+│                                                                   │
+│  Code Quality (4):                                                │
 │  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐       │
 │  │ code-review-   │  │ refactoring-   │  │ tdd-workflow   │       │
 │  │ workflow       │  │ strategy       │  │                │       │
@@ -291,38 +291,38 @@ User Request → Claude Code → MCP Server → Tool Execution → Results
 │  │ Systematic     │  │ Safe code      │  │ Refactor cycle │       │
 │  │ review process │  │ improvements   │  │                │       │
 │  └────────────────┘  └────────────────┘  └────────────────┘       │
-│                                                                       │
-│  ┌────────────────┐                                                  │
-│  │ testing-       │                                                  │
-│  │ standards      │                                                  │
-│  │                │                                                  │
-│  │ Best practices │                                                  │
-│  └────────────────┘                                                  │
-│                                                                       │
-│  API Development (2):                                                │
-│  • api-design-patterns      • api-documentation                     │
-│                                                                       │
-│  Testing Specializations (6):                                       │
-│  • advanced-e2e-testing     • bdd-framework-examples                │
-│  • contract-testing         • mutation-testing                      │
-│  • visual-regression-testing                                        │
-│                                                                       │
-│  Infrastructure (4):                                                 │
-│  • caching-expert           • ci-best-practices                     │
-│  • database-design-patterns • release-management                    │
-└───────────────────────────────────────────────────────────────────────┘
+│                                                                   │
+│  ┌────────────────┐                                               │
+│  │ testing-       │                                               │
+│  │ standards      │                                               │
+│  │                │                                               │
+│  │ Best practices │                                               │
+│  └────────────────┘                                               │
+│                                                                   │
+│  API Development (2):                                             │
+│  • api-design-patterns      • api-documentation                   │
+│                                                                   │
+│  Testing Specializations (6):                                     │
+│  • advanced-e2e-testing     • bdd-framework-examples              │
+│  • contract-testing         • mutation-testing                    │
+│  • visual-regression-testing                                      │
+│                                                                   │
+│  Infrastructure (4):                                              │
+│  • caching-expert           • ci-best-practices                   │
+│  • database-design-patterns • release-management                  │
+└───────────────────────────────────────────────────────────────────┘
 
 ┌─── COMMANDS (7) ──────────────────────────────────────────────────┐
-│  Slash commands for quick workflows                                 │
-│                                                                       │
-│  /plan                 → Uses planner agent (Opus)                  │
-│  /review               → Code review workflow                       │
-│  /test-generate        → Auto-generate test suite                   │
-│  /scaffold             → Project structure generation               │
-│  /document             → Generate documentation                     │
-│  /refactor             → Interactive refactoring                    │
-│  /observability        → Toggle model transparency                  │
-└───────────────────────────────────────────────────────────────────────┘
+│  Slash commands for quick workflows                               │
+│                                                                   │
+│  /plan                 → Uses planner agent (Opus)                │
+│  /review               → Code review workflow                     │
+│  /test-generate        → Auto-generate test suite                 │
+│  /scaffold             → Project structure generation             │
+│  /document             → Generate documentation                   │
+│  /refactor             → Interactive refactoring                  │
+│  /observability        → Toggle model transparency                │
+└───────────────────────────────────────────────────────────────────┘
 ```
 
 **Usage Flow:**
