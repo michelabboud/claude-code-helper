@@ -15,6 +15,98 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [1.9.2] - 2026-01-12
+
+### 🎯 Standardized Credits & Attribution
+
+Established consistent credits system across all resources with proper attribution, AI co-authorship transparency, and improved discoverability.
+
+### Added
+
+#### Credits to All Resources (48 files)
+
+**Skills (15 files):**
+- Added credits to: code-review-workflow, tdd-workflow, api-design-patterns, bdd-framework-examples, caching-expert, ci-best-practices, contract-testing, database-design-patterns, mutation-testing, refactoring-strategy, release-management, visual-regression-testing, advanced-e2e-testing
+- Added credits to: api-documentation/SKILL.md, testing-standards/SKILL.md
+
+**Agents (22 files):**
+- Added credits to: code-reviewer, rag-coder, test-writer (examples/agents/)
+- Added credits to: android-dev, api-expert, css-tailwind-expert, data-engineering-expert, database-expert, devops-infrastructure-expert, documentation-expert, git-expert, ios-development-expert, ml-ai-expert, nodejs-typescript-backend-expert, observability-expert, performance-optimizer, python-backend-expert, qa-testing-expert, react-nextjs-expert, security-expert, vue-nuxt-expert (examples/agents/subagents/)
+- Updated credits in: examples/agents/mcp-agents/README.md
+
+**MCP Servers (9 files):**
+- Updated credits to consistent format in all MCP server README files
+- Servers: api-specialist-mcp, cicd-pipeline, code-review-mcp, database-operations, dependency-management, design-system-mcp, n8n-automation, rag-mcp, testing-mcp, uiux-review-mcp
+
+#### New Documentation
+
+**templates/CREDITS-TEMPLATE.md** (new file):
+- Standard credits format definition
+- Placement guidelines for different file types
+- Examples for markdown, TypeScript, and JSON files
+- Customization instructions for contributors
+- Co-authorship format for collaborative work
+- Validation checklist and CLI tools
+- Complete template documentation (200+ lines)
+
+**mcp-servers/CONTRIBUTING.md** (updated):
+- Added "Credits Requirements" section
+- Documented mandatory credits for all contributions
+- Provided template and placement examples
+- Clarified required vs optional credits
+- Linked to complete CREDITS-TEMPLATE.md
+
+### Format
+
+All resources now use consistent credits format:
+
+```markdown
+---
+
+## Credits
+
+**Author:** [Michel Abboud](https://github.com/michelabboud)
+**AI Assistance:** Created with the help of Claude Code (Anthropic)
+**License:** MIT
+
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+```
+
+### Benefits
+
+**For Users:**
+- ✅ Clear attribution on all resources
+- ✅ Transparency about AI co-authorship
+- ✅ Easy discovery of more tools via repository link
+- ✅ Professional and consistent presentation
+
+**For Contributors:**
+- ✅ Clear standards to follow in CREDITS-TEMPLATE.md
+- ✅ Simple template available for new contributions
+- ✅ Consistent format across entire project
+- ✅ Recognition for contributions
+
+**For Project:**
+- ✅ Established contribution standard
+- ✅ Professional branding throughout
+- ✅ Improved discoverability with call-to-action
+- ✅ Complete transparency about AI involvement
+
+### Technical Details
+
+**Files Modified:**
+- Skills: 15 files
+- Agents: 22 files (21 markdown + 1 README)
+- MCP Servers: 9 README files
+- Templates: 1 new file
+- Documentation: 1 updated file
+
+**Total:** 49 files changed, 734 insertions(+), 23 deletions(-)
+
+**Commit:** 26620e1
+
+---
+
 ## [1.9.1] - 2026-01-11
 
 ### 🧪 RAG MCP Real-World Validation - Production Ready at Scale
