@@ -59,7 +59,7 @@ export class LocalEmbeddingGenerator implements EmbeddingGenerator {
   async initialize(): Promise<void> {
     if (this.pipeline) return;
 
-    const { pipeline } = await import("@xenova/transformers");
+    const { pipeline } = await import("@huggingface/transformers");
 
     // Get model info for display
     const variantInfo = MODEL_VARIANTS[this.modelVariant] || MODEL_VARIANTS["default"];
