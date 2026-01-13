@@ -38,10 +38,15 @@ const dbConfig = {
 
 console.error(`🔌 Using vector database: ${dbType.toUpperCase()} at ${dbConfig.host}:${dbConfig.port}`);
 
-// Embedding type configuration
+// Embedding configuration
 const embeddingType = (process.env.EMBEDDING_TYPE || "local") as "local" | "openai";
+const modelVariant = (process.env.MODEL_VARIANT || "default").toLowerCase();
+
 if (dbType !== "chromadb") {
-  console.error(`🧠 Using embedding model: ${embeddingType.toUpperCase()}`);
+  console.error(`🧠 Embedding provider: ${embeddingType.toUpperCase()}`);
+  if (embeddingType === "local") {
+    console.error(`   Model variant: ${modelVariant}`);
+  }
 }
 
 // Create database adapter (will be initialized async)
@@ -51,7 +56,7 @@ let dbInitPromise: Promise<void>;
 // Initialize database async
 dbInitPromise = (async () => {
   try {
-    vectorDB = await createVectorDatabase(dbType, dbConfig, embeddingType);
+    vectorDB = await createVectorDatabase(dbType, dbConfig, embeddingType, modelVariant);
     console.error(`✅ ${dbType.toUpperCase()} database initialized successfully`);
   } catch (error) {
     console.error(`❌ Failed to initialize ${dbType}:`, error);

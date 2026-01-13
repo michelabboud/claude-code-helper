@@ -34,6 +34,14 @@ export interface EmbeddingGenerator {
 }
 
 /**
+ * Model variant information for user-friendly display
+ */
+const MODEL_VARIANTS: Record<string, { size: string; description: string }> = {
+  "default": { size: "90.4 MB", description: "full precision" },
+  "quantized": { size: "23 MB", description: "quantized (default)" },
+};
+
+/**
  * Local embedding generator using Transformers.js
  * Runs entirely in Node.js without external API calls
  * Uses sentence-transformers/all-MiniLM-L6-v2 (384 dimensions)
@@ -42,13 +50,33 @@ export class LocalEmbeddingGenerator implements EmbeddingGenerator {
   private pipeline: any = null;
   private modelName = "Xenova/all-MiniLM-L6-v2";
   private dimension = 384;
+  private modelVariant: string;
+
+  constructor(modelVariant: string = "default") {
+    this.modelVariant = modelVariant.toLowerCase();
+  }
 
   async initialize(): Promise<void> {
     if (this.pipeline) return;
 
     const { pipeline } = await import("@xenova/transformers");
+
+    // Get model info for display
+    const variantInfo = MODEL_VARIANTS[this.modelVariant] || MODEL_VARIANTS["default"];
     console.error(`🔧 Loading local embedding model: ${this.modelName}`);
-    this.pipeline = await pipeline("feature-extraction", this.modelName);
+    console.error(`   Model variant: ${variantInfo.description} (${variantInfo.size})`);
+
+    // Configure pipeline options
+    const pipelineOptions: any = {};
+
+    if (this.modelVariant === "quantized") {
+      // Use default quantized model (model_quantized.onnx - INT8, 23 MB)
+      pipelineOptions.quantized = true;
+    }
+    // For "default" variant, no options needed - uses full precision model.onnx
+
+    this.pipeline = await pipeline("feature-extraction", this.modelName, pipelineOptions);
+
     console.error(`✅ Local embedding model loaded (${this.dimension} dimensions)`);
   }
 
@@ -144,13 +172,16 @@ export class OpenAIEmbeddingGenerator implements EmbeddingGenerator {
 
 /**
  * Factory function to create embedding generator based on configuration
+ * @param type - Embedding provider: "local" (Transformers.js) or "openai" (OpenAI API)
+ * @param modelVariant - Model variant for local embeddings (default, fp16, int8, uint8, q4, q4f16, bnb4)
  */
 export function createEmbeddingGenerator(
-  type: "local" | "openai" = "local"
+  type: "local" | "openai" = "local",
+  modelVariant: string = "default"
 ): EmbeddingGenerator {
   switch (type) {
     case "local":
-      return new LocalEmbeddingGenerator();
+      return new LocalEmbeddingGenerator(modelVariant);
     case "openai":
       return new OpenAIEmbeddingGenerator();
     default:

@@ -440,7 +440,8 @@ export class RedisAdapter implements VectorDatabase {
 export async function createVectorDatabase(
   type: "chromadb" | "redis" | "qdrant" = "chromadb",
   config?: { host?: string; port?: number },
-  embeddingType: "local" | "openai" = "local"
+  embeddingType: "local" | "openai" = "local",
+  modelVariant: string = "default"
 ): Promise<VectorDatabase> {
   // Import embeddings module dynamically
   const { createEmbeddingGenerator } = await import("./embeddings.js");
@@ -452,14 +453,14 @@ export async function createVectorDatabase(
 
     case "redis": {
       // Redis needs embedder
-      const embedder = createEmbeddingGenerator(embeddingType);
+      const embedder = createEmbeddingGenerator(embeddingType, modelVariant);
       await (embedder as any).initialize?.();
       return new RedisAdapter(config, embedder);
     }
 
     case "qdrant": {
       // Qdrant needs embedder
-      const embedder = createEmbeddingGenerator(embeddingType);
+      const embedder = createEmbeddingGenerator(embeddingType, modelVariant);
       await (embedder as any).initialize?.();
       return new QdrantAdapter(config, embedder);
     }
