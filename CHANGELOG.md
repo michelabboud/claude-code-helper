@@ -15,6 +15,106 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [1.10.0] - 2026-01-13
+
+### 🎯 RAG MCP v1.3.0: Dynamic Model Variants + Transformers v3.x
+
+Major enhancement to RAG MCP with user-selectable embedding models and upgrade to latest Transformers.js.
+
+### Added
+
+#### RAG MCP: Model Variant Selection (v1.3.0)
+
+Users can now choose between full precision and quantized embedding models via environment variable.
+
+**Model Variants:**
+- **Default (Full Precision):** 90.4 MB, best accuracy
+- **Quantized (INT8):** 23 MB (75% smaller), ~99% accuracy
+
+**Configuration:**
+```bash
+MODEL_VARIANT=default    # Full precision (recommended for production)
+MODEL_VARIANT=quantized  # 75% smaller (recommended for dev/CI/CD)
+```
+
+**New Files:**
+- `mcp-servers/rag-mcp/MODEL-VARIANTS.md` - Complete user guide with performance comparisons
+- `mcp-servers/rag-mcp/.env.template` - Configuration template with examples
+- `mcp-servers/rag-mcp/rag-server.sh` - Server management script (start/stop/restart/status/logs)
+- `mcp-servers/rag-mcp/TEST-RESULTS-V3.md` - Comprehensive v3.x test results
+
+**Code Changes:**
+- `src/embeddings.ts` - Dynamic model loading based on MODEL_VARIANT
+- `src/vector-db-adapter.ts` - Pass model variant through factory
+- `src/index.ts` - Read and display MODEL_VARIANT configuration
+
+**Test Results:**
+- ✅ Both models tested on real codebase (42 chunks)
+- ✅ Identical similarity scores (0.4331, 0.6353, 0.5736, 0.5169)
+- ✅ Quantized model 20% faster (6.8ms vs 8.5ms)
+- ✅ Zero quality loss with 75% size reduction
+
+#### RAG MCP: Transformers v3.x Upgrade
+
+**Package Upgrade:**
+- From: `@xenova/transformers@2.17.2` (legacy)
+- To: `@huggingface/transformers@3.8.1` (official, actively maintained)
+
+**Benefits:**
+- ✅ WebGPU support for GPU acceleration
+- ✅ Active development with latest features
+- ✅ Official Hugging Face package naming
+- ✅ 100% backward compatible
+
+**Testing:**
+- ✅ Full integration tests passed
+- ✅ Search quality validated
+- ✅ Both model variants work perfectly
+- ✅ Same API, same model paths, zero breaking changes
+
+### Technical Details
+
+**Model Performance Comparison:**
+
+| Metric | Default | Quantized |
+|--------|---------|-----------|
+| Size | 90.4 MB | 23 MB |
+| Load Time | 0.5s | 0.3s |
+| Search Speed | 8.5ms | 6.8ms |
+| Accuracy | Best | Identical scores |
+
+**Backward Compatibility:**
+- All existing configurations work without changes
+- Default behavior unchanged (uses full precision model)
+- Opt-in quantized model via environment variable
+
+**Server Management:**
+New `rag-server.sh` script provides:
+- `start` - Start server in background with PID tracking
+- `stop` - Graceful shutdown with force fallback
+- `restart` - Stop and start
+- `status` - Check running status and display config
+- `logs` - View server logs
+
+### Documentation
+
+**Updated:**
+- RAG MCP README with model variant configuration
+- Installation instructions with .env.template
+- Server management guide
+
+**New:**
+- MODEL-VARIANTS.md - Complete guide (183 lines)
+- TEST-RESULTS-V3.md - Test validation report
+- .env.template - Configuration examples
+
+### Commits
+
+- `c02f438` Add dynamic embedding model variant support + server management
+- `dbc8cb0` Upgrade to @huggingface/transformers v3.8.1
+
+---
+
 ## [1.9.2] - 2026-01-12
 
 ### 🎯 Standardized Credits & Attribution
