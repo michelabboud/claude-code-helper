@@ -11,6 +11,25 @@ This is **claude-code-helper** - a comprehensive toolkit and learning resource f
 - Production-ready configurations and tools
 - Example implementations for all Claude Code tool types
 - MCP servers for code quality automation
+- **Distribution source for Claude Code agents** - This repo maintains a comprehensive collection of useful agents that users install to their `~/.claude/agents/` directory
+
+### CRITICAL: Agent Preservation Policy
+
+**NEVER remove agents from this repository**, even if they duplicate Claude Code's built-in agents.
+
+**Why duplicates exist and must be kept:**
+1. **This repo is a distribution source** - Users install agents from here to `~/.claude/agents/`
+2. **Customization** - Custom agents can have different prompts, tools, or model preferences than built-in equivalents
+3. **Backward compatibility** - Existing users depend on these agents being available
+4. **Documentation value** - Example agents serve as learning resources and templates
+5. **Independence from Claude Code updates** - Built-in agents may change; repo agents remain stable
+6. **Offline reference** - Users can study agent patterns without running Claude Code
+
+**Current agent inventory:**
+- **58 agent files** committed across `examples/agents/`, `examples/sub-agents/`, and `config-bundle/agents/`
+- **33 agents** overlap with Claude Code built-in agents (this is intentional)
+- **14 MCP-integrated JSON agents** provide unique functionality through MCP servers
+- **All agents are valuable** - duplicates included
 
 ## Repository Structure
 
