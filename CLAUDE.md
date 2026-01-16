@@ -62,6 +62,7 @@ claude-code-helper/
 │   └── [3 integration files]
 │
 ├── docs/                     # Documentation (organized)
+│   ├── mcp-configs/          # Third-party MCP server configs
 │   ├── releases/             # Release notes (v1.3.0 - v1.7.0)
 │   ├── reference/            # Reference docs, guides, tools
 │   └── reports/              # Audit reports, statistics
@@ -75,8 +76,7 @@ claude-code-helper/
 │   └── advanced-patterns/    # Advanced usage patterns
 │
 ├── config-bundle/            # Production-ready global config
-├── templates/                # Starter templates
-└── archive/                  # Archived/deprecated content
+└── templates/                # Starter templates
 ```
 
 ## Key Architectural Patterns
@@ -322,9 +322,42 @@ When adding new content:
 6. Include installation instructions
 7. Test installation process
 
-## Latest Claude Code Features (v2.1.3+)
+## Latest Claude Code Features (v2.1.9)
 
-### Unified Skills and Commands
+### Customizable Keyboard Shortcuts (v2.1.7)
+Configure custom keybindings via `~/.claude/keybindings.json`. Run `/keybindings` to get started with customizing your keyboard shortcuts.
+
+### Plans Directory Customization (v2.1.9)
+Use the `plansDirectory` setting to customize where plan files are stored, giving you control over project organization.
+
+### Session ID in Skills (v2.1.9)
+Skills can now access the current session ID using `${CLAUDE_SESSION_ID}` string substitution, enabling session-aware skill behavior.
+
+### Enhanced PreToolUse Hooks (v2.1.9)
+PreToolUse hooks can now return `additionalContext` to inject context into tool execution, providing more control over tool behavior.
+
+### MCP Tool Search Auto Mode (v2.1.7)
+MCP tool search is now auto-enabled by default. When MCP tool descriptions exceed 10% of context window, they're automatically deferred and discovered via MCPSearch tool. Configure threshold with `auto:N` syntax where N is context window percentage (0-100).
+
+### Skill Auto-Discovery (v2.1.6)
+Skills are automatically discovered from nested `.claude/skills` directories when working with files in subdirectories, improving project organization.
+
+### Enhanced Status Line Fields (v2.1.6)
+New context window fields available for status lines:
+- `context_window.used_percentage`
+- `context_window.remaining_percentage`
+
+### Config Search (v2.1.6)
+The `/config` command now has search functionality for filtering settings quickly.
+
+### Stats Date Range Filtering (v2.1.6)
+Press `r` in `/stats` to cycle between Last 7 days, Last 30 days, and All time.
+
+### Environment Variables (v2.1.4-2.1.5)
+- `CLAUDE_CODE_TMPDIR` - Override temp directory for internal temp files
+- `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` - Disable background task functionality
+
+### Unified Skills and Commands (v2.1.3)
 Claude Code has merged the conceptual distinction between skills and commands - they now share a simplified mental model with no behavior changes. Both can be invoked with `/name` syntax and both support the same frontmatter options.
 
 ### Automatic Skill Hot-Reload

@@ -1,12 +1,12 @@
 # Claude Code Changelog Updates
 
-**Date**: January 10, 2026
-**Claude Code Version**: v2.1.3+
+**Date**: January 16, 2026
+**Claude Code Version**: v2.1.9
 **Repository**: claude-code-helper
 
 ## Summary
 
-This document tracks updates made to claude-code-helper repository to align with the latest Claude Code features and capabilities from the official changelog at: https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
+This document tracks updates made to claude-code-helper repository to align with the latest Claude Code features and capabilities from the official changelog at: https://code.claude.com/docs/en/changelog
 
 ## Updates Applied
 
@@ -308,13 +308,26 @@ hooks:
 
 ### Minimum Required Version
 - Claude Code **v2.1.0+** for basic features (context fork, agent field)
-- Claude Code **v2.1.3+** for all documented features (extended timeout, hot-reload)
+- Claude Code **v2.1.3+** for extended timeout, hot-reload
+- Claude Code **v2.1.7+** for keybindings, MCP tool search auto mode
+- Claude Code **v2.1.9** for all documented features
 
 ### Feature Matrix
 
 | Feature | Minimum Version | Status in Docs |
 |---------|----------------|----------------|
-| Unified Skills/Commands | v2.1.0 | ✅ Documented |
+| Customizable Keybindings | v2.1.7 | ✅ Documented |
+| Plans Directory Setting | v2.1.9 | ✅ Documented |
+| Session ID in Skills | v2.1.9 | ✅ Documented |
+| PreToolUse additionalContext | v2.1.9 | ✅ Documented |
+| MCP Tool Search Auto Mode | v2.1.7 | ✅ Documented |
+| Skill Auto-Discovery | v2.1.6 | ✅ Documented |
+| Context Window Status Fields | v2.1.6 | ✅ Documented |
+| Config Search | v2.1.6 | ✅ Documented |
+| Stats Date Range Filtering | v2.1.6 | ✅ Documented |
+| CLAUDE_CODE_TMPDIR | v2.1.5 | ✅ Documented |
+| CLAUDE_CODE_DISABLE_BACKGROUND_TASKS | v2.1.4 | ✅ Documented |
+| Unified Skills/Commands | v2.1.3 | ✅ Documented |
 | Context Forking | v2.1.0 | ✅ Documented with examples |
 | Agent Field | v2.1.0 | ✅ Documented with examples |
 | Frontmatter Hooks | v2.1.0 | ✅ Documented with examples |
@@ -343,10 +356,10 @@ hooks:
 
 ## References
 
-- **Claude Code Changelog**: https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md
+- **Claude Code Changelog**: https://code.claude.com/docs/en/changelog
 - **Claude Code Repository**: https://github.com/anthropics/claude-code
-- **Update Date**: January 10, 2026
-- **Updated By**: Claude (Sonnet 4.5) via claude-code-helper maintenance
+- **Update Date**: January 16, 2026
+- **Updated By**: Claude (Opus 4.5) via claude-code-helper maintenance
 
 ## Verification
 
@@ -372,7 +385,7 @@ Expected: All commands should return matches.
 
 **Status**: ✅ All updates successfully applied
 **Compatibility**: Backward compatible, additive changes only
-**Ready for**: Production use with Claude Code v2.1.3+
+**Ready for**: Production use with Claude Code v2.1.9
 
 ---
 
