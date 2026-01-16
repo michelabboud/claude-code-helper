@@ -1,6 +1,3 @@
-# Archive folder (temporary holding area - will be empty)
-archive/
-
 # Node modules (all subdirectories)
 **/node_modules/
 **/package-lock.json
