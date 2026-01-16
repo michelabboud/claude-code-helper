@@ -1,20 +1,23 @@
 # Archive folder (temporary holding area - will be empty)
 archive/
 
-# Node modules (for MCP servers)
-node_modules/
-package-lock.json
+# Node modules (all subdirectories)
+**/node_modules/
+**/package-lock.json
 
-# Python virtual environments
-venv/
-.venv/
-__pycache__/
-*.pyc
+# Python virtual environments (all subdirectories)
+**/venv/
+**/.venv/
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.egg-info/
 
-# Build outputs
-build/
-dist/
-*.js.map
+# Build outputs (all subdirectories)
+**/build/
+**/dist/
+**/*.js.map
+**/.cache/
 
 # Environment files
 .env
