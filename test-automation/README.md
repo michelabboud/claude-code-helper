@@ -103,7 +103,7 @@ test-automation/
 
 **Usage:**
 ```bash
-python3 test-parser.py ../docs/reference/TESTING-GUIDE.md tests/test-cases.json
+python3 test-parser.py ../TESTING-GUIDE.md tests/test-cases.json
 ```
 
 **Output Format (JSON):**
@@ -499,7 +499,7 @@ Test my custom functionality
 
 **2. Re-run parser:**
 ```bash
-python3 test-parser.py ../docs/reference/TESTING-GUIDE.md tests/test-cases.json
+python3 test-parser.py ../TESTING-GUIDE.md tests/test-cases.json
 ```
 
 **3. Run tests:**
@@ -562,9 +562,9 @@ validate_custom_output() {
 
 ## 📚 Related Documentation
 
-- **[TESTING-GUIDE.md](../docs/reference/TESTING-GUIDE.md)** - Manual test procedures
+- **[TESTING-GUIDE.md](../TESTING-GUIDE.md)** - Manual test procedures
 - **[INSTALLATION-STATISTICS.md](../docs/reports/INSTALLATION-STATISTICS.md)** - Resource metrics
-- **[TOOLS-CHEATSHEET.md](../docs/reference/TOOLS-CHEATSHEET.md)** - Component reference
+- **[TOOLS-CHEATSHEET.md](../TOOLS-CHEATSHEET.md)** - Component reference
 - **[README.md](../README.md)** - Main documentation
 
 ---

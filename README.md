@@ -17,7 +17,7 @@
 | **[📋 TOOLS-INDEX.md](TOOLS-INDEX.md)** | Complete catalog of all components | Exploring available tools |
 | **[⚡ TOOLS-CHEATSHEET.md](TOOLS-CHEATSHEET.md)** | Quick reference for 131 tools/agents/skills | Need instant lookup |
 | **[🏗️ ECOSYSTEM-DIAGRAM.md](docs/reference/ECOSYSTEM-DIAGRAM.md)** | Visual architecture & workflow diagrams | Understanding how it all works |
-| **[🧪 TESTING-GUIDE.md](docs/reference/TESTING-GUIDE.md)** | Validation with 136 test cases | Testing your installation |
+| **[🧪 TESTING-GUIDE.md](TESTING-GUIDE.md)** | Validation with 136 test cases | Testing your installation |
 | **[🤖 test-automation/](test-automation/)** | Automated testing framework | Running automated tests |
 | **[📊 INSTALLATION-STATISTICS.md](docs/reports/INSTALLATION-STATISTICS.md)** | Impact analysis & metrics | Understanding resource usage |
 | **[🔄 agent-loop-prevention.md](guides/advanced-patterns/agent-loop-prevention.md)** | Prevent infinite agent loops | Production agent development |
@@ -401,8 +401,9 @@ claude-code-helper/
 │
 ├── docs/                     # Documentation (organized)
 │   ├── releases/             # Release notes (v1.3.0 - v1.7.0)
-│   ├── reference/            # TOOLS-INDEX, TESTING-GUIDE, etc.
-│   └── reports/              # AUDIT-REPORT, statistics
+│   ├── reference/            # ECOSYSTEM-DIAGRAM, INSTALLATION, etc.
+│   ├── reports/              # AUDIT-REPORT, statistics
+│   └── mcp-configs/          # Third-party MCP server configs
 │
 ├── mcp-servers/              # MCP server implementations
 │   └── [10 TypeScript servers]
@@ -413,8 +414,7 @@ claude-code-helper/
 │   └── advanced-patterns/    # Production patterns
 │
 ├── config-bundle/            # Production-ready global config
-├── templates/                # Starter templates
-└── archive/                  # Archived/deprecated content
+└── templates/                # Starter templates
 ```
 
 ---
