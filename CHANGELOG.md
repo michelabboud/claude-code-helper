@@ -15,6 +15,65 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [1.10.1] - 2026-01-16
+
+### 🔧 Repository Reorganization & Claude Code v2.1.9 Support
+
+Major repository cleanup with improved organization and support for latest Claude Code features.
+
+### Changed
+
+#### Repository Reorganization
+- **Primary content moved to root level** - Agents, skills, commands, hooks, and plugins now at repository root for easier access
+- **TESTING-GUIDE.md moved to root** - Now at `./TESTING-GUIDE.md` instead of `docs/reference/`
+- **Archive folder removed** - Deprecated content cleaned up
+- **MCP configs relocated** - Third-party MCP server configs moved to `docs/mcp-configs/`
+
+#### Skills Enhanced with Agent Field
+Added `agent:` field to 11 skills for Claude Code v2.1.9 auto-invocation:
+- `api-design-patterns.md` → `api-expert`
+- `tdd-workflow.md` → `qa-testing-expert`
+- `release-management.md` → `devops-infrastructure-expert`
+- `database-design-patterns.md` → `database-expert`
+- `advanced-e2e-testing.md` → `qa-testing-expert`
+- `bdd-framework-examples.md` → `qa-testing-expert`
+- `ci-best-practices.md` → `devops-infrastructure-expert`
+- `caching-expert.md` → `redis-expert`
+- `contract-testing.md` → `qa-testing-expert`
+- `mutation-testing.md` → `qa-testing-expert`
+- `visual-regression-testing.md` → `qa-testing-expert`
+
+### Added
+
+#### Claude Code v2.1.9 Documentation
+Updated CLAUDE.md with latest features:
+- Customizable keyboard shortcuts (`keybindings.json`)
+- Plans directory customization (`plansDirectory` setting)
+- Session ID in skills (`${CLAUDE_SESSION_ID}`)
+- MCP tool search auto mode
+- Skill auto-discovery improvements
+
+#### Repository Validation Script
+- New `validate-repo.sh` for quick repository health checks
+- Validates directory structure, key files, agents, skills, and MCP server builds
+- Reports pass/fail/warning counts
+
+#### Agent Preservation Policy
+- Added policy to CLAUDE.md preventing removal of agents that duplicate built-ins
+- Documents why 33 agents overlap with Claude Code built-ins (intentional)
+
+### Fixed
+- All broken references to `docs/reference/TESTING-GUIDE.md` updated to `TESTING-GUIDE.md`
+- Updated directory structure in README.md
+- Fixed test-automation paths for TESTING-GUIDE.md and TOOLS-CHEATSHEET.md
+
+### Improved
+- `.gitignore` updated with explicit `**/` patterns for recursive matching
+- Added Python virtual environment patterns (`venv/`, `.venv/`, `__pycache__/`)
+- RAG MCP test scripts organized into `test/` directory
+
+---
+
 ## [1.10.0] - 2026-01-13
 
 ### 🎯 RAG MCP v1.3.0: Dynamic Model Variants + Transformers v3.x
