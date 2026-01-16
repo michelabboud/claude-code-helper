@@ -198,7 +198,7 @@ Test your hook before deployment:
 ## References
 
 - [Claude Code Hooks Documentation](https://github.com/anthropics/claude-code)
-- [Example Hooks](../../examples/hooks/)
+- [Example Hooks](../../hooks/)
 - [Hook Development Guide](../../guides/)
 
 ---

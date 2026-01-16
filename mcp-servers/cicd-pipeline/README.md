@@ -540,9 +540,9 @@ env:
 
 ## Related Resources
 
-- **CI Best Practices Skill**: `examples/skills/ci-best-practices.md`
-- **Release Management Skill**: `examples/skills/release-management.md`
-- **DevOps Expert Agent**: `examples/sub-agents/devops-infrastructure-expert.md`
+- **CI Best Practices Skill**: `skills/ci-best-practices.md`
+- **Release Management Skill**: `skills/release-management.md`
+- **DevOps Expert Agent**: `agents/domain-experts/devops-infrastructure-expert.md`
 
 ---
 

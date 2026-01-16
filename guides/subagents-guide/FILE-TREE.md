@@ -84,7 +84,7 @@ After installation, agents will be located at:
 
 ### Individual Installation
 ```bash
-cp examples/database-expert.md ~/.claude/agents/
+cp agents/domain-experts/database-expert.md ~/.claude/agents/
 ```
 
 ### Verify Installation

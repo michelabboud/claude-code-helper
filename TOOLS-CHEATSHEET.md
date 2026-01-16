@@ -663,9 +663,9 @@ Total: 60 MCP tools • 48 agents • 16 skills • 7 commands
 
 ## 🔗 Related Documentation
 
-- **Installation:** [INSTALLATION.md](INSTALLATION.md)
-- **Testing Guide:** [TESTING-GUIDE.md](TESTING-GUIDE.md)
-- **Statistics:** [INSTALLATION-STATISTICS.md](INSTALLATION-STATISTICS.md)
+- **Installation:** [INSTALLATION.md](docs/reference/INSTALLATION.md)
+- **Testing Guide:** [TESTING-GUIDE.md](docs/reference/TESTING-GUIDE.md)
+- **Statistics:** [INSTALLATION-STATISTICS.md](docs/reports/INSTALLATION-STATISTICS.md)
 - **Main README:** [README.md](README.md)
 - **MCP Servers:** [mcp-servers/README.md](mcp-servers/README.md)
 

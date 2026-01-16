@@ -229,10 +229,10 @@ and integrate testing into your development workflow.
 ```
 
 **Other Results:**
-- examples/skills/tdd-workflow.md (distance: 0.74) - TDD best practices and do's/don'ts
+- skills/tdd-workflow.md (distance: 0.74) - TDD best practices and do's/don'ts
 - guides/advanced-patterns/testing-strategy.md (distance: 0.76) - Testing fundamentals
-- examples/skills/tdd-workflow.md (distance: 0.76) - TDD benefits and trade-offs
-- examples/sub-agents/qa-testing-expert.md (distance: 0.79) - Testing resources
+- skills/tdd-workflow.md (distance: 0.76) - TDD benefits and trade-offs
+- agents/domain-experts/qa-testing-expert.md (distance: 0.79) - Testing resources
 
 **Analysis:**
 - ✅ Perfect match - exact document about testing strategies

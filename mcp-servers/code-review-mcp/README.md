@@ -378,7 +378,7 @@ Works great with:
 
 ## 📊 Example Agent Configuration
 
-See `../../examples/agents/mcp-agents/security-reviewer.json` for a pre-configured agent that uses this MCP server for security-focused code review.
+See `../../agents/mcp-integrated/security-reviewer.json` for a pre-configured agent that uses this MCP server for security-focused code review.
 
 ---
 

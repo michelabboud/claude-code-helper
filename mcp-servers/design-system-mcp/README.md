@@ -513,7 +513,7 @@ Works great with:
 
 ## 📊 Example Agent Configuration
 
-See `../../examples/agents/mcp-agents/design-system-guardian.json` for a pre-configured agent that uses this MCP server for comprehensive design system enforcement.
+See `../../agents/mcp-integrated/design-system-guardian.json` for a pre-configured agent that uses this MCP server for comprehensive design system enforcement.
 
 ---
 

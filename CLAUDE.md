@@ -26,44 +26,71 @@ This is **claude-code-helper** - a comprehensive toolkit and learning resource f
 6. **Offline reference** - Users can study agent patterns without running Claude Code
 
 **Current agent inventory:**
-- **58 agent files** committed across `examples/agents/`, `examples/sub-agents/`, and `config-bundle/agents/`
+- **47 agent files** in `agents/` directory (34 domain-experts + 13 MCP-integrated)
+- **2 agent files** in `config-bundle/agents/` (planner, implementer)
 - **33 agents** overlap with Claude Code built-in agents (this is intentional)
-- **14 MCP-integrated JSON agents** provide unique functionality through MCP servers
 - **All agents are valuable** - duplicates included
 
 ## Repository Structure
 
 ```
 claude-code-helper/
-├── guides/                    # Learning documentation
-│   ├── complete-guide/        # Zero-to-hero learning path
-│   ├── subagents-guide/       # Advanced agent patterns
-│   └── advanced-patterns/     # Advanced usage patterns
-├── mcp-servers/               # 9 MCP servers (TypeScript/Node.js)
-├── examples/                  # Ready-to-use examples
-│   ├── agents/               # MCP agents + sub-agents
-│   ├── skills/               # Reusable skills
-│   ├── commands/             # Slash commands
-│   ├── hooks/                # Event automation
-│   ├── plugins/              # Complete packages
-│   ├── mcp/                  # MCP configurations
-│   ├── integrations/         # Integration examples
-│   └── sub-agents/           # Sub-agent examples
-├── templates/                 # Starter templates
+├── README.md                  # Main entry point
+├── QUICKSTART.md             # Quick setup guide
+├── CLAUDE.md                 # AI instructions (this file)
+├── CHANGELOG.md              # Version history
+├── TOOLS-INDEX.md            # Complete catalog of all tools
+│
+├── agents/                   # PRIMARY: Agent distribution
+│   ├── domain-experts/       # 34 specialized .md agents
+│   ├── mcp-integrated/       # 13 .json agents using MCP tools
+│   └── README.md
+│
+├── skills/                   # PRIMARY: Skills distribution
+│   └── [16 skill files/dirs]
+│
+├── commands/                 # PRIMARY: Commands distribution
+│   └── [6 command files]
+│
+├── hooks/                    # PRIMARY: Hooks distribution
+│   └── [5 hook files]
+│
+├── plugins/                  # PRIMARY: Plugins distribution
+│   └── [7 plugin files]
+│
+├── integrations/             # PRIMARY: Integration examples
+│   └── [3 integration files]
+│
+├── docs/                     # Documentation (organized)
+│   ├── releases/             # Release notes (v1.3.0 - v1.7.0)
+│   ├── reference/            # Reference docs, guides, tools
+│   └── reports/              # Audit reports, statistics
+│
+├── mcp-servers/              # MCP server implementations
+│   └── [10 TypeScript servers]
+│
+├── guides/                   # Learning documentation
+│   ├── complete-guide/       # Zero-to-hero learning path
+│   ├── subagents-guide/      # Advanced agent patterns
+│   └── advanced-patterns/    # Advanced usage patterns
+│
 ├── config-bundle/            # Production-ready global config
-└── scripts/                  # Installation utilities
+├── templates/                # Starter templates
+└── archive/                  # Archived/deprecated content
 ```
 
 ## Key Architectural Patterns
 
-### 1. Dual-Purpose Directories
-Many directories (agents/, commands/, skills/, statuslines/) exist in:
-- **Root level**: User's personal customizations (not tracked in git)
-- **examples/**: Example implementations to copy
-- **config-bundle/**: Production-ready bundles
-- **templates/**: Blank starter templates
+### 1. Primary Distribution Directories
+The main distributable content is now at root level:
+- **agents/**: All agent files (domain-experts + MCP-integrated)
+- **skills/**: All skill files
+- **commands/**: All command files
+- **hooks/**: All hook files
+- **plugins/**: All plugin files
+- **integrations/**: Integration examples
 
-Users copy from examples/config-bundle/templates to their `~/.claude/` directory or root-level working directories.
+Users install from these directories to their `~/.claude/` directory.
 
 ### 2. Installation Pattern
 Most components use `install-all.sh` scripts that:
@@ -140,8 +167,8 @@ node build/index.js
 ```bash
 # Main entry points
 cat README.md                           # Repository overview
+cat TOOLS-INDEX.md                      # Complete catalog of all tools
 cat guides/README.md                    # Learning resources
-cat examples/README.md                  # Examples overview
 cat mcp-servers/README.md              # MCP servers docs
 
 # Quick starts
@@ -152,18 +179,19 @@ cat config-bundle/README.md            # Config bundle guide
 ## File Type Conventions
 
 ### Agent Files (.md or .json)
-- **Sub-agents**: Markdown files with YAML frontmatter (name, description, tools, model)
-- **MCP agents**: JSON files referencing MCP server tools
-- Location: `~/.claude/agents/` or `examples/agents/`
+- **Domain experts**: Markdown files with YAML frontmatter in `agents/domain-experts/`
+- **MCP agents**: JSON files referencing MCP server tools in `agents/mcp-integrated/`
+- Install to: `~/.claude/agents/`
 
 ### Skill Files (SKILL.md)
 - Markdown files in `skills/[skill-name]/SKILL.md` structure
 - May include additional resources in same directory
-- Location: `~/.claude/skills/` or `examples/skills/`
+- Install to: `~/.claude/skills/`
 
 ### Command Files (.md or .sh)
 - Markdown for command logic or shell scripts for execution
-- Location: `~/.claude/commands/` or `examples/commands/`
+- Located in: `commands/`
+- Install to: `~/.claude/commands/`
 
 ### Status Line Scripts (.sh)
 - Bash scripts that output terminal status line content
@@ -195,9 +223,9 @@ cat config-bundle/README.md            # Config bundle guide
 - Build artifacts (`mcp-servers/*/build/`)
 
 ### Documentation Maintenance
-When updating examples or guides:
+When updating content:
 - Update corresponding README.md files
-- Maintain consistency between examples/ and config-bundle/ versions
+- Maintain consistency between root-level content and config-bundle/ versions
 - Keep main README.md navigation structure updated
 - Verify all install scripts work after changes
 
@@ -229,11 +257,11 @@ cd guides/subagents-guide && ./install-all-agents.sh
 ### For Beginners
 1. Read `guides/complete-guide/00-ZERO-TO-HERO-GUIDE.md`
 2. Install config-bundle: `cd config-bundle && ./scripts/install-all.sh`
-3. Try basic examples from `examples/`
+3. Copy agents from `agents/` to `~/.claude/agents/`
 
 ### For Intermediate Users
-1. Install sub-agents: `cd guides/subagents-guide && ./install-all-agents.sh`
-2. Explore agent examples in `examples/agents/`
+1. Explore agents in `agents/domain-experts/` and `agents/mcp-integrated/`
+2. Install skills from `skills/`
 3. Set up MCP servers: `cd mcp-servers && ./install-all.sh`
 
 ### For Advanced Users
@@ -286,12 +314,13 @@ The config-bundle implements model transparency:
 ## Contributing Guidelines
 
 When adding new content:
-1. Place examples in appropriate `examples/` subdirectory
-2. Add template version to `templates/` if creating new pattern
-3. Update relevant README.md files
-4. Include installation instructions
-5. Test installation process
-6. Add to main README.md if significant addition
+1. Place agents in `agents/domain-experts/` or `agents/mcp-integrated/`
+2. Place skills in `skills/`
+3. Place commands in `commands/`
+4. Add template version to `templates/` if creating new pattern
+5. Update relevant README.md files
+6. Include installation instructions
+7. Test installation process
 
 ## Latest Claude Code Features (v2.1.3+)
 
@@ -343,8 +372,8 @@ Use `/config` to toggle between `stable` or `latest` release channels, giving yo
 1. `README.md` - Start here for complete overview
 2. `QUICKSTART.md` - 5-minute setup guide
 3. `guides/README.md` - Learning path navigation
-4. `examples/README.md` - Examples by type
-5. `REORGANIZATION-COMPLETE.md` - Recent structure changes
+4. `agents/README.md` - Agent catalog
+5. `docs/reference/` - Reference documentation
 
 ### Most Commonly Used Scripts
 - `config-bundle/scripts/install-all.sh` - Install production config
@@ -354,8 +383,10 @@ Use `/config` to toggle between `stable` or `latest` release channels, giving yo
 
 ### Entry Points for Different Tasks
 - **Learning Claude Code**: `guides/complete-guide/`
+- **Installing agents**: `agents/`
+- **Installing skills**: `skills/`
+- **Installing commands**: `commands/`
 - **Setting up production config**: `config-bundle/`
-- **Finding example code**: `examples/`
 - **Creating custom tools**: `templates/`
 - **Installing MCP servers**: `mcp-servers/`
-- **Understanding architecture**: `mcp-servers/ARCHITECTURE.md`
+- **Reference documentation**: `docs/reference/`

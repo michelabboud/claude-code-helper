@@ -456,9 +456,9 @@ const optimizations = await mcp.call('optimize_workflow', {
 
 ## Related Resources
 
-- **Workflow Patterns**: `examples/skills/workflow-automation-patterns.md`
-- **API Integration**: `examples/skills/api-integration-best-practices.md`
-- **Error Handling**: `examples/skills/error-handling-patterns.md`
+- **Workflow Patterns**: `skills/workflow-automation-patterns.md`
+- **API Integration**: `skills/api-integration-best-practices.md`
+- **Error Handling**: `skills/error-handling-patterns.md`
 
 ---
 

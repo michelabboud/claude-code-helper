@@ -574,7 +574,7 @@ claude
 
 Copy the production-ready `rag-coder` agent:
 ```bash
-cp examples/agents/rag-coder.md ~/.claude/agents/
+cp agents/rag-coder.md ~/.claude/agents/
 
 # Use it
 claude --agent rag-coder "Implement user profile editing"

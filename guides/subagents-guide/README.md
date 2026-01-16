@@ -39,7 +39,7 @@ Agents tailored specifically for your workflow:
 
 ```bash
 # Copy an agent to your Claude config
-cp examples/android-dev.md ~/.claude/agents/
+cp agents/domain-experts/android-expert.md ~/.claude/agents/
 
 # Restart Claude Code
 claude
@@ -56,8 +56,8 @@ claude
 
 ```bash
 # Install only what you need
-cp examples/database-expert.md ~/.claude/agents/
-cp examples/api-expert.md ~/.claude/agents/
+cp agents/domain-experts/database-expert.md ~/.claude/agents/
+cp agents/domain-experts/api-expert.md ~/.claude/agents/
 cp custom/gradle-expert.md ~/.claude/agents/
 ```
 
@@ -146,7 +146,7 @@ claude
 
 ```markdown
 1. Copy agent to your directory
-cp examples/api-expert.md ~/.claude/agents/
+cp agents/domain-experts/api-expert.md ~/.claude/agents/
 
 2. Edit in your favorite editor
 nano ~/.claude/agents/api-expert.md

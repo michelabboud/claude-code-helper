@@ -11,13 +11,12 @@ This package contains everything you need to master Claude Code from zero to her
 - **03-BEST-PRACTICES.md** - Industry best practices and patterns
 - **04-TROUBLESHOOTING.md** - Common issues and solutions
 
-### Practical Examples
-- **examples/skills/** - Ready-to-use skill examples
-- **examples/agents/** - Sub-agent templates
-- **examples/mcp/** - MCP server configurations
-- **examples/commands/** - Slash command examples
-- **examples/hooks/** - Hook configurations
-- **examples/plugins/** - Complete plugin examples
+### Practical Examples (at repository root)
+- **agents/** - Domain experts and MCP-integrated agents
+- **skills/** - Ready-to-use skill examples
+- **commands/** - Slash command examples
+- **hooks/** - Hook configurations
+- **plugins/** - Complete plugin examples
 
 ### Templates
 - **templates/** - Starter templates for all tool types
@@ -30,7 +29,7 @@ This package contains everything you need to master Claude Code from zero to her
 
 1. Read `00-ZERO-TO-HERO-GUIDE.md` for complete learning path
 2. Reference `01-TOOLS-COMPARISON.md` when choosing tools
-3. Copy examples from `examples/` to your projects
+3. Copy from root-level `agents/`, `skills/`, `commands/` to `~/.claude/`
 4. Customize templates from `templates/` for your needs
 
 ## 📖 Recommended Learning Path

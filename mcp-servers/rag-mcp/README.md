@@ -402,7 +402,7 @@ claude
 
 ## 🤖 Use with Sub-Agent
 
-See `examples/agents/rag-coder.md` for a complete sub-agent that uses these tools automatically.
+See `agents/rag-coder.md` for a complete sub-agent that uses these tools automatically.
 
 **Usage:**
 ```bash
@@ -554,7 +554,7 @@ Tests cover:
 ## 🔗 Related Resources
 
 - **[Solving AI Coding Problems Guide](../../guides/advanced-patterns/solving-ai-coding-problems.md)** - Complete RAG implementation guide
-- **[RAG Coder Agent](../../examples/agents/rag-coder.md)** - Ready-to-use sub-agent
+- **[RAG Coder Agent](../../agents/rag-coder.md)** - Ready-to-use sub-agent
 - **[ChromaDB Documentation](https://docs.trychroma.com/)** - Vector database docs
 
 ---

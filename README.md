@@ -16,10 +16,10 @@
 |----------|---------|----------|
 | **[📋 TOOLS-INDEX.md](TOOLS-INDEX.md)** | Complete catalog of all components | Exploring available tools |
 | **[⚡ TOOLS-CHEATSHEET.md](TOOLS-CHEATSHEET.md)** | Quick reference for 131 tools/agents/skills | Need instant lookup |
-| **[🏗️ ECOSYSTEM-DIAGRAM.md](ECOSYSTEM-DIAGRAM.md)** | Visual architecture & workflow diagrams | Understanding how it all works |
-| **[🧪 TESTING-GUIDE.md](TESTING-GUIDE.md)** | Validation with 136 test cases | Testing your installation |
+| **[🏗️ ECOSYSTEM-DIAGRAM.md](docs/reference/ECOSYSTEM-DIAGRAM.md)** | Visual architecture & workflow diagrams | Understanding how it all works |
+| **[🧪 TESTING-GUIDE.md](docs/reference/TESTING-GUIDE.md)** | Validation with 136 test cases | Testing your installation |
 | **[🤖 test-automation/](test-automation/)** | Automated testing framework | Running automated tests |
-| **[📊 INSTALLATION-STATISTICS.md](INSTALLATION-STATISTICS.md)** | Impact analysis & metrics | Understanding resource usage |
+| **[📊 INSTALLATION-STATISTICS.md](docs/reports/INSTALLATION-STATISTICS.md)** | Impact analysis & metrics | Understanding resource usage |
 | **[🔄 agent-loop-prevention.md](guides/advanced-patterns/agent-loop-prevention.md)** | Prevent infinite agent loops | Production agent development |
 | **[🎯 solving-ai-coding-problems.md](guides/advanced-patterns/solving-ai-coding-problems.md)** | Solutions to top 11 developer complaints | Fixing AI hallucinations, costs, quality |
 
@@ -39,9 +39,11 @@ This repository contains everything you need to become productive with Claude Co
 
 | Component | Description | Best For |
 |-----------|-------------|----------|
+| **[Agents](#-agents)** | 46 agents (domain experts + MCP-integrated) | Specialized AI assistance |
+| **[Skills](#-skills)** | 16 reusable workflow skills | Workflows & patterns |
+| **[Commands](#-commands)** | 6 slash commands | Quick operations |
 | **[Guides](#-guides)** | Complete learning paths from zero to hero | Learning & Reference |
-| **[MCP Servers](#-mcp-servers)** | 9 specialized servers for code quality & automation | Automation & CI/CD |
-| **[Examples](#-examples)** | Ready-to-use examples for all tool types | Quick Start & Templates |
+| **[MCP Servers](#-mcp-servers)** | 10 specialized servers for code quality & automation | Automation & CI/CD |
 | **[Templates](#-templates)** | Starter templates for creating your own | Building Custom Tools |
 | **[Config Bundle](#-config-bundle)** | Production-ready global configuration | Setup & Optimization |
 
@@ -55,27 +57,28 @@ This repository contains everything you need to become productive with Claude Co
 cat guides/complete-guide/00-ZERO-TO-HERO-GUIDE.md
 
 # 2. Install the config bundle
-cd config-bundle
-./scripts/install-all.sh
+cd config-bundle && ./scripts/install-all.sh
 
-# 3. Start using Claude Code
+# 3. Copy some agents to use
+cp agents/domain-experts/*.md ~/.claude/agents/
+
+# 4. Start using Claude Code
 claude
 ```
 
 ### For Intermediate Users
 ```bash
-# 1. Explore examples
-cd examples && ls -la
+# 1. Explore agents at root level
+ls agents/domain-experts/
+ls agents/mcp-integrated/
 
-# 2. Install sub-agents
-cd ../guides/subagents-guide
-./install-all-agents.sh
+# 2. Install agents and skills
+cp agents/domain-experts/*.md ~/.claude/agents/
+cp -r skills/* ~/.claude/skills/
 
 # 3. Set up MCP servers
-cd ../../mcp-servers
-./install-all.sh
+cd mcp-servers && ./install-all.sh
 # Add with CLI (commands provided by script)
-# Or configure Claude Desktop (see QUICKGUIDE.md)
 ```
 
 ### For Advanced Users
@@ -213,53 +216,96 @@ cd mcp-servers
 
 ---
 
-## 💡 Examples
+## 🤖 Agents
 
-**[📝 Navigate to Examples →](./examples/)**
+**[📁 Navigate to Agents →](./agents/)**
 
-Ready-to-use examples for all Claude Code tool types. Copy, customize, and deploy!
+46 production-ready agents for specialized AI assistance.
 
-### What's Included
+### Domain Experts (34 agents)
+Specialized agents for every major technology stack:
+- **Frontend:** React, Next.js, Vue, Nuxt, Angular, CSS/Tailwind
+- **Backend:** Node.js, Python, Go, Rust, PHP, Laravel, Ruby/Rails
+- **Mobile:** Android, iOS, React Native
+- **Cloud:** AWS, Azure, GCP architects
+- **DevOps:** Git, CI/CD, Docker, Kubernetes
+- **Data:** Database, ML/AI, Data Engineering
+- **Quality:** QA/Testing, Security, Performance
 
-#### [Agents](./examples/agents/) 🤖
-- **MCP Agents** (12 configs) - Use MCP servers for specialized tasks (8 production + 4 experimental)
-- **Sub-Agents** (32+ agents) - Autonomous domain experts
-
-#### [Skills](./examples/skills/) ✨
-- **Workflows:** Code review, refactoring, TDD, release management, CI best practices
-- **Testing Suite:** Visual regression, contract testing, mutation testing, BDD, advanced E2E
-- **Architecture:** API design, database design, caching patterns
-
-#### [Commands](./examples/commands/) ⚡
-- Slash commands for quick operations
-- `/plan`, `/review`, `/test`, `/docs`
-
-#### [Hooks](./examples/hooks/) 🎣
-- Event-driven automation
-- PreToolUse, PostToolUse, SessionStart, SessionEnd
-
-#### [Plugins](./examples/plugins/) 🔌
-- Complete packages combining multiple tools
-- Full-stack dev, testing, documentation workflows
-
-#### [MCP Configs](./examples/mcp/) 🌐
-- MCP server configuration examples
-- GitHub, database, API integration
+### MCP-Integrated (12 agents)
+JSON agents that leverage MCP server tools:
+- API Specialist, Code Reviewer, Design System Guardian
+- UI/UX Reviewer, Test Quality Enforcer, Security Reviewer
+- Database Engineer, CI/CD Engineer, and more
 
 ### Installation
 ```bash
-# Browse examples
-cd examples && ls -la
+# Install all domain experts
+cp agents/domain-experts/*.md ~/.claude/agents/
 
-# Install specific category
-cp agents/subagents/database-expert.md ~/.claude/agents/
-
-# Install everything
-cd ../guides/subagents-guide
-./install-all-agents.sh
+# Install MCP-integrated agents
+cp agents/mcp-integrated/*.json ~/.claude/agents/
 ```
 
-**Learn more:** [Examples Documentation](./examples/README.md)
+---
+
+## ✨ Skills
+
+**[📁 Navigate to Skills →](./skills/)**
+
+16 reusable workflow skills for common development patterns.
+
+### Available Skills
+- **Workflows:** Code review, refactoring, TDD, release management, CI best practices
+- **Testing:** Visual regression, contract testing, mutation testing, BDD, advanced E2E
+- **Architecture:** API design, API documentation, database design, caching patterns
+
+### Installation
+```bash
+cp -r skills/* ~/.claude/skills/
+```
+
+---
+
+## ⚡ Commands
+
+**[📁 Navigate to Commands →](./commands/)**
+
+6 slash commands for quick development operations.
+
+### Available Commands
+- `/plan` - Planning workflows
+- `/review` - Code review
+- `/test-generate` - Generate tests
+- `/document` - Add documentation
+- `/scaffold` - Project scaffolding
+- `/refactor` - Code refactoring
+
+### Installation
+```bash
+cp commands/*.md ~/.claude/commands/
+```
+
+---
+
+## 🎣 Hooks & Plugins
+
+**[📁 Hooks →](./hooks/)** | **[📁 Plugins →](./plugins/)** | **[📁 Integrations →](./integrations/)**
+
+### Hooks (5 files)
+Event-driven automation for PreToolUse, PostToolUse, SessionStart, SessionEnd.
+
+### Plugins (7 files)
+Complete packages combining multiple tools for full-stack dev, testing, documentation.
+
+### Integrations (3 files)
+Real-world integration examples for e-commerce, SaaS applications.
+
+### Installation
+```bash
+cp hooks/* ~/.claude/hooks/
+cp plugins/* ~/.claude/plugins/
+```
 
 ---
 
@@ -327,51 +373,48 @@ claude
 ```
 claude-code-helper/
 │
-├── TOOLS-INDEX.md             # 📋 Master catalog of all tools
+├── README.md                  # Main entry point
+├── QUICKSTART.md             # Quick setup guide
+├── CLAUDE.md                 # AI instructions
+├── CHANGELOG.md              # Version history
+├── TOOLS-INDEX.md            # Complete catalog of all tools
 │
-├── guides/                    # Learning resources
-│   ├── complete-guide/        # Zero to hero path
-│   ├── subagents-guide/       # Advanced agents guide
-│   └── advanced-patterns/     # Advanced usage patterns
+├── agents/                   # PRIMARY: Agent distribution
+│   ├── domain-experts/       # 34 specialized .md agents
+│   ├── mcp-integrated/       # 12 .json agents using MCP tools
+│   └── README.md
 │
-├── mcp-servers/               # 5 MCP servers (30 tools)
-│   ├── api-specialist-mcp/
-│   ├── code-review-mcp/
-│   ├── design-system-mcp/
-│   ├── testing-mcp/
-│   └── uiux-review-mcp/
+├── skills/                   # PRIMARY: Skills distribution
+│   └── [16 skill files/dirs]
 │
-├── examples/                  # Ready-to-use examples
-│   ├── agents/               # MCP + Sub-agents
-│   ├── skills/               # Reusable workflows
-│   ├── commands/             # Slash commands
-│   ├── hooks/                # Event automation
-│   ├── plugins/              # Complete packages
-│   ├── mcp/                  # MCP configs
-│   ├── integrations/         # Integration examples
-│   └── sub-agents/           # Sub-agent examples
+├── commands/                 # PRIMARY: Commands distribution
+│   └── [6 command files]
 │
-├── templates/                 # Starter templates
-│   ├── agent/
-│   ├── skill/
-│   └── command/
+├── hooks/                    # PRIMARY: Hooks distribution
+│   └── [5 hook files]
 │
-├── config-bundle/             # Production config
-│   ├── global-config/
-│   ├── statuslines/
-│   ├── commands/
-│   ├── skills/
-│   ├── agents/
-│   ├── scripts/
-│   └── wsl-setup/
+├── plugins/                  # PRIMARY: Plugins distribution
+│   └── [7 plugin files]
 │
-├── agents/                    # Your custom agents
-├── commands/                  # Your custom commands
-├── skills/                    # Your custom skills
-├── statuslines/               # Your status line scripts
-├── scripts/                   # Utility scripts
-├── global-config/             # Your global config
-└── wsl-setup/                 # WSL configuration
+├── integrations/             # PRIMARY: Integration examples
+│   └── [3 integration files]
+│
+├── docs/                     # Documentation (organized)
+│   ├── releases/             # Release notes (v1.3.0 - v1.7.0)
+│   ├── reference/            # TOOLS-INDEX, TESTING-GUIDE, etc.
+│   └── reports/              # AUDIT-REPORT, statistics
+│
+├── mcp-servers/              # MCP server implementations
+│   └── [10 TypeScript servers]
+│
+├── guides/                   # Learning documentation
+│   ├── complete-guide/       # Zero-to-hero learning path
+│   ├── subagents-guide/      # Advanced agent patterns
+│   └── advanced-patterns/    # Production patterns
+│
+├── config-bundle/            # Production-ready global config
+├── templates/                # Starter templates
+└── archive/                  # Archived/deprecated content
 ```
 
 ---
@@ -382,13 +425,13 @@ claude-code-helper/
 1. Read [Zero to Hero Guide](./guides/complete-guide/00-ZERO-TO-HERO-GUIDE.md)
 2. Review [Tools Comparison](./guides/complete-guide/01-TOOLS-COMPARISON.md)
 3. Install [Config Bundle](./config-bundle/)
-4. Try [Basic Examples](./examples/)
+4. Copy agents from [agents/](./agents/) to `~/.claude/agents/`
 
 ### Path 2: Intermediate Developer (Week 3-4)
 5. Study [Sub-Agents Guide](./guides/subagents-guide/README.md)
-6. Install [Sub-Agents](./guides/subagents-guide/install-all-agents.sh)
+6. Explore [Domain Expert Agents](./agents/domain-experts/)
 7. Try [Integration Example](./guides/subagents-guide/INTEGRATION-EXAMPLE.md)
-8. Experiment with [Agent Examples](./examples/agents/)
+8. Install [Skills](./skills/) and [Commands](./commands/)
 
 ### Path 3: Advanced User (Week 5+)
 9. Set up [MCP Servers](./mcp-servers/)
@@ -456,8 +499,13 @@ cd claude-code-helper
 # Install config bundle
 cd config-bundle && ./scripts/install-all.sh && cd ..
 
-# Install sub-agents
-cd guides/subagents-guide && ./install-all-agents.sh && cd ../..
+# Install agents (from root-level agents/)
+cp agents/domain-experts/*.md ~/.claude/agents/
+cp agents/mcp-integrated/*.json ~/.claude/agents/
+
+# Install skills and commands
+cp -r skills/* ~/.claude/skills/
+cp commands/*.md ~/.claude/commands/
 
 # Install MCP servers (builds all servers)
 cd mcp-servers && ./install-all.sh
@@ -483,13 +531,12 @@ claude
 # Just the guides (no installation needed)
 cd guides && cat complete-guide/README.md
 
-# Just the examples
-cp examples/agents/subagents/*.md ~/.claude/agents/
+# Just the agents
+cp agents/domain-experts/*.md ~/.claude/agents/
 
 # Just the MCP servers
 cd mcp-servers && ./install-all.sh
 # Then add with CLI: claude mcp add <name> -- node "$(pwd)/<server>/build/index.js"
-# Or configure Claude Desktop (see mcp-servers/QUICKGUIDE.md)
 
 # Just the config bundle
 cd config-bundle && ./scripts/install-all.sh
@@ -500,13 +547,13 @@ cd config-bundle && ./scripts/install-all.sh
 ## 🎯 Common Use Cases
 
 ### Use Case 1: API Development
-**Tools:** API Specialist MCP + API Expert Sub-Agent + Testing MCP
+**Tools:** API Specialist MCP + API Expert Agent + Testing MCP
 ```bash
 # 1. Install MCP servers
 cd mcp-servers && ./install-all.sh
 
 # 2. Install API expert agent
-cp examples/agents/subagents/api-expert.md ~/.claude/agents/
+cp agents/domain-experts/api-expert.md ~/.claude/agents/
 
 # 3. Use in project
 claude
@@ -517,10 +564,10 @@ claude
 ---
 
 ### Use Case 2: Android Development
-**Tools:** Android Dev Sub-Agent + Performance MCP + Testing MCP
+**Tools:** Android Dev Agent + Performance MCP + Testing MCP
 ```bash
 # 1. Install agents
-cp examples/agents/subagents/android-dev.md ~/.claude/agents/
+cp agents/domain-experts/android-expert.md ~/.claude/agents/
 
 # 2. Use for development
 claude
@@ -534,7 +581,7 @@ claude
 ```bash
 # 1. Install everything
 cd mcp-servers && ./install-all.sh
-cp examples/agents/mcp-agents/*.json ~/.claude/agents/
+cp agents/mcp-integrated/*.json ~/.claude/agents/
 
 # 2. Run comprehensive review
 claude
@@ -703,8 +750,8 @@ No attribution is legally required, but it is appreciated!
 ### Repository Documentation
 - [TOOLS-INDEX.md](TOOLS-INDEX.md) - Complete catalog of all tools and components
 - [CHANGELOG.md](CHANGELOG.md) - Version history and release notes
-- [TODO.md](TODO.md) - Repository roadmap (79/79 items complete)
-- [COMPLETION-SUMMARY.md](COMPLETION-SUMMARY.md) - 100% completion milestone
+- [docs/TODO.md](docs/TODO.md) - Repository roadmap (79/79 items complete)
+- [docs/reports/](docs/reports/) - Audit reports, completion summary, statistics
 
 ### Official Documentation
 - [Claude Code Docs](https://code.claude.com/docs)
@@ -735,7 +782,7 @@ No attribution is legally required, but it is appreciated!
 
 Need help?
 1. Check [Guides](./guides/) for learning resources
-2. Review [Examples](./examples/) for working code
+2. Browse [Agents](./agents/), [Skills](./skills/), [Commands](./commands/) for working code
 3. Read [Troubleshooting](./guides/complete-guide/04-TROUBLESHOOTING.md)
 4. Ask in [Community Forums](https://reddit.com/r/ClaudeAI)
 5. Open an [Issue](https://github.com/yourusername/claude-code-helper/issues)
@@ -748,13 +795,14 @@ Need help?
 # Choose your path:
 
 # 🌱 Beginner: Learn the basics
-cd guides/complete-guide && cat 00-ZERO-TO-HERO-GUIDE.md
+cat guides/complete-guide/00-ZERO-TO-HERO-GUIDE.md
 
-# 🚀 Intermediate: Install and explore
+# 🚀 Intermediate: Install agents and explore
+cp agents/domain-experts/*.md ~/.claude/agents/
 cd config-bundle && ./scripts/install-all.sh
 
 # ⚡ Advanced: Build custom workflows
-cd guides/subagents-guide && cat patterns/coordination-patterns.md
+cat guides/subagents-guide/patterns/coordination-patterns.md
 ```
 
 ---

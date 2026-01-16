@@ -130,9 +130,9 @@ Established consistent credits system across all resources with proper attributi
 - Added credits to: api-documentation/SKILL.md, testing-standards/SKILL.md
 
 **Agents (22 files):**
-- Added credits to: code-reviewer, rag-coder, test-writer (examples/agents/)
-- Added credits to: android-dev, api-expert, css-tailwind-expert, data-engineering-expert, database-expert, devops-infrastructure-expert, documentation-expert, git-expert, ios-development-expert, ml-ai-expert, nodejs-typescript-backend-expert, observability-expert, performance-optimizer, python-backend-expert, qa-testing-expert, react-nextjs-expert, security-expert, vue-nuxt-expert (examples/agents/subagents/)
-- Updated credits in: examples/agents/mcp-agents/README.md
+- Added credits to: code-reviewer, rag-coder, test-writer (agents/)
+- Added credits to: android-dev, api-expert, css-tailwind-expert, data-engineering-expert, database-expert, devops-infrastructure-expert, documentation-expert, git-expert, ios-development-expert, ml-ai-expert, nodejs-typescript-backend-expert, observability-expert, performance-optimizer, python-backend-expert, qa-testing-expert, react-nextjs-expert, security-expert, vue-nuxt-expert (agents/subagents/)
+- Updated credits in: agents/mcp-agents/README.md
 
 **MCP Servers (9 files):**
 - Updated credits to consistent format in all MCP server README files
@@ -788,7 +788,7 @@ Complete Retrieval-Augmented Generation system with semantic codebase search to 
 - ✅ **Fast retrieval** - ChromaDB vector similarity search
 - ✅ **Production-ready** - Comprehensive error handling and tests
 
-#### RAG-Enhanced Sub-Agent (`examples/agents/rag-coder.md`)
+#### RAG-Enhanced Sub-Agent (`agents/rag-coder.md`)
 
 **Purpose:** Context-aware coder that never hallucinates
 
@@ -955,7 +955,7 @@ claude mcp list
 **With Sub-Agent:**
 ```bash
 # Copy agent
-cp examples/agents/rag-coder.md ~/.claude/agents/
+cp agents/rag-coder.md ~/.claude/agents/
 
 # Use it
 claude --agent rag-coder "Implement logout"
@@ -968,7 +968,7 @@ claude --agent rag-coder "Implement logout"
 - `mcp-servers/rag-mcp/src/test.ts` - 400+ lines (test suite)
 - `mcp-servers/rag-mcp/README.md` - 500+ lines (documentation)
 - `mcp-servers/rag-mcp/QUICKSTART.md` - 400+ lines (quick guide)
-- `examples/agents/rag-coder.md` - 1,100+ lines (sub-agent)
+- `agents/rag-coder.md` - 1,100+ lines (sub-agent)
 - `mcp-servers/rag-mcp/package.json` - Dependencies
 - `mcp-servers/rag-mcp/tsconfig.json` - TS configuration
 - `mcp-servers/rag-mcp/.gitignore` - Git ignores
@@ -1337,7 +1337,7 @@ Major expansion of MCP server infrastructure, completing all 9 servers with full
 - **Updated `mcp-servers/PACKAGE_CONTENTS.md`:**
   - Expanded from 3 to 9 complete server specifications
   - Added detailed specs for all experimental servers
-- **Updated `examples/agents/mcp-agents/README.md`:**
+- **Updated `agents/mcp-agents/README.md`:**
   - Documented all 12 agents (8 production + 4 experimental)
   - Added usage examples for new agents
   - Updated directory structure diagram
@@ -1412,7 +1412,7 @@ Comprehensive repository audit and cleanup addressing structural issues, missing
   - Installation and configuration instructions
   - Tool-by-tool reference with input/output examples
   - Troubleshooting and best practices sections
-- **Added installation instructions to 13 skill files** in `examples/skills/`
+- **Added installation instructions to 13 skill files** in `skills/`
   - Global and project-specific installation paths
   - Hot-reload documentation
   - Usage guidance for each skill
@@ -1468,25 +1468,25 @@ The claude-code-helper repository has reached 100% completion with comprehensive
 ### Added
 
 #### Sub-Agents (15 new domain experts)
-- **Angular Expert** - Angular 17+, Signals, Standalone Components, RxJS, NgRx (`examples/sub-agents/angular-expert.md`)
-- **Android Expert** - Kotlin, Jetpack Compose, Hilt DI, Material Design 3 (`examples/sub-agents/android-expert.md`)
-- **Ruby on Rails Expert** - Rails 7+, Hotwire, Turbo, Stimulus, Action Cable (`examples/sub-agents/ruby-rails-expert.md`)
-- **Rust Expert** - Ownership/Borrowing, Async/Tokio, Axum, SQLx (`examples/sub-agents/rust-expert.md`)
-- **Go Expert** - Goroutines, Channels, Gin, Context, Modules (`examples/sub-agents/go-expert.md`)
-- **Laravel Expert** - Laravel 10+, Eloquent, Blade, Livewire, Sanctum (`examples/sub-agents/laravel-expert.md`)
-- **WordPress Expert** - Plugin Development, Custom Post Types, Gutenberg, WooCommerce (`examples/sub-agents/wordpress-expert.md`)
-- **PHP Expert** - PHP 8.2+, Enums, Attributes, Modern Patterns (`examples/sub-agents/php-expert.md`)
-- **Redis Expert** - All Data Structures, Caching, Pub/Sub, Clustering (`examples/sub-agents/redis-expert.md`)
-- **AWS Architect Expert** - EC2, Lambda, ECS, RDS, DynamoDB, CloudFormation, CDK (`examples/sub-agents/aws-architect-expert.md`)
-- **Azure Architect Expert** - Azure Functions, AKS, Cosmos DB, ARM, Bicep (`examples/sub-agents/azure-architect-expert.md`)
-- **GCP Architect Expert** - Cloud Functions, GKE, BigQuery, Dataflow, Terraform (`examples/sub-agents/gcp-architect-expert.md`)
-- **IoT & Embedded Expert** - Arduino, ESP32/ESP8266, MQTT, Sensors, Power Management (`examples/sub-agents/iot-embedded-expert.md`)
-- **Game Design Expert** - Unity, Unreal Engine, Game Mechanics, AI Patterns (`examples/sub-agents/game-design-expert.md`)
-- **Hugging Face Expert** - Transformers, Fine-tuning, Inference, Deployment (`examples/sub-agents/huggingface-expert.md`)
+- **Angular Expert** - Angular 17+, Signals, Standalone Components, RxJS, NgRx (`agents/domain-experts/angular-expert.md`)
+- **Android Expert** - Kotlin, Jetpack Compose, Hilt DI, Material Design 3 (`agents/domain-experts/android-expert.md`)
+- **Ruby on Rails Expert** - Rails 7+, Hotwire, Turbo, Stimulus, Action Cable (`agents/domain-experts/ruby-rails-expert.md`)
+- **Rust Expert** - Ownership/Borrowing, Async/Tokio, Axum, SQLx (`agents/domain-experts/rust-expert.md`)
+- **Go Expert** - Goroutines, Channels, Gin, Context, Modules (`agents/domain-experts/go-expert.md`)
+- **Laravel Expert** - Laravel 10+, Eloquent, Blade, Livewire, Sanctum (`agents/domain-experts/laravel-expert.md`)
+- **WordPress Expert** - Plugin Development, Custom Post Types, Gutenberg, WooCommerce (`agents/domain-experts/wordpress-expert.md`)
+- **PHP Expert** - PHP 8.2+, Enums, Attributes, Modern Patterns (`agents/domain-experts/php-expert.md`)
+- **Redis Expert** - All Data Structures, Caching, Pub/Sub, Clustering (`agents/domain-experts/redis-expert.md`)
+- **AWS Architect Expert** - EC2, Lambda, ECS, RDS, DynamoDB, CloudFormation, CDK (`agents/domain-experts/aws-architect-expert.md`)
+- **Azure Architect Expert** - Azure Functions, AKS, Cosmos DB, ARM, Bicep (`agents/domain-experts/azure-architect-expert.md`)
+- **GCP Architect Expert** - Cloud Functions, GKE, BigQuery, Dataflow, Terraform (`agents/domain-experts/gcp-architect-expert.md`)
+- **IoT & Embedded Expert** - Arduino, ESP32/ESP8266, MQTT, Sensors, Power Management (`agents/domain-experts/iot-embedded-expert.md`)
+- **Game Design Expert** - Unity, Unreal Engine, Game Mechanics, AI Patterns (`agents/domain-experts/game-design-expert.md`)
+- **Hugging Face Expert** - Transformers, Fine-tuning, Inference, Deployment (`agents/domain-experts/huggingface-expert.md`)
 
 #### Skills (2 comprehensive guides)
-- **Caching Expert** - Static, Object, HTTP, and CDN cache patterns with multi-layer architecture (`examples/skills/caching-expert.md`)
-- **CI Best Practices** - Complete CI/CD pipeline design, optimization, security, and deployment strategies (`examples/skills/ci-best-practices.md`)
+- **Caching Expert** - Static, Object, HTTP, and CDN cache patterns with multi-layer architecture (`skills/caching-expert.md`)
+- **CI Best Practices** - Complete CI/CD pipeline design, optimization, security, and deployment strategies (`skills/ci-best-practices.md`)
 
 #### MCP Servers (1 workflow automation)
 - **n8n Automation MCP Server** - Workflow generation, optimization, troubleshooting, and integration patterns (`mcp-servers/n8n-automation/`)
@@ -1525,7 +1525,7 @@ Complete restructuring of the repository from a scattered archive into a profess
 - **Main README.md** (586 lines) - Complete repository overview with navigation, quick starts, and use cases
 - **guides/README.md** (185 lines) - Navigation for Complete Guide and Sub-Agents Guide with learning paths
 - **examples/README.md** (340 lines) - Overview of all example types with installation and usage patterns
-- **examples/agents/README.md** (360 lines) - Explains MCP Agents vs Sub-Agents with customization guide
+- **agents/README.md** (360 lines) - Explains MCP Agents vs Sub-Agents with customization guide
 
 #### Repository Structure
 - **guides/** - Consolidated learning resources
@@ -1677,11 +1677,11 @@ Complete suite of advanced testing patterns and frameworks, bringing comprehensi
 ### Added
 
 #### Skills (5 advanced testing guides)
-- **Visual Regression Testing** - Percy, Chromatic, BackstopJS, Playwright snapshots (`examples/skills/visual-regression-testing.md`)
-- **Contract Testing** - Pact consumer-driven contracts, GraphQL contracts, message contracts (`examples/skills/contract-testing.md`)
-- **Mutation Testing** - Stryker, PITest, Mutmut, test quality measurement (`examples/skills/mutation-testing.md`)
-- **BDD Framework Examples** - Cucumber, Behave, SpecFlow, Gherkin patterns (`examples/skills/bdd-framework-examples.md`)
-- **Advanced E2E Testing** - Complex workflows, authentication, API mocking, cross-browser (`examples/skills/advanced-e2e-testing.md`)
+- **Visual Regression Testing** - Percy, Chromatic, BackstopJS, Playwright snapshots (`skills/visual-regression-testing.md`)
+- **Contract Testing** - Pact consumer-driven contracts, GraphQL contracts, message contracts (`skills/contract-testing.md`)
+- **Mutation Testing** - Stryker, PITest, Mutmut, test quality measurement (`skills/mutation-testing.md`)
+- **BDD Framework Examples** - Cucumber, Behave, SpecFlow, Gherkin patterns (`skills/bdd-framework-examples.md`)
+- **Advanced E2E Testing** - Complex workflows, authentication, API mocking, cross-browser (`skills/advanced-e2e-testing.md`)
 
 ### Enhanced
 

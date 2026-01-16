@@ -374,8 +374,8 @@ Double-check token format:
 
 **Read more:**
 - Full README: `api-specialist-mcp/README.md`
-- Agent config: `../../examples/agents/mcp-agents/api-specialist.json`
-- All example agents: [Example MCP Agents](../../examples/agents/mcp-agents/)
+- Agent config: `../../agents/mcp-integrated/api-specialist.json`
+- All example agents: [Example MCP Agents](../../agents/mcp-integrated/)
 
 ---
 

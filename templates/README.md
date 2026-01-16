@@ -225,10 +225,10 @@ project/.claude/
 
 ### Example Components
 
-- [Example Hooks](../examples/hooks/) - Real-world hook implementations
-- [Example Plugins](../examples/plugins/) - Complete plugin examples
-- [Example Agents](../examples/agents/) - Agent configurations
-- [Example Skills](../examples/skills/) - Skill definitions
+- [Example Hooks](../hooks/) - Real-world hook implementations
+- [Example Plugins](../plugins/) - Complete plugin examples
+- [Example Agents](../agents/) - Agent configurations
+- [Example Skills](../skills/) - Skill definitions
 
 ### Guides
 

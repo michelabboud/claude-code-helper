@@ -256,9 +256,9 @@ if (!validate(result)) {
 ## 📚 Resources
 
 - Full Guide: `README.md`
-- Examples: `/examples/`
-- Patterns: `/patterns/coordination-patterns.md`
-- Custom: `/custom/michel-custom-agents.md`
+- Examples: `./examples/`
+- Patterns: `./patterns/coordination-patterns.md`
+- Custom: `./custom/michel-custom-agents.md`
 - Docs: https://code.claude.com/docs/sub-agents
 
 ## ⌨️ Keyboard Shortcuts

@@ -25,7 +25,7 @@ Ten specialized MCP (Model Context Protocol) servers that work together to creat
 
 Ready-to-use agent configurations demonstrating how to use these MCP servers:
 
-👉 **[Example MCP Agents](../examples/agents/mcp-agents/)** - 8 specialized agents with complete documentation
+👉 **[Example MCP Agents](../agents/mcp-integrated/)** - 8 specialized agents with complete documentation
 
 Agents include:
 - 🔒 **Security Reviewer** - Vulnerability scanning and remediation

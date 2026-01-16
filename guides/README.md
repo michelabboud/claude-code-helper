@@ -176,9 +176,11 @@ claude
 
 ## 📚 Additional Resources
 
-- [Examples Directory](../examples/) - Ready-to-use examples for all tools
+- [Agents Directory](../agents/) - 46 production-ready agents
+- [Skills Directory](../skills/) - 16 workflow skills
+- [Commands Directory](../commands/) - 6 slash commands
 - [Templates Directory](../templates/) - Starter templates
-- [MCP Servers](../mcp-servers/) - 5 specialized MCP servers
+- [MCP Servers](../mcp-servers/) - 10 specialized MCP servers
 - [Config Bundle](../config-bundle/) - Production configuration
 
 ---

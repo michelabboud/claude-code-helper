@@ -174,7 +174,7 @@ Pre-configured specialized agents for common workflows:
 - Temperature: 0.4
 - Best for: Complete PR reviews, production readiness
 
-**Note:** Example agents are located in `../examples/agents/mcp-agents/` for consistency with repository structure.
+**Note:** Example agents are located in `../agents/mcp-integrated/` for consistency with repository structure.
 
 ---
 
@@ -242,7 +242,7 @@ mcp-multi-agent-system/
     └── .gitignore
 ```
 
-**Note:** Example agent configurations are located in `../examples/agents/mcp-agents/` with comprehensive documentation.
+**Note:** Example agent configurations are located in `../agents/mcp-integrated/` with comprehensive documentation.
 
 ---
 

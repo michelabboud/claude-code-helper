@@ -407,7 +407,7 @@ Works great with:
 
 ## 📊 Example Agent Configuration
 
-See `../../examples/agents/mcp-agents/test-quality-enforcer.json` for a pre-configured agent that uses this MCP server for comprehensive test quality enforcement.
+See `../../agents/mcp-integrated/test-quality-enforcer.json` for a pre-configured agent that uses this MCP server for comprehensive test quality enforcement.
 
 ---
 

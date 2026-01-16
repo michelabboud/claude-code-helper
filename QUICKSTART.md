@@ -83,7 +83,7 @@ Always see current model at terminal bottom:
 - Check all with `/help`
 
 ### Comprehensive Testing Suite
-Advanced testing skills available in `examples/skills/`:
+Advanced testing skills available in `skills/`:
 - Visual regression (Percy, Chromatic, BackstopJS)
 - Contract testing (Pact, consumer-driven)
 - Mutation testing (Stryker, PITest, Mutmut)
