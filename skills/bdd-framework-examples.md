@@ -1,3 +1,11 @@
+---
+skill_name: BDD Framework Examples
+description: Behavior-Driven Development using Cucumber, Behave, SpecFlow with Gherkin syntax
+category: Testing
+priority: P1
+agent: qa-testing-expert
+---
+
 # BDD Framework Examples Skill
 
 Comprehensive guide to Behavior-Driven Development (BDD) using Cucumber, Behave, SpecFlow, and other BDD frameworks with Gherkin syntax and practical patterns.

@@ -1,3 +1,11 @@
+---
+skill_name: Contract Testing
+description: Contract testing for microservices with consumer-driven contracts and Pact
+category: Testing
+priority: P1
+agent: qa-testing-expert
+---
+
 # Contract Testing Skill
 
 Comprehensive guide to contract testing for microservices, covering consumer-driven contracts, provider verification, and integration patterns with Pact and other tools.

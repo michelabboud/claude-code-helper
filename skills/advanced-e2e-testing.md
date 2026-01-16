@@ -1,3 +1,11 @@
+---
+skill_name: Advanced E2E Testing
+description: Advanced end-to-end testing patterns for complex user journeys, workflows, and cross-browser testing
+category: Testing
+priority: P1
+agent: qa-testing-expert
+---
+
 # Advanced E2E Testing Scenarios
 
 Comprehensive guide to advanced end-to-end testing patterns covering complex user journeys, multi-step workflows, authentication, API mocking, and cross-browser testing.

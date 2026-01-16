@@ -1,3 +1,11 @@
+---
+skill_name: Database Design Patterns
+description: Database schema design, migration strategies, indexing, query optimization, and scaling patterns
+category: Architecture
+priority: P1
+agent: database-expert
+---
+
 # Database Design Patterns Skill
 
 ## Overview

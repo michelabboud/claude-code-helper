@@ -1,3 +1,11 @@
+---
+skill_name: CI Best Practices
+description: CI pipeline design, parallel execution, caching strategies, and quality gates
+category: DevOps
+priority: P1
+agent: devops-infrastructure-expert
+---
+
 # Continuous Integration Best Practices Skill
 
 ## Overview

@@ -1,3 +1,11 @@
+---
+skill_name: Visual Regression Testing
+description: Visual regression testing to catch unintended visual changes in web applications
+category: Testing
+priority: P1
+agent: qa-testing-expert
+---
+
 # Visual Regression Testing Skill
 
 Comprehensive guide to visual regression testing, covering tools, patterns, and best practices for catching unintended visual changes in web applications.

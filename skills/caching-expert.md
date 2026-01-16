@@ -1,3 +1,11 @@
+---
+skill_name: Caching Expert
+description: Caching strategies for static, object, HTTP, and CDN cache with implementation patterns
+category: Performance
+priority: P1
+agent: redis-expert
+---
+
 # Caching Expert Skill
 
 Comprehensive guide to caching strategies covering static cache, object cache, HTTP cache, and CDN cache with implementation patterns and best practices.

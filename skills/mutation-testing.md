@@ -1,3 +1,11 @@
+---
+skill_name: Mutation Testing
+description: Mutation testing to measure test suite effectiveness by introducing controlled bugs
+category: Testing
+priority: P1
+agent: qa-testing-expert
+---
+
 # Mutation Testing Skill
 
 Comprehensive guide to mutation testing for measuring test suite effectiveness by introducing controlled bugs (mutations) and verifying that tests catch them.

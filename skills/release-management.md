@@ -3,6 +3,7 @@ skill_name: Release Management
 description: Semantic versioning, release planning, deployment strategies, and rollback procedures
 category: DevOps & Deployment
 priority: P1
+agent: devops-infrastructure-expert
 ---
 
 # Release Management Skill

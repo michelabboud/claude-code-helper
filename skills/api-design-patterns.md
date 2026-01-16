@@ -3,6 +3,7 @@ skill_name: API Design Patterns
 description: REST API design, GraphQL patterns, API versioning, and documentation best practices
 category: Architecture
 priority: P1
+agent: api-expert
 ---
 
 # API Design Patterns Skill

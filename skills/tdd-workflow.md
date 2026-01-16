@@ -3,6 +3,7 @@ skill_name: Test-Driven Development (TDD) Workflow
 description: Red-Green-Refactor cycle, test-first development, and TDD best practices
 category: Development Workflows
 priority: P1
+agent: qa-testing-expert
 ---
 
 # Test-Driven Development (TDD) Workflow
