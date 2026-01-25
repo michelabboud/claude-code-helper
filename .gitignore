@@ -51,3 +51,8 @@ temp/
 Thumbs.db
 .DS_Store
 mcp-servers/claude_desktop_config.json
+
+# Demo folder (for testing triggers)
+demo/*
+!demo/.gitkeep
+!demo/APP-REQUIREMENTS.md
