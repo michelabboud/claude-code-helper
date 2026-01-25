@@ -15,5 +15,36 @@
       "Write(./production.*)",
       "Write(.env*)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/file-trigger-matcher.js read \"$TOOL_INPUT\""
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/file-trigger-matcher.js edit \"$TOOL_INPUT\""
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/file-trigger-matcher.js write \"$TOOL_INPUT\""
+          }
+        ]
+      }
+    ]
   }
 }
