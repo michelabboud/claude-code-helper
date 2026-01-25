@@ -631,4 +631,4 @@ START HERE
 **Version:** claude-code-helper v1.3.0
 **Author:** Michel Abboud
 **AI Assistance:** Claude Sonnet 4.5
-**License:** MIT
+**License:** Apache-2.0

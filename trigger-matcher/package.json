@@ -20,7 +20,7 @@
     "pattern-matching"
   ],
   "author": "claude-code-helper",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "minimatch": "^9.0.0",
     "yaml": "^2.3.0",

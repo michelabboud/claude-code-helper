@@ -12,7 +12,7 @@
 # Credits:
 #   Author: Michel Abboud (https://github.com/michelabboud)
 #   AI Assistance: Created with the help of Claude Code (Anthropic)
-#   License: MIT - Free to use for personal and commercial projects
+#   License: Apache-2.0 - Free to use for personal and commercial projects
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Model detection

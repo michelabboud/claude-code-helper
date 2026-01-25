@@ -14,7 +14,7 @@
   },
   "keywords": ["mcp", "design-system", "ui", "consistency"],
   "author": "",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "zod": "^3.23.8",

@@ -88,7 +88,7 @@ rm -rf agents/ commands/ global-config/ scripts/ skills/ statuslines/ wsl-setup/
 # Credits:
 #   Author: Michel Abboud (https://github.com/michelabboud)
 #   AI Assistance: Created with the help of Claude Code (Anthropic)
-#   License: MIT - Free to use for personal and commercial projects
+#   License: Apache-2.0 - Free to use for personal and commercial projects
 # ─────────────────────────────────────────────────────────────────────────────
 ```
 
@@ -419,7 +419,7 @@ ls: cannot access 'archive/': No such directory
 # All scripts in config-bundle/ have proper headers:
 # - Author: Michel Abboud
 # - AI Assistance: Claude Code (Anthropic)
-# - License: MIT
+# - License: Apache-2.0
 ```
 
 **TypeScript Files**: ❌ NONE

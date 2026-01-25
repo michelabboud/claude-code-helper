@@ -15,7 +15,7 @@ All resources (skills, agents, MCP servers, guides) should include a credits sec
 
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
 ```
@@ -54,7 +54,7 @@ Place credits **at the very end** of the file, after all content:
 
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
 ```
@@ -68,7 +68,7 @@ Add credits in JSDoc format at the top of the file:
  * [File description]
  *
  * @author Michel Abboud (https://github.com/michelabboud)
- * @license MIT
+ * @license Apache-2.0
  */
 ```
 
@@ -93,7 +93,7 @@ Description and content...
 
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
 ```
@@ -116,7 +116,7 @@ Agent content...
 
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
 ```
@@ -138,7 +138,7 @@ Server description and documentation...
 
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
 ```
@@ -158,7 +158,7 @@ If you're contributing to the repository, use this format with your own informat
 
 **Author:** [Your Name](https://github.com/yourusername)
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
 ```
@@ -175,7 +175,7 @@ If you're contributing to the repository, use this format with your own informat
 - [Your Name](https://github.com/yourusername)
 
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
 ```

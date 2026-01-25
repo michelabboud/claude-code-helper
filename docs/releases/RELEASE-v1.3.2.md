@@ -222,7 +222,7 @@ The framework is now production-ready and provides comprehensive automated valid
 
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Claude Sonnet 4.5 (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 ---
 

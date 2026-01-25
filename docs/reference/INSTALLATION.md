@@ -681,7 +681,7 @@ claude-code-helper/
 
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with Claude Code (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 **Version:** 1.4.0
 **Last Updated:** 2026-01-11

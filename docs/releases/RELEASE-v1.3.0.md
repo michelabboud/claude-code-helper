@@ -128,7 +128,7 @@ cp *.json ~/.claude/agents/
 
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with Claude Code (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 ---
 

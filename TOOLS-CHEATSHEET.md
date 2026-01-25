@@ -674,5 +674,5 @@ Total: 60 MCP tools • 48 agents • 16 skills • 7 commands
 **Version:** claude-code-helper v1.3.0
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Claude Sonnet 4.5
-**License:** MIT
+**License:** Apache-2.0
 **Last Updated:** 2026-01-11

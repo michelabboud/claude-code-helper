@@ -701,6 +701,6 @@ npm test -- build/mcp.test.js
 
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with Claude Code (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 
 💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 50+ agents, 16+ skills, 10 MCP servers, and comprehensive guides.

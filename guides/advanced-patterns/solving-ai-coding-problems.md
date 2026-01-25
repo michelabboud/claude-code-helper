@@ -2445,7 +2445,7 @@ See [INSTALLATION.md](../../INSTALLATION.md) for full setup guide.
 
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Claude Sonnet 4.5 (Anthropic)
-**License:** MIT
+**License:** Apache-2.0
 **Repository:** [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
 
 ---

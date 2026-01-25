@@ -618,5 +618,5 @@ To improve the test automation framework:
 **Version:** 1.0.0
 **Author:** Michel Abboud
 **AI Assistance:** Claude Sonnet 4.5
-**License:** MIT
+**License:** Apache-2.0
 **Last Updated:** 2026-01-11
