@@ -16,6 +16,28 @@ const path = require('path');
 const { minimatch } = require('minimatch');
 const yaml = require('js-yaml');
 
+// Debug configuration - set to true to enable debug logging
+const DEBUG_ENABLED = process.env.CLAUDE_HOOKS_DEBUG === 'true' || false;
+
+// Debug log file
+const DEBUG_LOG = path.join(process.env.HOME || '', '.claude', 'hooks', 'debug.log');
+
+// Debug logging function
+function debug(message, data = null) {
+  if (!DEBUG_ENABLED) return;
+
+  const timestamp = new Date().toISOString();
+  const logEntry = data
+    ? `[${timestamp}] ${message}\n${JSON.stringify(data, null, 2)}\n`
+    : `[${timestamp}] ${message}\n`;
+
+  try {
+    fs.appendFileSync(DEBUG_LOG, logEntry);
+  } catch (error) {
+    // Silently fail if can't write debug log
+  }
+}
+
 // Agent directories to scan
 const AGENT_DIRS = [
   path.join(process.env.HOME || '', '.claude', 'agents'),
@@ -221,30 +243,138 @@ ${suggestion}
 }
 
 /**
- * Main entry point
+ * Extract file path from tool input JSON
+ * Reads from stdin and extracts file_path from tool_input
  */
-function main() {
-  const args = process.argv.slice(2);
+function extractFilePath(stdinData) {
+  debug('Raw stdin data', stdinData);
 
-  if (args.length < 2) {
-    console.error('Usage: file-trigger-matcher.js <event> <file_path>');
-    console.error('Events: read, edit, write');
-    process.exit(1);
+  if (!stdinData || !stdinData.tool_input) {
+    debug('No tool_input in stdin data');
+    return null;
   }
 
-  const [event, filePath] = args;
+  const toolInput = stdinData.tool_input;
+  debug('tool_input', toolInput);
 
-  if (!['read', 'edit', 'write'].includes(event)) {
-    console.error(`Invalid event: ${event}. Must be read, edit, or write.`);
-    process.exit(1);
+  // Read/Edit/Write tools use 'file_path' parameter
+  if (toolInput.file_path) {
+    debug('Extracted file_path', toolInput.file_path);
+    return toolInput.file_path;
+  }
+
+  // NotebookEdit uses 'notebook_path' parameter
+  if (toolInput.notebook_path) {
+    debug('Extracted notebook_path', toolInput.notebook_path);
+    return toolInput.notebook_path;
+  }
+
+  debug('No file path found in tool_input');
+  return null;
+}
+
+/**
+ * Read JSON data from stdin
+ */
+function readStdin() {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    process.stdin.on('data', chunk => data += chunk);
+    process.stdin.on('end', () => {
+      try {
+        resolve(JSON.parse(data));
+      } catch (error) {
+        reject(new Error(`Failed to parse stdin JSON: ${error.message}`));
+      }
+    });
+    process.stdin.on('error', reject);
+  });
+}
+
+/**
+ * Main entry point
+ */
+async function main() {
+  debug('=== Hook script invoked ===');
+  debug('process.argv', process.argv);
+  debug('process.cwd()', process.cwd());
+  debug('process.env.HOME', process.env.HOME);
+
+  // Debug all environment variables (not just keys)
+  const envVars = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    if (key.includes('CLAUDE') || key.includes('HOOK') || key.includes('TOOL')) {
+      envVars[key] = value;
+    }
+  }
+  debug('CLAUDE/HOOK/TOOL ENVIRONMENT VARS', envVars);
+
+  // Read hook input from stdin
+  let stdinData;
+  try {
+    stdinData = await readStdin();
+    debug('Stdin data received', stdinData);
+  } catch (error) {
+    debug('ERROR reading stdin', error.message);
+    console.log(JSON.stringify({ additionalContext: null }));
+    return;
+  }
+
+  // Extract event from tool_name or stdin
+  const toolName = stdinData.tool_name || '';
+  const eventMap = {
+    'Read': 'read',
+    'Edit': 'edit',
+    'Write': 'write',
+    'NotebookEdit': 'write'
+  };
+  const event = eventMap[toolName];
+
+  debug('Tool name', toolName);
+  debug('Mapped event', event);
+
+  if (!event) {
+    debug('No matching event for tool, returning null context');
+    console.log(JSON.stringify({ additionalContext: null }));
+    debug('=== Hook script completed (no event mapping) ===\n');
+    return;
+  }
+
+  // Extract file path from stdin tool_input
+  const filePath = extractFilePath(stdinData);
+  debug('Extracted filePath', filePath);
+
+  // If no file path, return null context
+  if (!filePath) {
+    debug('No file path found, returning null context');
+    console.log(JSON.stringify({ additionalContext: null }));
+    debug('=== Hook script completed (no file path) ===\n');
+    return;
   }
 
   // Load agents and match
+  debug('Loading agents from directories', AGENT_DIRS);
   const agents = loadAgents();
+  debug('Loaded agents count', agents.length);
+  debug('Loaded agent names', agents.map(a => a.name));
+
   const matches = matchFile(filePath, event, agents);
+  debug('Matches found', matches.length);
+  debug('Match details', matches.map(m => ({
+    agent: m.agent.name,
+    pattern: m.pattern,
+    priority: m.priority
+  })));
 
   // Output result
-  console.log(formatOutput(matches, filePath, event));
+  const output = formatOutput(matches, filePath, event);
+  debug('Output to stdout', output);
+  console.log(output);
+  debug('=== Hook script completed ===\n');
 }
 
-main();
+main().catch(error => {
+  debug('FATAL ERROR', error);
+  console.log(JSON.stringify({ additionalContext: null }));
+  process.exit(1);
+});

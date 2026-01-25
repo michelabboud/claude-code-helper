@@ -1,32 +1,14 @@
 {
   "name": "file-trigger-hook",
-  "description": "Intercepts Read/Edit/Write operations to match against agent file triggers",
+  "description": "Intercepts Read/Edit/Write/NotebookEdit operations to match against agent file triggers",
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Read",
+        "matcher": "Read|Edit|Write|NotebookEdit",
         "hooks": [
           {
             "type": "command",
-            "command": "node ~/.claude/hooks/file-trigger-matcher.js read \"$FILE_PATH\""
-          }
-        ]
-      },
-      {
-        "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node ~/.claude/hooks/file-trigger-matcher.js edit \"$FILE_PATH\""
-          }
-        ]
-      },
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node ~/.claude/hooks/file-trigger-matcher.js write \"$FILE_PATH\""
+            "command": "node $HOME/.claude/hooks/file-trigger-matcher.js"
           }
         ]
       }
