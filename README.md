@@ -56,15 +56,18 @@ This repository contains everything you need to become productive with Claude Co
 # 1. Read the zero-to-hero guide
 cat guides/complete-guide/00-ZERO-TO-HERO-GUIDE.md
 
-# 2. Install the config bundle
-cd config-bundle && ./scripts/install-all.sh
+# 2. Install everything (agents, hooks, triggers, skills, commands)
+cd config-bundle/scripts && ./install-all.sh
 
-# 3. Copy some agents to use
-cp agents/domain-experts/*.md ~/.claude/agents/
-
-# 4. Start using Claude Code
+# 3. Start using Claude Code
 claude
 ```
+
+The install script installs:
+- 48 agents (domain experts + MCP-integrated)
+- 6 hook configurations (file, event, MCP triggers)
+- Triggers configuration (triggers.json + schema)
+- Skills, commands, and status lines
 
 ### For Intermediate Users
 ```bash

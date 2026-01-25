@@ -178,22 +178,27 @@ Major feature release introducing a comprehensive trigger system for determinist
 
 ### Installation
 
+**Option 1: Full Install (Recommended)**
 ```bash
-cd trigger-matcher
-npm install
-npm run build
-npm test  # 188 tests
+# Install everything: agents, hooks, triggers, skills, commands
+cd config-bundle/scripts && ./install-all.sh
 ```
 
-**Add hooks to Claude Code:**
+**Option 2: Trigger Matcher Only**
 ```bash
-# Copy hooks to ~/.claude/hooks/
-cp hooks/*.json ~/.claude/hooks/
-cp hooks/*.js ~/.claude/hooks/
+# Build library and install hooks + triggers config
+cd trigger-matcher && ./install.sh
+```
 
-# Copy triggers config
-cp config-bundle/triggers.json ~/.claude/
-cp config-bundle/triggers.schema.json ~/.claude/
+**Option 3: Manual**
+```bash
+cd trigger-matcher
+npm install && npm run build
+npm test  # 188 tests
+
+# Copy hooks and config
+cp hooks/*.json hooks/*.js ~/.claude/hooks/
+cp config-bundle/triggers.json config-bundle/triggers.schema.json ~/.claude/
 ```
 
 ### File Statistics
