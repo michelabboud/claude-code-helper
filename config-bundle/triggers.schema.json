@@ -1,0 +1,356 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/anthropics/claude-code-helper/triggers.schema.json",
+  "title": "Claude Code Triggers Configuration",
+  "description": "Configuration schema for Claude Code agent triggers and chains",
+  "type": "object",
+  "required": ["version"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "description": "Schema version",
+      "enum": ["1.0"]
+    },
+    "triggers": {
+      "type": "array",
+      "description": "List of global triggers",
+      "items": {
+        "$ref": "#/definitions/GlobalTrigger"
+      }
+    },
+    "chains": {
+      "type": "array",
+      "description": "List of agent chains",
+      "items": {
+        "$ref": "#/definitions/AgentChain"
+      }
+    },
+    "mcp_triggers": {
+      "type": "array",
+      "description": "List of MCP tool triggers",
+      "items": {
+        "$ref": "#/definitions/MCPTrigger"
+      }
+    }
+  },
+  "definitions": {
+    "GlobalTrigger": {
+      "type": "object",
+      "description": "A trigger that spawns an agent based on match conditions",
+      "required": ["name", "match", "action"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique identifier for this trigger",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description"
+        },
+        "match": {
+          "$ref": "#/definitions/TriggerMatch"
+        },
+        "action": {
+          "$ref": "#/definitions/TriggerAction"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this trigger is active",
+          "default": true
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Priority when multiple triggers match (higher = preferred)",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 10
+        }
+      }
+    },
+    "TriggerMatch": {
+      "type": "object",
+      "description": "Conditions that activate a trigger (at least one must be specified)",
+      "minProperties": 1,
+      "properties": {
+        "keywords": {
+          "type": "array",
+          "description": "Keywords or patterns to match in user prompts",
+          "items": {
+            "type": "string"
+          }
+        },
+        "files": {
+          "type": "array",
+          "description": "Glob patterns to match file paths (prefix with ! to exclude)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "events": {
+          "type": "array",
+          "description": "Event types to match (e.g., 'Edit', 'PreCommit', 'PostToolUse:Bash')",
+          "items": {
+            "type": "string",
+            "pattern": "^(PreToolUse|PostToolUse|PreCommit|PostCommit|SessionStart|SessionEnd|Error|AgentStart|AgentEnd)(:[A-Za-z]+)?$"
+          }
+        }
+      }
+    },
+    "TriggerAction": {
+      "type": "object",
+      "description": "Action to take when a trigger matches",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of action",
+          "enum": ["spawn_agent", "mcp_tool", "shell_command"]
+        },
+        "agent": {
+          "type": "string",
+          "description": "Agent name to spawn (for spawn_agent)"
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Prompt to send to the agent"
+        },
+        "prompt_prefix": {
+          "type": "string",
+          "description": "Prefix to add to user's original prompt"
+        },
+        "blocking": {
+          "type": "boolean",
+          "description": "Whether this action blocks the current operation",
+          "default": false
+        },
+        "run_in_background": {
+          "type": "boolean",
+          "description": "Whether to run the action in the background",
+          "default": false
+        },
+        "server": {
+          "type": "string",
+          "description": "MCP server name (for mcp_tool)"
+        },
+        "tool": {
+          "type": "string",
+          "description": "MCP tool name (for mcp_tool)"
+        },
+        "params": {
+          "type": "object",
+          "description": "Parameters for MCP tool (supports ${variable} substitution)",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "command": {
+          "type": "string",
+          "description": "Shell command to run (for shell_command)"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "spawn_agent" } }
+          },
+          "then": {
+            "required": ["agent"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "mcp_tool" } }
+          },
+          "then": {
+            "required": ["server", "tool"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "shell_command" } }
+          },
+          "then": {
+            "required": ["command"]
+          }
+        }
+      ]
+    },
+    "AgentChain": {
+      "type": "object",
+      "description": "A chain of agents that execute in sequence or parallel",
+      "required": ["name", "trigger", "agents", "execution"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique identifier for this chain",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description"
+        },
+        "trigger": {
+          "$ref": "#/definitions/TriggerMatch"
+        },
+        "agents": {
+          "type": "array",
+          "description": "Ordered list of agent steps",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/ChainStep"
+          }
+        },
+        "execution": {
+          "type": "string",
+          "description": "How to execute the agents",
+          "enum": ["sequential", "parallel"]
+        },
+        "output": {
+          "type": "string",
+          "description": "How to handle outputs from agents",
+          "enum": ["consolidated_report", "last_only"],
+          "default": "consolidated_report"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this chain is active",
+          "default": true
+        }
+      }
+    },
+    "ChainStep": {
+      "type": "object",
+      "description": "A single step in an agent chain",
+      "required": ["agent", "prompt"],
+      "properties": {
+        "agent": {
+          "type": "string",
+          "description": "Name of the agent to invoke"
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Prompt to send to the agent"
+        },
+        "condition": {
+          "type": "string",
+          "description": "JavaScript expression that must be truthy for step to run"
+        },
+        "optional": {
+          "type": "boolean",
+          "description": "Whether failure of this step should stop the chain",
+          "default": false
+        }
+      }
+    },
+    "MCPTrigger": {
+      "type": "object",
+      "description": "A trigger that invokes an MCP tool with optional before/after hooks",
+      "required": ["name", "match", "action"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique identifier for this trigger",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description"
+        },
+        "match": {
+          "$ref": "#/definitions/TriggerMatch"
+        },
+        "action": {
+          "type": "object",
+          "required": ["type", "server", "tool"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "mcp_tool"
+            },
+            "server": {
+              "type": "string",
+              "description": "MCP server name"
+            },
+            "tool": {
+              "type": "string",
+              "description": "MCP tool name"
+            },
+            "params": {
+              "type": "object",
+              "description": "Parameters (supports ${variable} substitution)",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "hooks": {
+          "type": "array",
+          "description": "Before/after hooks for this MCP trigger",
+          "items": {
+            "$ref": "#/definitions/MCPHook"
+          }
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this trigger is active",
+          "default": true
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Priority when multiple triggers match (higher = preferred)",
+          "minimum": 0,
+          "maximum": 20,
+          "default": 10
+        }
+      }
+    },
+    "MCPHook": {
+      "type": "object",
+      "description": "A hook that runs before or after MCP tool execution",
+      "required": ["timing"],
+      "properties": {
+        "timing": {
+          "type": "string",
+          "description": "When to run this hook",
+          "enum": ["before", "after"]
+        },
+        "server": {
+          "type": "string",
+          "description": "MCP server pattern to match (glob syntax)"
+        },
+        "tool": {
+          "type": "string",
+          "description": "MCP tool pattern to match (glob syntax)"
+        },
+        "condition": {
+          "type": "string",
+          "description": "JavaScript expression that must be truthy for hook to run"
+        },
+        "agent": {
+          "type": "string",
+          "description": "Name of the agent to invoke"
+        },
+        "prompt": {
+          "type": "string",
+          "description": "Prompt to send to the agent (supports ${variable} substitution)"
+        },
+        "blocking": {
+          "type": "boolean",
+          "description": "Whether this hook can block tool execution (before hooks only)",
+          "default": false
+        },
+        "inject_context": {
+          "type": "boolean",
+          "description": "Whether to inject hook output into tool context",
+          "default": false
+        }
+      }
+    }
+  }
+}

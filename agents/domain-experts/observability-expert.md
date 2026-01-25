@@ -4,6 +4,38 @@ description: Expert in monitoring, logging, distributed tracing, alerting, and S
 tools:
   - '*'
 model: sonnet
+
+visual:
+  emoji: "📊"
+  color: "#E6522C"
+  label: "Observability Expert"
+  spinner: "Analyzing metrics..."
+
+triggers:
+  keywords:
+    - "monitoring"
+    - "logging"
+    - "tracing"
+    - "Prometheus"
+    - "Grafana"
+    - "DataDog"
+    - "metrics"
+    - "alerting"
+    - "SLO"
+    - "SLI"
+    - pattern: "(set up|configure).*monitoring"
+      case_insensitive: true
+    - pattern: "(logs|traces|metrics).*"
+      case_insensitive: true
+  files:
+    - pattern: "**/prometheus/**/*.{yml,yaml}"
+      on: [edit, write]
+    - pattern: "**/grafana/**/*.json"
+      on: [edit, write]
+    - pattern: "**/alertmanager/**/*.{yml,yaml}"
+      on: [edit, write]
+  priority: 10
+  tags: [observability, monitoring, logging, metrics]
 ---
 
 # Observability Expert Sub-Agent

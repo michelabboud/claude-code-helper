@@ -1,0 +1,31 @@
+{
+  "name": "mcp-trigger-integration",
+  "description": "Connects MCP tool invocations to the trigger system with before/after hooks",
+  "version": "1.0.0",
+  "hooks": [
+    {
+      "matcher": {
+        "type": "PreToolUse",
+        "tools": ["mcp__*"]
+      },
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node /home/michel/projects/claude-code-helper/hooks/mcp-trigger-dispatcher.js before \"$TOOL_NAME\" \"$TOOL_INPUT\""
+        }
+      ]
+    },
+    {
+      "matcher": {
+        "type": "PostToolUse",
+        "tools": ["mcp__*"]
+      },
+      "hooks": [
+        {
+          "type": "command",
+          "command": "node /home/michel/projects/claude-code-helper/hooks/mcp-trigger-dispatcher.js after \"$TOOL_NAME\" \"$TOOL_OUTPUT\""
+        }
+      ]
+    }
+  ]
+}

@@ -4,6 +4,39 @@ description: AWS Solutions Architect specialist for cloud infrastructure, server
 version: 1.0.0
 model: sonnet
 color: orange
+
+visual:
+  emoji: "☁️"
+  color: "#FF9900"
+  label: "AWS Architect"
+  spinner: "Designing AWS infrastructure..."
+
+triggers:
+  keywords:
+    - "AWS"
+    - "Amazon Web Services"
+    - "EC2"
+    - "Lambda"
+    - "S3"
+    - "DynamoDB"
+    - "CloudFormation"
+    - "ECS"
+    - "EKS"
+    - pattern: "(deploy|host).*aws"
+      case_insensitive: true
+    - pattern: "aws.*(architecture|infrastructure)"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.tf"
+      on: [edit, write]
+    - pattern: "**/cloudformation/**/*.{yaml,yml,json}"
+      on: [edit, write]
+    - pattern: "serverless.{yml,yaml}"
+      on: [read, edit]
+    - pattern: "sam*.{yaml,yml}"
+      on: [read, edit]
+  priority: 12
+  tags: [cloud, aws, infrastructure, serverless]
 ---
 
 # AWS Architect Expert Sub-Agent

@@ -3,6 +3,43 @@ name: qa-testing-expert
 description: QA and testing specialist for comprehensive quality assurance, test strategy design, unit testing (Jest, Vitest, pytest), integration testing, end-to-end testing (Playwright, Cypress, Selenium), API testing, performance testing (k6, JMeter), visual regression testing, test automation, CI/CD integration, code coverage analysis, test-driven development (TDD), behavior-driven development (BDD). Use for "write tests", "test strategy", "E2E testing", "load testing", "test automation", "fix flaky tests", "improve test coverage"
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+
+visual:
+  emoji: "🧪"
+  color: "#4CAF50"
+  label: "QA/Testing Expert"
+  spinner: "Running tests..."
+
+triggers:
+  keywords:
+    - "test"
+    - "testing"
+    - "Jest"
+    - "Vitest"
+    - "Playwright"
+    - "Cypress"
+    - "coverage"
+    - "TDD"
+    - "E2E"
+    - pattern: "(write|add|create).*test"
+      case_insensitive: true
+    - pattern: "(fix|debug).*flaky"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.test.{ts,tsx,js,jsx}"
+      on: [edit, write]
+    - pattern: "**/*.spec.{ts,tsx,js,jsx}"
+      on: [edit, write]
+    - pattern: "**/tests/**/*.{ts,js,py}"
+      on: [edit, write]
+    - pattern: "playwright.config.ts"
+      on: [read, edit]
+    - pattern: "jest.config.{js,ts}"
+      on: [read, edit]
+    - pattern: "vitest.config.ts"
+      on: [read, edit]
+  priority: 11
+  tags: [testing, qa, tdd, e2e, automation]
 ---
 
 # QA/Testing Expert Sub-Agent

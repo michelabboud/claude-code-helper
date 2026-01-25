@@ -292,7 +292,7 @@ cp commands/*.md ~/.claude/commands/
 
 **[📁 Hooks →](./hooks/)** | **[📁 Plugins →](./plugins/)** | **[📁 Integrations →](./integrations/)**
 
-### Hooks (5 files)
+### Hooks (8 files)
 Event-driven automation for PreToolUse, PostToolUse, SessionStart, SessionEnd.
 
 ### Plugins (7 files)
@@ -306,6 +306,63 @@ Real-world integration examples for e-commerce, SaaS applications.
 cp hooks/* ~/.claude/hooks/
 cp plugins/* ~/.claude/plugins/
 ```
+
+---
+
+## 🔌 Trigger Matcher Library
+
+**[📁 Navigate to Trigger Matcher →](./trigger-matcher/)**
+
+A comprehensive TypeScript library for **deterministic agent triggering** in Claude Code.
+
+### Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **Keyword Triggers** | Match patterns in user prompts |
+| **File Pattern Triggers** | Activate agents based on file operations |
+| **Event Triggers** | React to tool usage and lifecycle events |
+| **Global Configuration** | Centralized trigger rules with conflict resolution |
+| **Agent Chains** | Sequential or parallel execution of multiple agents |
+| **MCP Integration** | Connect triggers to MCP tool invocations with hooks |
+
+### Why Use Triggers?
+
+| Before (Non-Deterministic) | After (Deterministic) |
+|----------------------------|----------------------|
+| Claude decides when to spawn agents | Rules define exactly when agents activate |
+| Same prompt may or may not trigger | Consistent, predictable triggering |
+| No automation possible | Auto-trigger on file changes, commits, etc. |
+| Hope the right agent is selected | Guarantee specific agents for specific tasks |
+
+### Quick Example
+
+```yaml
+# In agent frontmatter (api-expert.md)
+triggers:
+  keywords: ["REST API", "endpoint"]
+  files:
+    - pattern: "src/api/**/*.ts"
+      on: [edit, write]
+  events:
+    - type: PreCommit
+      condition: "files.some(f => f.includes('/api/'))"
+  priority: 12
+```
+
+### Test Coverage
+
+**200 tests passing** across 6 modules covering file matching, events, configuration, chains, and MCP integration.
+
+### Installation
+
+```bash
+cd trigger-matcher
+npm install && npm run build
+npm test  # Verify 200 tests pass
+```
+
+**Learn more:** [Trigger Matcher Documentation](./trigger-matcher/README.md)
 
 ---
 

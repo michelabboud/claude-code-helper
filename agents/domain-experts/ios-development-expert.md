@@ -4,6 +4,38 @@ description: Expert in Swift, SwiftUI, UIKit, iOS architecture patterns, and App
 tools:
   - '*'
 model: sonnet
+
+visual:
+  emoji: "🍎"
+  color: "#007AFF"
+  label: "iOS Expert"
+  spinner: "Building iOS app..."
+
+triggers:
+  keywords:
+    - "iOS"
+    - "Swift"
+    - "SwiftUI"
+    - "UIKit"
+    - "Xcode"
+    - "App Store"
+    - "iPhone"
+    - "iPad"
+    - pattern: "(create|build).*ios"
+      case_insensitive: true
+    - pattern: "(swift|swiftui).*"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.swift"
+      on: [edit, write]
+    - pattern: "**/*.xcodeproj/**"
+      on: [read]
+    - pattern: "**/Package.swift"
+      on: [edit, write]
+    - pattern: "**/*.storyboard"
+      on: [read, edit]
+  priority: 10
+  tags: [mobile, ios, swift, swiftui]
 ---
 
 # iOS Development Expert Sub-Agent

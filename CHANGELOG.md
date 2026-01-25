@@ -15,6 +15,207 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.0.0] - 2026-01-25
+
+### 🎯 Agent Triggers System - Deterministic Agent Routing & Automation
+
+Major feature release introducing a comprehensive trigger system for deterministic agent invocation based on keywords, file patterns, events, and MCP tool usage. Enables automated workflows, agent chains, and event-driven automation.
+
+### Added
+
+#### Trigger Matcher Library (`trigger-matcher/`)
+
+**Complete TypeScript library (2,500+ lines) with 188 passing tests:**
+
+- **`src/types.ts`** - Comprehensive type definitions for all trigger components
+- **`src/parser.ts`** - Agent file parser supporting Markdown (YAML frontmatter) and JSON formats
+- **`src/matcher.ts`** - Keyword and file pattern matching with glob support
+- **`src/events.ts`** - Event bus, condition evaluation, and event trigger matching
+- **`src/dispatcher.ts`** - Event dispatcher with agent index building
+- **`src/config.ts`** - Global configuration loader with conflict detection/resolution
+- **`src/chain.ts`** - Agent chain executor with sequential/parallel modes
+- **`src/mcp.ts`** - MCP trigger executor with before/after hooks
+
+**Key Features:**
+- ✅ **Keyword Triggers** - Pattern matching in user prompts (string or regex)
+- ✅ **File Pattern Triggers** - Glob patterns with `on: [read, edit, write]` event filtering
+- ✅ **Event Triggers** - React to PreToolUse, PostToolUse, PreCommit, PostCommit, SessionStart, SessionEnd, Error, AgentStart, AgentEnd
+- ✅ **Agent Chains** - Sequential or parallel multi-agent workflows with conditions
+- ✅ **MCP Integration** - Before/after hooks for MCP tool execution
+- ✅ **Priority-Based Selection** - Higher priority agents preferred when multiple match
+- ✅ **Confidence Scoring** - Rank matches by relevance
+- ✅ **Safe Condition Evaluation** - Blocks dangerous patterns (eval, require, process, etc.)
+- ✅ **Variable Substitution** - `${file}`, `${files}`, `${user_prompt}`, `${previous_output}`, `${mcp_output}`
+
+#### Agent Updates (45 agents)
+
+**All 33 domain-expert agents updated with:**
+- `visual.emoji` - Agent-specific emoji for status line
+- `visual.color` - Hex color for UI theming
+- `visual.label` - Human-readable display name
+- `visual.spinner` - Text shown while agent is working
+- `triggers.keywords` - Keyword/regex patterns for prompt matching
+- `triggers.files` - Glob patterns with `on: [read, edit, write]` events
+- `triggers.priority` - 8-15 (higher = preferred when multiple match)
+- `triggers.tags` - Categorization tags
+
+**All 12 MCP-integrated agents updated with same trigger/visual fields**
+
+#### Hook Files
+
+**File Pattern Hooks:**
+- `hooks/file-trigger-hook.json` - PreToolUse configuration for file operations
+- `hooks/file-trigger-matcher.js` - Standalone matcher script
+
+**Event Hooks:**
+- `hooks/event-trigger-hook.json` - PreToolUse/PostToolUse event configuration
+- `hooks/event-dispatcher.js` - Event dispatcher script
+
+**MCP Hooks:**
+- `hooks/mcp-trigger-hook.json` - MCP tool execution hooks
+- `hooks/mcp-trigger-dispatcher.js` - MCP dispatcher script
+
+#### Configuration System
+
+**`config-bundle/triggers.json`** - Global trigger configuration:
+- 5 global triggers (security-on-commit, api-file-guard, test-after-edit, database-migrations, docker-devops)
+- 2 agent chains (full-review-pipeline, pre-release-check)
+- 4 MCP triggers (design-token-validator, api-spec-validator, security-scan-with-hooks, test-coverage-check)
+
+**`config-bundle/triggers.schema.json`** - JSON Schema for IDE validation:
+- GlobalTrigger definition
+- TriggerMatch conditions
+- TriggerAction types (spawn_agent, mcp_tool, shell_command)
+- AgentChain definition
+- ChainStep with conditions
+- MCPTrigger with hooks
+- MCPHook definition (before/after timing)
+
+#### Documentation
+
+**`trigger-matcher/README.md`** (700+ lines):
+- Complete API reference for all modules
+- Installation and usage guide
+- Configuration examples
+- Hook integration guide
+- Variable substitution reference
+- Security considerations
+
+**`docs/reference/agent-triggers-schema.md`**:
+- Trigger field definitions
+- Visual indicator system
+- Priority guidelines
+- Best practices
+
+**`config-bundle/statuslines/agent-display.sh`**:
+- Status line script using environment variables
+- CLAUDE_ACTIVE_AGENT, CLAUDE_ACTIVE_AGENT_EMOJI, CLAUDE_ACTIVE_AGENT_LABEL
+
+### Technical Implementation
+
+#### Phase 1: Keyword Triggers + Visual Indicators
+- Extended agent frontmatter with `triggers` and `visual` fields
+- Created parser for Markdown YAML frontmatter and JSON formats
+- Implemented keyword matching with regex support
+
+#### Phase 2: File Pattern Triggers
+- Implemented glob pattern matching with minimatch
+- Added `on` event filtering (read, edit, write)
+- Built priority-based selection with confidence scoring
+- Created PreToolUse hooks for Read/Edit/Write operations
+
+#### Phase 3: Event Triggers
+- Created EventBus for pub/sub event handling
+- Implemented 9 event types with context creators
+- Built safe condition evaluation (blocks eval, require, process, etc.)
+- Created event dispatcher with agent indexing
+
+#### Phase 4: Global Configuration
+- Created ConfigLoader with load/merge/resolve capabilities
+- Implemented conflict detection and priority-based resolution
+- Built JSON Schema for IDE validation
+
+#### Phase 5: Agent Chains
+- Created ChainExecutor for multi-agent workflows
+- Implemented sequential and parallel execution modes
+- Added condition evaluation for chain steps
+- Built output consolidation (consolidated_report, last_only)
+- Added variable substitution with previous outputs
+
+#### Phase 6: MCP Integration
+- Created MCPTriggerExecutor class
+- Implemented before/after hooks with blocking support
+- Added MCP-specific variable substitution (${server}, ${tool}, ${mcp_output})
+- Built safe hook condition evaluation
+- Added hook timeout handling
+
+### Testing
+
+**188 tests across 6 modules:**
+- `matcher.test.ts` - 28 tests (parser, matcher, file patterns)
+- `events.test.ts` - 25 tests (event bus, conditions, matching)
+- `dispatcher.test.ts` - 18 tests (event dispatch, agent index)
+- `config.test.ts` - 39 tests (loading, merging, conflicts)
+- `chain.test.ts` - 45 tests (execution modes, conditions, variables)
+- `mcp.test.ts` - 33 tests (MCP matching, hooks, execution)
+
+### Impact
+
+**Before Agent Triggers:**
+- ❌ Agents only triggered via Claude's judgment through Task tool
+- ❌ No deterministic routing based on context
+- ❌ Manual agent selection required
+- ❌ No event-driven automation
+
+**After Agent Triggers:**
+- ✅ Deterministic agent invocation based on keywords, files, events
+- ✅ Automatic agent selection based on file patterns
+- ✅ Event-driven workflows (security scan on commit, tests after edit)
+- ✅ Multi-agent chains for complex workflows
+- ✅ MCP tool hooks for validation and enrichment
+- ✅ Priority-based conflict resolution
+- ✅ Visual status indicators
+
+### Installation
+
+```bash
+cd trigger-matcher
+npm install
+npm run build
+npm test  # 188 tests
+```
+
+**Add hooks to Claude Code:**
+```bash
+# Copy hooks to ~/.claude/hooks/
+cp hooks/*.json ~/.claude/hooks/
+cp hooks/*.js ~/.claude/hooks/
+
+# Copy triggers config
+cp config-bundle/triggers.json ~/.claude/
+cp config-bundle/triggers.schema.json ~/.claude/
+```
+
+### File Statistics
+
+**New Files (20+):**
+- `trigger-matcher/src/*.ts` - 6 core modules (~2,500 lines)
+- `trigger-matcher/src/*.test.ts` - 6 test files (~1,500 lines)
+- `trigger-matcher/package.json`, `tsconfig.json`, `README.md`
+- `hooks/*.json`, `hooks/*.js` - 6 hook files
+- `config-bundle/triggers.json`, `triggers.schema.json`
+- `docs/reference/agent-triggers-schema.md`
+- `config-bundle/statuslines/agent-display.sh`
+
+**Modified Files (45+):**
+- All 33 files in `agents/domain-experts/`
+- All 12 files in `agents/mcp-integrated/`
+- `README.md` - Added Trigger Matcher Library section
+
+**Total:** ~4,000+ lines of new code and documentation
+
+---
+
 ## [1.10.1] - 2026-01-16
 
 ### 🔧 Repository Reorganization & Claude Code v2.1.9 Support

@@ -4,6 +4,37 @@ description: Go programming specialist for concurrent systems, microservices, an
 version: 1.0.0
 model: sonnet
 color: cyan
+
+visual:
+  emoji: "🔷"
+  color: "#00ADD8"
+  label: "Go Expert"
+  spinner: "Building Go application..."
+
+triggers:
+  keywords:
+    - "Go"
+    - "Golang"
+    - "goroutine"
+    - "channel"
+    - "Gin"
+    - "Echo"
+    - "gRPC"
+    - pattern: "(go|golang).*api"
+      case_insensitive: true
+    - pattern: "(concurrent|goroutine|channel).*"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.go"
+      on: [edit, write]
+    - pattern: "go.mod"
+      on: [read, edit]
+    - pattern: "go.sum"
+      on: [read]
+    - pattern: "Makefile"
+      on: [read, edit]
+  priority: 10
+  tags: [backend, go, golang, microservices]
 ---
 
 # Go Expert Sub-Agent

@@ -4,6 +4,36 @@ description: Angular 17+ specialist for enterprise application development with 
 version: 1.0.0
 model: sonnet
 color: red
+
+visual:
+  emoji: "🅰️"
+  color: "#DD0031"
+  label: "Angular Expert"
+  spinner: "Building Angular app..."
+
+triggers:
+  keywords:
+    - "Angular"
+    - "RxJS"
+    - "NgRx"
+    - "signals"
+    - "standalone component"
+    - "Observable"
+    - pattern: "(create|build).*angular"
+      case_insensitive: true
+    - pattern: "angular.*(component|service|module)"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.component.ts"
+      on: [edit, write]
+    - pattern: "**/*.service.ts"
+      on: [edit, write]
+    - pattern: "angular.json"
+      on: [read, edit]
+    - pattern: "**/*.module.ts"
+      on: [edit, write]
+  priority: 10
+  tags: [frontend, angular, rxjs, typescript]
 ---
 
 # Angular Expert Sub-Agent

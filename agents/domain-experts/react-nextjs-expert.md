@@ -3,6 +3,49 @@ name: react-nextjs-expert
 description: React and Next.js specialist for modern web applications. Use for React 18+ components, Next.js 14+ App Router, Server Components, state management (Zustand, Jotai, Redux Toolkit), form handling (React Hook Form, Zod), data fetching (React Query, SWR), SSR/SSG, Server Actions, performance optimization, and testing. Examples: "create Next.js app", "build React component", "implement authentication", "optimize bundle size", "add server actions"
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+
+# Visual Indicators (Phase 1)
+visual:
+  emoji: "⚛️"
+  color: "#61dafb"
+  label: "React/Next.js Expert"
+  spinner: "Building components..."
+
+# Triggers (Phase 1)
+triggers:
+  keywords:
+    - "React"
+    - "Next.js"
+    - "component"
+    - "hook"
+    - "useState"
+    - "useEffect"
+    - "Server Component"
+    - "Client Component"
+    - "Server Action"
+    - "Zustand"
+    - "React Query"
+    - "SSR"
+    - "SSG"
+    - pattern: "(create|build|implement).*component"
+      case_insensitive: true
+    - pattern: "(next|react).*app"
+      case_insensitive: true
+
+  files:
+    - pattern: "**/*.{tsx,jsx}"
+      on: [edit, write]
+    - pattern: "app/**/*.{ts,tsx}"
+      on: [edit, write]
+    - pattern: "components/**/*.{ts,tsx}"
+      on: [edit, write]
+    - pattern: "next.config.{js,mjs,ts}"
+      on: [read, edit]
+    - pattern: "src/hooks/**/*.{ts,tsx}"
+      on: [edit, write]
+
+  priority: 10
+  tags: [frontend, react, nextjs, typescript]
 ---
 
 # React/Next.js Development Expert

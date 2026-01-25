@@ -3,6 +3,38 @@ name: android-dev
 description: Android development specialist. Use for Kotlin/Java code, XML layouts, Gradle, AndroidManifest, Room database, Jetpack Compose, ViewModel, LiveData, Coroutines. Examples: "create Android activity", "implement Room database", "fix Gradle issue", "build Compose UI"
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+
+visual:
+  emoji: "🤖"
+  color: "#3DDC84"
+  label: "Android Dev"
+  spinner: "Building Android app..."
+
+triggers:
+  keywords:
+    - "Android"
+    - "Kotlin"
+    - "Gradle"
+    - "Jetpack"
+    - "Compose"
+    - "Room"
+    - "ViewModel"
+    - "LiveData"
+    - pattern: "(create|build).*android"
+      case_insensitive: true
+    - pattern: "(activity|fragment|compose).*"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.kt"
+      on: [edit, write]
+    - pattern: "**/build.gradle*"
+      on: [edit, write]
+    - pattern: "**/AndroidManifest.xml"
+      on: [read, edit]
+    - pattern: "**/res/**/*.xml"
+      on: [edit, write]
+  priority: 10
+  tags: [mobile, android, kotlin, jetpack]
 ---
 
 # Android Development Specialist

@@ -1,0 +1,36 @@
+{
+  "name": "claude-trigger-matcher",
+  "version": "1.0.0",
+  "description": "File pattern trigger matching for Claude Code agents",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test --test-force-exit build/**/*.test.js",
+    "test:watch": "tsc -w & node --test --watch build/**/*.test.js",
+    "lint": "eslint src/",
+    "clean": "rm -rf build/",
+    "prepublish": "npm run build"
+  },
+  "keywords": [
+    "claude-code",
+    "triggers",
+    "agents",
+    "glob",
+    "pattern-matching"
+  ],
+  "author": "claude-code-helper",
+  "license": "MIT",
+  "dependencies": {
+    "minimatch": "^9.0.0",
+    "yaml": "^2.3.0",
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

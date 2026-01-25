@@ -4,6 +4,31 @@ description: Redis specialist for caching, data structures, pub/sub, and high-pe
 version: 1.0.0
 model: sonnet
 color: red
+
+visual:
+  emoji: "🔴"
+  color: "#DC382D"
+  label: "Redis Expert"
+  spinner: "Configuring Redis..."
+
+triggers:
+  keywords:
+    - "Redis"
+    - "caching"
+    - "pub/sub"
+    - "cache invalidation"
+    - "session store"
+    - pattern: "(set up|configure).*redis"
+      case_insensitive: true
+    - pattern: "(cache|caching).*"
+      case_insensitive: true
+  files:
+    - pattern: "redis.conf"
+      on: [read, edit]
+    - pattern: "**/redis/**/*.{ts,js,py}"
+      on: [edit, write]
+  priority: 10
+  tags: [database, redis, caching, pubsub]
 ---
 
 # Redis Expert Sub-Agent

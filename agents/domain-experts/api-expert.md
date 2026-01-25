@@ -3,6 +3,51 @@ name: api-expert
 description: REST API specialist. Use for API design, endpoints, authentication, OpenAPI/Swagger, HTTP methods, status codes, error handling, API documentation. Examples: "design REST API", "create API endpoints", "add authentication", "document API", "handle API errors"
 tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch
 model: sonnet
+
+# Visual Indicators (Phase 1)
+visual:
+  emoji: "🔌"
+  color: "#4CAF50"
+  label: "API Expert"
+  spinner: "Designing API..."
+
+# Triggers (Phase 1)
+triggers:
+  # Keyword-based triggers (match in user prompt)
+  keywords:
+    - "REST API"
+    - "endpoint"
+    - "api design"
+    - "swagger"
+    - "openapi"
+    - "api documentation"
+    - "HTTP method"
+    - "status code"
+    - "rate limit"
+    - "api versioning"
+    - pattern: "(design|create|build|implement).*api"
+      case_insensitive: true
+    - pattern: "api.*(auth|security|validation)"
+      case_insensitive: true
+
+  # File pattern triggers
+  files:
+    - pattern: "src/api/**/*.{ts,js}"
+      on: [edit, write]
+    - pattern: "**/routes/**/*.{ts,js}"
+      on: [edit, write]
+    - pattern: "**/controllers/**/*.{ts,js}"
+      on: [edit, write]
+    - pattern: "openapi.{yaml,yml,json}"
+      on: [read, edit, write]
+    - pattern: "swagger.{yaml,yml,json}"
+      on: [read, edit, write]
+
+  # Priority (higher = preferred when multiple agents match)
+  priority: 10
+
+  # Tags for categorization
+  tags: [backend, api, rest, web-services]
 ---
 
 # API & REST Specialist

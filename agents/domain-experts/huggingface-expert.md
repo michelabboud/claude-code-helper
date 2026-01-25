@@ -4,6 +4,33 @@ description: Hugging Face specialist for transformers, fine-tuning, inference, a
 version: 1.0.0
 model: sonnet
 color: yellow
+
+visual:
+  emoji: "🤗"
+  color: "#FFD21E"
+  label: "Hugging Face Expert"
+  spinner: "Loading transformers..."
+
+triggers:
+  keywords:
+    - "Hugging Face"
+    - "transformers"
+    - "BERT"
+    - "GPT"
+    - "tokenizer"
+    - "fine-tuning"
+    - "inference"
+    - pattern: "(huggingface|hf).*"
+      case_insensitive: true
+    - pattern: "(load|train).*model"
+      case_insensitive: true
+  files:
+    - pattern: "**/transformers/**/*.py"
+      on: [edit, write]
+    - pattern: "**/models/**/*.py"
+      on: [edit, write]
+  priority: 11
+  tags: [ml, huggingface, transformers, nlp]
 ---
 
 # Hugging Face Expert Sub-Agent

@@ -4,6 +4,37 @@ description: Ruby on Rails specialist for modern web development with Hotwire, T
 version: 1.0.0
 model: sonnet
 color: red
+
+visual:
+  emoji: "💎"
+  color: "#CC342D"
+  label: "Ruby/Rails Expert"
+  spinner: "Building Rails app..."
+
+triggers:
+  keywords:
+    - "Ruby"
+    - "Rails"
+    - "ActiveRecord"
+    - "Hotwire"
+    - "Turbo"
+    - "Stimulus"
+    - "RSpec"
+    - pattern: "(create|build).*rails"
+      case_insensitive: true
+    - pattern: "rails.*(model|controller|migration)"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.rb"
+      on: [edit, write]
+    - pattern: "**/app/models/**/*.rb"
+      on: [edit, write]
+    - pattern: "**/app/controllers/**/*.rb"
+      on: [edit, write]
+    - pattern: "Gemfile"
+      on: [read, edit]
+  priority: 10
+  tags: [backend, ruby, rails, hotwire]
 ---
 
 # Ruby/Rails Expert Sub-Agent

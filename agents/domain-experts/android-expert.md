@@ -4,6 +4,33 @@ description: Android development specialist for Kotlin, Jetpack Compose, and mod
 version: 1.0.0
 model: sonnet
 color: green
+
+visual:
+  emoji: "📱"
+  color: "#3DDC84"
+  label: "Android Expert"
+  spinner: "Developing Android app..."
+
+triggers:
+  keywords:
+    - "Android"
+    - "Kotlin"
+    - "Jetpack Compose"
+    - "Hilt"
+    - "Material Design"
+    - "Coroutines"
+    - "Flow"
+    - pattern: "(modern|compose).*android"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.kt"
+      on: [edit, write]
+    - pattern: "**/build.gradle.kts"
+      on: [edit, write]
+    - pattern: "**/compose/**/*.kt"
+      on: [edit, write]
+  priority: 10
+  tags: [mobile, android, kotlin, compose]
 ---
 
 # Android Expert Sub-Agent

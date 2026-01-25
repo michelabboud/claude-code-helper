@@ -1,0 +1,28 @@
+{
+  "name": "event-trigger-hook",
+  "description": "Dispatches events to matching agent triggers based on tool operations and git events",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Write|Edit|Bash|Glob|Grep|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/event-dispatcher.js PreToolUse \"$TOOL_NAME\" \"$FILE_PATH\" \"$COMMAND\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Read|Write|Edit|Bash|Glob|Grep|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/hooks/event-dispatcher.js PostToolUse \"$TOOL_NAME\" \"$FILE_PATH\" \"$COMMAND\""
+          }
+        ]
+      }
+    ]
+  }
+}

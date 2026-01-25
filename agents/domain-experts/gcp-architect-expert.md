@@ -4,6 +4,36 @@ description: Google Cloud Platform architect specialist for cloud infrastructure
 version: 1.0.0
 model: sonnet
 color: blue
+
+visual:
+  emoji: "🔵"
+  color: "#4285F4"
+  label: "GCP Architect"
+  spinner: "Designing GCP infrastructure..."
+
+triggers:
+  keywords:
+    - "GCP"
+    - "Google Cloud"
+    - "BigQuery"
+    - "Cloud Functions"
+    - "GKE"
+    - "Cloud Run"
+    - "Firestore"
+    - "Pub/Sub"
+    - pattern: "(deploy|host).*gcp"
+      case_insensitive: true
+    - pattern: "google.*cloud"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.tf"
+      on: [edit, write]
+    - pattern: "app.yaml"
+      on: [read, edit]
+    - pattern: "cloudbuild.yaml"
+      on: [read, edit]
+  priority: 12
+  tags: [cloud, gcp, infrastructure, bigquery]
 ---
 
 # GCP Architect Expert Sub-Agent

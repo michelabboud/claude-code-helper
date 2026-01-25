@@ -3,6 +3,38 @@ name: css-tailwind-expert
 description: CSS and Tailwind specialist. Use for styling, layouts, responsive design, Tailwind utilities, CSS animations, Flexbox, Grid, custom components. Examples: "style this component", "make it responsive", "convert to Tailwind", "create custom theme", "optimize CSS"
 tools: Read, Write, Edit, Grep, Glob, WebSearch
 model: sonnet
+
+visual:
+  emoji: "🎨"
+  color: "#38bdf8"
+  label: "CSS/Tailwind Expert"
+  spinner: "Styling components..."
+
+triggers:
+  keywords:
+    - "CSS"
+    - "Tailwind"
+    - "styling"
+    - "responsive"
+    - "Flexbox"
+    - "Grid"
+    - "animation"
+    - "layout"
+    - pattern: "(style|design|theme).*component"
+      case_insensitive: true
+    - pattern: "make.*responsive"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.css"
+      on: [edit, write]
+    - pattern: "**/*.scss"
+      on: [edit, write]
+    - pattern: "tailwind.config.{js,ts,mjs}"
+      on: [read, edit, write]
+    - pattern: "**/styles/**"
+      on: [edit, write]
+  priority: 10
+  tags: [frontend, css, tailwind, styling]
 ---
 
 # CSS & Tailwind CSS Specialist

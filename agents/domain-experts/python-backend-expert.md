@@ -3,6 +3,40 @@ name: python-backend-expert
 description: Python backend specialist for modern web APIs and applications. Use for FastAPI, Django, Flask, async programming (asyncio, aiohttp), type hints, Pydantic models, SQLAlchemy ORM, database migrations (Alembic), testing (pytest), Celery background tasks, API documentation, and data science integrations. Examples: "create FastAPI endpoint", "build Django REST API", "implement async database queries", "set up Celery tasks", "add authentication"
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+
+visual:
+  emoji: "🐍"
+  color: "#3776ab"
+  label: "Python Backend"
+  spinner: "Building Python API..."
+
+triggers:
+  keywords:
+    - "Python"
+    - "FastAPI"
+    - "Django"
+    - "Flask"
+    - "Pydantic"
+    - "SQLAlchemy"
+    - "Celery"
+    - "pytest"
+    - pattern: "(create|build).*python.*api"
+      case_insensitive: true
+    - pattern: "(fastapi|django|flask).*"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.py"
+      on: [edit, write]
+    - pattern: "requirements.txt"
+      on: [read, edit]
+    - pattern: "pyproject.toml"
+      on: [read, edit]
+    - pattern: "**/views.py"
+      on: [edit, write]
+    - pattern: "**/models.py"
+      on: [edit, write]
+  priority: 10
+  tags: [backend, python, fastapi, django]
 ---
 
 # Python Backend Development Expert

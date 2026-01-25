@@ -4,6 +4,37 @@ description: WordPress specialist for theme development, plugin development, cus
 version: 1.0.0
 model: sonnet
 color: blue
+
+visual:
+  emoji: "📝"
+  color: "#21759B"
+  label: "WordPress Expert"
+  spinner: "Building WordPress site..."
+
+triggers:
+  keywords:
+    - "WordPress"
+    - "WooCommerce"
+    - "Gutenberg"
+    - "theme"
+    - "plugin"
+    - "custom post type"
+    - "ACF"
+    - pattern: "(create|build).*wordpress"
+      case_insensitive: true
+    - pattern: "wordpress.*(theme|plugin)"
+      case_insensitive: true
+  files:
+    - pattern: "**/wp-content/**/*.php"
+      on: [edit, write]
+    - pattern: "**/themes/**/*.php"
+      on: [edit, write]
+    - pattern: "**/plugins/**/*.php"
+      on: [edit, write]
+    - pattern: "style.css"
+      on: [read, edit]
+  priority: 10
+  tags: [cms, wordpress, php, woocommerce]
 ---
 
 # WordPress Expert Sub-Agent

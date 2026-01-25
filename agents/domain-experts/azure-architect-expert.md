@@ -4,6 +4,38 @@ description: Azure Solutions Architect specialist for cloud infrastructure, serv
 version: 1.0.0
 model: sonnet
 color: blue
+
+visual:
+  emoji: "🔷"
+  color: "#0078D4"
+  label: "Azure Architect"
+  spinner: "Designing Azure infrastructure..."
+
+triggers:
+  keywords:
+    - "Azure"
+    - "Microsoft Azure"
+    - "Azure Functions"
+    - "AKS"
+    - "Cosmos DB"
+    - "Azure DevOps"
+    - "App Service"
+    - "Blob Storage"
+    - pattern: "(deploy|host).*azure"
+      case_insensitive: true
+    - pattern: "azure.*(architecture|infrastructure)"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.tf"
+      on: [edit, write]
+    - pattern: "**/arm-templates/**/*.json"
+      on: [edit, write]
+    - pattern: "azure-pipelines.yml"
+      on: [read, edit]
+    - pattern: "bicep/**/*.bicep"
+      on: [edit, write]
+  priority: 12
+  tags: [cloud, azure, infrastructure, enterprise]
 ---
 
 # Azure Architect Expert Sub-Agent

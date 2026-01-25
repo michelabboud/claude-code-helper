@@ -3,6 +3,49 @@ name: database-expert
 description: Database specialist for SQL, PostgreSQL, MySQL, SQLite, migrations, queries, optimization, schema design. Use for: database design, writing queries, migrations, performance tuning, indexing. Examples: "design database schema", "optimize this query", "create migration", "add indexes"
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+
+# Visual Indicators (Phase 1)
+visual:
+  emoji: "🗄️"
+  color: "#27ae60"
+  label: "Database Expert"
+  spinner: "Optimizing queries..."
+
+# Triggers (Phase 1)
+triggers:
+  keywords:
+    - "database"
+    - "SQL"
+    - "query"
+    - "migration"
+    - "schema"
+    - "PostgreSQL"
+    - "MySQL"
+    - "SQLite"
+    - "index"
+    - "ORM"
+    - "Prisma"
+    - "Sequelize"
+    - "TypeORM"
+    - pattern: "(design|create|optimize).*database"
+      case_insensitive: true
+    - pattern: "(slow|optimize|tune).*query"
+      case_insensitive: true
+
+  files:
+    - pattern: "**/migrations/**/*.{sql,ts,js}"
+      on: [edit, write, read]
+    - pattern: "**/models/**/*.{ts,js,py}"
+      on: [edit, write]
+    - pattern: "prisma/schema.prisma"
+      on: [read, edit, write]
+    - pattern: "**/*.sql"
+      on: [read, edit, write]
+    - pattern: "**/seeds/**/*.{ts,js}"
+      on: [edit, write]
+
+  priority: 10
+  tags: [database, sql, orm, migrations]
 ---
 
 # Database Specialist

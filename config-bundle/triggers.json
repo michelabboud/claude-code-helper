@@ -1,0 +1,223 @@
+{
+  "$schema": "./triggers.schema.json",
+  "version": "1.0",
+  "triggers": [
+    {
+      "name": "security-on-commit",
+      "description": "Security review before commits",
+      "match": {
+        "events": ["PreCommit"]
+      },
+      "action": {
+        "type": "spawn_agent",
+        "agent": "security-expert",
+        "prompt": "Review staged changes for security vulnerabilities: hardcoded secrets, SQL injection, XSS, command injection",
+        "blocking": true
+      },
+      "priority": 15
+    },
+    {
+      "name": "api-file-guard",
+      "description": "Involve api-expert for API file changes",
+      "match": {
+        "files": ["src/api/**/*.ts", "**/routes/**/*.ts", "**/controllers/**/*.ts"],
+        "events": ["Edit", "Write"]
+      },
+      "action": {
+        "type": "spawn_agent",
+        "agent": "api-expert",
+        "prompt_prefix": "Review this API change for best practices: "
+      },
+      "priority": 12
+    },
+    {
+      "name": "test-after-edit",
+      "description": "Run tests after editing source files",
+      "match": {
+        "files": ["src/**/*.ts", "!src/**/*.test.ts", "!src/**/*.spec.ts"],
+        "events": ["PostToolUse:Write", "PostToolUse:Edit"]
+      },
+      "action": {
+        "type": "spawn_agent",
+        "agent": "qa-testing-expert",
+        "prompt": "Run relevant tests for the modified files",
+        "run_in_background": true
+      },
+      "priority": 8
+    },
+    {
+      "name": "database-migrations",
+      "description": "Database expert for migration files",
+      "match": {
+        "files": ["**/migrations/**", "**/db/**/*.sql", "prisma/schema.prisma"],
+        "events": ["Edit", "Write"]
+      },
+      "action": {
+        "type": "spawn_agent",
+        "agent": "database-expert",
+        "prompt_prefix": "Review this database change: "
+      },
+      "priority": 12
+    },
+    {
+      "name": "docker-devops",
+      "description": "DevOps expert for container files",
+      "match": {
+        "files": ["Dockerfile*", "docker-compose*.yml", ".github/workflows/**", ".gitlab-ci.yml"],
+        "events": ["Edit", "Write"]
+      },
+      "action": {
+        "type": "spawn_agent",
+        "agent": "devops-infrastructure-expert",
+        "prompt_prefix": "Review this DevOps configuration: "
+      },
+      "priority": 12
+    }
+  ],
+  "chains": [
+    {
+      "name": "full-review-pipeline",
+      "description": "Complete code review workflow",
+      "trigger": {
+        "keywords": ["full review", "complete review", "/review-all"]
+      },
+      "agents": [
+        {
+          "agent": "security-expert",
+          "prompt": "Perform a security audit of all staged changes"
+        },
+        {
+          "agent": "performance-optimizer",
+          "prompt": "Review for performance issues and optimization opportunities"
+        },
+        {
+          "agent": "api-expert",
+          "prompt": "Review API endpoints for best practices",
+          "condition": "files.some(f => f.includes('/api/') || f.includes('/routes/'))"
+        },
+        {
+          "agent": "qa-testing-expert",
+          "prompt": "Analyze test coverage and suggest missing tests"
+        }
+      ],
+      "execution": "sequential",
+      "output": "consolidated_report"
+    },
+    {
+      "name": "pre-release-check",
+      "description": "Checks before releasing",
+      "trigger": {
+        "keywords": ["pre-release", "before release", "/release-check"]
+      },
+      "agents": [
+        {
+          "agent": "security-expert",
+          "prompt": "Security audit for release"
+        },
+        {
+          "agent": "documentation-expert",
+          "prompt": "Check if documentation is up to date"
+        },
+        {
+          "agent": "qa-testing-expert",
+          "prompt": "Verify all tests pass and coverage is adequate"
+        }
+      ],
+      "execution": "parallel",
+      "output": "consolidated_report"
+    }
+  ],
+  "mcp_triggers": [
+    {
+      "name": "design-token-validator",
+      "description": "Validate design tokens on component changes",
+      "match": {
+        "files": ["src/components/**/*.tsx", "src/components/**/*.css"],
+        "events": ["PostToolUse:Write"]
+      },
+      "action": {
+        "type": "mcp_tool",
+        "server": "design-system-mcp",
+        "tool": "validate_tokens",
+        "params": {
+          "file": "${file}"
+        }
+      },
+      "priority": 10
+    },
+    {
+      "name": "api-spec-validator",
+      "description": "Validate OpenAPI spec on changes",
+      "match": {
+        "files": ["openapi.yaml", "openapi.json", "swagger.yaml", "swagger.json"],
+        "events": ["PostToolUse:Write"]
+      },
+      "action": {
+        "type": "mcp_tool",
+        "server": "api-specialist-mcp",
+        "tool": "validate_openapi",
+        "params": {
+          "file": "${file}"
+        }
+      },
+      "priority": 12
+    },
+    {
+      "name": "security-scan-with-hooks",
+      "description": "Security scan with before/after hooks for sensitive files",
+      "match": {
+        "files": ["src/auth/**/*.ts", "src/crypto/**/*.ts", "**/security/**/*.ts"],
+        "keywords": ["security scan", "audit security"]
+      },
+      "action": {
+        "type": "mcp_tool",
+        "server": "code-review-mcp",
+        "tool": "security_scan",
+        "params": {
+          "file": "${file}",
+          "level": "thorough"
+        }
+      },
+      "hooks": [
+        {
+          "timing": "before",
+          "agent": "security-expert",
+          "prompt": "Verify that ${file} is appropriate for automated security scanning. Check if it contains sensitive patterns that require manual review.",
+          "blocking": true
+        },
+        {
+          "timing": "after",
+          "agent": "documentation-expert",
+          "prompt": "Create a security scan report summary for ${file} based on the scan results: ${mcp_output}",
+          "inject_context": true
+        }
+      ],
+      "priority": 15
+    },
+    {
+      "name": "test-coverage-check",
+      "description": "Check test coverage when test files are modified",
+      "match": {
+        "files": ["**/*.test.ts", "**/*.spec.ts", "**/__tests__/**/*.ts"],
+        "events": ["PostToolUse:Write"]
+      },
+      "action": {
+        "type": "mcp_tool",
+        "server": "testing-mcp",
+        "tool": "get_coverage",
+        "params": {
+          "path": "${file}"
+        }
+      },
+      "hooks": [
+        {
+          "timing": "after",
+          "condition": "getParam('coverage') < 80",
+          "agent": "qa-testing-expert",
+          "prompt": "Test coverage for ${file} is below 80%. Suggest additional test cases to improve coverage."
+        }
+      ],
+      "priority": 10
+    }
+  ]
+}

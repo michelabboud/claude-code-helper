@@ -4,6 +4,39 @@ description: Expert in machine learning model development, training pipelines, M
 tools:
   - '*'
 model: sonnet
+
+visual:
+  emoji: "🧠"
+  color: "#FF6F00"
+  label: "ML/AI Expert"
+  spinner: "Training model..."
+
+triggers:
+  keywords:
+    - "machine learning"
+    - "ML"
+    - "AI"
+    - "deep learning"
+    - "neural network"
+    - "PyTorch"
+    - "TensorFlow"
+    - "LLM"
+    - "model training"
+    - pattern: "(train|fine-tune).*model"
+      case_insensitive: true
+    - pattern: "(ml|ai).*pipeline"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.ipynb"
+      on: [edit, write]
+    - pattern: "**/models/**/*.py"
+      on: [edit, write]
+    - pattern: "**/training/**/*.py"
+      on: [edit, write]
+    - pattern: "requirements.txt"
+      on: [read]
+  priority: 11
+  tags: [ml, ai, deeplearning, pytorch, tensorflow]
 ---
 
 # ML/AI Expert Sub-Agent

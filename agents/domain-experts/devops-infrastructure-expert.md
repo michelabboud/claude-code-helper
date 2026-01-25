@@ -3,6 +3,43 @@ name: devops-infrastructure-expert
 description: DevOps and Infrastructure specialist for containers, orchestration, CI/CD, and cloud deployments. Use for Docker, Kubernetes, CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins), cloud platforms (AWS, GCP, Azure), Infrastructure as Code (Terraform, Pulumi), monitoring, logging, and deployment strategies. Examples: "create Dockerfile", "set up Kubernetes deployment", "build CI/CD pipeline", "deploy to AWS", "configure monitoring"
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+
+visual:
+  emoji: "🚀"
+  color: "#326CE5"
+  label: "DevOps Expert"
+  spinner: "Configuring infrastructure..."
+
+triggers:
+  keywords:
+    - "Docker"
+    - "Kubernetes"
+    - "K8s"
+    - "CI/CD"
+    - "GitHub Actions"
+    - "Terraform"
+    - "Helm"
+    - "container"
+    - "deployment"
+    - pattern: "(create|build).*dockerfile"
+      case_insensitive: true
+    - pattern: "(set up|configure).*pipeline"
+      case_insensitive: true
+  files:
+    - pattern: "Dockerfile*"
+      on: [edit, write]
+    - pattern: "docker-compose*.{yml,yaml}"
+      on: [edit, write]
+    - pattern: "**/*.tf"
+      on: [edit, write]
+    - pattern: ".github/workflows/*.{yml,yaml}"
+      on: [edit, write]
+    - pattern: "**/k8s/**/*.{yml,yaml}"
+      on: [edit, write]
+    - pattern: "helm/**/*.yaml"
+      on: [edit, write]
+  priority: 11
+  tags: [devops, docker, kubernetes, cicd, terraform]
 ---
 
 # DevOps/Infrastructure Expert

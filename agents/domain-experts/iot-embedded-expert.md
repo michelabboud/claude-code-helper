@@ -4,6 +4,38 @@ description: IoT and embedded systems specialist for Arduino, ESP32, MQTT, senso
 version: 1.0.0
 model: sonnet
 color: green
+
+visual:
+  emoji: "📡"
+  color: "#00979D"
+  label: "IoT/Embedded Expert"
+  spinner: "Programming device..."
+
+triggers:
+  keywords:
+    - "IoT"
+    - "Arduino"
+    - "ESP32"
+    - "ESP8266"
+    - "MQTT"
+    - "embedded"
+    - "sensor"
+    - "microcontroller"
+    - pattern: "(create|build).*iot"
+      case_insensitive: true
+    - pattern: "(arduino|esp32).*"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.ino"
+      on: [edit, write]
+    - pattern: "**/*.cpp"
+      on: [edit, write]
+    - pattern: "**/*.h"
+      on: [edit, write]
+    - pattern: "platformio.ini"
+      on: [read, edit]
+  priority: 10
+  tags: [iot, embedded, arduino, esp32, mqtt]
 ---
 
 # IoT & Embedded Systems Expert Sub-Agent

@@ -4,6 +4,36 @@ description: Expert in technical writing, API documentation, architecture diagra
 tools:
   - '*'
 model: sonnet
+
+visual:
+  emoji: "📚"
+  color: "#2E86AB"
+  label: "Documentation Expert"
+  spinner: "Writing documentation..."
+
+triggers:
+  keywords:
+    - "documentation"
+    - "docs"
+    - "README"
+    - "API docs"
+    - "technical writing"
+    - "architecture diagram"
+    - pattern: "(write|create|update).*documentation"
+      case_insensitive: true
+    - pattern: "(document|explain).*"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.md"
+      on: [edit, write]
+    - pattern: "**/docs/**/*"
+      on: [edit, write]
+    - pattern: "README*"
+      on: [edit, write]
+    - pattern: "CHANGELOG*"
+      on: [edit, write]
+  priority: 8
+  tags: [documentation, technical-writing, api-docs]
 ---
 
 # Documentation Expert Sub-Agent

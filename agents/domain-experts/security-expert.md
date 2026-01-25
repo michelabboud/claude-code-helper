@@ -4,6 +4,47 @@ description: Expert in application security, OWASP Top 10, secure coding practic
 tools:
   - '*'
 model: sonnet
+
+# Visual Indicators (Phase 1)
+visual:
+  emoji: "🔒"
+  color: "#9b59b6"
+  label: "Security Expert"
+  spinner: "Scanning for vulnerabilities..."
+
+# Triggers (Phase 1)
+triggers:
+  keywords:
+    - "security"
+    - "vulnerability"
+    - "OWASP"
+    - "CVE"
+    - "penetration test"
+    - "security audit"
+    - "XSS"
+    - "SQL injection"
+    - "CSRF"
+    - "authentication"
+    - "authorization"
+    - "encryption"
+    - "cryptography"
+    - pattern: "(secure|harden|protect).*"
+      case_insensitive: true
+    - pattern: "(auth|jwt|oauth|session).*security"
+      case_insensitive: true
+
+  files:
+    - pattern: "**/auth/**/*.{ts,js,py}"
+      on: [edit, write]
+    - pattern: "**/security/**/*.{ts,js,py}"
+      on: [edit, write]
+    - pattern: "**/middleware/auth*.{ts,js}"
+      on: [edit, write]
+    - pattern: ".env*"
+      on: [read, edit]
+
+  priority: 15
+  tags: [security, audit, owasp, compliance]
 ---
 
 # Security Expert Sub-Agent

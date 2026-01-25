@@ -4,6 +4,37 @@ description: Game design specialist for Unity, Unreal Engine, game mechanics, an
 version: 1.0.0
 model: sonnet
 color: purple
+
+visual:
+  emoji: "🎮"
+  color: "#5C2D91"
+  label: "Game Design Expert"
+  spinner: "Designing game systems..."
+
+triggers:
+  keywords:
+    - "Unity"
+    - "Unreal"
+    - "game"
+    - "game design"
+    - "game mechanics"
+    - "player experience"
+    - "C#"
+    - pattern: "(create|build).*game"
+      case_insensitive: true
+    - pattern: "(unity|unreal).*"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.cs"
+      on: [edit, write]
+    - pattern: "**/*.unity"
+      on: [read]
+    - pattern: "**/*.uasset"
+      on: [read]
+    - pattern: "**/Assets/**/*.cs"
+      on: [edit, write]
+  priority: 10
+  tags: [gamedev, unity, unreal, csharp]
 ---
 
 # Game Design Expert Sub-Agent

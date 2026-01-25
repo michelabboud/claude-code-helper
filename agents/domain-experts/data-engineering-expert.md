@@ -4,6 +4,36 @@ description: Expert in ETL pipelines, data warehousing, Apache Airflow, Spark, a
 tools:
   - '*'
 model: sonnet
+
+visual:
+  emoji: "🔄"
+  color: "#017CEE"
+  label: "Data Engineering"
+  spinner: "Processing data pipeline..."
+
+triggers:
+  keywords:
+    - "ETL"
+    - "data pipeline"
+    - "Airflow"
+    - "Spark"
+    - "data warehouse"
+    - "dbt"
+    - "data lake"
+    - "data quality"
+    - pattern: "(build|create).*pipeline"
+      case_insensitive: true
+    - pattern: "(etl|elt).*"
+      case_insensitive: true
+  files:
+    - pattern: "**/dags/**/*.py"
+      on: [edit, write]
+    - pattern: "**/pipelines/**/*.py"
+      on: [edit, write]
+    - pattern: "**/dbt/**/*.sql"
+      on: [edit, write]
+  priority: 10
+  tags: [data, etl, airflow, spark, dbt]
 ---
 
 # Data Engineering Expert Sub-Agent

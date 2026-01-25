@@ -3,6 +3,39 @@ name: nodejs-typescript-backend-expert
 description: Node.js and TypeScript backend specialist for modern server applications. Use for NestJS, Express.js, TypeScript best practices, microservices architecture, real-time communication (WebSockets, Socket.io, Server-Sent Events), TypeORM, Prisma, authentication/authorization, testing (Jest, Supertest), event-driven architecture, and API design. Examples: "create NestJS API", "build Express server", "implement WebSocket server", "set up microservices", "add JWT auth"
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+
+visual:
+  emoji: "🟢"
+  color: "#339933"
+  label: "Node.js/TS Backend"
+  spinner: "Building backend..."
+
+triggers:
+  keywords:
+    - "Node.js"
+    - "Express"
+    - "NestJS"
+    - "TypeScript backend"
+    - "WebSocket"
+    - "Socket.io"
+    - "microservices"
+    - pattern: "(create|build).*server"
+      case_insensitive: true
+    - pattern: "(express|nest|fastify).*api"
+      case_insensitive: true
+  files:
+    - pattern: "src/**/*.ts"
+      on: [edit, write]
+    - pattern: "**/controllers/**/*.ts"
+      on: [edit, write]
+    - pattern: "**/services/**/*.ts"
+      on: [edit, write]
+    - pattern: "nest-cli.json"
+      on: [read, edit]
+    - pattern: "tsconfig.json"
+      on: [read, edit]
+  priority: 10
+  tags: [backend, nodejs, typescript, nestjs]
 ---
 
 # Node.js/TypeScript Backend Expert

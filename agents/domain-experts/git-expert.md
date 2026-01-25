@@ -3,6 +3,33 @@ name: git-expert
 description: Git workflow specialist. Use for version control, branching strategies, commit messages, merging, rebasing, conflict resolution, Git best practices. Examples: "fix merge conflict", "rebase branch", "write commit message", "undo last commit", "cherry-pick commits"
 tools: Read, Bash, Grep, Glob
 model: sonnet
+
+visual:
+  emoji: "🔀"
+  color: "#F05032"
+  label: "Git Expert"
+  spinner: "Managing version control..."
+
+triggers:
+  keywords:
+    - "git"
+    - "merge"
+    - "rebase"
+    - "branch"
+    - "commit"
+    - "cherry-pick"
+    - "conflict"
+    - pattern: "(fix|resolve).*conflict"
+      case_insensitive: true
+    - pattern: "(undo|revert).*commit"
+      case_insensitive: true
+  files:
+    - pattern: ".gitignore"
+      on: [edit, write]
+    - pattern: ".gitattributes"
+      on: [edit, write]
+  priority: 8
+  tags: [git, vcs, workflow]
 ---
 
 # Git Workflow Specialist

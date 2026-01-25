@@ -3,6 +3,37 @@ name: performance-optimizer
 description: Performance optimization specialist. Use for speed improvements, bundle size reduction, memory optimization, caching strategies, profiling, performance auditing. Examples: "optimize performance", "reduce bundle size", "fix memory leak", "improve loading speed", "analyze performance"
 tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch
 model: opus
+
+visual:
+  emoji: "⚡"
+  color: "#FFD700"
+  label: "Performance Optimizer"
+  spinner: "Analyzing performance..."
+
+triggers:
+  keywords:
+    - "performance"
+    - "optimize"
+    - "slow"
+    - "bundle size"
+    - "memory leak"
+    - "loading speed"
+    - "profiling"
+    - "Core Web Vitals"
+    - "LCP"
+    - pattern: "(improve|fix|optimize).*performance"
+      case_insensitive: true
+    - pattern: "(reduce|minimize).*bundle"
+      case_insensitive: true
+  files:
+    - pattern: "webpack.config.{js,ts}"
+      on: [edit, write]
+    - pattern: "vite.config.{js,ts}"
+      on: [edit, write]
+    - pattern: "lighthouse*.json"
+      on: [read]
+  priority: 12
+  tags: [performance, optimization, profiling, speed]
 ---
 
 # Performance Optimization Specialist

@@ -4,6 +4,36 @@ description: Laravel PHP framework specialist for modern web applications with E
 version: 1.0.0
 model: sonnet
 color: red
+
+visual:
+  emoji: "🔴"
+  color: "#FF2D20"
+  label: "Laravel Expert"
+  spinner: "Building Laravel app..."
+
+triggers:
+  keywords:
+    - "Laravel"
+    - "Eloquent"
+    - "Livewire"
+    - "Blade"
+    - "Artisan"
+    - "Sanctum"
+    - pattern: "(create|build).*laravel"
+      case_insensitive: true
+    - pattern: "laravel.*(api|model|controller)"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.php"
+      on: [edit, write]
+    - pattern: "**/routes/**/*.php"
+      on: [edit, write]
+    - pattern: "**/app/Models/**/*.php"
+      on: [edit, write]
+    - pattern: "artisan"
+      on: [read]
+  priority: 11
+  tags: [backend, php, laravel, eloquent]
 ---
 
 # Laravel Expert Sub-Agent

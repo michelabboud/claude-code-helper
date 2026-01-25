@@ -4,6 +4,36 @@ description: Rust systems programming specialist for safe, concurrent, and high-
 version: 1.0.0
 model: sonnet
 color: orange
+
+visual:
+  emoji: "🦀"
+  color: "#dea584"
+  label: "Rust Expert"
+  spinner: "Building Rust application..."
+
+triggers:
+  keywords:
+    - "Rust"
+    - "cargo"
+    - "ownership"
+    - "borrowing"
+    - "Actix"
+    - "Axum"
+    - "WebAssembly"
+    - "WASM"
+    - pattern: "(rust|cargo).*"
+      case_insensitive: true
+    - pattern: "(async|tokio|actix).*rust"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.rs"
+      on: [edit, write]
+    - pattern: "Cargo.toml"
+      on: [read, edit]
+    - pattern: "Cargo.lock"
+      on: [read]
+  priority: 10
+  tags: [systems, rust, performance, wasm]
 ---
 
 # Rust Expert Sub-Agent

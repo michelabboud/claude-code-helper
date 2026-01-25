@@ -4,6 +4,30 @@ description: PHP specialist for modern PHP 8.2+, Composer, PSR standards, and be
 version: 1.0.0
 model: sonnet
 color: purple
+
+visual:
+  emoji: "🐘"
+  color: "#777BB4"
+  label: "PHP Expert"
+  spinner: "Writing PHP code..."
+
+triggers:
+  keywords:
+    - "PHP"
+    - "Composer"
+    - "PSR"
+    - "PHP 8"
+    - pattern: "(create|build).*php"
+      case_insensitive: true
+  files:
+    - pattern: "**/*.php"
+      on: [edit, write]
+    - pattern: "composer.json"
+      on: [read, edit]
+    - pattern: "composer.lock"
+      on: [read]
+  priority: 10
+  tags: [backend, php, composer]
 ---
 
 # PHP Expert Sub-Agent
