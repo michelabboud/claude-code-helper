@@ -1,6 +1,6 @@
 ---
 name: database-expert
-description: Database specialist for SQL, PostgreSQL, MySQL, SQLite, migrations, queries, optimization, schema design. Use for: database design, writing queries, migrations, performance tuning, indexing. Examples: "design database schema", "optimize this query", "create migration", "add indexes"
+description: 'Database specialist for SQL, PostgreSQL, MySQL, SQLite, migrations, queries, optimization, schema design. Use for: database design, writing queries, migrations, performance tuning, indexing. Examples: "design database schema", "optimize this query", "create migration", "add indexes"'
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 
@@ -37,7 +37,7 @@ triggers:
       on: [edit, write, read]
     - pattern: "**/models/**/*.{ts,js,py}"
       on: [edit, write]
-    - pattern: "prisma/schema.prisma"
+    - pattern: "**/*.prisma"
       on: [read, edit, write]
     - pattern: "**/*.sql"
       on: [read, edit, write]

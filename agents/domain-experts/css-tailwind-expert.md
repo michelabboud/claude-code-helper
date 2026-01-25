@@ -1,6 +1,6 @@
 ---
 name: css-tailwind-expert
-description: CSS and Tailwind specialist. Use for styling, layouts, responsive design, Tailwind utilities, CSS animations, Flexbox, Grid, custom components. Examples: "style this component", "make it responsive", "convert to Tailwind", "create custom theme", "optimize CSS"
+description: 'CSS and Tailwind specialist. Use for styling, layouts, responsive design, Tailwind utilities, CSS animations, Flexbox, Grid, custom components. Examples: "style this component", "make it responsive", "convert to Tailwind", "create custom theme", "optimize CSS"'
 tools: Read, Write, Edit, Grep, Glob, WebSearch
 model: sonnet
 

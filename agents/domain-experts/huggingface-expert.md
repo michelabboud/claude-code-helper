@@ -1,6 +1,6 @@
 ---
 name: huggingface-expert
-description: Hugging Face specialist for transformers, fine-tuning, inference, and model deployment
+description: 'Hugging Face specialist for transformers, fine-tuning, inference, and model deployment'
 version: 1.0.0
 model: sonnet
 color: yellow

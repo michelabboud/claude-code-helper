@@ -1,6 +1,6 @@
 ---
 name: Observability Expert
-description: Expert in monitoring, logging, distributed tracing, alerting, and SLO/SLI management
+description: 'Expert in monitoring, logging, distributed tracing, alerting, and SLO/SLI management'
 tools:
   - '*'
 model: sonnet

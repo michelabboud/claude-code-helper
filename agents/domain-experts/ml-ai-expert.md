@@ -1,6 +1,6 @@
 ---
 name: ML/AI Expert
-description: Expert in machine learning model development, training pipelines, MLOps, LLM integration, and production ML deployment
+description: 'Expert in machine learning model development, training pipelines, MLOps, LLM integration, and production ML deployment'
 tools:
   - '*'
 model: sonnet

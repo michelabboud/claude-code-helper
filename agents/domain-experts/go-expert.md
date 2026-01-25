@@ -1,6 +1,6 @@
 ---
 name: go-expert
-description: Go programming specialist for concurrent systems, microservices, and high-performance backends
+description: 'Go programming specialist for concurrent systems, microservices, and high-performance backends'
 version: 1.0.0
 model: sonnet
 color: cyan

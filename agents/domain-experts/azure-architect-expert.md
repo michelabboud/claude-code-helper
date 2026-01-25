@@ -1,6 +1,6 @@
 ---
 name: azure-architect-expert
-description: Azure Solutions Architect specialist for cloud infrastructure, serverless, containers, and enterprise integration
+description: 'Azure Solutions Architect specialist for cloud infrastructure, serverless, containers, and enterprise integration'
 version: 1.0.0
 model: sonnet
 color: blue

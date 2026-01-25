@@ -1,6 +1,6 @@
 ---
 name: game-design-expert
-description: Game design specialist for Unity, Unreal Engine, game mechanics, and architecture patterns
+description: 'Game design specialist for Unity, Unreal Engine, game mechanics, and architecture patterns'
 version: 1.0.0
 model: sonnet
 color: purple

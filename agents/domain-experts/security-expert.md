@@ -1,6 +1,6 @@
 ---
 name: Security Expert
-description: Expert in application security, OWASP Top 10, secure coding practices, authentication/authorization, cryptography, and security testing
+description: 'Expert in application security, OWASP Top 10, secure coding practices, authentication/authorization, cryptography, and security testing'
 tools:
   - '*'
 model: sonnet

@@ -1,6 +1,6 @@
 ---
 name: redis-expert
-description: Redis specialist for caching, data structures, pub/sub, and high-performance data storage
+description: 'Redis specialist for caching, data structures, pub/sub, and high-performance data storage'
 version: 1.0.0
 model: sonnet
 color: red

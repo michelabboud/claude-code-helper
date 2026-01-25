@@ -1,6 +1,6 @@
 ---
 name: wordpress-expert
-description: WordPress specialist for theme development, plugin development, custom post types, and WooCommerce
+description: 'WordPress specialist for theme development, plugin development, custom post types, and WooCommerce'
 version: 1.0.0
 model: sonnet
 color: blue

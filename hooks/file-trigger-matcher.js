@@ -14,6 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 const { minimatch } = require('minimatch');
+const yaml = require('js-yaml');
 
 // Agent directories to scan
 const AGENT_DIRS = [
@@ -30,78 +31,12 @@ function parseYamlFrontmatter(content) {
   const match = content.match(/^---\n([\s\S]*?)\n---/);
   if (!match) return null;
 
-  const yaml = match[1];
-  const result = {};
-
-  // Simple YAML parser for our use case
-  let currentKey = null;
-  let inArray = false;
-  let arrayKey = null;
-  let indent = 0;
-
-  for (const line of yaml.split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-
-    const lineIndent = line.search(/\S/);
-
-    // Key-value pair
-    const kvMatch = trimmed.match(/^(\w+):\s*(.*)$/);
-    if (kvMatch) {
-      const [, key, value] = kvMatch;
-
-      if (lineIndent === 0) {
-        currentKey = key;
-        if (value === '' || value === '|') {
-          result[key] = value === '|' ? '' : {};
-          inArray = false;
-        } else if (value.startsWith('[') && value.endsWith(']')) {
-          result[key] = value
-            .slice(1, -1)
-            .split(',')
-            .map((s) => s.trim().replace(/^["']|["']$/g, ''));
-        } else {
-          result[key] = value.replace(/^["']|["']$/g, '');
-          inArray = false;
-        }
-      } else if (currentKey && typeof result[currentKey] === 'object') {
-        if (Array.isArray(result[currentKey])) {
-          // Skip
-        } else {
-          result[currentKey][key] = value.replace(/^["']|["']$/g, '');
-        }
-      }
-    }
-
-    // Array item
-    if (trimmed.startsWith('- ')) {
-      const itemValue = trimmed.slice(2).trim();
-      if (currentKey) {
-        if (!Array.isArray(result[currentKey])) {
-          result[currentKey] = [];
-        }
-
-        // Check if it's an object item
-        const objMatch = itemValue.match(/^(\w+):\s*(.*)$/);
-        if (objMatch) {
-          const obj = { [objMatch[1]]: objMatch[2].replace(/^["']|["']$/g, '') };
-          result[currentKey].push(obj);
-        } else if (itemValue.startsWith('{')) {
-          // Inline object
-          try {
-            const parsed = JSON.parse(itemValue.replace(/(\w+):/g, '"$1":'));
-            result[currentKey].push(parsed);
-          } catch {
-            result[currentKey].push(itemValue);
-          }
-        } else {
-          result[currentKey].push(itemValue.replace(/^["']|["']$/g, ''));
-        }
-      }
-    }
+  try {
+    return yaml.load(match[1]);
+  } catch (error) {
+    console.error('YAML parse error:', error.message);
+    return null;
   }
-
-  return result;
 }
 
 /**

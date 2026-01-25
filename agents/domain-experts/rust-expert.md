@@ -1,6 +1,6 @@
 ---
 name: rust-expert
-description: Rust systems programming specialist for safe, concurrent, and high-performance applications
+description: 'Rust systems programming specialist for safe, concurrent, and high-performance applications'
 version: 1.0.0
 model: sonnet
 color: orange

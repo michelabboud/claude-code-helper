@@ -1,6 +1,6 @@
 ---
 name: php-expert
-description: PHP specialist for modern PHP 8.2+, Composer, PSR standards, and best practices
+description: 'PHP specialist for modern PHP 8.2+, Composer, PSR standards, and best practices'
 version: 1.0.0
 model: sonnet
 color: purple

@@ -1,6 +1,6 @@
 ---
 name: iOS Development Expert
-description: Expert in Swift, SwiftUI, UIKit, iOS architecture patterns, and App Store deployment
+description: 'Expert in Swift, SwiftUI, UIKit, iOS architecture patterns, and App Store deployment'
 tools:
   - '*'
 model: sonnet

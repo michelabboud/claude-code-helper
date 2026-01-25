@@ -1,6 +1,6 @@
 ---
 name: aws-architect-expert
-description: AWS Solutions Architect specialist for cloud infrastructure, serverless, containers, and best practices
+description: 'AWS Solutions Architect specialist for cloud infrastructure, serverless, containers, and best practices'
 version: 1.0.0
 model: sonnet
 color: orange

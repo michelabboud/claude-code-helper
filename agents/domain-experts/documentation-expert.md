@@ -1,6 +1,6 @@
 ---
 name: Documentation Expert
-description: Expert in technical writing, API documentation, architecture diagrams, and knowledge management
+description: 'Expert in technical writing, API documentation, architecture diagrams, and knowledge management'
 tools:
   - '*'
 model: sonnet

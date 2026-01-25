@@ -1,6 +1,6 @@
 ---
 name: Data Engineering Expert
-description: Expert in ETL pipelines, data warehousing, Apache Airflow, Spark, and data quality engineering
+description: 'Expert in ETL pipelines, data warehousing, Apache Airflow, Spark, and data quality engineering'
 tools:
   - '*'
 model: sonnet
