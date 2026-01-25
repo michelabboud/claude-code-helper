@@ -19,12 +19,15 @@ echo ""
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Get script directory
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+# Get script directory (config-bundle/scripts) and repo root
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CONFIG_BUNDLE_DIR="$( cd "$SCRIPT_DIR/.." && pwd )"
+REPO_ROOT="$( cd "$CONFIG_BUNDLE_DIR/.." && pwd )"
 
-echo "Installing from: $SCRIPT_DIR"
+echo "Installing from: $REPO_ROOT"
 echo ""
 
 # Backup existing configuration
@@ -42,40 +45,99 @@ mkdir -p ~/.claude/statuslines
 mkdir -p ~/.claude/commands
 mkdir -p ~/.claude/skills
 mkdir -p ~/.claude/agents
+mkdir -p ~/.claude/hooks
 echo -e "${GREEN}✓ Directories created${NC}"
 echo ""
 
 # Install global configuration
 echo "Installing global configuration..."
-cp "$SCRIPT_DIR/global-config/settings.json" ~/.claude/
-cp "$SCRIPT_DIR/global-config/CLAUDE.md" ~/.claude/
+cp "$CONFIG_BUNDLE_DIR/global-config/settings.json" ~/.claude/
+cp "$CONFIG_BUNDLE_DIR/global-config/CLAUDE.md" ~/.claude/
 echo -e "${GREEN}✓ Global configuration installed${NC}"
 echo ""
 
 # Install status lines
 echo "Installing status lines..."
-cp "$SCRIPT_DIR/statuslines"/*.sh ~/.claude/statuslines/
+cp "$CONFIG_BUNDLE_DIR/statuslines"/*.sh ~/.claude/statuslines/
 chmod +x ~/.claude/statuslines/*.sh
 echo -e "${GREEN}✓ Status lines installed${NC}"
 echo ""
 
 # Install commands
 echo "Installing custom commands..."
-cp "$SCRIPT_DIR/commands"/* ~/.claude/commands/
-chmod +x ~/.claude/commands/*.sh 2>/dev/null || true
+if [ -d "$CONFIG_BUNDLE_DIR/commands" ] && [ "$(ls -A "$CONFIG_BUNDLE_DIR/commands" 2>/dev/null)" ]; then
+    cp "$CONFIG_BUNDLE_DIR/commands"/* ~/.claude/commands/
+    chmod +x ~/.claude/commands/*.sh 2>/dev/null || true
+fi
+# Also install from root commands directory
+if [ -d "$REPO_ROOT/commands" ] && [ "$(ls -A "$REPO_ROOT/commands" 2>/dev/null)" ]; then
+    cp "$REPO_ROOT/commands"/* ~/.claude/commands/ 2>/dev/null || true
+    chmod +x ~/.claude/commands/*.sh 2>/dev/null || true
+fi
 echo -e "${GREEN}✓ Commands installed${NC}"
 echo ""
 
 # Install skills
 echo "Installing skills..."
-cp -r "$SCRIPT_DIR/skills"/* ~/.claude/skills/
+if [ -d "$CONFIG_BUNDLE_DIR/skills" ]; then
+    cp -r "$CONFIG_BUNDLE_DIR/skills"/* ~/.claude/skills/ 2>/dev/null || true
+fi
+# Also install from root skills directory
+if [ -d "$REPO_ROOT/skills" ]; then
+    cp -r "$REPO_ROOT/skills"/* ~/.claude/skills/ 2>/dev/null || true
+fi
 echo -e "${GREEN}✓ Skills installed${NC}"
 echo ""
 
-# Install agents
+# Install agents (config-bundle agents + domain experts + MCP integrated)
 echo "Installing agents..."
-cp "$SCRIPT_DIR/agents"/* ~/.claude/agents/
-echo -e "${GREEN}✓ Agents installed${NC}"
+# Config bundle agents (planner, implementer)
+if [ -d "$CONFIG_BUNDLE_DIR/agents" ] && [ "$(ls -A "$CONFIG_BUNDLE_DIR/agents" 2>/dev/null)" ]; then
+    cp "$CONFIG_BUNDLE_DIR/agents"/* ~/.claude/agents/ 2>/dev/null || true
+fi
+# Domain expert agents (33 agents)
+if [ -d "$REPO_ROOT/agents/domain-experts" ]; then
+    cp "$REPO_ROOT/agents/domain-experts"/*.md ~/.claude/agents/ 2>/dev/null || true
+fi
+# MCP integrated agents (12 agents)
+if [ -d "$REPO_ROOT/agents/mcp-integrated" ]; then
+    cp "$REPO_ROOT/agents/mcp-integrated"/*.json ~/.claude/agents/ 2>/dev/null || true
+fi
+echo -e "${GREEN}✓ Agents installed ($(ls ~/.claude/agents | wc -l) files)${NC}"
+echo ""
+
+# Install hooks
+echo -e "${BLUE}Installing hooks...${NC}"
+if [ -d "$REPO_ROOT/hooks" ]; then
+    # Copy all hook files
+    cp "$REPO_ROOT/hooks"/*.json ~/.claude/hooks/ 2>/dev/null || true
+    cp "$REPO_ROOT/hooks"/*.js ~/.claude/hooks/ 2>/dev/null || true
+    cp "$REPO_ROOT/hooks"/*.md ~/.claude/hooks/ 2>/dev/null || true
+    chmod +x ~/.claude/hooks/*.js 2>/dev/null || true
+
+    # Install minimatch dependency for hook scripts
+    echo "  Installing hook dependencies..."
+    cd ~/.claude/hooks
+    if [ ! -f "package.json" ]; then
+        npm init -y > /dev/null 2>&1
+    fi
+    npm install minimatch --save > /dev/null 2>&1
+    cd - > /dev/null
+fi
+echo -e "${GREEN}✓ Hooks installed ($(ls ~/.claude/hooks/*.json 2>/dev/null | wc -l) hook configs)${NC}"
+echo ""
+
+# Install triggers configuration
+echo -e "${BLUE}Installing triggers configuration...${NC}"
+if [ -f "$CONFIG_BUNDLE_DIR/triggers.json" ]; then
+    cp "$CONFIG_BUNDLE_DIR/triggers.json" ~/.claude/
+    echo "  ✓ triggers.json"
+fi
+if [ -f "$CONFIG_BUNDLE_DIR/triggers.schema.json" ]; then
+    cp "$CONFIG_BUNDLE_DIR/triggers.schema.json" ~/.claude/
+    echo "  ✓ triggers.schema.json"
+fi
+echo -e "${GREEN}✓ Triggers configuration installed${NC}"
 echo ""
 
 # Summary
@@ -87,9 +149,14 @@ echo ""
 echo "Installed components:"
 echo "  • Global settings and CLAUDE.md"
 echo "  • Status line scripts"
-echo "  • Custom commands (/plan, /observability)"
-echo "  • Auto-planning skill"
-echo "  • Planner and implementer agents"
+echo "  • Custom commands"
+echo "  • Skills"
+echo "  • Agents ($(ls ~/.claude/agents 2>/dev/null | wc -l) files)"
+echo "  • Hooks ($(ls ~/.claude/hooks/*.json 2>/dev/null | wc -l) configs)"
+echo "  • Triggers configuration"
+echo ""
+echo "Hook files installed:"
+ls ~/.claude/hooks/*.json 2>/dev/null | xargs -n1 basename | sed 's/^/  • /'
 echo ""
 echo "Next steps:"
 echo "  1. Configure your API key (if using API):"
