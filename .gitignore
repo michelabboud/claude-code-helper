@@ -57,6 +57,7 @@ demo/*
 !demo/.gitkeep
 !demo/APP-REQUIREMENTS.md
 !demo/IMPLEMENTATION-PLAN.md
+!demo/README.md
 !demo/package.json
 !demo/tsconfig.json
 !demo/.env.example
@@ -66,7 +67,9 @@ demo/*
 !demo/playwright.config.ts
 !demo/Dockerfile
 !demo/docker-compose.yml
+!demo/next.config.js
 !demo/.github/
 !demo/k8s/
+!demo/docs/
 !demo/prisma/
 !demo/src/
