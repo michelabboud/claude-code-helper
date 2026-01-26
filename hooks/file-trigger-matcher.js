@@ -40,26 +40,33 @@ function ensureDir(filePath) {
 
 /**
  * Get short session ID (first 8 chars) for log prefix
+ * Checks: stdinData.session_id > env CLAUDE_SESSION_ID > fallback to PID
  */
-function getSessionPrefix() {
+function getSessionPrefix(stdinData = null) {
+  // Try stdin data first (Claude Code may pass session_id in hook payload)
+  if (stdinData?.session_id) {
+    return stdinData.session_id.substring(0, 8);
+  }
+
+  // Try environment variable
   const sessionId = process.env.CLAUDE_SESSION_ID || '';
   if (sessionId) {
-    // Use first 8 chars of session ID for brevity
     return sessionId.substring(0, 8);
   }
-  // Fallback: use PID if no session ID
+
+  // Fallback: use parent PID (more stable than child PID for identifying session)
   return `pid:${process.ppid || process.pid}`;
 }
 
 /**
  * Log trigger event to file (for tail -f visibility)
  */
-function logTrigger(event, filePath, matches) {
+function logTrigger(event, filePath, matches, stdinData = null) {
   try {
     ensureDir(TRIGGER_LOG);
     const timestamp = new Date().toISOString();
     const fileName = path.basename(filePath);
-    const sessionPrefix = getSessionPrefix();
+    const sessionPrefix = getSessionPrefix(stdinData);
 
     let logLine;
     if (matches.length === 0) {
@@ -87,14 +94,14 @@ function logTrigger(event, filePath, matches) {
 /**
  * Update state file for status line
  */
-function updateTriggerState(event, filePath, matches) {
+function updateTriggerState(event, filePath, matches, stdinData = null) {
   try {
     ensureDir(TRIGGER_STATE);
 
     const state = {
       timestamp: new Date().toISOString(),
-      sessionId: process.env.CLAUDE_SESSION_ID || null,
-      sessionPrefix: getSessionPrefix(),
+      sessionId: stdinData?.session_id || process.env.CLAUDE_SESSION_ID || null,
+      sessionPrefix: getSessionPrefix(stdinData),
       event,
       file: filePath,
       fileName: path.basename(filePath),
@@ -463,8 +470,8 @@ async function main() {
   })));
 
   // Log trigger for user visibility (Option 2 & 3)
-  logTrigger(event, filePath, matches);
-  updateTriggerState(event, filePath, matches);
+  logTrigger(event, filePath, matches, stdinData);
+  updateTriggerState(event, filePath, matches, stdinData);
 
   // Output result
   const output = formatOutput(matches, filePath, event);
