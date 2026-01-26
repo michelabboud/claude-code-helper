@@ -56,3 +56,9 @@ mcp-servers/claude_desktop_config.json
 demo/*
 !demo/.gitkeep
 !demo/APP-REQUIREMENTS.md
+!demo/IMPLEMENTATION-PLAN.md
+!demo/package.json
+!demo/tsconfig.json
+!demo/.env.example
+!demo/prisma/
+!demo/src/
