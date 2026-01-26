@@ -62,5 +62,7 @@ demo/*
 !demo/.env.example
 !demo/postcss.config.js
 !demo/tailwind.config.ts
+!demo/vitest.config.ts
+!demo/playwright.config.ts
 !demo/prisma/
 !demo/src/
