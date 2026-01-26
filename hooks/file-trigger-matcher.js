@@ -22,6 +22,86 @@ const DEBUG_ENABLED = process.env.CLAUDE_HOOKS_DEBUG === 'true' || false;
 // Debug log file
 const DEBUG_LOG = path.join(process.env.HOME || '', '.claude', 'hooks', 'debug.log');
 
+// Trigger log file (for user visibility via tail -f)
+const TRIGGER_LOG = path.join(process.env.HOME || '', '.claude', 'logs', 'agent-triggers.log');
+
+// State file for status line (contains last trigger info)
+const TRIGGER_STATE = path.join(process.env.HOME || '', '.claude', 'state', 'last-trigger.json');
+
+/**
+ * Ensure directory exists
+ */
+function ensureDir(filePath) {
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+}
+
+/**
+ * Log trigger event to file (for tail -f visibility)
+ */
+function logTrigger(event, filePath, matches) {
+  try {
+    ensureDir(TRIGGER_LOG);
+    const timestamp = new Date().toISOString();
+    const fileName = path.basename(filePath);
+
+    let logLine;
+    if (matches.length === 0) {
+      // Don't log non-matches to keep log clean
+      return;
+    } else if (matches.length === 1) {
+      const m = matches[0];
+      const emoji = m.agent.visual?.emoji || '🤖';
+      logLine = `[${timestamp}] ${emoji} ${m.agent.name} ← ${event.toUpperCase()} ${fileName}`;
+    } else {
+      const primary = matches[0];
+      const emoji = primary.agent.visual?.emoji || '🤖';
+      logLine = `[${timestamp}] ${emoji} ${primary.agent.name} (+${matches.length - 1} more) ← ${event.toUpperCase()} ${fileName}`;
+    }
+
+    fs.appendFileSync(TRIGGER_LOG, logLine + '\n');
+
+    // Also write to stderr for immediate visibility in terminal
+    console.error(logLine);
+  } catch (error) {
+    // Silently fail if can't write log
+  }
+}
+
+/**
+ * Update state file for status line
+ */
+function updateTriggerState(event, filePath, matches) {
+  try {
+    ensureDir(TRIGGER_STATE);
+
+    const state = {
+      timestamp: new Date().toISOString(),
+      event,
+      file: filePath,
+      fileName: path.basename(filePath),
+      matchCount: matches.length,
+      primaryAgent: matches.length > 0 ? {
+        name: matches[0].agent.name,
+        emoji: matches[0].agent.visual?.emoji || '🤖',
+        label: matches[0].agent.visual?.label || matches[0].agent.name,
+        priority: matches[0].priority,
+      } : null,
+      allAgents: matches.map(m => ({
+        name: m.agent.name,
+        emoji: m.agent.visual?.emoji || '🤖',
+        priority: m.priority,
+      })),
+    };
+
+    fs.writeFileSync(TRIGGER_STATE, JSON.stringify(state, null, 2));
+  } catch (error) {
+    // Silently fail if can't write state
+  }
+}
+
 // Debug logging function
 function debug(message, data = null) {
   if (!DEBUG_ENABLED) return;
@@ -365,6 +445,10 @@ async function main() {
     pattern: m.pattern,
     priority: m.priority
   })));
+
+  // Log trigger for user visibility (Option 2 & 3)
+  logTrigger(event, filePath, matches);
+  updateTriggerState(event, filePath, matches);
 
   // Output result
   const output = formatOutput(matches, filePath, event);
