@@ -1,19 +1,45 @@
 /**
  * Global Styles
- * Phase 3: Frontend - React/Next.js
+ * Phase 4: Styling & Design System
  *
- * Tailwind base styles and custom global CSS.
- * Should trigger: css-tailwind-expert
+ * Tailwind base styles, dark mode support, and global CSS.
+ * Should trigger: css-tailwind-expert, design-system-guardian
  */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Import component styles */
+@import '../styles/components.css';
+
 @layer base {
   :root {
+    /* Light mode colors */
     --background: 255 255 255;
     --foreground: 17 24 39;
+    --card: 255 255 255;
+    --card-foreground: 17 24 39;
+    --primary: 37 99 235;
+    --primary-foreground: 255 255 255;
+    --muted: 243 244 246;
+    --muted-foreground: 107 114 128;
+    --border: 229 231 235;
+    --ring: 59 130 246;
+  }
+
+  .dark {
+    /* Dark mode colors */
+    --background: 3 7 18;
+    --foreground: 243 244 246;
+    --card: 31 41 55;
+    --card-foreground: 243 244 246;
+    --primary: 96 165 250;
+    --primary-foreground: 3 7 18;
+    --muted: 55 65 81;
+    --muted-foreground: 156 163 175;
+    --border: 55 65 81;
+    --ring: 96 165 250;
   }
 
   html {
@@ -22,6 +48,7 @@
 
   body {
     @apply bg-white text-gray-900 antialiased;
+    @apply dark:bg-gray-950 dark:text-gray-100;
   }
 
   /* Custom scrollbar styles */

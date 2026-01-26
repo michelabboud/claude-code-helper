@@ -1,0 +1,521 @@
+/**
+ * Component Styles
+ * Phase 4: Styling & Design System
+ *
+ * Complex component-specific styles and utility combinations.
+ * Should trigger: css-tailwind-expert, design-system-guardian
+ */
+
+/* ==============================
+   Button Component Styles
+   ============================== */
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-md font-medium transition-all;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+  @apply disabled:pointer-events-none disabled:opacity-50;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+}
+
+.btn-secondary {
+  @apply bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500;
+}
+
+.btn-outline {
+  @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-500;
+}
+
+.btn-ghost {
+  @apply text-gray-700 hover:bg-gray-100 focus:ring-gray-500;
+}
+
+.btn-destructive {
+  @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+}
+
+.btn-sm {
+  @apply h-8 px-3 text-sm;
+}
+
+.btn-md {
+  @apply h-10 px-4 text-sm;
+}
+
+.btn-lg {
+  @apply h-12 px-6 text-base;
+}
+
+.btn-icon {
+  @apply h-10 w-10 p-0;
+}
+
+/* Button loading state */
+.btn-loading {
+  @apply relative text-transparent;
+}
+
+.btn-loading::after {
+  content: '';
+  @apply absolute inset-0 m-auto h-4 w-4;
+  @apply animate-spin rounded-full border-2 border-current border-t-transparent;
+}
+
+/* ==============================
+   Card Component Styles
+   ============================== */
+
+.card {
+  @apply rounded-lg border border-gray-200 bg-white;
+}
+
+.card-elevated {
+  @apply shadow-md;
+}
+
+.card-interactive {
+  @apply cursor-pointer transition-all;
+  @apply hover:border-blue-500 hover:shadow-md;
+}
+
+.card-selected {
+  @apply border-blue-500 ring-2 ring-blue-500 ring-opacity-50;
+}
+
+/* ==============================
+   Input Component Styles
+   ============================== */
+
+.input {
+  @apply block w-full rounded-md border bg-white px-3 py-2 text-sm;
+  @apply placeholder:text-gray-400;
+  @apply focus:outline-none focus:ring-2 focus:ring-offset-0;
+}
+
+.input-default {
+  @apply border-gray-300 focus:border-blue-500 focus:ring-blue-500;
+}
+
+.input-error {
+  @apply border-red-500 focus:border-red-500 focus:ring-red-500;
+}
+
+.input-success {
+  @apply border-green-500 focus:border-green-500 focus:ring-green-500;
+}
+
+/* Input with icon */
+.input-with-icon {
+  @apply pl-10;
+}
+
+.input-icon {
+  @apply absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400;
+}
+
+/* ==============================
+   Badge/Status Styles
+   ============================== */
+
+.badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+.badge-sm {
+  @apply px-2 py-0.5 text-xs;
+}
+
+.badge-lg {
+  @apply px-3 py-1 text-sm;
+}
+
+/* Status badges */
+.badge-todo {
+  @apply bg-gray-100 text-gray-700;
+}
+
+.badge-in-progress {
+  @apply bg-blue-100 text-blue-700;
+}
+
+.badge-in-review {
+  @apply bg-purple-100 text-purple-700;
+}
+
+.badge-blocked {
+  @apply bg-red-100 text-red-700;
+}
+
+.badge-done {
+  @apply bg-green-100 text-green-700;
+}
+
+.badge-cancelled {
+  @apply bg-gray-100 text-gray-500;
+}
+
+/* Priority indicators */
+.priority-low {
+  @apply text-gray-400;
+}
+
+.priority-medium {
+  @apply text-yellow-500;
+}
+
+.priority-high {
+  @apply text-orange-500;
+}
+
+.priority-urgent {
+  @apply text-red-500;
+}
+
+/* ==============================
+   Modal/Dialog Styles
+   ============================== */
+
+.modal-overlay {
+  @apply fixed inset-0 z-50 bg-black/50 backdrop-blur-sm;
+  @apply animate-fade-in;
+}
+
+.modal-content {
+  @apply fixed left-1/2 top-1/2 z-60 w-full max-w-lg -translate-x-1/2 -translate-y-1/2;
+  @apply rounded-lg bg-white p-6 shadow-xl;
+  @apply animate-slide-up;
+}
+
+.modal-header {
+  @apply mb-4 flex items-center justify-between;
+}
+
+.modal-title {
+  @apply text-lg font-semibold text-gray-900;
+}
+
+.modal-close {
+  @apply rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600;
+}
+
+/* ==============================
+   Kanban Board Styles
+   ============================== */
+
+.kanban-board {
+  @apply flex h-full gap-4 overflow-x-auto pb-4;
+}
+
+.kanban-column {
+  @apply flex w-72 flex-shrink-0 flex-col;
+}
+
+.kanban-column-header {
+  @apply mb-3 flex items-center justify-between;
+}
+
+.kanban-column-title {
+  @apply flex items-center gap-2 font-medium text-gray-900;
+}
+
+.kanban-column-count {
+  @apply rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600;
+}
+
+.kanban-column-content {
+  @apply flex-1 space-y-3 rounded-lg bg-gray-50 p-2 transition-colors;
+}
+
+.kanban-column-content.drag-over {
+  @apply bg-blue-50 ring-2 ring-inset ring-blue-300;
+}
+
+.kanban-task {
+  @apply cursor-grab rounded-lg border border-gray-200 bg-white p-3 shadow-sm transition-all;
+  @apply hover:border-blue-300 hover:shadow-md;
+  @apply active:cursor-grabbing;
+}
+
+.kanban-task.dragging {
+  @apply rotate-3 scale-105 opacity-90 shadow-lg;
+}
+
+.kanban-empty {
+  @apply flex h-24 items-center justify-center rounded-lg border-2 border-dashed border-gray-200;
+  @apply text-sm text-gray-400;
+}
+
+/* ==============================
+   Avatar Styles
+   ============================== */
+
+.avatar {
+  @apply inline-flex items-center justify-center rounded-full bg-gray-200 font-medium text-gray-600;
+}
+
+.avatar-xs {
+  @apply h-6 w-6 text-xs;
+}
+
+.avatar-sm {
+  @apply h-8 w-8 text-sm;
+}
+
+.avatar-md {
+  @apply h-10 w-10 text-base;
+}
+
+.avatar-lg {
+  @apply h-12 w-12 text-lg;
+}
+
+.avatar-xl {
+  @apply h-16 w-16 text-xl;
+}
+
+.avatar-group {
+  @apply flex -space-x-2;
+}
+
+.avatar-group > * {
+  @apply ring-2 ring-white;
+}
+
+/* ==============================
+   Navigation Styles
+   ============================== */
+
+.nav-link {
+  @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors;
+}
+
+.nav-link-default {
+  @apply text-gray-700 hover:bg-gray-100 hover:text-gray-900;
+}
+
+.nav-link-active {
+  @apply bg-blue-50 text-blue-700;
+}
+
+.nav-icon {
+  @apply h-5 w-5;
+}
+
+.nav-icon-default {
+  @apply text-gray-400;
+}
+
+.nav-icon-active {
+  @apply text-blue-600;
+}
+
+/* ==============================
+   Progress Bar Styles
+   ============================== */
+
+.progress {
+  @apply h-2 w-full overflow-hidden rounded-full bg-gray-100;
+}
+
+.progress-bar {
+  @apply h-full rounded-full transition-all duration-300;
+}
+
+.progress-bar-primary {
+  @apply bg-blue-500;
+}
+
+.progress-bar-success {
+  @apply bg-green-500;
+}
+
+.progress-bar-warning {
+  @apply bg-yellow-500;
+}
+
+.progress-bar-danger {
+  @apply bg-red-500;
+}
+
+/* ==============================
+   Skeleton Loading Styles
+   ============================== */
+
+.skeleton {
+  @apply animate-pulse rounded bg-gray-200;
+}
+
+.skeleton-text {
+  @apply h-4 w-full;
+}
+
+.skeleton-title {
+  @apply h-6 w-3/4;
+}
+
+.skeleton-avatar {
+  @apply h-10 w-10 rounded-full;
+}
+
+.skeleton-card {
+  @apply h-32 w-full;
+}
+
+/* ==============================
+   Tooltip Styles
+   ============================== */
+
+.tooltip {
+  @apply absolute z-70 rounded bg-gray-900 px-2 py-1 text-xs text-white;
+  @apply invisible opacity-0 transition-all duration-200;
+}
+
+.tooltip-visible {
+  @apply visible opacity-100;
+}
+
+.tooltip-arrow {
+  @apply absolute h-2 w-2 rotate-45 bg-gray-900;
+}
+
+/* ==============================
+   Dropdown Styles
+   ============================== */
+
+.dropdown {
+  @apply absolute z-80 mt-2 min-w-[200px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg;
+  @apply animate-fade-in;
+}
+
+.dropdown-item {
+  @apply flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700;
+  @apply hover:bg-gray-100;
+}
+
+.dropdown-item-danger {
+  @apply text-red-600 hover:bg-red-50;
+}
+
+.dropdown-divider {
+  @apply my-1 border-t border-gray-200;
+}
+
+/* ==============================
+   Form Styles
+   ============================== */
+
+.form-group {
+  @apply space-y-1.5;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700;
+}
+
+.form-helper {
+  @apply text-sm text-gray-500;
+}
+
+.form-error {
+  @apply text-sm text-red-600;
+}
+
+/* ==============================
+   Table Styles
+   ============================== */
+
+.table {
+  @apply w-full text-left text-sm;
+}
+
+.table-header {
+  @apply border-b border-gray-200 bg-gray-50;
+}
+
+.table-header-cell {
+  @apply px-4 py-3 font-semibold text-gray-900;
+}
+
+.table-row {
+  @apply border-b border-gray-100 transition-colors hover:bg-gray-50;
+}
+
+.table-cell {
+  @apply px-4 py-3 text-gray-600;
+}
+
+/* ==============================
+   Empty State Styles
+   ============================== */
+
+.empty-state {
+  @apply flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-200 p-12;
+}
+
+.empty-state-icon {
+  @apply mb-4 h-12 w-12 text-gray-300;
+}
+
+.empty-state-title {
+  @apply text-lg font-medium text-gray-900;
+}
+
+.empty-state-description {
+  @apply mt-1 text-sm text-gray-500;
+}
+
+/* ==============================
+   Notification/Alert Styles
+   ============================== */
+
+.alert {
+  @apply rounded-lg border p-4;
+}
+
+.alert-info {
+  @apply border-blue-200 bg-blue-50 text-blue-800;
+}
+
+.alert-success {
+  @apply border-green-200 bg-green-50 text-green-800;
+}
+
+.alert-warning {
+  @apply border-yellow-200 bg-yellow-50 text-yellow-800;
+}
+
+.alert-error {
+  @apply border-red-200 bg-red-50 text-red-800;
+}
+
+.alert-title {
+  @apply mb-1 font-medium;
+}
+
+.alert-description {
+  @apply text-sm opacity-90;
+}
+
+/* ==============================
+   Dark Mode Overrides
+   ============================== */
+
+@media (prefers-color-scheme: dark) {
+  .dark\:card {
+    @apply border-gray-800 bg-gray-900;
+  }
+
+  .dark\:input {
+    @apply border-gray-700 bg-gray-800 text-white placeholder:text-gray-500;
+  }
+
+  .dark\:modal-content {
+    @apply bg-gray-900;
+  }
+
+  .dark\:dropdown {
+    @apply border-gray-700 bg-gray-800;
+  }
+}
