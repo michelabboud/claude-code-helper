@@ -39,6 +39,19 @@ function ensureDir(filePath) {
 }
 
 /**
+ * Get short session ID (first 8 chars) for log prefix
+ */
+function getSessionPrefix() {
+  const sessionId = process.env.CLAUDE_SESSION_ID || '';
+  if (sessionId) {
+    // Use first 8 chars of session ID for brevity
+    return sessionId.substring(0, 8);
+  }
+  // Fallback: use PID if no session ID
+  return `pid:${process.ppid || process.pid}`;
+}
+
+/**
  * Log trigger event to file (for tail -f visibility)
  */
 function logTrigger(event, filePath, matches) {
@@ -46,6 +59,7 @@ function logTrigger(event, filePath, matches) {
     ensureDir(TRIGGER_LOG);
     const timestamp = new Date().toISOString();
     const fileName = path.basename(filePath);
+    const sessionPrefix = getSessionPrefix();
 
     let logLine;
     if (matches.length === 0) {
@@ -54,11 +68,11 @@ function logTrigger(event, filePath, matches) {
     } else if (matches.length === 1) {
       const m = matches[0];
       const emoji = m.agent.visual?.emoji || '🤖';
-      logLine = `[${timestamp}] ${emoji} ${m.agent.name} ← ${event.toUpperCase()} ${fileName}`;
+      logLine = `[${timestamp}] [${sessionPrefix}] ${emoji} ${m.agent.name} ← ${event.toUpperCase()} ${fileName}`;
     } else {
       const primary = matches[0];
       const emoji = primary.agent.visual?.emoji || '🤖';
-      logLine = `[${timestamp}] ${emoji} ${primary.agent.name} (+${matches.length - 1} more) ← ${event.toUpperCase()} ${fileName}`;
+      logLine = `[${timestamp}] [${sessionPrefix}] ${emoji} ${primary.agent.name} (+${matches.length - 1} more) ← ${event.toUpperCase()} ${fileName}`;
     }
 
     fs.appendFileSync(TRIGGER_LOG, logLine + '\n');
@@ -79,6 +93,8 @@ function updateTriggerState(event, filePath, matches) {
 
     const state = {
       timestamp: new Date().toISOString(),
+      sessionId: process.env.CLAUDE_SESSION_ID || null,
+      sessionPrefix: getSessionPrefix(),
       event,
       file: filePath,
       fileName: path.basename(filePath),
