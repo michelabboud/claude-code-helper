@@ -1,0 +1,145 @@
+# Kubernetes Service
+# Phase 8: DevOps & Deployment
+#
+# Service and Ingress configuration.
+# Should trigger: devops-infrastructure-expert
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskmanager-app
+  labels:
+    app: taskmanager
+    component: app
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
+  selector:
+    app: taskmanager
+    component: app
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: taskmanager-ingress
+  labels:
+    app: taskmanager
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+    # WebSocket support
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
+spec:
+  tls:
+    - hosts:
+        - taskmanager.example.com
+        - www.taskmanager.example.com
+      secretName: taskmanager-tls
+  rules:
+    - host: taskmanager.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: taskmanager-app
+                port:
+                  number: 80
+    - host: www.taskmanager.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: taskmanager-app
+                port:
+                  number: 80
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: taskmanager
+  labels:
+    app: taskmanager
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: taskmanager-secrets
+  labels:
+    app: taskmanager
+type: Opaque
+stringData:
+  database-url: "postgresql://user:password@postgres:5432/taskmanager"
+  redis-url: "redis://redis:6379"
+  jwt-secret: "your-secure-jwt-secret-here"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: taskmanager-config
+  labels:
+    app: taskmanager
+data:
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"
+  CORS_ORIGIN: "https://taskmanager.example.com"
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: taskmanager-network-policy
+  labels:
+    app: taskmanager
+spec:
+  podSelector:
+    matchLabels:
+      app: taskmanager
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+        - podSelector:
+            matchLabels:
+              app: taskmanager
+      ports:
+        - protocol: TCP
+          port: 3000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53

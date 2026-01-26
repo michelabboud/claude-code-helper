@@ -64,5 +64,9 @@ demo/*
 !demo/tailwind.config.ts
 !demo/vitest.config.ts
 !demo/playwright.config.ts
+!demo/Dockerfile
+!demo/docker-compose.yml
+!demo/.github/
+!demo/k8s/
 !demo/prisma/
 !demo/src/
