@@ -60,5 +60,7 @@ demo/*
 !demo/package.json
 !demo/tsconfig.json
 !demo/.env.example
+!demo/postcss.config.js
+!demo/tailwind.config.ts
 !demo/prisma/
 !demo/src/
