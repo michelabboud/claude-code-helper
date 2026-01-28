@@ -322,7 +322,48 @@ When adding new content:
 6. Include installation instructions
 7. Test installation process
 
-## Latest Claude Code Features (v2.1.9)
+## Latest Claude Code Features (v2.1.21)
+
+### VSCode Python Environment Activation (v2.1.21)
+Added automatic Python virtual environment activation via `claudeCode.usePythonEnvironment` setting in VSCode.
+
+### Full-Width Number Input Support (v2.1.21)
+Added support for full-width (zenkaku) number input from Japanese IME.
+
+### PR Review Status Indicator (v2.1.20)
+PR review status indicator now appears in the prompt footer when working on pull requests.
+
+### Task Deletion (v2.1.20)
+Tasks can now be deleted via the TaskUpdate tool by setting status to `deleted`.
+
+### Permission Rules Update (v2.1.20)
+Permission rules like `Bash(*)` are now accepted as equivalent to `Bash`, providing more flexible permission configuration.
+
+### Config Backups (v2.1.20)
+Configuration backups are now timestamped and rotated, keeping the 5 most recent backups.
+
+### Background Agent Permissions (v2.1.20)
+Background agents now prompt for tool permissions before launching, improving security and control.
+
+### Argument Syntax Update (v2.1.19)
+- **Breaking**: Indexed argument syntax changed from `$ARGUMENTS.0` to `$ARGUMENTS[0]` (bracket syntax)
+- **New**: Shorthand `$0`, `$1`, etc. for accessing individual arguments in custom commands
+- Environment variable `CLAUDE_CODE_ENABLE_TASKS` - set to `false` to disable new task system
+
+### Task Management System (v2.1.16)
+New comprehensive task management system with dependency tracking. Tasks can have `blockedBy` relationships and status progression (`pending` → `in_progress` → `completed`).
+
+### VSCode Plugin Management (v2.1.16)
+Native plugin management support in VSCode extension, plus ability for OAuth users to browse/resume remote Claude sessions.
+
+### npm Installation Deprecated (v2.1.15)
+npm installation (`npm install -g @anthropic-ai/claude-code`) is deprecated and shows a warning. Recommended: `curl -fsSL https://claude.ai/install.sh | sh` or see https://docs.anthropic.com/en/docs/claude-code/getting-started
+
+### Bash History Autocomplete (v2.1.14)
+Added history-based autocomplete in bash mode (`!`) - press Tab to complete from bash history.
+
+### Plugin Commit Pinning (v2.1.14)
+Support for pinning plugins to specific git commit SHAs for version control.
 
 ### Customizable Keyboard Shortcuts (v2.1.7)
 Configure custom keybindings via `~/.claude/keybindings.json`. Run `/keybindings` to get started with customizing your keyboard shortcuts.

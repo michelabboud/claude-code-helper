@@ -209,7 +209,7 @@ Breakdown:
 ## 🔄 Dependencies
 
 ### Required
-- **Claude Code CLI**: `npm install -g @anthropic-ai/claude-code`
+- **Claude Code CLI**: Install via `curl -fsSL https://claude.ai/install.sh | sh` (recommended) or `npm install -g @anthropic-ai/claude-code` (deprecated)
 - **Bash**: For scripts (standard on Linux/macOS/WSL)
 - **Node.js**: For Claude Code (v18+ recommended)
 

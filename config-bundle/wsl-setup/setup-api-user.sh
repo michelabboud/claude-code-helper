@@ -43,8 +43,9 @@ export NVM_DIR="\$HOME/.nvm"
 nvm install --lts
 nvm use --lts
 
-# Install Claude Code
-npm install -g @anthropic-ai/claude-code
+# Install Claude Code (recommended method)
+curl -fsSL https://claude.ai/install.sh | sh
+# Alternative: npm install -g @anthropic-ai/claude-code (deprecated)
 
 # Create configuration directories
 mkdir -p ~/.claude/statuslines

@@ -543,8 +543,13 @@ A comprehensive 10-chapter guide covering AI fundamentals through advanced Claud
 
 ### Prerequisites
 ```bash
-# Install Claude Code CLI
+# Install Claude Code CLI (recommended method)
+curl -fsSL https://claude.ai/install.sh | sh
+
+# Alternative: npm (deprecated, shows warning)
 npm install -g @anthropic-ai/claude-code
+
+# See: https://docs.anthropic.com/en/docs/claude-code/getting-started
 
 # Verify installation
 claude --version
@@ -720,7 +725,12 @@ export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=true
 
 **Claude Code not found**
 ```bash
+# Recommended installation method
+curl -fsSL https://claude.ai/install.sh | sh
+
+# Or via npm (deprecated but still works)
 npm install -g @anthropic-ai/claude-code
+
 claude --version
 ```
 

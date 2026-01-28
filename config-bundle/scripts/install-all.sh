@@ -176,7 +176,8 @@ echo ""
 # Check if Claude Code is installed
 if ! command -v claude &> /dev/null; then
     echo -e "${YELLOW}⚠️  Claude Code not found${NC}"
-    echo "Install it with: npm install -g @anthropic-ai/claude-code"
+    echo "Install with: curl -fsSL https://claude.ai/install.sh | sh"
+    echo "Or via npm:   npm install -g @anthropic-ai/claude-code (deprecated)"
     echo ""
 fi
 
