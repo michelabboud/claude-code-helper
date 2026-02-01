@@ -322,7 +322,10 @@ When adding new content:
 6. Include installation instructions
 7. Test installation process
 
-## Latest Claude Code Features (v2.1.21)
+## Latest Claude Code Features (v2.1.22)
+
+### Structured Outputs Fix (v2.1.22)
+Fixed structured outputs for non-interactive (`-p`) mode.
 
 ### VSCode Python Environment Activation (v2.1.21)
 Added automatic Python virtual environment activation via `claudeCode.usePythonEnvironment` setting in VSCode.

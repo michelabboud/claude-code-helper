@@ -63,15 +63,18 @@ Hooks are event-driven scripts or prompts that execute automatically when specif
 
 ### Supported Hook Events
 
-- **PreToolUse** - Before a tool executes
+- **PreToolUse** - Before a tool executes (can inject `additionalContext` or modify inputs via `updatedInput`)
 - **PostToolUse** - After a tool completes
-- **Stop** - When session stops
-- **SubagentStop** - When subagent finishes
-- **SessionStart** - At session start
-- **SessionEnd** - When session ends
-- **UserPromptSubmit** - On user prompt
+- **Stop** - When main agent stops (supports prompt-based evaluation with `model` parameter)
+- **SubagentStop** - When subagent finishes (includes `agent_id`, `agent_transcript_path`)
+- **SubagentStart** - When subagent starts
+- **SessionStart** - At session start (includes `agent_type` if `--agent` specified)
+- **SessionEnd** - When session ends (supports `systemMessage` output)
+- **UserPromptSubmit** - On user prompt (supports `additionalContext`)
 - **PreCompact** - Before conversation compaction
-- **Notification** - On system notifications
+- **Notification** - On system notifications (supports matcher values)
+- **Setup** - On `--init`/`--init-only`/`--maintenance` flags
+- **PermissionRequest** - When tool permission is requested (can auto-approve/deny)
 
 ### Quick Create
 

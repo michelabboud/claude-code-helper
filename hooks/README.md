@@ -24,10 +24,36 @@ Hooks are automation scripts that execute in response to specific events in Clau
 
 | Event | When It Fires | Common Uses |
 |-------|---------------|-------------|
-| `PreToolUse` | Before any tool executes | Validation, blocking |
+| `PreToolUse` | Before any tool executes | Validation, blocking, input modification |
 | `PostToolUse` | After tool completes | Verification, cleanup |
+| `Stop` | When the main agent stops | Final checks, reporting |
+| `SubagentStop` | When a subagent completes | Subagent result handling |
+| `SubagentStart` | When a subagent starts | Subagent monitoring |
 | `SessionStart` | When session begins | Setup, initialization |
 | `SessionEnd` | When session ends | Cleanup, reporting |
+| `UserPromptSubmit` | When user submits a prompt | Input validation, context injection |
+| `PreCompact` | Before conversation compaction | State preservation |
+| `Notification` | On system notifications | Alerting, logging |
+| `Setup` | On `--init`/`--maintenance` flags | Repository setup, maintenance |
+| `PermissionRequest` | When tool permission is requested | Auto-approve/deny logic |
+
+### Hook Capabilities
+
+- **PreToolUse** hooks can return `additionalContext` to inject context into tool execution (v2.1.9+)
+- **PreToolUse** hooks can return `updatedInput` to modify tool inputs (v2.0.10+)
+- **PostToolUse** hooks receive tool output for verification and can perform cleanup
+- **SubagentStart** hooks receive `agent_id` for tracking subagent lifecycle
+- **SubagentStop** hooks receive `agent_id` and `agent_transcript_path` for result handling
+- **UserPromptSubmit** hooks can return `additionalContext` (v1.0.59+)
+- **PreCompact** hooks run before conversation compaction to preserve state or inject summaries
+- **Notification** hooks fire on system notifications and support matcher values for filtering
+- **PermissionRequest** hooks can process 'always allow' suggestions and apply permission updates (v2.0.54+)
+- **Stop** hooks support prompt-based evaluation with optional `model` parameter (v2.0.30+)
+- Hooks support `once: true` to run only once per session — set in settings.json hook config (v2.1.0+):
+  ```json
+  { "matcher": "Write", "command": "echo setup", "once": true }
+  ```
+- Hooks have a **10-minute timeout** (configurable per command) (v2.1.3+)
 
 ## Installation
 
@@ -302,11 +328,14 @@ exit 0
 
 | Variable | Description | Available In |
 |----------|-------------|--------------|
-| `TOOL_NAME` | Name of the tool | All hooks |
+| `TOOL_NAME` | Name of the tool | All tool hooks |
 | `FILE_PATH` | File being modified | Write, Edit |
 | `CONTENT` | Content being written | Write |
 | `OLD_CONTENT` | Original content | Edit |
 | `NEW_CONTENT` | New content | Edit |
+| `CLAUDE_PROJECT_DIR` | Project directory path | All hooks (v1.0.58+) |
+| `hook_event_name` | Name of the hook event | All hooks (v1.0.41+) |
+| `tool_use_id` | Tool use ID | PreToolUse, PostToolUse (v2.0.43+) |
 
 ## Related Resources
 
@@ -326,4 +355,4 @@ exit 0
 
 ---
 
-**Version**: 1.0.0
+**Version**: 2.0.0 (updated for Claude Code CLI v2.1.22)

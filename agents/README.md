@@ -250,6 +250,52 @@ model: sonnet
 ...
 ```
 
+### New Agent Frontmatter Features (v1.0.60+)
+
+Since Claude Code v1.0.60, agents support additional frontmatter fields:
+
+```markdown
+---
+name: secure-developer
+description: Security-focused development agent
+tools: Read, Write, Edit, Bash, Grep, Glob
+model: sonnet
+permissionMode: default
+disallowedTools: WebFetch, WebSearch
+hooks:
+  PreToolUse: |
+    if [[ "$TOOL_NAME" == "Write" ]]; then
+      # Minimal example - for production use a proper scanner (gitleaks, trufflehog)
+      grep -qE "api[_-]?key|password|secret|token" "$FILE_PATH" 2>/dev/null && exit 1
+    fi
+  PostToolUse: |
+    echo "Tool completed: $TOOL_NAME"
+---
+```
+
+| Field | Version | Description |
+|-------|---------|-------------|
+| `model` | v1.0.64 | Specify which model the agent should use (e.g., `sonnet`, `opus`, `haiku`) |
+| `permissionMode` | v2.0.43 | Permission mode for the agent (`default`, etc.) |
+| `disallowedTools` | v2.0.30 | Tools the agent cannot use |
+| `hooks` | v2.1.0 | Inline PreToolUse, PostToolUse, and Stop hooks scoped to the agent |
+
+### Invoking Agents
+
+```bash
+# @-mention syntax (v1.0.62+)
+> @my-android-dev Build a login screen
+
+# Automatic detection based on description
+> Build an Android login screen with Material 3
+
+# Explicit invocation
+> Use the my-android-dev agent to build a login screen
+
+# Disable specific agents via settings
+# In settings.json: "disallowedTools": ["Task(AgentName)"]
+```
+
 ---
 
 ## 📚 Learn More

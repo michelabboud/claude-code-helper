@@ -21,10 +21,18 @@ export interface FilePattern {
 export type EventType =
   | 'PreToolUse'
   | 'PostToolUse'
+  | 'Stop'
+  | 'SubagentStop'
+  | 'SubagentStart'
   | 'PreCommit'
   | 'PostCommit'
   | 'SessionStart'
   | 'SessionEnd'
+  | 'UserPromptSubmit'
+  | 'PreCompact'
+  | 'Notification'
+  | 'Setup'
+  | 'PermissionRequest'
   | 'Error'
   | 'AgentStart'
   | 'AgentEnd';

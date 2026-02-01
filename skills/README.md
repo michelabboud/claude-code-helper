@@ -11,6 +11,9 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 - Provide comprehensive knowledge in a domain
 - Can include examples, patterns, and best practices
 - Hot-reload when saved (no restart needed)
+- Skills and commands are now unified (v2.1.3) - both use `/name` syntax
+- Auto-discovered from nested `.claude/skills` directories (v2.1.6+)
+- Visible in slash command menu by default (opt-out with `user-invocable: false`)
 
 ## Available Skills
 
@@ -299,15 +302,45 @@ Description and example...
 
 ### Skill Frontmatter Options
 
-| Field | Description |
-|-------|-------------|
-| `name` | Skill identifier |
-| `description` | When to activate (used for matching) |
-| `category` | Grouping category |
-| `priority` | P0-P3 priority level |
-| `hooks` | Inline hook definitions |
-| `context` | `fork` for isolated execution |
-| `agent` | Specify agent type |
+| Field | Description | Version |
+|-------|-------------|---------|
+| `name` | Skill identifier | - |
+| `description` | When to activate (used for matching) | - |
+| `category` | Grouping category | - |
+| `priority` | P0-P3 priority level | - |
+| `allowed-tools` | Tools the skill can use (supports YAML lists) | v2.1.0 |
+| `hooks` | Inline hook definitions (PreToolUse, PostToolUse, Stop) | v2.1.0 |
+| `context` | `fork` for isolated execution in a forked sub-agent | v2.1.0 |
+| `agent` | Specify agent type for execution | v2.1.0 |
+| `model` | Specify model for skill execution | v1.0.57 |
+| `user-invocable` | Show in slash command menu (default: true) | v2.1.0 |
+| `argument-hint` | Hint text for expected arguments | v1.0.54 |
+| `skills` | Auto-load additional skills for subagents | v2.0.43 |
+
+### Advanced Frontmatter Example
+
+```yaml
+---
+name: secure-deployment
+description: Deploy with security checks
+allowed-tools:
+  - Read
+  - Bash
+  - Edit
+context: fork
+agent: devops-infrastructure-expert
+model: sonnet
+hooks:
+  PreToolUse: |
+    if [[ "$TOOL_NAME" == "Bash" ]]; then
+      echo "Validating command..."
+    fi
+---
+```
+
+### Session ID Access (v2.1.9+)
+
+Skills can access the current session ID using `${CLAUDE_SESSION_ID}` string substitution, enabling session-aware behavior like logging or state tracking.
 
 ### Best Practices
 
@@ -319,13 +352,16 @@ Description and example...
 
 ## Skills vs Commands
 
+As of Claude Code v2.1.3, skills and commands are **unified** - they share the same mental model and behavior. Both can be invoked with `/name` syntax and both support the same frontmatter options.
+
 | Aspect | Skills | Commands |
 |--------|--------|----------|
 | Purpose | Teach knowledge | Perform actions |
-| Activation | Context-based | Explicit invocation |
+| Activation | Context-based or `/name` | Explicit `/name` invocation |
 | Content | Comprehensive | Lean instructions |
 | Format | Can be long | Should be short |
 | Example | TDD patterns | `/refactor` |
+| Invocation | `/tdd-workflow` | `/refactor` |
 
 ## Related Resources
 
@@ -345,4 +381,4 @@ Description and example...
 
 ---
 
-**Version**: 1.0.0
+**Version**: 2.0.0 (updated for Claude Code CLI v2.1.22)

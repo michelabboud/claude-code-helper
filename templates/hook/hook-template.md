@@ -1,6 +1,6 @@
 ---
 hook_name: [Hook Name]
-event: [PreToolUse|PostToolUse|Stop|SubagentStop|SessionStart|SessionEnd|UserPromptSubmit|PreCompact|Notification]
+event: [PreToolUse|PostToolUse|Stop|SubagentStop|SubagentStart|SessionStart|SessionEnd|UserPromptSubmit|PreCompact|Notification|Setup|PermissionRequest]
 description: [Brief description of what this hook does]
 priority: [P0|P1|P2|P3]
 ---
@@ -15,15 +15,18 @@ priority: [P0|P1|P2|P3]
 
 ### Available Events
 
-- **PreToolUse** - Before a tool is executed
+- **PreToolUse** - Before a tool is executed (can return `additionalContext` or `updatedInput`)
 - **PostToolUse** - After a tool completes execution
-- **Stop** - When the session is stopped
-- **SubagentStop** - When a subagent completes
-- **SessionStart** - At the beginning of a new session
-- **SessionEnd** - When the session ends
-- **UserPromptSubmit** - When the user submits a prompt
+- **Stop** - When the main agent stops (supports prompt-based evaluation with `model` parameter)
+- **SubagentStop** - When a subagent completes (includes `agent_id` and `agent_transcript_path`)
+- **SubagentStart** - When a subagent starts
+- **SessionStart** - At the beginning of a new session (includes `agent_type` if `--agent` specified)
+- **SessionEnd** - When the session ends (supports `systemMessage` output)
+- **UserPromptSubmit** - When the user submits a prompt (can return `additionalContext`)
 - **PreCompact** - Before conversation compaction
-- **Notification** - On system notifications
+- **Notification** - On system notifications (supports matcher values)
+- **Setup** - On `--init`, `--init-only`, or `--maintenance` CLI flags
+- **PermissionRequest** - When tool permission is requested (can auto-approve/deny)
 
 ## Hook Timeout
 

@@ -343,16 +343,42 @@ Clear instructions for Claude to follow when this command is invoked.
 
 ### Frontmatter Options
 
-| Field | Description |
-|-------|-------------|
-| `command` | Command name (optional, defaults to filename) |
-| `description` | Short description shown in command list |
-| `category` | Grouping category |
-| `priority` | P0-P3 priority level |
-| `allowed-tools` | Tools Claude can use |
-| `hooks` | Inline hook definitions |
-| `context` | `fork` for isolated execution |
-| `agent` | Specify agent type |
+| Field | Description | Version |
+|-------|-------------|---------|
+| `description` | Short description shown in command list | - |
+| `category` | Grouping category | - |
+| `priority` | P0-P3 priority level | - |
+| `allowed-tools` | Tools Claude can use (supports YAML lists) | - |
+| `argument-hint` | Hint text for expected arguments | v1.0.54 |
+| `hooks` | Inline hook definitions | v2.1.0 |
+| `context` | `fork` for isolated execution in a sub-agent | v2.1.0 |
+| `agent` | Specify agent type for execution | v2.1.0 |
+| `model` | Specify model for this command | v1.0.57 |
+| `user-invocable` | Show in slash command menu (default: true) | v2.1.0 |
+
+### Argument Syntax (v2.1.19+)
+
+Commands can access arguments passed by the user:
+
+```markdown
+---
+description: Deploy to environment
+argument-hint: <environment>
+allowed-tools: Bash
+---
+
+Deploy to the $ARGUMENTS environment.
+
+# Bracket syntax for indexed access
+First argument: $ARGUMENTS[0]
+Second argument: $ARGUMENTS[1]
+
+# Shorthand syntax (v2.1.19+)
+First argument: $0
+Second argument: $1
+```
+
+**Note**: The old dot syntax (`$ARGUMENTS.0`) is deprecated as of v2.1.19. Use bracket syntax (`$ARGUMENTS[0]`) or shorthand (`$0`).
 
 ### Best Practices
 
@@ -410,4 +436,4 @@ These commands are part of the [claude-code-helper](https://github.com/michelabb
 
 ---
 
-**Version**: 1.0.0
+**Version**: 2.0.0 (updated for Claude Code CLI v2.1.22)

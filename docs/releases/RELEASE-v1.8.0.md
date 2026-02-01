@@ -1,8 +1,8 @@
-# Release v1.8.0 - Claude Code CLI v2.1.21 Compatibility Update
+# Release v1.8.0 - Claude Code CLI v2.1.22 Compatibility Update
 
-**Documentation and compatibility update for Claude Code CLI v2.1.21**
+**Documentation and compatibility update for Claude Code CLI v2.1.22**
 
-This release updates the repository to align with the latest Claude Code CLI features and deprecations from v2.1.10 through v2.1.21.
+This release updates the repository to align with the latest Claude Code CLI features and deprecations from v0.2.30 through v2.1.22.
 
 ---
 
@@ -68,6 +68,39 @@ Indexed argument syntax changed from `$ARGUMENTS.0` to `$ARGUMENTS[0]` (bracket 
 - **Bash History Autocomplete** - `!` mode with Tab completion
 - **Plugin Commit Pinning** - Pin to specific git SHAs
 
+### v2.1.22
+- **Structured Outputs Fix** - Fixed for non-interactive (`-p`) mode
+
+---
+
+## Repository Tools Updated
+
+### Hook System (hooks/)
+- Added 6 new hook events: `SubagentStart`, `Setup`, `PermissionRequest`, `Stop`, `Notification`, `PreCompact`
+- Documented hook capabilities: `additionalContext`, `updatedInput`, `systemMessage`, `once: true`
+- Added new environment variables: `CLAUDE_PROJECT_DIR`, `hook_event_name`, `tool_use_id`
+- Updated hook template and README to v2.0.0
+
+### Agent System (agents/)
+- Documented new agent frontmatter fields: `model`, `permissionMode`, `disallowedTools`, `hooks`
+- Documented `@agent-name` mention syntax (v1.0.62+)
+- Documented `Task(AgentName)` disable syntax for settings.json
+
+### Skill System (skills/)
+- Documented unified skills/commands model (v2.1.3)
+- Added new frontmatter fields: `allowed-tools` (YAML lists), `context: fork`, `agent`, `model`, `user-invocable`, `argument-hint`, `skills`
+- Documented `${CLAUDE_SESSION_ID}` substitution (v2.1.9+)
+- Documented auto-discovery from nested directories (v2.1.6+)
+
+### Command System (commands/)
+- Documented argument bracket syntax `$ARGUMENTS[0]` (v2.1.19+)
+- Documented shorthand `$0`, `$1` syntax (v2.1.19+)
+- Added new frontmatter fields: `argument-hint`, `model`, `user-invocable`
+
+### Trigger Matcher (trigger-matcher/)
+- Added new event types to `EventType`: `Stop`, `SubagentStop`, `SubagentStart`, `UserPromptSubmit`, `PreCompact`, `Notification`, `Setup`, `PermissionRequest`
+- Updated triggers schema with new event type pattern
+
 ---
 
 ## Files Changed
@@ -75,8 +108,15 @@ Indexed argument syntax changed from `$ARGUMENTS.0` to `$ARGUMENTS[0]` (bracket 
 ### Updated
 | File | Change |
 |------|--------|
-| `README.md` | Updated 2 npm install references to official installer |
-| `CLAUDE.md` | Added features from v2.1.10-v2.1.21, updated header to v2.1.21 |
+| `README.md` | Updated npm install references to official installer |
+| `CLAUDE.md` | Added features from v2.1.10-v2.1.22, updated header to v2.1.22 |
+| `hooks/README.md` | Added 6 new events, capabilities, env vars; updated to v2.0.0 |
+| `templates/hook/hook-template.md` | Added new events with capability descriptions |
+| `agents/README.md` | Added new frontmatter features section |
+| `skills/README.md` | Added new frontmatter fields, unified model, session ID; updated to v2.0.0 |
+| `commands/README.md` | Added argument syntax, new frontmatter fields; updated to v2.0.0 |
+| `trigger-matcher/src/types.ts` | Added 8 new EventType values |
+| `config-bundle/triggers.schema.json` | Updated event type regex pattern |
 | `config-bundle/wsl-setup/setup-pro-user.sh` | Updated npm install to curl installer |
 | `config-bundle/wsl-setup/setup-api-user.sh` | Updated npm install to curl installer |
 | `config-bundle/scripts/install-all.sh` | Updated error message with new install method |
@@ -93,8 +133,8 @@ Indexed argument syntax changed from `$ARGUMENTS.0` to `$ARGUMENTS[0]` (bracket 
 
 | Claude Code CLI | Repository Version | Status |
 |-----------------|-------------------|--------|
-| v2.1.21 | v1.8.0 | Fully compatible |
-| v2.1.15-v2.1.20 | v1.8.0 | Compatible |
+| v2.1.22 | v1.8.0 | Fully compatible |
+| v2.1.15-v2.1.21 | v1.8.0 | Compatible |
 | v2.1.9-v2.1.14 | v1.7.0 | Compatible |
 | < v2.1.9 | v1.7.0 | May have missing features |
 
@@ -158,7 +198,7 @@ The following remain fully compatible:
 | v1.5.0 | 2026-01-11 | Agent loop prevention |
 | v1.6.0 | 2026-01-11 | Solving AI coding problems |
 | v1.7.0 | 2026-01-11 | RAG MCP Server |
-| v1.8.0 | 2026-01-28 | **CLI v2.1.21 compatibility update** |
+| v1.8.0 | 2026-01-30 | **CLI v2.1.22 compatibility update** |
 
 ---
 

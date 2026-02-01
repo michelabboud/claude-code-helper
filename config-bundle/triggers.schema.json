@@ -93,10 +93,10 @@
         },
         "events": {
           "type": "array",
-          "description": "Event types to match (e.g., 'Edit', 'PreCommit', 'PostToolUse:Bash')",
+          "description": "Event types to match (e.g., 'PreToolUse:Write', 'PreCommit', 'PostToolUse:Bash')",
           "items": {
             "type": "string",
-            "pattern": "^(PreToolUse|PostToolUse|PreCommit|PostCommit|SessionStart|SessionEnd|Error|AgentStart|AgentEnd)(:[A-Za-z]+)?$"
+            "pattern": "^(PreToolUse|PostToolUse|Stop|SubagentStop|SubagentStart|PreCommit|PostCommit|SessionStart|SessionEnd|UserPromptSubmit|PreCompact|Notification|Setup|PermissionRequest|Error|AgentStart|AgentEnd)(:[A-Za-z]+)?$"
           }
         }
       }
