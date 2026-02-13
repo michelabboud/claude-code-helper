@@ -20,11 +20,10 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { ChromaClient } from "chromadb";
 import * as fs from "fs/promises";
 import * as path from "path";
 import { config } from "dotenv";
-import { createVectorDatabase, type VectorDatabase } from "./vector-db-adapter.js";
+import { createVectorDatabase, type VectorDatabase, type VectorDocument } from "./vector-db-adapter.js";
 
 // Load environment variables
 config();
@@ -63,9 +62,6 @@ dbInitPromise = (async () => {
     process.exit(1);
   }
 })();
-
-// Keep chromaClient for backward compatibility (will be removed in v2.0.0)
-const chromaClient = new ChromaClient();
 
 // Tool input schemas
 const IndexCodebaseSchema = z.object({
@@ -192,18 +188,8 @@ async function indexCodebase(args: z.infer<typeof IndexCodebaseSchema>) {
   try {
     const { rootPath, collectionName, filePatterns, excludePatterns, chunkSize } = args;
 
-    // Get or create collection
-    let collection;
-    try {
-      collection = await chromaClient.getOrCreateCollection({
-        name: collectionName,
-      });
-    } catch (error) {
-      return {
-        success: false,
-        error: `Failed to create collection: ${error}`,
-      };
-    }
+    // Create collection via adapter
+    await vectorDB.createCollection(collectionName);
 
     // Read all files
     const files = await readFileRecursive(rootPath, filePatterns, excludePatterns);
@@ -217,18 +203,17 @@ async function indexCodebase(args: z.infer<typeof IndexCodebaseSchema>) {
       fileStats[file.path] = chunks.length;
       totalChunks += chunks.length;
 
-      const ids = chunks.map((_, i) => `${file.path}::chunk${i}`);
-      const metadatas = chunks.map((_, i) => ({
-        filePath: file.path,
-        chunkIndex: i,
-        totalChunks: chunks.length,
+      const documents: VectorDocument[] = chunks.map((chunk, i) => ({
+        id: `${file.path}::chunk${i}`,
+        content: chunk,
+        metadata: {
+          filePath: file.path,
+          chunkIndex: i,
+          totalChunks: chunks.length,
+        },
       }));
 
-      await collection.add({
-        ids,
-        documents: chunks,
-        metadatas,
-      });
+      await vectorDB.addDocuments(collectionName, documents);
     }
 
     return {
@@ -251,26 +236,23 @@ async function indexFile(args: z.infer<typeof IndexFileSchema>) {
   try {
     const { filePath, collectionName, metadata } = args;
 
-    const collection = await chromaClient.getOrCreateCollection({
-      name: collectionName,
-    });
+    await vectorDB.createCollection(collectionName);
 
     const content = await fs.readFile(filePath, "utf-8");
     const chunks = chunkText(content, 1000);
 
-    const ids = chunks.map((_, i) => `${filePath}::chunk${i}`);
-    const metadatas = chunks.map((_, i) => ({
-      filePath,
-      chunkIndex: i,
-      totalChunks: chunks.length,
-      ...metadata,
+    const documents: VectorDocument[] = chunks.map((chunk, i) => ({
+      id: `${filePath}::chunk${i}`,
+      content: chunk,
+      metadata: {
+        filePath,
+        chunkIndex: i,
+        totalChunks: chunks.length,
+        ...metadata,
+      },
     }));
 
-    await collection.add({
-      ids,
-      documents: chunks,
-      metadatas,
-    });
+    await vectorDB.addDocuments(collectionName, documents);
 
     return {
       success: true,
@@ -290,32 +272,13 @@ async function semanticSearch(args: z.infer<typeof SemanticSearchSchema>) {
   try {
     const { query, collectionName, nResults, filter } = args;
 
-    const collection = await chromaClient.getOrCreateCollection({
-      name: collectionName,
-    });
-
-    const results = await collection.query({
-      queryTexts: [query],
-      nResults,
-      where: filter,
-    });
-
-    const formattedResults = (results.documents[0] || [])
-      .map((doc, i) => {
-        if (!doc) return null;
-        return {
-          content: doc,
-          metadata: results.metadatas?.[0]?.[i] || {},
-          distance: results.distances?.[0]?.[i],
-        };
-      })
-      .filter((r): r is NonNullable<typeof r> => r !== null);
+    const results = await vectorDB.search(collectionName, query, { nResults, filter });
 
     return {
       success: true,
       query,
-      results: formattedResults,
-      count: formattedResults.length,
+      results,
+      count: results.length,
     };
   } catch (error) {
     return {
@@ -329,25 +292,13 @@ async function findSimilarCode(args: z.infer<typeof FindSimilarCodeSchema>) {
   try {
     const { codeSnippet, collectionName, nResults, threshold } = args;
 
-    const collection = await chromaClient.getOrCreateCollection({
-      name: collectionName,
-    });
+    const searchResults = await vectorDB.search(collectionName, codeSnippet, { nResults });
 
-    const results = await collection.query({
-      queryTexts: [codeSnippet],
-      nResults,
-    });
-
-    let formattedResults = (results.documents[0] || [])
-      .map((doc, i) => {
-        if (!doc) return null;
-        return {
-          content: doc,
-          metadata: results.metadatas?.[0]?.[i] || {},
-          similarity: 1 - (results.distances?.[0]?.[i] || 0),
-        };
-      })
-      .filter((r): r is NonNullable<typeof r> => r !== null);
+    let formattedResults = searchResults.map((r) => ({
+      content: r.content,
+      metadata: r.metadata,
+      similarity: r.score != null ? r.score : 1 - (r.distance || 0),
+    }));
 
     if (threshold) {
       formattedResults = formattedResults.filter((r) => r.similarity >= threshold);
@@ -370,15 +321,7 @@ async function getRelevantContext(args: z.infer<typeof GetRelevantContextSchema>
   try {
     const { task, collectionName, maxTokens } = args;
 
-    const collection = await chromaClient.getOrCreateCollection({
-      name: collectionName,
-    });
-
-    // Query with more results initially
-    const results = await collection.query({
-      queryTexts: [task],
-      nResults: 20,
-    });
+    const searchResults = await vectorDB.search(collectionName, task, { nResults: 20 });
 
     // Accumulate context up to maxTokens (rough estimate: 1 token ≈ 4 chars)
     const maxChars = maxTokens * 4;
@@ -389,20 +332,16 @@ async function getRelevantContext(args: z.infer<typeof GetRelevantContextSchema>
       file: string;
     }> = [];
 
-    for (let i = 0; i < (results.documents[0] || []).length; i++) {
-      const doc = results.documents[0]?.[i];
-      const metadata = results.metadatas?.[0]?.[i];
-
-      if (!doc || !metadata) continue;
-      if (totalChars + doc.length > maxChars) break;
+    for (const result of searchResults) {
+      if (totalChars + result.content.length > maxChars) break;
 
       contextChunks.push({
-        content: doc,
-        metadata,
-        file: (metadata.filePath as string) || "unknown",
+        content: result.content,
+        metadata: result.metadata,
+        file: (result.metadata.filePath as string) || "unknown",
       });
 
-      totalChars += doc.length;
+      totalChars += result.content.length;
     }
 
     // Group by file
@@ -431,25 +370,12 @@ async function getRelevantContext(args: z.infer<typeof GetRelevantContextSchema>
 
 async function listCollections(args: z.infer<typeof ListCollectionsSchema>) {
   try {
-    const collections = await chromaClient.listCollections();
-
-    const collectionInfo = await Promise.all(
-      collections.map(async (col: any) => {
-        const collection = await chromaClient.getOrCreateCollection({
-          name: col.name,
-        });
-        const count = await collection.count();
-        return {
-          name: col.name,
-          count,
-        };
-      })
-    );
+    const collections = await vectorDB.listCollections();
 
     return {
       success: true,
-      collections: collectionInfo,
-      total: collectionInfo.length,
+      collections,
+      total: collections.length,
     };
   } catch (error) {
     return {
@@ -463,30 +389,12 @@ async function getCollectionStats(args: z.infer<typeof GetCollectionStatsSchema>
   try {
     const { collectionName } = args;
 
-    const collection = await chromaClient.getOrCreateCollection({
-      name: collectionName,
-    });
-
-    const count = await collection.count();
-
-    // Get sample to analyze
-    const sample = await collection.get({
-      limit: 100,
-    });
-
-    const files = new Set<string>();
-    for (const metadata of sample.metadatas || []) {
-      if (metadata && metadata.filePath) {
-        files.add(metadata.filePath as string);
-      }
-    }
+    const stats = await vectorDB.getCollectionStats(collectionName);
 
     return {
       success: true,
       collection: collectionName,
-      totalChunks: count,
-      filesInSample: files.size,
-      sampleSize: (sample.documents || []).length,
+      totalChunks: stats.totalChunks,
     };
   } catch (error) {
     return {
@@ -500,9 +408,7 @@ async function deleteCollection(args: z.infer<typeof DeleteCollectionSchema>) {
   try {
     const { collectionName } = args;
 
-    await chromaClient.deleteCollection({
-      name: collectionName,
-    });
+    await vectorDB.deleteCollection(collectionName);
 
     return {
       success: true,

@@ -398,7 +398,7 @@ export class RedisAdapter implements VectorDatabase {
     const queryEmbedding = await this.embedder.generate(query);
     const queryBuffer = Buffer.from(new Float32Array(queryEmbedding).buffer);
 
-    // Perform KNN vector search
+    // Perform KNN vector search — return all stored fields so metadata is preserved
     const results = await this.client.ft.search(
       `idx:${collectionName}`,
       `*=>[KNN ${options.nResults || 5} @embedding $vec AS score]`,
@@ -406,7 +406,6 @@ export class RedisAdapter implements VectorDatabase {
         PARAMS: {
           vec: queryBuffer,
         },
-        RETURN: ["content", "score"],
         SORTBY: "score",
         DIALECT: 2,
       }
@@ -416,11 +415,14 @@ export class RedisAdapter implements VectorDatabase {
       return [];
     }
 
-    return results.documents.map((doc: any) => ({
-      content: doc.value.content || "",
-      metadata: doc.value,
-      score: parseFloat(doc.value.score) || 0,
-    }));
+    return results.documents.map((doc: any) => {
+      const { content, score, embedding, ...metadata } = doc.value;
+      return {
+        content: content || "",
+        metadata,
+        score: parseFloat(score) || 0,
+      };
+    });
   }
 
   async healthCheck(): Promise<boolean> {

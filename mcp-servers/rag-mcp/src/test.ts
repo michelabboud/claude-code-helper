@@ -3,12 +3,17 @@
 /**
  * Test suite for RAG MCP Server
  *
- * Tests all tools to ensure proper functionality
+ * Tests all tools to ensure proper functionality.
+ * Respects VECTOR_DB_TYPE env var to test against any supported backend.
  */
 
-import { ChromaClient } from "chromadb";
 import * as fs from "fs/promises";
 import * as path from "path";
+import { config } from "dotenv";
+import { createVectorDatabase, type VectorDatabase, type VectorDocument } from "./vector-db-adapter.js";
+
+// Load environment variables
+config();
 
 const TEST_COLLECTION = "test_codebase";
 const TEST_DIR = "./test_files";
@@ -24,6 +29,24 @@ const colors = {
 
 function log(message: string, color: keyof typeof colors = "reset") {
   console.log(`${colors[color]}${message}${colors.reset}`);
+}
+
+// Initialize vector database via adapter
+let vectorDB: VectorDatabase;
+
+async function initDB(): Promise<void> {
+  const dbType = (process.env.VECTOR_DB_TYPE || "chromadb") as "chromadb" | "redis" | "qdrant";
+  const dbConfig = {
+    host: process.env.VECTOR_DB_HOST || "localhost",
+    port: parseInt(process.env.VECTOR_DB_PORT || (dbType === "chromadb" ? "8000" : dbType === "redis" ? "6379" : "6333")),
+  };
+  const embeddingType = (process.env.EMBEDDING_TYPE || "local") as "local" | "openai";
+  const modelVariant = (process.env.MODEL_VARIANT || "default").toLowerCase();
+
+  log(`\n🔌 Using vector database: ${dbType.toUpperCase()} at ${dbConfig.host}:${dbConfig.port}`, "blue");
+
+  vectorDB = await createVectorDatabase(dbType, dbConfig, embeddingType, modelVariant);
+  log(`✅ ${dbType.toUpperCase()} database initialized`, "green");
 }
 
 async function setup() {
@@ -116,16 +139,13 @@ async function cleanup() {
   log("\n🧹 Cleaning up...", "blue");
 
   try {
-    // Delete test collection
-    const client = new ChromaClient();
-    await client.deleteCollection({ name: TEST_COLLECTION });
+    await vectorDB.deleteCollection(TEST_COLLECTION);
     log("✅ Deleted test collection", "green");
   } catch (error) {
     // Collection might not exist, that's ok
   }
 
   try {
-    // Delete test directory
     await fs.rm(TEST_DIR, { recursive: true });
     log("✅ Deleted test files\n", "green");
   } catch (error) {
@@ -137,15 +157,9 @@ async function cleanup() {
 async function testIndexCodebase() {
   log("\n📦 Test 1: Index Codebase", "blue");
 
-  const client = new ChromaClient();
-
   try {
-    // Create collection
-    const collection = await client.getOrCreateCollection({
-      name: TEST_COLLECTION,
-    });
+    await vectorDB.createCollection(TEST_COLLECTION);
 
-    // Read and index files
     const files = await fs.readdir(TEST_DIR);
     let totalChunks = 0;
 
@@ -153,23 +167,18 @@ async function testIndexCodebase() {
       const filePath = path.join(TEST_DIR, file);
       const content = await fs.readFile(filePath, "utf-8");
 
-      // Chunk the content
-      const chunks = [content]; // Simple: 1 chunk per file for testing
+      const documents: VectorDocument[] = [{
+        id: `${file}::chunk0`,
+        content,
+        metadata: {
+          filePath: file,
+          chunkIndex: 0,
+          totalChunks: 1,
+        },
+      }];
 
-      const ids = chunks.map((_, i) => `${file}::chunk${i}`);
-      const metadatas = chunks.map((_, i) => ({
-        filePath: file,
-        chunkIndex: i,
-        totalChunks: chunks.length,
-      }));
-
-      await collection.add({
-        ids,
-        documents: chunks,
-        metadatas,
-      });
-
-      totalChunks += chunks.length;
+      await vectorDB.addDocuments(TEST_COLLECTION, documents);
+      totalChunks += 1;
     }
 
     log(`✅ Indexed ${files.length} files with ${totalChunks} chunks`, "green");
@@ -184,14 +193,7 @@ async function testIndexCodebase() {
 async function testSemanticSearch() {
   log("\n🔍 Test 2: Semantic Search", "blue");
 
-  const client = new ChromaClient();
-
   try {
-    const collection = await client.getOrCreateCollection({
-      name: TEST_COLLECTION,
-    });
-
-    // Test queries
     const queries = [
       "how does authentication work?",
       "user management",
@@ -199,19 +201,15 @@ async function testSemanticSearch() {
     ];
 
     for (const query of queries) {
-      const results = await collection.query({
-        queryTexts: [query],
-        nResults: 3,
-      });
+      const results = await vectorDB.search(TEST_COLLECTION, query, { nResults: 3 });
 
       log(`\n  Query: "${query}"`, "yellow");
-      log(`  Found ${results.documents[0].length} results`, "green");
+      log(`  Found ${results.length} results`, "green");
 
-      results.documents[0]?.forEach((doc, i) => {
-        const metadata = results.metadatas?.[0]?.[i];
-        if (metadata && metadata.filePath) {
-          log(`    - ${metadata.filePath} (distance: ${results.distances?.[0]?.[i]?.toFixed(4)})`, "reset");
-        }
+      results.forEach((result) => {
+        const filePath = result.metadata?.filePath || "unknown";
+        const distance = result.distance?.toFixed(4) ?? result.score?.toFixed(4) ?? "N/A";
+        log(`    - ${filePath} (distance/score: ${distance})`, "reset");
       });
     }
 
@@ -227,32 +225,21 @@ async function testSemanticSearch() {
 async function testFindSimilarCode() {
   log("\n🔎 Test 3: Find Similar Code", "blue");
 
-  const client = new ChromaClient();
-
   try {
-    const collection = await client.getOrCreateCollection({
-      name: TEST_COLLECTION,
-    });
-
     const codeSnippet = `async function getUser(id: string): Promise<User> {
   return null;
 }`;
 
-    const results = await collection.query({
-      queryTexts: [codeSnippet],
-      nResults: 3,
-    });
+    const results = await vectorDB.search(TEST_COLLECTION, codeSnippet, { nResults: 3 });
 
     log(`\n  Looking for code similar to:`, "yellow");
     log(`  ${codeSnippet.split('\n')[0]}...`, "reset");
-    log(`\n  Found ${results.documents[0].length} similar snippets`, "green");
+    log(`\n  Found ${results.length} similar snippets`, "green");
 
-    results.documents[0]?.forEach((doc, i) => {
-      const metadata = results.metadatas?.[0]?.[i];
-      if (metadata && metadata.filePath) {
-        const similarity = 1 - (results.distances?.[0]?.[i] || 0);
-        log(`    - ${metadata.filePath} (similarity: ${similarity.toFixed(2)})`, "reset");
-      }
+    results.forEach((result) => {
+      const filePath = result.metadata?.filePath || "unknown";
+      const similarity = result.score != null ? result.score : 1 - (result.distance || 0);
+      log(`    - ${filePath} (similarity: ${similarity.toFixed(2)})`, "reset");
     });
 
     log("\n✅ Similar code search working", "green");
@@ -267,37 +254,25 @@ async function testFindSimilarCode() {
 async function testGetRelevantContext() {
   log("\n📄 Test 4: Get Relevant Context", "blue");
 
-  const client = new ChromaClient();
-
   try {
-    const collection = await client.getOrCreateCollection({
-      name: TEST_COLLECTION,
-    });
-
     const task = "implement user logout functionality";
     const maxTokens = 2000;
 
-    const results = await collection.query({
-      queryTexts: [task],
-      nResults: 5,
-    });
+    const results = await vectorDB.search(TEST_COLLECTION, task, { nResults: 5 });
 
-    // Calculate context
     const maxChars = maxTokens * 4;
     let totalChars = 0;
     const contextChunks = [];
 
-    for (let i = 0; i < (results.documents[0] || []).length; i++) {
-      const doc = results.documents[0]?.[i];
-      if (!doc) continue;
-      if (totalChars + doc.length > maxChars) break;
+    for (const result of results) {
+      if (totalChars + result.content.length > maxChars) break;
 
       contextChunks.push({
-        content: doc,
-        metadata: results.metadatas?.[0]?.[i] || {},
+        content: result.content,
+        metadata: result.metadata,
       });
 
-      totalChars += doc.length;
+      totalChars += result.content.length;
     }
 
     log(`\n  Task: "${task}"`, "yellow");
@@ -318,19 +293,13 @@ async function testGetRelevantContext() {
 async function testListCollections() {
   log("\n📋 Test 5: List Collections", "blue");
 
-  const client = new ChromaClient();
-
   try {
-    const collections = await client.listCollections();
+    const collections = await vectorDB.listCollections();
 
     log(`\n  Found ${collections.length} collections:`, "green");
 
-    for (const col of collections as any[]) {
-      const collection = await client.getOrCreateCollection({
-        name: col.name,
-      });
-      const count = await collection.count();
-      log(`    - ${col.name}: ${count} chunks`, "reset");
+    for (const col of collections) {
+      log(`    - ${col.name}: ${col.count} chunks`, "reset");
     }
 
     log("\n✅ List collections working", "green");
@@ -345,30 +314,11 @@ async function testListCollections() {
 async function testGetCollectionStats() {
   log("\n📊 Test 6: Get Collection Stats", "blue");
 
-  const client = new ChromaClient();
-
   try {
-    const collection = await client.getOrCreateCollection({
-      name: TEST_COLLECTION,
-    });
-
-    const count = await collection.count();
-
-    const sample = await collection.get({
-      limit: 10,
-    });
-
-    const files = new Set<string>();
-    for (const metadata of sample.metadatas || []) {
-      if (metadata && metadata.filePath) {
-        files.add(metadata.filePath as string);
-      }
-    }
+    const stats = await vectorDB.getCollectionStats(TEST_COLLECTION);
 
     log(`\n  Collection: ${TEST_COLLECTION}`, "yellow");
-    log(`  Total chunks: ${count}`, "green");
-    log(`  Files in sample: ${files.size}`, "green");
-    log(`  Files: ${Array.from(files).join(", ")}`, "reset");
+    log(`  Total chunks: ${stats.totalChunks}`, "green");
 
     log("\n✅ Collection stats working", "green");
     return true;
@@ -382,14 +332,7 @@ async function testGetCollectionStats() {
 async function testIndexFile() {
   log("\n📝 Test 7: Index Single File", "blue");
 
-  const client = new ChromaClient();
-
   try {
-    const collection = await client.getOrCreateCollection({
-      name: TEST_COLLECTION,
-    });
-
-    // Create a new test file
     const newFilePath = path.join(TEST_DIR, "config.ts");
     await fs.writeFile(
       newFilePath,
@@ -400,22 +343,24 @@ async function testIndexFile() {
 };`
     );
 
-    // Index it
     const content = await fs.readFile(newFilePath, "utf-8");
-    await collection.add({
-      ids: ["config.ts::chunk0"],
-      documents: [content],
-      metadatas: [{
+
+    const documents: VectorDocument[] = [{
+      id: "config.ts::chunk0",
+      content,
+      metadata: {
         filePath: "config.ts",
         chunkIndex: 0,
         totalChunks: 1,
-      }],
-    });
+      },
+    }];
 
-    const newCount = await collection.count();
+    await vectorDB.addDocuments(TEST_COLLECTION, documents);
+
+    const stats = await vectorDB.getCollectionStats(TEST_COLLECTION);
 
     log(`\n  Indexed: config.ts`, "green");
-    log(`  New total chunks: ${newCount}`, "green");
+    log(`  New total chunks: ${stats.totalChunks}`, "green");
 
     log("\n✅ Single file indexing working", "green");
     return true;
@@ -431,6 +376,7 @@ async function runTests() {
   log("  RAG MCP SERVER TEST SUITE", "blue");
   log("=".repeat(60) + "\n", "blue");
 
+  await initDB();
   await setup();
 
   const tests = [
