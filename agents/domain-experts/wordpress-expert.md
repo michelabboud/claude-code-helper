@@ -35,6 +35,10 @@ triggers:
       on: [read, edit]
   priority: 10
   tags: [cms, wordpress, php, woocommerce]
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # WordPress Expert Sub-Agent
@@ -743,10 +747,19 @@ $wpdb->get_results($wpdb->prepare(
 - **WooCommerce Development**: `skills/woocommerce-development.md`
 - **WordPress Security**: `skills/wordpress-security.md`
 
----
-
-**Version**: 1.0.0
 **Last Updated**: 2026-01-10
 **Platform**: WordPress 6.0+
 **Language**: PHP 8.0+
 **Status**: Production Ready ✅
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

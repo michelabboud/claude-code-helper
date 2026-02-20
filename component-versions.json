@@ -1,0 +1,619 @@
+{
+  "schemaVersion": 1,
+  "repoVersion": "2.3.0",
+  "generatedAt": "2026-02-20T10:50:29.455Z",
+  "components": {
+    "agents/domain-experts/android-dev": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/android-dev.md",
+      "installPath": "agents/android-dev.md",
+      "changelog": "agents/domain-experts/android-dev.md#changelog"
+    },
+    "agents/domain-experts/android-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/android-expert.md",
+      "installPath": "agents/android-expert.md",
+      "changelog": "agents/domain-experts/android-expert.md#changelog"
+    },
+    "agents/domain-experts/angular-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/angular-expert.md",
+      "installPath": "agents/angular-expert.md",
+      "changelog": "agents/domain-experts/angular-expert.md#changelog"
+    },
+    "agents/domain-experts/api-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/api-expert.md",
+      "installPath": "agents/api-expert.md",
+      "changelog": "agents/domain-experts/api-expert.md#changelog"
+    },
+    "agents/domain-experts/aws-architect-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/aws-architect-expert.md",
+      "installPath": "agents/aws-architect-expert.md",
+      "changelog": "agents/domain-experts/aws-architect-expert.md#changelog"
+    },
+    "agents/domain-experts/azure-architect-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/azure-architect-expert.md",
+      "installPath": "agents/azure-architect-expert.md",
+      "changelog": "agents/domain-experts/azure-architect-expert.md#changelog"
+    },
+    "agents/domain-experts/css-tailwind-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/css-tailwind-expert.md",
+      "installPath": "agents/css-tailwind-expert.md",
+      "changelog": "agents/domain-experts/css-tailwind-expert.md#changelog"
+    },
+    "agents/domain-experts/data-engineering-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/data-engineering-expert.md",
+      "installPath": "agents/data-engineering-expert.md",
+      "changelog": "agents/domain-experts/data-engineering-expert.md#changelog"
+    },
+    "agents/domain-experts/database-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/database-expert.md",
+      "installPath": "agents/database-expert.md",
+      "changelog": "agents/domain-experts/database-expert.md#changelog"
+    },
+    "agents/domain-experts/devops-infrastructure-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/devops-infrastructure-expert.md",
+      "installPath": "agents/devops-infrastructure-expert.md",
+      "changelog": "agents/domain-experts/devops-infrastructure-expert.md#changelog"
+    },
+    "agents/domain-experts/documentation-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/documentation-expert.md",
+      "installPath": "agents/documentation-expert.md",
+      "changelog": "agents/domain-experts/documentation-expert.md#changelog"
+    },
+    "agents/domain-experts/game-design-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/game-design-expert.md",
+      "installPath": "agents/game-design-expert.md",
+      "changelog": "agents/domain-experts/game-design-expert.md#changelog"
+    },
+    "agents/domain-experts/gcp-architect-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/gcp-architect-expert.md",
+      "installPath": "agents/gcp-architect-expert.md",
+      "changelog": "agents/domain-experts/gcp-architect-expert.md#changelog"
+    },
+    "agents/domain-experts/git-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/git-expert.md",
+      "installPath": "agents/git-expert.md",
+      "changelog": "agents/domain-experts/git-expert.md#changelog"
+    },
+    "agents/domain-experts/go-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/go-expert.md",
+      "installPath": "agents/go-expert.md",
+      "changelog": "agents/domain-experts/go-expert.md#changelog"
+    },
+    "agents/domain-experts/huggingface-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/huggingface-expert.md",
+      "installPath": "agents/huggingface-expert.md",
+      "changelog": "agents/domain-experts/huggingface-expert.md#changelog"
+    },
+    "agents/domain-experts/ios-development-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/ios-development-expert.md",
+      "installPath": "agents/ios-development-expert.md",
+      "changelog": "agents/domain-experts/ios-development-expert.md#changelog"
+    },
+    "agents/domain-experts/iot-embedded-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/iot-embedded-expert.md",
+      "installPath": "agents/iot-embedded-expert.md",
+      "changelog": "agents/domain-experts/iot-embedded-expert.md#changelog"
+    },
+    "agents/domain-experts/laravel-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/laravel-expert.md",
+      "installPath": "agents/laravel-expert.md",
+      "changelog": "agents/domain-experts/laravel-expert.md#changelog"
+    },
+    "agents/domain-experts/ml-ai-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/ml-ai-expert.md",
+      "installPath": "agents/ml-ai-expert.md",
+      "changelog": "agents/domain-experts/ml-ai-expert.md#changelog"
+    },
+    "agents/domain-experts/nodejs-typescript-backend-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/nodejs-typescript-backend-expert.md",
+      "installPath": "agents/nodejs-typescript-backend-expert.md",
+      "changelog": "agents/domain-experts/nodejs-typescript-backend-expert.md#changelog"
+    },
+    "agents/domain-experts/observability-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/observability-expert.md",
+      "installPath": "agents/observability-expert.md",
+      "changelog": "agents/domain-experts/observability-expert.md#changelog"
+    },
+    "agents/domain-experts/performance-optimizer": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/performance-optimizer.md",
+      "installPath": "agents/performance-optimizer.md",
+      "changelog": "agents/domain-experts/performance-optimizer.md#changelog"
+    },
+    "agents/domain-experts/php-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/php-expert.md",
+      "installPath": "agents/php-expert.md",
+      "changelog": "agents/domain-experts/php-expert.md#changelog"
+    },
+    "agents/domain-experts/project-manager": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/project-manager.md",
+      "installPath": "agents/project-manager.md",
+      "changelog": "agents/domain-experts/project-manager.md#changelog"
+    },
+    "agents/domain-experts/python-backend-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/python-backend-expert.md",
+      "installPath": "agents/python-backend-expert.md",
+      "changelog": "agents/domain-experts/python-backend-expert.md#changelog"
+    },
+    "agents/domain-experts/qa-testing-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/qa-testing-expert.md",
+      "installPath": "agents/qa-testing-expert.md",
+      "changelog": "agents/domain-experts/qa-testing-expert.md#changelog"
+    },
+    "agents/domain-experts/react-nextjs-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/react-nextjs-expert.md",
+      "installPath": "agents/react-nextjs-expert.md",
+      "changelog": "agents/domain-experts/react-nextjs-expert.md#changelog"
+    },
+    "agents/domain-experts/redis-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/redis-expert.md",
+      "installPath": "agents/redis-expert.md",
+      "changelog": "agents/domain-experts/redis-expert.md#changelog"
+    },
+    "agents/domain-experts/ruby-rails-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/ruby-rails-expert.md",
+      "installPath": "agents/ruby-rails-expert.md",
+      "changelog": "agents/domain-experts/ruby-rails-expert.md#changelog"
+    },
+    "agents/domain-experts/rust-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/rust-expert.md",
+      "installPath": "agents/rust-expert.md",
+      "changelog": "agents/domain-experts/rust-expert.md#changelog"
+    },
+    "agents/domain-experts/security-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/security-expert.md",
+      "installPath": "agents/security-expert.md",
+      "changelog": "agents/domain-experts/security-expert.md#changelog"
+    },
+    "agents/domain-experts/vue-nuxt-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/vue-nuxt-expert.md",
+      "installPath": "agents/vue-nuxt-expert.md",
+      "changelog": "agents/domain-experts/vue-nuxt-expert.md#changelog"
+    },
+    "agents/domain-experts/wordpress-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/wordpress-expert.md",
+      "installPath": "agents/wordpress-expert.md",
+      "changelog": "agents/domain-experts/wordpress-expert.md#changelog"
+    },
+    "agents/mcp-integrated/api-specialist": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/api-specialist.json",
+      "installPath": "agents/api-specialist.json",
+      "changelog": "agents/mcp-integrated/api-specialist.json#changelog"
+    },
+    "agents/mcp-integrated/automation-architect": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/automation-architect.json",
+      "installPath": "agents/automation-architect.json",
+      "changelog": "agents/mcp-integrated/automation-architect.json#changelog"
+    },
+    "agents/mcp-integrated/cicd-engineer": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/cicd-engineer.json",
+      "installPath": "agents/cicd-engineer.json",
+      "changelog": "agents/mcp-integrated/cicd-engineer.json#changelog"
+    },
+    "agents/mcp-integrated/database-engineer": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/database-engineer.json",
+      "installPath": "agents/database-engineer.json",
+      "changelog": "agents/mcp-integrated/database-engineer.json#changelog"
+    },
+    "agents/mcp-integrated/dependency-manager": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/dependency-manager.json",
+      "installPath": "agents/dependency-manager.json",
+      "changelog": "agents/mcp-integrated/dependency-manager.json#changelog"
+    },
+    "agents/mcp-integrated/design-system-guardian": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/design-system-guardian.json",
+      "installPath": "agents/design-system-guardian.json",
+      "changelog": "agents/mcp-integrated/design-system-guardian.json#changelog"
+    },
+    "agents/mcp-integrated/full-stack-reviewer": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/full-stack-reviewer.json",
+      "installPath": "agents/full-stack-reviewer.json",
+      "changelog": "agents/mcp-integrated/full-stack-reviewer.json#changelog"
+    },
+    "agents/mcp-integrated/performance-optimizer": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/performance-optimizer.json",
+      "installPath": "agents/performance-optimizer.json",
+      "changelog": "agents/mcp-integrated/performance-optimizer.json#changelog"
+    },
+    "agents/mcp-integrated/security-reviewer": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/security-reviewer.json",
+      "installPath": "agents/security-reviewer.json",
+      "changelog": "agents/mcp-integrated/security-reviewer.json#changelog"
+    },
+    "agents/mcp-integrated/test-quality-enforcer": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/test-quality-enforcer.json",
+      "installPath": "agents/test-quality-enforcer.json",
+      "changelog": "agents/mcp-integrated/test-quality-enforcer.json#changelog"
+    },
+    "agents/mcp-integrated/uiux-design-critic": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/uiux-design-critic.json",
+      "installPath": "agents/uiux-design-critic.json",
+      "changelog": "agents/mcp-integrated/uiux-design-critic.json#changelog"
+    },
+    "agents/mcp-integrated/uiux-reviewer": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/uiux-reviewer.json",
+      "installPath": "agents/uiux-reviewer.json",
+      "changelog": "agents/mcp-integrated/uiux-reviewer.json#changelog"
+    },
+    "hooks/build-validation": {
+      "type": "hook",
+      "version": "1.0.0",
+      "file": "hooks/build-validation.md",
+      "installPath": "hooks/build-validation.md",
+      "changelog": "hooks/build-validation.md#changelog"
+    },
+    "hooks/code-quality-gate": {
+      "type": "hook",
+      "version": "1.0.0",
+      "file": "hooks/code-quality-gate.md",
+      "installPath": "hooks/code-quality-gate.md",
+      "changelog": "hooks/code-quality-gate.md#changelog"
+    },
+    "hooks/security-scan": {
+      "type": "hook",
+      "version": "1.0.0",
+      "file": "hooks/security-scan.md",
+      "installPath": "hooks/security-scan.md",
+      "changelog": "hooks/security-scan.md#changelog"
+    },
+    "integrations/ecommerce-platform": {
+      "type": "integration",
+      "version": "1.0.0",
+      "file": "integrations/ecommerce-platform.md",
+      "installPath": "integrations/ecommerce-platform.md",
+      "changelog": "integrations/ecommerce-platform.md#changelog"
+    },
+    "integrations/saas-application": {
+      "type": "integration",
+      "version": "1.0.0",
+      "file": "integrations/saas-application.md",
+      "installPath": "integrations/saas-application.md",
+      "changelog": "integrations/saas-application.md#changelog"
+    },
+    "mcp-servers/api-specialist-mcp": {
+      "type": "mcp-server",
+      "version": "1.0.0",
+      "file": "mcp-servers/api-specialist-mcp/package.json",
+      "installPath": null,
+      "changelog": "mcp-servers/api-specialist-mcp/CHANGELOG.md",
+      "buildRequired": true
+    },
+    "mcp-servers/cicd-pipeline": {
+      "type": "mcp-server",
+      "version": "1.0.0",
+      "file": "mcp-servers/cicd-pipeline/package.json",
+      "installPath": null,
+      "changelog": "mcp-servers/cicd-pipeline/CHANGELOG.md",
+      "buildRequired": true
+    },
+    "mcp-servers/code-review-mcp": {
+      "type": "mcp-server",
+      "version": "1.0.0",
+      "file": "mcp-servers/code-review-mcp/package.json",
+      "installPath": null,
+      "changelog": "mcp-servers/code-review-mcp/CHANGELOG.md",
+      "buildRequired": true
+    },
+    "mcp-servers/database-operations": {
+      "type": "mcp-server",
+      "version": "1.0.0",
+      "file": "mcp-servers/database-operations/package.json",
+      "installPath": null,
+      "changelog": "mcp-servers/database-operations/CHANGELOG.md",
+      "buildRequired": true
+    },
+    "mcp-servers/dependency-management": {
+      "type": "mcp-server",
+      "version": "1.0.0",
+      "file": "mcp-servers/dependency-management/package.json",
+      "installPath": null,
+      "changelog": "mcp-servers/dependency-management/CHANGELOG.md",
+      "buildRequired": true
+    },
+    "mcp-servers/design-system-mcp": {
+      "type": "mcp-server",
+      "version": "1.0.0",
+      "file": "mcp-servers/design-system-mcp/package.json",
+      "installPath": null,
+      "changelog": "mcp-servers/design-system-mcp/CHANGELOG.md",
+      "buildRequired": true
+    },
+    "mcp-servers/n8n-automation": {
+      "type": "mcp-server",
+      "version": "1.0.0",
+      "file": "mcp-servers/n8n-automation/package.json",
+      "installPath": null,
+      "changelog": "mcp-servers/n8n-automation/CHANGELOG.md",
+      "buildRequired": true
+    },
+    "mcp-servers/rag-mcp": {
+      "type": "mcp-server",
+      "version": "1.0.0",
+      "file": "mcp-servers/rag-mcp/package.json",
+      "installPath": null,
+      "changelog": "mcp-servers/rag-mcp/CHANGELOG.md",
+      "buildRequired": true
+    },
+    "mcp-servers/testing-mcp": {
+      "type": "mcp-server",
+      "version": "1.0.0",
+      "file": "mcp-servers/testing-mcp/package.json",
+      "installPath": null,
+      "changelog": "mcp-servers/testing-mcp/CHANGELOG.md",
+      "buildRequired": true
+    },
+    "mcp-servers/uiux-review-mcp": {
+      "type": "mcp-server",
+      "version": "1.0.0",
+      "file": "mcp-servers/uiux-review-mcp/package.json",
+      "installPath": null,
+      "changelog": "mcp-servers/uiux-review-mcp/CHANGELOG.md",
+      "buildRequired": true
+    },
+    "plugins/cicd-automation-plugin": {
+      "type": "plugin",
+      "version": "1.0.0",
+      "file": "plugins/cicd-automation-plugin.md",
+      "installPath": "plugins/cicd-automation-plugin.md",
+      "changelog": "plugins/cicd-automation-plugin.md#changelog"
+    },
+    "plugins/cloud-native-plugin": {
+      "type": "plugin",
+      "version": "1.0.0",
+      "file": "plugins/cloud-native-plugin.md",
+      "installPath": "plugins/cloud-native-plugin.md",
+      "changelog": "plugins/cloud-native-plugin.md#changelog"
+    },
+    "plugins/code-quality-suite-plugin": {
+      "type": "plugin",
+      "version": "1.0.0",
+      "file": "plugins/code-quality-suite-plugin.md",
+      "installPath": "plugins/code-quality-suite-plugin.md",
+      "changelog": "plugins/code-quality-suite-plugin.md#changelog"
+    },
+    "plugins/modern-web-stack-plugin": {
+      "type": "plugin",
+      "version": "1.0.0",
+      "file": "plugins/modern-web-stack-plugin.md",
+      "installPath": "plugins/modern-web-stack-plugin.md",
+      "changelog": "plugins/modern-web-stack-plugin.md#changelog"
+    },
+    "plugins/python-data-stack-plugin": {
+      "type": "plugin",
+      "version": "1.0.0",
+      "file": "plugins/python-data-stack-plugin.md",
+      "installPath": "plugins/python-data-stack-plugin.md",
+      "changelog": "plugins/python-data-stack-plugin.md#changelog"
+    },
+    "plugins/security-hardening-plugin": {
+      "type": "plugin",
+      "version": "1.0.0",
+      "file": "plugins/security-hardening-plugin.md",
+      "installPath": "plugins/security-hardening-plugin.md",
+      "changelog": "plugins/security-hardening-plugin.md#changelog"
+    },
+    "skills/advanced-e2e-testing": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/advanced-e2e-testing.md",
+      "installPath": "skills/advanced-e2e-testing.md",
+      "changelog": "skills/advanced-e2e-testing.md#changelog"
+    },
+    "skills/api-design-patterns": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/api-design-patterns.md",
+      "installPath": "skills/api-design-patterns.md",
+      "changelog": "skills/api-design-patterns.md#changelog"
+    },
+    "skills/api-documentation": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/api-documentation/SKILL.md",
+      "installPath": "skills/api-documentation/",
+      "changelog": "skills/api-documentation/SKILL.md#changelog"
+    },
+    "skills/bdd-framework-examples": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/bdd-framework-examples.md",
+      "installPath": "skills/bdd-framework-examples.md",
+      "changelog": "skills/bdd-framework-examples.md#changelog"
+    },
+    "skills/caching-expert": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/caching-expert.md",
+      "installPath": "skills/caching-expert.md",
+      "changelog": "skills/caching-expert.md#changelog"
+    },
+    "skills/ci-best-practices": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/ci-best-practices.md",
+      "installPath": "skills/ci-best-practices.md",
+      "changelog": "skills/ci-best-practices.md#changelog"
+    },
+    "skills/code-review-workflow": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/code-review-workflow.md",
+      "installPath": "skills/code-review-workflow.md",
+      "changelog": "skills/code-review-workflow.md#changelog"
+    },
+    "skills/contract-testing": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/contract-testing.md",
+      "installPath": "skills/contract-testing.md",
+      "changelog": "skills/contract-testing.md#changelog"
+    },
+    "skills/database-design-patterns": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/database-design-patterns.md",
+      "installPath": "skills/database-design-patterns.md",
+      "changelog": "skills/database-design-patterns.md#changelog"
+    },
+    "skills/documentation": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/documentation/SKILL.md",
+      "installPath": "skills/documentation/",
+      "changelog": "skills/documentation/SKILL.md#changelog"
+    },
+    "skills/mutation-testing": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/mutation-testing.md",
+      "installPath": "skills/mutation-testing.md",
+      "changelog": "skills/mutation-testing.md#changelog"
+    },
+    "skills/pm-dashboard": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/pm-dashboard/SKILL.md",
+      "installPath": "skills/pm-dashboard/",
+      "changelog": "skills/pm-dashboard/SKILL.md#changelog"
+    },
+    "skills/project-scaffolding": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/project-scaffolding/SKILL.md",
+      "installPath": "skills/project-scaffolding/",
+      "changelog": "skills/project-scaffolding/SKILL.md#changelog"
+    },
+    "skills/refactoring-strategy": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/refactoring-strategy.md",
+      "installPath": "skills/refactoring-strategy.md",
+      "changelog": "skills/refactoring-strategy.md#changelog"
+    },
+    "skills/release-management": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/release-management.md",
+      "installPath": "skills/release-management.md",
+      "changelog": "skills/release-management.md#changelog"
+    },
+    "skills/tdd-workflow": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/tdd-workflow.md",
+      "installPath": "skills/tdd-workflow.md",
+      "changelog": "skills/tdd-workflow.md#changelog"
+    },
+    "skills/testing-standards": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/testing-standards/SKILL.md",
+      "installPath": "skills/testing-standards/",
+      "changelog": "skills/testing-standards/SKILL.md#changelog"
+    },
+    "skills/update-check": {
+      "type": "skill",
+      "version": "2.0.0",
+      "file": "skills/update-check/SKILL.md",
+      "installPath": "skills/update-check/",
+      "changelog": "skills/update-check/SKILL.md#changelog"
+    },
+    "skills/visual-regression-testing": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/visual-regression-testing.md",
+      "installPath": "skills/visual-regression-testing.md",
+      "changelog": "skills/visual-regression-testing.md#changelog"
+    }
+  }
+}

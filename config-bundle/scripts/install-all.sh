@@ -181,13 +181,24 @@ if ! command -v claude &> /dev/null; then
     echo ""
 fi
 
-# Write installation manifest
+# Write installation manifest (v2: per-component registration)
 if [ -f "$REPO_ROOT/scripts/manifest-helper.sh" ]; then
+    export REPO_ROOT
     source "$REPO_ROOT/scripts/manifest-helper.sh"
+
+    echo -e "${BLUE}Registering components in manifest...${NC}"
+
+    # Register all installed components (scans ~/.claude/ directories)
+    register_all_installed "$REPO_ROOT"
+
+    # Also keep legacy manifest data for backward compatibility
     AGENT_COUNT=$(ls ~/.claude/agents 2>/dev/null | wc -l | tr -d ' ')
     SKILL_COUNT=$(find ~/.claude/skills -maxdepth 2 -name "SKILL.md" -o -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
     HOOK_COUNT=$(ls ~/.claude/hooks/*.json 2>/dev/null | wc -l | tr -d ' ')
     update_manifest "config-bundle" "{\"agents\": ${AGENT_COUNT}, \"skills\": ${SKILL_COUNT}, \"hooks\": ${HOOK_COUNT}}"
+
+    echo -e "${GREEN}✓ Manifest updated${NC}"
+    echo ""
 fi
 
 echo "Enjoy your optimized Claude Code experience! 🚀"

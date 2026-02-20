@@ -3,6 +3,11 @@ skill_name: PM Dashboard
 description: 'Update the Project Manager dashboard with assessment scores, tasks, and risks. Use after running a project health assessment.'
 argument-hint: '[open|update|reset]'
 user-invocable: true
+version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # PM Dashboard Manager
@@ -129,3 +134,15 @@ cp ~/.claude/skills/pm-dashboard/dashboard.html .claude/pm-dashboard.html
 open .claude/pm-dashboard.html  # macOS
 xdg-open .claude/pm-dashboard.html  # Linux
 ```
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

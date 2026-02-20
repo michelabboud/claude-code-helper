@@ -15,6 +15,62 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.3.0] - 2026-02-20
+
+### Per-Component Versioning, npm Workspaces & Architecture Decision Records
+
+Major infrastructure release: per-component versioning system with 86 independently versioned components, npm workspaces monorepo, shared tsconfig base, Architecture Decision Records, and comprehensive script tests.
+
+### Added
+
+#### Per-Component Versioning System
+- Every distributable component (76 .md/.json files) now has `version: 1.0.0`, `author`, `license`, `repository`, `issues` in frontmatter plus `## Changelog` section and standardized footer
+- `component-versions.json` central index (86 components: 46 agents, 19 skills, 10 MCP servers, 3 hooks, 6 plugins, 2 integrations)
+- `scripts/generate-version-index.mjs` generates the index from source files; runs before releases
+- CI job `validate-version-index` ensures the index stays in sync with source
+- `scripts/update-component.sh` updates a single component from local repo clone
+
+#### Manifest v2 (Per-Component Tracking)
+- `manifest-helper.sh` rewritten with `register_component()`, `register_all_installed()`, `ensure_manifest_v2()` functions
+- Manifest format upgraded: `manifestVersion: 2`, per-component `installed` map, `_legacyComponents` for backward compat
+- All install scripts now register components individually instead of category blobs
+
+#### `/update-check` Skill v2.0.0
+- Complete rewrite for per-component checking with fuzzy name matching
+- Two modes: all-components table and single-component detail view with changelog
+- Fetches `component-versions.json` from GitHub (single request, no API rate limit)
+- Four status outcomes: UPDATE AVAILABLE, UP TO DATE, REMOVED UPSTREAM, NEW
+
+#### npm Workspaces Monorepo
+- Root `package.json` declares 12 workspaces (mcp-shared + 10 MCP servers + trigger-matcher)
+- Single `npm install` replaces 12 separate installs; common dependencies hoisted
+- `mcp-shared` referenced as `"*"` workspace dependency (replaces `file:../mcp-shared`)
+- `mcp-servers/tsconfig.base.json` shared TypeScript config; 11 tsconfig.json files now extend it
+- New aggregate scripts: `build:mcp`, `test:all`, `test:scripts`
+
+#### Architecture Decision Records
+- `docs/decisions/` directory with 5 ADRs: mcp-shared extraction, per-component versioning, manifest v2 design, npm workspaces, CI pipeline design
+- Standard format: Status, Context, Decision, Consequences
+
+#### Script Tests
+- `scripts/__tests__/generate-version-index.test.mjs` (31 tests) - validates output schema, component counts, field presence, version format, type coverage
+- `scripts/__tests__/manifest-helper.test.sh` (19 tests) - validates v2 manifest functions, component registration, idempotency
+- `scripts/__tests__/update-component.test.sh` (6 tests) - validates CLI contract, error handling
+- `npm run test:scripts` runs all 56 tests
+
+#### MCP Server Changelogs
+- CHANGELOG.md added to all 10 MCP server directories
+
+### Changed
+- CI pipeline restructured with shared `install` job and `node_modules` caching; `working-directory` used instead of `-w` flags
+- Security audit now uses root-level `npm audit` instead of per-directory audits
+- `mcp-shared` jest coverage thresholds relaxed (pre-existing ts-jest ESM coverage issue with Node.js v24)
+- `skills/README.md` license corrected from MIT to Apache-2.0
+- `mcp-servers/rag-mcp` version reset from 1.3.0 to 1.0.0 (fresh per-component versioning start)
+- `config-bundle/agents/` (planner.json, implementer.json) now include version/author/license metadata
+
+---
+
 ## [2.2.0] - 2026-02-20
 
 ### Versioning, Self-Update Check & v2.1.49 Feature Adoption

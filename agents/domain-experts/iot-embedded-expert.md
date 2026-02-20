@@ -36,6 +36,10 @@ triggers:
       on: [read, edit]
   priority: 10
   tags: [iot, embedded, arduino, esp32, mqtt]
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # IoT & Embedded Systems Expert Sub-Agent
@@ -638,9 +642,18 @@ void setup() {
 - **Edge Computing**: `skills/edge-computing.md`
 - **IoT Security**: `skills/iot-security.md`
 
----
-
-**Version**: 1.0.0
 **Last Updated**: 2026-01-10
 **Platforms**: Arduino, ESP32, ESP8266
 **Status**: Production Ready ✅
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

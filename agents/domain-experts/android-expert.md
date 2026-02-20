@@ -31,6 +31,10 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [mobile, android, kotlin, compose]
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Android Expert Sub-Agent
@@ -956,10 +960,19 @@ app/
 - **Testing Best Practices**: `skills/testing-best-practices.md`
 - **Mobile Performance**: `skills/mobile-performance.md`
 
----
-
-**Version**: 1.0.0
 **Last Updated**: 2026-01-10
 **Platform**: Android (API 24+)
 **Language**: Kotlin
 **Status**: Production Ready ✅
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

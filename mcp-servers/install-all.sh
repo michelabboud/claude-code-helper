@@ -226,12 +226,25 @@ echo "   \"What MCP tools do you have available?\""
 echo ""
 echo -e "${GREEN}✅ Installation complete!${NC}"
 echo ""
-# Write installation manifest
+# Write installation manifest (v2: per-component registration)
 SCRIPT_DIR_MCP="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_ROOT_MCP="$( cd "$SCRIPT_DIR_MCP/.." && pwd )"
 if [ -f "$REPO_ROOT_MCP/scripts/manifest-helper.sh" ]; then
     export REPO_ROOT="$REPO_ROOT_MCP"
     source "$REPO_ROOT_MCP/scripts/manifest-helper.sh"
+
+    echo "📝 Registering MCP servers in manifest..."
+    for dir in */build/index.js; do
+        server=$(echo "$dir" | sed 's|/build/index.js||')
+        [ "$server" = "mcp-shared" ] && continue
+        if [ -f "${server}/package.json" ]; then
+            ver=$(extract_json_version "$(pwd)/${server}/package.json")
+            register_component "mcp-servers/${server}" "$ver" ""
+            echo "  ✓ ${server} (v${ver})"
+        fi
+    done
+
+    # Also keep legacy manifest data for backward compatibility
     SERVERS_LIST=$(ls -d */build/index.js 2>/dev/null | sed 's|/build/index.js||' | paste -sd ',' - | sed 's/,/", "/g')
     update_manifest "mcp-servers" "{\"servers\": [\"${SERVERS_LIST}\"]}"
 fi

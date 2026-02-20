@@ -17,6 +17,11 @@
 **/*.js.map
 **/.cache/
 
+# TypeScript build artifacts in source directories (from misconfigured tsc)
+mcp-servers/*/src/**/*.js
+mcp-servers/*/src/**/*.d.ts
+mcp-servers/*/src/**/*.d.ts.map
+
 # Environment files
 .env
 .env.local

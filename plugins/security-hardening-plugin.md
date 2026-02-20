@@ -3,6 +3,10 @@ plugin_name: Security Hardening Plugin
 description: Comprehensive security scanning and hardening
 priority: P1
 version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Security Hardening Plugin
@@ -37,6 +41,14 @@ Ask: "Fix the security vulnerabilities in my dependencies"
 Ask: "Check for exposed secrets in my code"
 ```
 
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
 ---
 
-**Status**: Production Ready ✅
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

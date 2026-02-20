@@ -1,3 +1,14 @@
+---
+plugin_name: Python Data Stack Plugin
+description: Python + FastAPI + PostgreSQL + Data Engineering tools for data-intensive applications
+priority: P1
+version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
+---
+
 # Python Data Stack Plugin
 
 A comprehensive plugin bundling Python + FastAPI + PostgreSQL + Data Engineering tools for building data-intensive applications, ETL pipelines, and API services.
@@ -702,9 +713,18 @@ CREATE INDEX CONCURRENTLY idx_users_email ON users(email);
 - **Testing Strategy Guide**: Comprehensive testing approach
 - **API Design Patterns Skill**: REST API best practices
 
----
-
-**Version**: 1.0.0
 **Last Updated**: 2026-01-10
 **Status**: Production Ready ✅
 **Stack**: Python + FastAPI + PostgreSQL + Airflow + Data Engineering
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

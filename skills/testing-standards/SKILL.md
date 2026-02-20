@@ -6,6 +6,11 @@ priority: P1
 argument-hint: '[target] [type]'
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 agent: qa-testing-expert
+version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Testing Standards Skill
@@ -140,10 +145,14 @@ describe('UserService', () => {
 });
 ```
 
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
 ---
 
-## Credits
-
-**Author:** [Michel Abboud](https://github.com/michelabboud)
-**AI Assistance:** Created with the help of Claude Code (Anthropic)
-**License:** MIT
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

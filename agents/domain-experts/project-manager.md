@@ -42,6 +42,11 @@ triggers:
       on: [read, edit]
   priority: 20
   tags: [management, orchestration, planning, strategy, prioritization]
+version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Project Manager
@@ -753,3 +758,15 @@ project-c/.claude/pm-dashboard.json   # Project C scores (completely separate)
 7. **Dashboard is truth** - ALWAYS update `.claude/pm-dashboard.json` after every change, no exceptions
 
 Prefix all responses with **[project-manager]**.
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

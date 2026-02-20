@@ -4,6 +4,11 @@ description: Semantic versioning, release planning, deployment strategies, and r
 category: DevOps & Deployment
 priority: P1
 agent: devops-infrastructure-expert
+version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Release Management Skill
@@ -1040,18 +1045,17 @@ Effective release management combines careful planning, automated processes, gra
 
 **Remember**: The goal isn't to never have issues—it's to detect and resolve them quickly with minimal user impact.
 
----
-
-**Version**: 1.0.0
 **Last Updated**: January 10, 2026
 **Status**: Production Ready ✅
 
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
 ---
 
-## Credits
-
-**Author:** [Michel Abboud](https://github.com/michelabboud)
-**AI Assistance:** Created with the help of Claude Code (Anthropic)
-**License:** Apache-2.0
-
-💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

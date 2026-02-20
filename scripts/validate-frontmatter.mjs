@@ -45,6 +45,27 @@ function extractFrontmatter(content) {
   }
 }
 
+function validateVersionMetadata(filePath, fm) {
+  const rel = relative(ROOT, filePath);
+
+  // Version field check
+  if (!fm.version) {
+    WARNINGS.push(`${rel}: Missing 'version' field (recommended for per-component versioning)`);
+  } else if (typeof fm.version !== 'string' && typeof fm.version !== 'number') {
+    WARNINGS.push(`${rel}: 'version' should be a string (e.g., "1.0.0"), got ${typeof fm.version}`);
+  }
+
+  // Author field check
+  if (!fm.author) {
+    WARNINGS.push(`${rel}: Missing 'author' field`);
+  }
+
+  // License field check
+  if (!fm.license) {
+    WARNINGS.push(`${rel}: Missing 'license' field`);
+  }
+}
+
 function validateAgent(filePath, fm) {
   const rel = relative(ROOT, filePath);
 
@@ -65,6 +86,9 @@ function validateAgent(filePath, fm) {
   } else if (typeof fm.description !== 'string') {
     ERRORS.push(`${rel}: 'description' must be a string, got ${typeof fm.description}`);
   }
+
+  // Version metadata
+  validateVersionMetadata(filePath, fm);
 
   // Model validation
   if (fm.model && !VALID_MODELS.includes(fm.model)) {
@@ -144,6 +168,9 @@ function validateSkill(filePath, fm) {
     WARNINGS.push(`${rel}: Missing 'description' field (recommended)`);
   }
 
+  // Version metadata
+  validateVersionMetadata(filePath, fm);
+
   if (fm.model && !VALID_MODELS.includes(fm.model)) {
     ERRORS.push(`${rel}: Invalid model '${fm.model}'. Must be one of: ${VALID_MODELS.join(', ')}`);
   }
@@ -197,6 +224,51 @@ for (const dir of cmdDirs) {
       const fm = extractFrontmatter(content);
       if (fm) {
         validateSkill(file, fm); // commands use same schema as skills
+        filesChecked++;
+      }
+    }
+  } catch { /* dir doesn't exist */ }
+}
+
+// Hooks
+const hookDirs = [join(ROOT, 'hooks')];
+for (const dir of hookDirs) {
+  try {
+    for (const file of collectMdFiles(dir)) {
+      const content = readFileSync(file, 'utf-8');
+      const fm = extractFrontmatter(content);
+      if (fm) {
+        validateVersionMetadata(file, fm);
+        filesChecked++;
+      }
+    }
+  } catch { /* dir doesn't exist */ }
+}
+
+// Plugins
+const pluginDirs = [join(ROOT, 'plugins')];
+for (const dir of pluginDirs) {
+  try {
+    for (const file of collectMdFiles(dir)) {
+      const content = readFileSync(file, 'utf-8');
+      const fm = extractFrontmatter(content);
+      if (fm) {
+        validateVersionMetadata(file, fm);
+        filesChecked++;
+      }
+    }
+  } catch { /* dir doesn't exist */ }
+}
+
+// Integrations
+const integrationDirs = [join(ROOT, 'integrations')];
+for (const dir of integrationDirs) {
+  try {
+    for (const file of collectMdFiles(dir)) {
+      const content = readFileSync(file, 'utf-8');
+      const fm = extractFrontmatter(content);
+      if (fm) {
+        validateVersionMetadata(file, fm);
         filesChecked++;
       }
     }

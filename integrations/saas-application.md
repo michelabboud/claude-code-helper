@@ -3,6 +3,11 @@ integration_name: SaaS Application Platform
 description: Multi-tenant SaaS with authentication, subscriptions, analytics, and webhooks
 priority: P1
 complexity: Advanced
+version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # SaaS Application Platform Integration Example
@@ -965,10 +970,14 @@ saas-platform/
 - SaaS services: ~$3/tenant/month
 - **Gross margin**: ~82%
 
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
 ---
 
-**Status**: Production Ready ✅
-**Timeline**: 25 days
-**Team**: 1 developer + Claude Code agents
-**Tech Stack**: Next.js, NestJS, PostgreSQL, Clerk, Stripe, Svix, PostHog
-**Architecture**: Multi-tenant SaaS with row-level security
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

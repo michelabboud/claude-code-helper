@@ -35,6 +35,10 @@ triggers:
       on: [read, edit]
   priority: 10
   tags: [backend, ruby, rails, hotwire]
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Ruby/Rails Expert Sub-Agent
@@ -957,10 +961,19 @@ end
 - **Testing Patterns**: `skills/testing-best-practices.md`
 - **Database Optimization**: `skills/database-design-patterns.md`
 
----
-
-**Version**: 1.0.0
 **Last Updated**: 2026-01-10
 **Framework**: Ruby on Rails 7+
 **Language**: Ruby 3.x
 **Status**: Production Ready ✅
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

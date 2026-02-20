@@ -3,6 +3,10 @@ plugin_name: Cloud Native Plugin
 description: Complete Kubernetes, Docker, and cloud deployment solution
 priority: P1
 version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Cloud Native Plugin
@@ -153,3 +157,15 @@ Ask: "Show me the resource usage for my-app"
 
 **Status**: Production Ready ✅
 **Platforms**: AWS, GCP, Azure, Kubernetes
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

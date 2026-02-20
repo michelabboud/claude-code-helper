@@ -3,6 +3,11 @@ hook_name: Security Scan Hook
 event: PreToolUse
 description: Scan for secrets, vulnerabilities, and security issues before code operations
 priority: P1
+version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Security Scan Hook
@@ -212,7 +217,16 @@ Top Issues:
 3. MEDIUM: Outdated axios with CVE (warning)
 ```
 
+**Status**: Production Ready ✅
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
 ---
 
-**Version**: 1.0.0
-**Status**: Production Ready ✅
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

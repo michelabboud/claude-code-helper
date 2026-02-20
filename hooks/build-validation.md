@@ -3,6 +3,11 @@ hook_name: Build Validation Hook
 event: PrePush
 description: Validate build succeeds before push to remote
 priority: P1
+version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Build Validation Hook
@@ -121,6 +126,14 @@ Push BLOCKED. Fix errors and try again.
 Hint: Run 'npm run build' locally to see full errors
 ```
 
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
 ---
 
-**Version**: 1.0.0
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

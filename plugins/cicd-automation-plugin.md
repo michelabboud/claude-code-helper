@@ -3,6 +3,10 @@ plugin_name: CI/CD Automation Plugin
 description: Complete CI/CD pipeline setup and management
 priority: P1
 version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # CI/CD Automation Plugin
@@ -38,6 +42,14 @@ Ask: "Optimize my GitHub Actions workflow"
 /release --version 1.2.0 --changelog
 ```
 
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
 ---
 
-**Status**: Production Ready ✅
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

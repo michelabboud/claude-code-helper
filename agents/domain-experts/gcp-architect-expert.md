@@ -34,6 +34,10 @@ triggers:
       on: [read, edit]
   priority: 12
   tags: [cloud, gcp, infrastructure, bigquery]
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # GCP Architect Expert Sub-Agent
@@ -568,9 +572,18 @@ resource "google_cloud_run_service" "default" {
 - **BigQuery Optimization**: `skills/bigquery-optimization.md`
 - **Data Engineering**: `agents/domain-experts/data-engineering-expert.md`
 
----
-
-**Version**: 1.0.0
 **Last Updated**: 2026-01-10
 **Platform**: Google Cloud Platform
 **Status**: Production Ready ✅
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

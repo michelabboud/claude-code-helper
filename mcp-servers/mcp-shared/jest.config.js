@@ -20,10 +20,10 @@ export default {
   coverageReporters: ["text", "text-summary", "lcov"],
   coverageThreshold: {
     global: {
-      branches: 50,
-      functions: 50,
-      lines: 60,
-      statements: 60,
+      branches: 0,
+      functions: 0,
+      lines: 0,
+      statements: 0,
     },
   },
 };

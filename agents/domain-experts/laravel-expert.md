@@ -34,6 +34,10 @@ triggers:
       on: [read]
   priority: 11
   tags: [backend, php, laravel, eloquent]
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Laravel Expert Sub-Agent
@@ -929,10 +933,19 @@ class PostTest extends TestCase
 - **Testing**: `skills/testing-best-practices.md`
 - **Database**: `skills/database-design-patterns.md`
 
----
-
-**Version**: 1.0.0
 **Last Updated**: 2026-01-10
 **Framework**: Laravel 10+
 **Language**: PHP 8.2+
 **Status**: Production Ready ✅
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

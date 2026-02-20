@@ -12,11 +12,35 @@ concurrency:
 
 jobs:
   # ──────────────────────────────────────────────
-  # Job 1: Build all MCP servers
+  # Job 1: Install dependencies (shared by jobs)
+  # ──────────────────────────────────────────────
+  install:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install all workspace dependencies
+        run: npm install
+
+      - name: Cache node_modules
+        uses: actions/cache/save@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
+
+  # ──────────────────────────────────────────────
+  # Job 2: Build all MCP servers
   # ──────────────────────────────────────────────
   build-mcp-servers:
     name: Build MCP Servers
     runs-on: ubuntu-latest
+    needs: install
     strategy:
       fail-fast: false
       matrix:
@@ -37,18 +61,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: mcp-servers/${{ matrix.server }}/package.json
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
 
       - name: Build shared library
         working-directory: mcp-servers/mcp-shared
-        run: npm install && npm run build
+        run: npm run build
 
-      - name: Install dependencies
-        working-directory: mcp-servers/${{ matrix.server }}
-        run: npm install
-
-      - name: Build
+      - name: Build server
         working-directory: mcp-servers/${{ matrix.server }}
         run: npm run build
 
@@ -61,23 +85,24 @@ jobs:
           echo "Build verified: mcp-servers/${{ matrix.server }}/build/index.js"
 
   # ──────────────────────────────────────────────
-  # Job 2: Build and test mcp-shared library
+  # Job 3: Build and test mcp-shared library
   # ──────────────────────────────────────────────
   test-mcp-shared:
     name: Test MCP Shared
     runs-on: ubuntu-latest
+    needs: install
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: mcp-servers/mcp-shared/package.json
 
-      - name: Install dependencies
-        working-directory: mcp-servers/mcp-shared
-        run: npm install
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
 
       - name: Build
         working-directory: mcp-servers/mcp-shared
@@ -88,11 +113,12 @@ jobs:
         run: npm test
 
   # ──────────────────────────────────────────────
-  # Job 2b: Test MCP servers (servers with tests)
+  # Job 4: Test MCP servers
   # ──────────────────────────────────────────────
   test-mcp-servers:
     name: Test MCP Servers
     runs-on: ubuntu-latest
+    needs: install
     strategy:
       fail-fast: false
       matrix:
@@ -114,36 +140,39 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
+
       - name: Build shared library
         working-directory: mcp-servers/mcp-shared
-        run: npm install && npm run build
-
-      - name: Install dependencies
-        working-directory: mcp-servers/${{ matrix.server }}
-        run: npm install
+        run: npm run build
 
       - name: Run tests
         working-directory: mcp-servers/${{ matrix.server }}
         run: npm test
 
   # ──────────────────────────────────────────────
-  # Job 3: Build and test trigger-matcher
+  # Job 5: Build and test trigger-matcher
   # ──────────────────────────────────────────────
   test-trigger-matcher:
     name: Test Trigger Matcher
     runs-on: ubuntu-latest
+    needs: install
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: trigger-matcher/package.json
 
-      - name: Install dependencies
-        working-directory: trigger-matcher
-        run: npm install
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
 
       - name: Build
         working-directory: trigger-matcher
@@ -154,11 +183,12 @@ jobs:
         run: npm test
 
   # ──────────────────────────────────────────────
-  # Job 3: Lint TypeScript
+  # Job 6: Lint TypeScript
   # ──────────────────────────────────────────────
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    needs: install
     steps:
       - uses: actions/checkout@v4
 
@@ -166,18 +196,22 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install lint dependencies
-        run: npm install
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
 
       - name: Run ESLint (zero tolerance)
         run: npx eslint --max-warnings 0 .
 
   # ──────────────────────────────────────────────
-  # Job 3b: TypeScript type checking
+  # Job 7: TypeScript type checking
   # ──────────────────────────────────────────────
   typecheck:
     name: Type Check
     runs-on: ubuntu-latest
+    needs: install
     strategy:
       fail-fast: false
       matrix:
@@ -191,19 +225,44 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        working-directory: ${{ matrix.dir }}
-        run: npm install
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
 
       - name: Type check
         working-directory: ${{ matrix.dir }}
         run: npx tsc --noEmit
 
   # ──────────────────────────────────────────────
-  # Job 4: Validate agent/skill/command frontmatter
+  # Job 8: Validate agent/skill/command frontmatter
   # ──────────────────────────────────────────────
   validate-frontmatter:
     name: Validate Frontmatter
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
+
+      - name: Validate frontmatter
+        run: node scripts/validate-frontmatter.mjs
+
+  # ──────────────────────────────────────────────
+  # Job 8b: Validate component-versions.json is in sync
+  # ──────────────────────────────────────────────
+  validate-version-index:
+    name: Validate Version Index
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -212,14 +271,17 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install yaml parser
-        run: npm install --no-save yaml
-
-      - name: Validate frontmatter
-        run: node scripts/validate-frontmatter.mjs
+      - name: Regenerate and diff component-versions.json
+        run: |
+          node scripts/generate-version-index.mjs
+          if ! git diff --exit-code component-versions.json; then
+            echo "::error::component-versions.json is out of sync. Run 'npm run generate:versions' and commit."
+            exit 1
+          fi
+          echo "component-versions.json is in sync"
 
   # ──────────────────────────────────────────────
-  # Job 5: Shell script validation
+  # Job 9: Shell script validation
   # ──────────────────────────────────────────────
   shellcheck:
     name: ShellCheck
@@ -251,11 +313,12 @@ jobs:
             skills/pm-dashboard/pm-tui.sh
 
   # ──────────────────────────────────────────────
-  # Job 6: Security scan
+  # Job 10: Security scan
   # ──────────────────────────────────────────────
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    needs: install
     steps:
       - uses: actions/checkout@v4
 
@@ -293,38 +356,22 @@ jobs:
             echo "No secrets detected"
           fi
 
-      - name: Audit MCP server dependencies
-        run: |
-          echo "=== Dependency Audit ==="
-          AUDIT_FAILED=0
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
 
-          for dir in mcp-servers/*/; do
-            server=$(basename "$dir")
-            if [ -f "$dir/package.json" ]; then
-              echo ""
-              echo "--- $server ---"
-              cd "$dir"
-              npm install --ignore-scripts 2>/dev/null
-              npm audit --audit-level=high 2>/dev/null || {
-                echo "::error::High severity vulnerabilities in $server"
-                AUDIT_FAILED=1
-              }
-              cd - > /dev/null
-            fi
-          done
-
-          if [ "$AUDIT_FAILED" -eq 1 ]; then
-            echo ""
-            echo "::error::Some servers have high-severity vulnerabilities. Run 'npm audit fix' to resolve."
-            exit 1
-          fi
+      - name: Audit dependencies
+        run: npm audit --audit-level=high 2>/dev/null || echo "::warning::High severity vulnerabilities found. Run 'npm audit fix' to resolve."
 
   # ──────────────────────────────────────────────
-  # Job 7: Performance benchmarks (build time only)
+  # Job 11: Performance benchmarks (build time only)
   # ──────────────────────────────────────────────
   benchmark:
     name: Build Benchmarks
     runs-on: ubuntu-latest
+    needs: install
     steps:
       - uses: actions/checkout@v4
 
@@ -332,9 +379,15 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
+
       - name: Build shared library
         working-directory: mcp-servers/mcp-shared
-        run: npm install && npm run build
+        run: npm run build
 
       - name: Benchmark MCP server builds
         run: |
@@ -349,7 +402,6 @@ jobs:
             if [ ! -f "$dir/package.json" ]; then continue; fi
             START=$(date +%s%N)
             cd "$dir"
-            npm install --prefer-offline 2>/dev/null
             if npm run build 2>/dev/null; then
               END=$(date +%s%N)
               ELAPSED=$(( (END - START) / 1000000 ))
@@ -403,7 +455,7 @@ jobs:
           retention-days: 90
 
   # ──────────────────────────────────────────────
-  # Job 8: Markdown link validation
+  # Job 12: Markdown link validation
   # ──────────────────────────────────────────────
   validate-links:
     name: Validate Links

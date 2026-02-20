@@ -4,6 +4,11 @@ description: Database schema design, migration strategies, indexing, query optim
 category: Architecture
 priority: P1
 agent: database-expert
+version: 1.0.0
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # Database Design Patterns Skill
@@ -852,18 +857,17 @@ Apply Database Design Patterns when:
 - **Migration Command**: `commands/migrate.md`
 - **Modern Web Stack Plugin**: `plugins/modern-web-stack-plugin.md`
 
----
-
-**Version**: 1.0.0
 **Last Updated**: 2026-01-10
 **Maintained by**: Claude Code Helper Project
 
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
 ---
 
-## Credits
-
-**Author:** [Michel Abboud](https://github.com/michelabboud)
-**AI Assistance:** Created with the help of Claude Code (Anthropic)
-**License:** Apache-2.0
-
-💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

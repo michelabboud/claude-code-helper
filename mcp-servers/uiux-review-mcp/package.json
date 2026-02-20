@@ -10,7 +10,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "prepare": "npm run build",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "inspector": "npx @modelcontextprotocol/inspector build/index.js"
   },
   "keywords": ["mcp", "ui", "ux", "design", "accessibility", "wcag", "wireframe"],
@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
-    "mcp-shared": "file:../mcp-shared",
+    "mcp-shared": "*",
     "zod": "^3.23.8"
   },
   "devDependencies": {

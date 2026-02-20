@@ -37,6 +37,10 @@ triggers:
       on: [read, edit]
   priority: 12
   tags: [cloud, aws, infrastructure, serverless]
+author: Michel Abboud
+license: Apache-2.0
+repository: https://github.com/michelabboud/claude-code-helper
+issues: https://github.com/michelabboud/claude-code-helper/issues
 ---
 
 # AWS Architect Expert Sub-Agent
@@ -531,9 +535,18 @@ export class MyStack extends cdk.Stack {
 - **Serverless Patterns**: `skills/serverless-patterns.md`
 - **CI/CD Pipeline**: `mcp-servers/cicd-pipeline/README.md`
 
----
-
-**Version**: 1.0.0
 **Last Updated**: 2026-01-10
 **Platform**: AWS
 **Status**: Production Ready ✅
+
+## Changelog
+
+### 1.0.0 (2026-02-20)
+- Initial versioned release
+
+---
+
+**Author**: [Michel Abboud](https://github.com/michelabboud)
+**License**: Apache-2.0
+**Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)
+**Issues & Discussions**: [GitHub Issues](https://github.com/michelabboud/claude-code-helper/issues)

@@ -34,6 +34,13 @@ echo "  package.json version: ${VERSION}"
 echo "  Expected git tag:     ${TAG}"
 echo ""
 
+# Generate component-versions.json before release
+if [ -f "${REPO_ROOT}/scripts/generate-version-index.mjs" ]; then
+    echo -e "${BLUE}Generating component-versions.json...${NC}"
+    node "${REPO_ROOT}/scripts/generate-version-index.mjs"
+    echo ""
+fi
+
 # Check if tag exists locally
 if git tag -l "$TAG" | grep -q "$TAG"; then
     echo -e "${GREEN}Tag ${TAG} exists locally${NC}"

@@ -120,9 +120,14 @@ echo ""
 echo -e "${YELLOW}Note:${NC} The trigger system requires Claude Code hooks to be enabled."
 echo "Hooks are configured in ~/.claude/settings.json"
 echo ""
-# Write installation manifest
+# Write installation manifest (v2: per-component registration)
 if [ -f "$REPO_ROOT/scripts/manifest-helper.sh" ]; then
+    export REPO_ROOT
     source "$REPO_ROOT/scripts/manifest-helper.sh"
+    # Extract version from trigger-matcher's package.json
+    TM_VERSION=$(extract_json_version "${SCRIPT_DIR}/package.json")
+    register_component "trigger-matcher" "$TM_VERSION" ""
+    # Keep legacy data for backward compat
     HOOK_COUNT=$(ls "${HOOKS_DIR}"/*.json 2>/dev/null | wc -l | tr -d ' ')
     update_manifest "trigger-matcher" "{\"hooks\": ${HOOK_COUNT}}"
 fi
