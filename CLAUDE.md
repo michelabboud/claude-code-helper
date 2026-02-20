@@ -46,11 +46,8 @@ claude-code-helper/
 │   ├── mcp-integrated/       # 13 .json agents using MCP tools
 │   └── README.md
 │
-├── skills/                   # PRIMARY: Skills distribution
-│   └── [16 skill files/dirs]
-│
-├── commands/                 # PRIMARY: Commands distribution
-│   └── [6 command files]
+├── skills/                   # PRIMARY: Skills distribution (18 skills)
+│   └── [18 skill files/dirs]
 │
 ├── hooks/                    # PRIMARY: Hooks distribution
 │   └── [5 hook files]
@@ -63,7 +60,7 @@ claude-code-helper/
 │
 ├── docs/                     # Documentation (organized)
 │   ├── mcp-configs/          # Third-party MCP server configs
-│   ├── releases/             # Release notes (v1.3.0 - v1.7.0)
+│   ├── releases/             # Release notes (v1.3.0 - v1.9.0)
 │   ├── reference/            # Reference docs, guides, tools
 │   └── reports/              # Audit reports, statistics
 │
@@ -75,6 +72,7 @@ claude-code-helper/
 │   ├── subagents-guide/      # Advanced agent patterns
 │   └── advanced-patterns/    # Advanced usage patterns
 │
+├── dashboard/                # Multi-repo monitoring dashboard (npm run dev)
 ├── config-bundle/            # Production-ready global config
 └── templates/                # Starter templates
 ```
@@ -84,8 +82,7 @@ claude-code-helper/
 ### 1. Primary Distribution Directories
 The main distributable content is now at root level:
 - **agents/**: All agent files (domain-experts + MCP-integrated)
-- **skills/**: All skill files
-- **commands/**: All command files
+- **skills/**: All skill files (since v2.1.3, commands are unified into skills)
 - **hooks/**: All hook files
 - **plugins/**: All plugin files
 - **integrations/**: Integration examples
@@ -101,7 +98,6 @@ Most components use `install-all.sh` scripts that:
 Standard installation paths:
 - Agents: `~/.claude/agents/`
 - Skills: `~/.claude/skills/`
-- Commands: `~/.claude/commands/`
 - Hooks: `~/.claude/hooks/`
 - Status lines: `~/.claude/statuslines/`
 - Global config: `~/.claude/settings.json` and `~/.claude/CLAUDE.md`
@@ -187,11 +183,6 @@ cat config-bundle/README.md            # Config bundle guide
 - Markdown files in `skills/[skill-name]/SKILL.md` structure
 - May include additional resources in same directory
 - Install to: `~/.claude/skills/`
-
-### Command Files (.md or .sh)
-- Markdown for command logic or shell scripts for execution
-- Located in: `commands/`
-- Install to: `~/.claude/commands/`
 
 ### Status Line Scripts (.sh)
 - Bash scripts that output terminal status line content
@@ -315,14 +306,149 @@ The config-bundle implements model transparency:
 
 When adding new content:
 1. Place agents in `agents/domain-experts/` or `agents/mcp-integrated/`
-2. Place skills in `skills/`
-3. Place commands in `commands/`
-4. Add template version to `templates/` if creating new pattern
+2. Place skills in `skills/` (commands are now unified into skills since v2.1.3)
+3. Add template version to `templates/` if creating new pattern
 5. Update relevant README.md files
 6. Include installation instructions
 7. Test installation process
 
-## Latest Claude Code Features (v2.1.22)
+## Latest Claude Code Features (v2.1.49)
+
+### Major: Claude Opus 4.6 and Sonnet 4.6 (v2.1.32, v2.1.45)
+- **Claude Opus 4.6** is now available (v2.1.32)
+- **Claude Sonnet 4.6** is now available (v2.1.45)
+- **Fast mode for Opus 4.6** (v2.1.36) - same model, faster output
+- **Sonnet 4.5 1M removed from Max plan** in favor of Sonnet 4.6 with 1M context (v2.1.49)
+
+### Git Worktree Isolation (v2.1.49)
+- `--worktree` (`-w`) flag to start Claude in an isolated git worktree
+- Subagents support `isolation: "worktree"` for working in a temporary git worktree
+- Enables safe parallel work without affecting the main working tree
+
+### Background Agent Improvements (v2.1.49)
+- Agent definitions support `background: true` to always run as a background task
+- Fixed Ctrl+C/ESC being silently ignored when background agents are running
+
+### ConfigChange Hook Event (v2.1.49)
+New `ConfigChange` hook event fires when configuration files change during a session. Enables enterprise security auditing and optional blocking of settings changes.
+
+### Plugin Default Settings (v2.1.49)
+Plugins can now ship `settings.json` for default configuration, providing sensible defaults out of the box.
+
+### Simple Mode Enhancement (v2.1.49)
+Simple mode (`CLAUDE_CODE_SIMPLE`) now includes the file edit tool in addition to the Bash tool.
+
+### SDK Model Capability Discovery (v2.1.49)
+SDK model info now includes `supportsEffort`, `supportedEffortLevels`, and `supportsAdaptiveThinking` fields so consumers can discover model capabilities.
+
+### claude.ai MCP Connectors (v2.1.46)
+MCP connectors configured in claude.ai can now be used directly in Claude Code.
+
+### Agent Teams (v2.1.32) - Research Preview
+Multi-agent collaboration with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`. Includes `TeammateIdle` and `TaskCompleted` hook events (v2.1.33), `Task(agent_type)` syntax to restrict sub-agent spawning, and `memory` frontmatter field with `user`, `project`, or `local` scope.
+
+### Automatic Memory (v2.1.32)
+Claude now automatically records and recalls memories as it works, building context over time.
+
+### Summarize from Here (v2.1.32)
+Message selector now includes "Summarize from here" for partial conversation summarization.
+
+### PDF Page Ranges in Read Tool (v2.1.30)
+Added `pages` parameter for PDFs (e.g., `pages: "1-5"`). Large PDFs (>10 pages) return a lightweight reference when `@` mentioned.
+
+### PR-Linked Sessions (v2.1.27)
+- `--from-pr` flag to resume sessions linked to a specific GitHub PR number or URL
+- Sessions auto-link to PRs when created via `gh pr create`
+
+### Permission Behavior Change (v2.1.27)
+**Breaking:** Permissions now respect content-level `ask` over tool-level `allow`. Previously `allow: ["Bash"], ask: ["Bash(rm *)"]` allowed all bash commands; now it prompts for `rm`.
+
+### CLI Auth Subcommands (v2.1.41)
+New `claude auth login`, `claude auth status`, and `claude auth logout` CLI subcommands.
+
+### Windows ARM64 Support (v2.1.41)
+Native binary support for Windows ARM64 (win32-arm64).
+
+### MCP OAuth Client Credentials (v2.1.30)
+Pre-configured OAuth client credentials for MCP servers that don't support Dynamic Client Registration. Use `--client-id` and `--client-secret` with `claude mcp add`.
+
+### Debug Command (v2.1.30)
+`/debug` command for troubleshooting the current session.
+
+### Customizable Spinner Verbs and Tips (v2.1.23, v2.1.45)
+- `spinnerVerbs` setting for custom spinner verbs (v2.1.23)
+- `spinnerTipsOverride` setting with custom `tips` array and `excludeDefault: true` option (v2.1.45)
+
+### Enhanced /rename (v2.1.41, v2.1.47)
+- Auto-generates session name from conversation context when called without arguments (v2.1.41)
+- Updates the terminal tab title by default (v2.1.47)
+
+### New Keybinding Actions (v2.1.47)
+- `chat:newline` keybinding action for configurable multi-line input
+- `ctrl+f` now kills all background agents (instead of double-pressing ESC)
+- `added_dirs` in statusline JSON `workspace` section
+
+### Config Backups Relocated (v2.1.47)
+Config backup files moved from home directory root to `~/.claude/backups/`.
+
+### Resume Picker Improvements (v2.1.47)
+- Initial session count increased from 10 to 50
+- Simplified teammate navigation: Shift+Down only (with wrapping)
+
+### Stop Hook Enhancement (v2.1.47)
+`last_assistant_message` field added to Stop and SubagentStop hook inputs for accessing the final assistant response.
+
+### Skills from Additional Directories (v2.1.32)
+Skills in `.claude/skills/` within `--add-dir` directories are now loaded automatically. Skill character budget scales with context window (2% of context).
+
+### Plugins from Additional Directories (v2.1.45)
+`enabledPlugins` and `extraKnownMarketplaces` can now be read from `--add-dir` directories.
+
+### SDK Rate Limit Info (v2.1.45)
+New `SDKRateLimitInfo` and `SDKRateLimitEvent` types for receiving rate limit status updates including utilization, reset times, and overage information.
+
+### Sandbox Security Fix (v2.1.34)
+**Security:** Fixed commands excluded from sandboxing bypassing Bash ask permission when `autoAllowBashIfSandboxed` was enabled.
+
+### Heredoc Security Improvement (v2.1.38)
+Improved heredoc delimiter parsing to prevent command smuggling. Writes to `.claude/skills` directory blocked in sandbox mode.
+
+### Managed Settings Security (v2.1.49)
+**Security:** Fixed `disableAllHooks` setting to respect managed settings hierarchy - non-managed settings can no longer disable managed hooks set by policy.
+
+### VSCode Improvements (v2.1.27-v2.1.47)
+- Claude in Chrome integration (v2.1.27)
+- Remote sessions for OAuth users (v2.1.33)
+- Git branch and message count in session picker, searchable by branch name (v2.1.33)
+- Multiline input in "Other" text input (Shift+Enter) (v2.1.30)
+- Plan preview auto-updates, commenting only when ready, stays open on reject (v2.1.47)
+- Permission destination choice persists across sessions (v2.1.45)
+
+### Performance Improvements (v2.1.42-v2.1.49)
+- Deferred Zod schema construction for faster startup (v2.1.42)
+- Improved prompt cache hit rates by moving date out of system prompt (v2.1.42)
+- Deferred SessionStart hook execution (~500ms startup reduction) (v2.1.47)
+- Released API stream buffers, agent context, and skill state after use (v2.1.47)
+- Eliminated O(n²) message accumulation in progress updates (v2.1.47)
+- Pre-warmed `@` file mention index with session-based caching (v2.1.47)
+- Skipped unnecessary API calls in non-interactive mode (`-p`) (v2.1.49)
+- Cached MCP auth failures to avoid repeated connection attempts (v2.1.49)
+- Batched MCP tool token counting into single API call (v2.1.49)
+- Fixed unbounded WASM memory growth by periodically resetting tree-sitter parser (v2.1.49)
+
+### Major Bug Fix Highlights (v2.1.23-v2.1.49)
+- Fixed file-not-found errors now suggest corrected paths (v2.1.49)
+- Fixed unbounded Yoga WASM linear memory growth in long sessions (v2.1.49)
+- Fixed FileWriteTool stripping intentional trailing blank lines (v2.1.47)
+- Fixed Windows terminal rendering (`\r\n` issues) (v2.1.47)
+- Fixed Edit tool corrupting Unicode curly quotes (v2.1.47)
+- Fixed plan mode lost after context compaction (v2.1.47)
+- Fixed bash permission classifier hallucinating incorrect permissions (v2.1.47)
+- Fixed orphaned Claude Code processes after terminal disconnect on macOS (v2.1.46)
+- Fixed PDF too large errors locking up sessions (v2.1.31)
+- Fixed phantom "(no content)" text blocks wasting tokens (v2.1.30)
+- 68% memory reduction for `--resume` (v2.1.30)
+- Improved memory usage for long-running sessions (v2.1.47)
 
 ### Structured Outputs Fix (v2.1.22)
 Fixed structured outputs for non-interactive (`-p`) mode.
@@ -330,8 +456,8 @@ Fixed structured outputs for non-interactive (`-p`) mode.
 ### VSCode Python Environment Activation (v2.1.21)
 Added automatic Python virtual environment activation via `claudeCode.usePythonEnvironment` setting in VSCode.
 
-### Full-Width Number Input Support (v2.1.21)
-Added support for full-width (zenkaku) number input from Japanese IME.
+### Full-Width Input Support (v2.1.21, v2.1.31)
+Full-width (zenkaku) number input (v2.1.21) and space input (v2.1.31) from Japanese IME.
 
 ### PR Review Status Indicator (v2.1.20)
 PR review status indicator now appears in the prompt footer when working on pull requests.
@@ -341,9 +467,6 @@ Tasks can now be deleted via the TaskUpdate tool by setting status to `deleted`.
 
 ### Permission Rules Update (v2.1.20)
 Permission rules like `Bash(*)` are now accepted as equivalent to `Bash`, providing more flexible permission configuration.
-
-### Config Backups (v2.1.20)
-Configuration backups are now timestamped and rotated, keeping the 5 most recent backups.
 
 ### Background Agent Permissions (v2.1.20)
 Background agents now prompt for tool permissions before launching, improving security and control.
@@ -462,7 +585,6 @@ Use `/config` to toggle between `stable` or `latest` release channels, giving yo
 - **Learning Claude Code**: `guides/complete-guide/`
 - **Installing agents**: `agents/`
 - **Installing skills**: `skills/`
-- **Installing commands**: `commands/`
 - **Setting up production config**: `config-bundle/`
 - **Creating custom tools**: `templates/`
 - **Installing MCP servers**: `mcp-servers/`
