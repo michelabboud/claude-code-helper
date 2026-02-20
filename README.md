@@ -25,9 +25,9 @@
 
 ### What's Available
 
-- **49 Agents** (14 MCP agents + 35 sub-agents)
+- **49 Agents** (12 MCP agents + 37 domain experts)
 - **68 MCP Tools** across 10 servers (38 production + 30 experimental)
-- **19 Skills** (workflows, testing, scaffolding, documentation, update-check, and more)
+- **20 Skills** (workflows, testing, scaffolding, documentation, update-check, model-mode, and more)
 - **Comprehensive guides, templates, and integration examples**
 
 ---
@@ -38,7 +38,7 @@ This repository contains everything you need to become productive with Claude Co
 
 | Component | Description | Best For |
 |-----------|-------------|----------|
-| **[Agents](#-agents)** | 46 agents (domain experts + MCP-integrated) | Specialized AI assistance |
+| **[Agents](#-agents)** | 49 agents (domain experts + MCP-integrated) | Specialized AI assistance |
 | **[Skills](#-skills)** | 18 reusable workflow skills | Workflows, patterns & actions |
 | **[Guides](#-guides)** | Complete learning paths from zero to hero | Learning & Reference |
 | **[MCP Servers](#-mcp-servers)** | 10 specialized servers for code quality & automation | Automation & CI/CD |
@@ -240,6 +240,8 @@ JSON agents that leverage MCP server tools:
 - UI/UX Reviewer, Test Quality Enforcer, Security Reviewer
 - Database Engineer, CI/CD Engineer, and more
 
+**Note:** All 49 agents include a semantic `color` field in their frontmatter for visual identification in Claude Code (e.g., `color: blue`, `color: purple`). This allows the UI to display agents with distinct color coding when browsing or selecting them.
+
 ### Installation
 ```bash
 # Install all domain experts
@@ -421,6 +423,10 @@ cd dashboard && npm install && npm run dev
 **Features:**
 - **Multi-project overview** - Auto-discovers all Claude Code projects with health scores
 - **PM Health view** - 16 expert scores, radar chart, priority matrix, tasks, risks, tech debt, sparklines
+- **Sparkline trend charts** - Per-score mini trend lines showing score movement over time
+- **Score delta badges** - Visual indicators (▲/▼) showing score changes since last update
+- **Expert detail panels** - Expandable per-expert breakdown with findings and recommendations
+- **Trend History tab** - Full historical score timeline across all experts
 - **Activity Logs** - Real-time debug log viewer with level filtering (DEBUG/INFO/WARN/ERROR), search, auto-refresh
 - **Session Browser** - View session transcripts, subagent activity, tool calls in human-readable format
 - **Dark/light theme** - Professional design with keyboard shortcuts (T, 1-4, R)

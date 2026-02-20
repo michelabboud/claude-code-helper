@@ -15,6 +15,51 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.5.0] - 2026-02-21
+
+### Configurable Model Switching
+
+- **`MODEL_MODE` config variable** added to `config-bundle/global-config/CLAUDE.md` (repo template) and `~/.claude/CLAUDE.md` (global config)
+  - `default` — Auto-switch: Opus for planning, Sonnet for coding, Haiku for quick tasks (original behavior)
+  - `opus-only` — Always use Claude Opus 4.6 (ideal for MAX plan users wanting maximum quality everywhere)
+  - `sonnet-only` — Always use Claude Sonnet 4.6 (fast + capable, good for Pro plan)
+  - `haiku-only` — Always use Claude Haiku (fastest, cheapest)
+  - `custom` — Fine-grained control via `PLAN_MODEL`, `CODE_MODEL`, `QUICK_MODEL` variables
+- Detection rules are now conditional on `MODEL_MODE` — all existing auto-switching behavior preserved in `default` mode
+- User Configuration block placed at top of CLAUDE.md so it takes effect before detection rules
+
+### New Skill: `/model-mode`
+
+- **`skills/model-mode/SKILL.md`** — convenience skill to read/update `MODEL_MODE` without manual file editing
+  - `/model-mode status` — show current mode and custom model settings
+  - `/model-mode opus-only` / `sonnet-only` / `haiku-only` / `default` / `custom` — switch modes instantly
+  - Reads and rewrites the `MODEL_MODE:` line in `~/.claude/CLAUDE.md`
+  - Changes take effect at next session start (or immediately with ConfigChange hot-reload)
+- Skills count: 19 → 20
+
+### Dashboard Enhancements
+
+- **Sparkline trend charts** — SVG mini trend lines per project card showing score movement over time, with gradient fill and per-dot hover tooltips showing exact value and date
+- **Score delta badges** — ▲/▼ indicators on project cards and stats bar showing score change since last assessment entry
+- **Expert detail expand panels** — click any domain bar to expand a rich panel showing topFinding, recommendation, and riskIfIgnored for that expert
+- **Trend History tab** — new fourth tab in the bottom panel with a full per-project score matrix across all historical assessment dates and all expert domains
+- **Visual polish** — animated gauge glow, pulse-ring on active tool dots, gradient top borders on stat cards, gradient sparkline area fills
+
+### Agent Semantic Colors
+
+- All **49 agents** now include a `color` field with semantic meaning, enabling visual identification in Claude Code UI
+- Color scheme by category:
+  - `green` — runtime/backend agents (Node.js, Android, Vue/Nuxt, API)
+  - `blue` — data/infrastructure/management (database, data engineering, documentation, project manager, Python, iOS, full-stack reviewer, database engineer)
+  - `orange` — build/deploy/automation (DevOps, Git, automation architect, design critic)
+  - `red` — defense/quality/testing (QA testing, security, dependency management, test quality enforcer)
+  - `purple` — creative/AI/ML (ML/AI, design system, security reviewer, UI/UX reviewer, RAG coder)
+  - `yellow` — analysis/performance (performance optimizer)
+  - `cyan` — interfaces/streams/observability (API expert, CSS/Tailwind, observability, React/Next.js, CI/CD engineer)
+- Both markdown (YAML `color:`) and JSON (`"color":`) agent formats updated
+
+---
+
 ## [2.4.1] - 2026-02-20
 
 ### Security & CI Hardening
