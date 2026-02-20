@@ -55,6 +55,7 @@ jobs:
           - dependency-management
           - n8n-automation
           - rag-mcp
+          - project-oversight-mcp
     steps:
       - uses: actions/checkout@v4
 
@@ -133,6 +134,7 @@ jobs:
           - dependency-management
           - n8n-automation
           - rag-mcp
+          - project-oversight-mcp
     steps:
       - uses: actions/checkout@v4
 
@@ -392,7 +394,7 @@ jobs:
           key: nm-${{ hashFiles('package-lock.json') }}
 
       - name: Audit dependencies
-        run: npm audit --audit-level=high 2>/dev/null || echo "::warning::High severity vulnerabilities found. Run 'npm audit fix' to resolve."
+        run: npm audit --audit-level=high
 
   # ──────────────────────────────────────────────
   # Job 11: Performance benchmarks (build time only)

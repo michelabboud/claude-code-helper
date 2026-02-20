@@ -1,7 +1,7 @@
 ---
 skill_name: PM Dashboard
 description: 'Update the Project Manager dashboard with assessment scores, tasks, and risks. Use after running a project health assessment.'
-argument-hint: '[open|update|reset|sync]'
+argument-hint: '[open|update|reset]'
 user-invocable: true
 version: 1.1.0
 author: Michel Abboud
@@ -19,11 +19,10 @@ Manage the Project Manager dashboard data file used by both the terminal and web
 - `/pm-dashboard update` - Write/update assessment data after an expert consultation
 - `/pm-dashboard open` - Open the web dashboard in the browser
 - `/pm-dashboard reset` - Reset all scores to start a fresh assessment
-- `/pm-dashboard sync` - Sync project dashboard to the central store for multi-project monitoring
 
 ## Data File Location
 
-The PM agent writes assessment data to `.claude/pm-dashboard.json` in the project root. Both the terminal and web dashboards read from this file.
+The PM agent writes assessment data to `~/.claude/pm-dashboard/<project-name>/pm-dashboard.json` (central store). A local copy is also kept at `.claude/pm-dashboard.json` in the project root. The multi-project dashboard auto-discovers all projects from the central store.
 
 ## Data Schema
 
@@ -117,29 +116,24 @@ The PM dashboard data file follows this structure:
 
 ## Instructions for PM Agent
 
-After completing an assessment, write the results to `.claude/pm-dashboard.json`:
+After completing an assessment, write the results directly to the central store:
 
 ```bash
-# The PM agent writes this file after each assessment
-cat > .claude/pm-dashboard.json << 'DASHBOARD_EOF'
+# Write dashboard to central store (auto-discovered by multi-project dashboard)
+PROJECT_NAME=$(basename "$(pwd)")
+mkdir -p ~/.claude/pm-dashboard/"$PROJECT_NAME"
+cat > ~/.claude/pm-dashboard/"$PROJECT_NAME"/pm-dashboard.json << 'DASHBOARD_EOF'
 {
   ... assessment data ...
 }
 DASHBOARD_EOF
+
+# Also keep a local copy for the project
+mkdir -p .claude
+cp ~/.claude/pm-dashboard/"$PROJECT_NAME"/pm-dashboard.json .claude/pm-dashboard.json
 ```
 
-### Central Store Sync
-
-After writing the dashboard file, also sync it to the central store for multi-project monitoring:
-
-```bash
-# Sync to central store (enables multi-project dashboard auto-discovery)
-PROJECT_NAME=$(basename "$(pwd)")
-mkdir -p ~/.claude/pm-dashboard/"$PROJECT_NAME"
-cp .claude/pm-dashboard.json ~/.claude/pm-dashboard/"$PROJECT_NAME"/pm-dashboard.json
-```
-
-This enables the project-oversight-mcp server and multi-project dashboard to auto-discover all projects.
+The primary location is `~/.claude/pm-dashboard/<project>/pm-dashboard.json`. The local `.claude/pm-dashboard.json` copy is for convenience only.
 
 To open the web dashboard:
 ```bash
@@ -152,8 +146,8 @@ xdg-open .claude/pm-dashboard.html  # Linux
 ## Changelog
 
 ### 1.1.0 (2026-02-20)
-- Added `/pm-dashboard sync` command for central store sync
-- Added central store sync instructions for PM agent
+- PM agent now writes directly to central store (`~/.claude/pm-dashboard/<project>/`)
+- No manual sync needed — every assessment is auto-discovered
 - Dashboard auto-discovery support via `~/.claude/pm-dashboard/`
 
 ### 1.0.0 (2026-02-20)

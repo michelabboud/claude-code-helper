@@ -9,7 +9,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 ## Table of Contents
 
 - [Quick Stats](#quick-stats)
-- [MCP Servers (30+ Tools)](#mcp-servers-30-tools)
+- [MCP Servers (47+ Tools)](#mcp-servers-47-tools)
   - [API Specialist MCP](#api-specialist-mcp-8-tools)
   - [Code Review MCP](#code-review-mcp-4-tools)
   - [Testing MCP](#testing-mcp-4-tools)
@@ -43,10 +43,10 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 
 | Category | Count | Description |
 |----------|-------|-------------|
-| **MCP Servers** | 7 | Production-ready TypeScript servers with 47+ tools |
+| **MCP Servers** | 11 | Production-ready TypeScript servers with 47+ tools |
 | **MCP Tools** | 47+ | Individual automation tools across all servers |
-| **Agents** | 44+ | MCP agents, sub-agents, and technology specialists |
-| **Skills** | 15+ | Workflow and testing skills |
+| **Agents** | 47 | MCP agents, sub-agents, and technology specialists |
+| **Skills** | 19 | Workflow and testing skills |
 | **Commands** | 5 | Slash commands for common workflows |
 | **Hooks** | 4 | Event-driven automation hooks |
 | **Plugins** | 6 | Complete feature packages |

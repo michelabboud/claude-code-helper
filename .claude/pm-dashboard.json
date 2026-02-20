@@ -1,735 +1,263 @@
 {
   "projectName": "claude-code-helper",
-  "lastAssessment": "2026-02-20T16:00:00Z",
-  "assessmentCount": 15,
+  "lastAssessment": "2026-02-20T20:30:00Z",
+  "assessmentCount": 17,
   "overallScore": 8.8,
   "experts": {
     "qa": {
       "score": 9,
       "status": "excellent",
-      "topFinding": "All 11 MCP packages + trigger-matcher have tests. 1,327+ total tests across workspaces. 56 script tests covering versioning infrastructure: generate-version-index.test.mjs (31 tests), manifest-helper.test.sh (19 tests), update-component.test.sh (6 tests). Frontmatter validator checks 64+ files with 0 errors/0 warnings. Version index validates 86 components.",
-      "recommendation": "Add test:scripts to CI pipeline as a dedicated job. Add integration tests for cross-server scenarios.",
+      "topFinding": "1,480 total tests across all workspaces: 12 Jest suites (1,224 tests), trigger-matcher (200 tests via node:test), generate-version-index (31 tests), manifest-helper.sh (19 tests), update-component.sh (6 tests). All passing. 97 tests for new project-oversight-mcp. Frontmatter validator checks 64+ files with 0 errors.",
+      "recommendation": "Add project-oversight-mcp to CI test matrix (currently missing). Add integration tests for cross-server activity tracking.",
       "riskIfIgnored": "Low remaining risk - comprehensive test coverage across all components"
     },
     "uiux": {
       "score": 8,
       "status": "good",
-      "topFinding": "PM dashboard (TUI + web) has dark/light theme toggle (persisted in localStorage), keyboard navigation (J/K section nav, T theme toggle, R refresh, ? help), ARIA-friendly focusable cards. Multi-project view also themed. Primarily a CLI toolkit, so UI needs are limited.",
-      "recommendation": "Add collapsible sections and responsive mobile layout improvements",
-      "riskIfIgnored": "Low risk - UI is secondary to this project's purpose"
+      "topFinding": "Multi-project HTML dashboard redesigned with SVG radial score gauges, grouped domain bars, summary stats cards, tabbed bottom panel (Comparison/Risks/Tools/Logs), animated transitions, and responsive layout. Dark/light theme with keyboard nav (T key). Upload zone hidden in HTTP mode.",
+      "recommendation": "Add sparkline trend charts to project cards. Consider interactive drill-down into expert findings.",
+      "riskIfIgnored": "Low remaining risk - dashboard is now professional and usable"
     },
     "security": {
-      "score": 8,
-      "status": "good",
-      "topFinding": "59 sanitizePath() calls with basePath=process.cwd(). 10 execFile() calls, 0 raw exec() calls (no shell injection). CI secrets scan fails build on findings. npm audit warns on high-severity vulns. update-component.sh uses node -e for JSON (no eval injection). .gitignore prevents accidental secret commits.",
-      "recommendation": "Add SQL injection protection to database-operations. Add Content-Security-Policy headers if web dashboard is exposed.",
-      "riskIfIgnored": "Low remaining risk - major attack vectors are closed"
+      "score": 9,
+      "status": "excellent",
+      "topFinding": "CORS wildcard fixed - now restricted to localhost origin with Vary header. npm audit enforced in CI (no more warning-only fallback). 62 sanitizePath() calls. Zero exec(). serve.ts binds 127.0.0.1 with session ID validation and path traversal protection.",
+      "recommendation": "Add Content-Security-Policy headers to dashboard HTML response. Consider rate limiting on API endpoints.",
+      "riskIfIgnored": "Low remaining risk - all known security gaps addressed"
     },
     "devops": {
       "score": 10,
       "status": "excellent",
-      "topFinding": "CI pipeline: 14+ jobs with dedicated test-scripts job, benchmark trend detection (downloads previous artifact, compares per-server build times, warns on >20% regression). Branch protection on main with 9 required status checks (strict mode). Pre-commit hooks via husky + lint-staged. ShellCheck validates all bash scripts.",
-      "recommendation": "Consider adding required PR reviews for external contributors. Add Dependabot for automated dependency updates.",
-      "riskIfIgnored": "Low remaining risk - comprehensive CI/CD with branch protection in place"
+      "topFinding": "CI pipeline with 12 jobs: matrix build/test for all 11 servers (including project-oversight-mcp), lint (--max-warnings 0), typecheck, frontmatter validation, version index check, script tests, ShellCheck, security scan with enforced npm audit, benchmark with trend detection. Pre-commit hooks via husky + lint-staged.",
+      "recommendation": "Make ShellCheck and benchmark SLA non-advisory (fail on violation). Consider adding E2E smoke test for MCP server startup.",
+      "riskIfIgnored": "Low remaining risk - full CI coverage for all 11 servers"
     },
     "networking": {
       "score": 8,
       "status": "good",
-      "topFinding": "Stdio transport (minimal exposure). runServer() provides health check framework. rag-mcp, code-review-mcp, and testing-mcp use startup health checks via commandHealthCheck(). URL sanitization blocks SSRF.",
-      "recommendation": "Add periodic health checks for long-running servers",
+      "topFinding": "Stdio transport for MCP servers (minimal exposure). serve.ts binds to 127.0.0.1 only with auto-shutdown after inactivity. Health checks via commandHealthCheck() for exec-based servers.",
+      "recommendation": "Replace wildcard CORS with origin validation. Add periodic health checks for long-running servers.",
       "riskIfIgnored": "Low remaining risk - all exec-based servers verify tool availability at startup"
     },
     "development": {
       "score": 9,
       "status": "excellent",
-      "topFinding": "npm workspaces monorepo with 12 packages. Shared tsconfig.base.json (all 11 tsconfigs extend it). ESLint zero-tolerance (--max-warnings 0). Pre-commit hooks via husky + lint-staged. Clean working tree - v2.3.0 committed, tagged, pushed, and released.",
-      "recommendation": "Add tsc --noEmit to pre-commit hooks for MCP servers. Consider adding workspace constraint checks.",
-      "riskIfIgnored": "Low remaining risk - comprehensive development guardrails in place"
+      "topFinding": "npm workspaces monorepo with 13 packages. Shared tsconfig.base.json. ESLint zero-tolerance (--max-warnings 0). Pre-commit hooks via husky + lint-staged. mcp-shared exports 8 modules with 20+ named exports covering logging, sanitization, health, responses, server lifecycle, metrics, and activity tracking.",
+      "recommendation": "Add tsc --noEmit for MCP servers to CI typecheck matrix (currently only mcp-shared and trigger-matcher).",
+      "riskIfIgnored": "Type errors in MCP servers only caught at build time, not in dedicated typecheck step"
     },
     "architecture": {
       "score": 9,
       "status": "excellent",
-      "topFinding": "npm workspaces monorepo with 12 packages and shared tsconfig.base.json. Per-component versioning with 86-component index (component-versions.json). Manifest v2 with per-component tracking. All 10 servers use runServer() factory from mcp-shared. 5 ADRs document key decisions. update-component.sh enables granular updates.",
-      "recommendation": "Consider workspace-level dependency constraints to prevent phantom deps. Add ADRs for future decisions.",
-      "riskIfIgnored": "Low remaining risk - clean monorepo architecture with documented decisions"
+      "topFinding": "npm workspaces monorepo with 13 packages. Per-component versioning with 86-component index. All 10+1 servers use runServer() + registerTrackedToolHandler() from mcp-shared. 5 ADRs document key decisions. ActivityTracker provides cross-server instrumentation.",
+      "recommendation": "Add ADR for project-oversight-mcp architecture. Consider workspace dependency constraints.",
+      "riskIfIgnored": "Low remaining risk - clean monorepo with documented decisions"
     },
     "product": {
       "score": 9,
       "status": "excellent",
-      "topFinding": "86 distributable components: 46 agents, 19 skills, 10 MCP servers, 3 hooks, 6 plugins, 2 integrations. Per-component versioning enables granular updates. /update-check v2.0.0 with fuzzy matching and changelog display. v2.3.0 released on GitHub. 90 total commits, 2 GitHub releases (v1.0.0, v2.3.0).",
-      "recommendation": "Keep docs in sync with Claude Code CLI releases. Consider a web-based component browser. Plan v2.4.0 priorities.",
-      "riskIfIgnored": "Users follow outdated guides as CLI evolves"
+      "topFinding": "86 distributable components: 46 agents, 19 skills, 11 MCP servers, 3 hooks, 6 plugins, 2 integrations. 4 GitHub releases (v1.0.0, v2.3.0, v2.3.1, v2.4.0). 23 changelog entries. component-versions.json tracks all 86 components.",
+      "recommendation": "Create GitHub releases for versions v1.1.0-v2.2.0 (19 missing releases). Update TOOLS-INDEX.md Quick Stats table (shows 7 servers, reality 10+).",
+      "riskIfIgnored": "Users can't discover intermediate releases via GitHub Releases page"
     },
     "api": {
       "score": 8,
       "status": "good",
-      "topFinding": "MCP tool interfaces are consistent. All use Zod validation, shared errorResponse() with actionable context. Standard response helpers from mcp-shared. runServer() provides unified lifecycle. 30+ MCP tools across 10 servers.",
-      "recommendation": "Add input examples to tool descriptions for better discoverability",
+      "topFinding": "47+ MCP tools across 11 servers. Consistent interfaces: Zod validation, shared errorResponse()/jsonResponse()/successResponse(). registerTrackedToolHandler() provides unified lifecycle. 7 HTTP API routes in project-oversight-mcp.",
+      "recommendation": "Add input examples to tool descriptions. Expose MetricsCollector data via a tool or API endpoint.",
       "riskIfIgnored": "Users may not understand expected input formats"
     },
     "monitoring": {
-      "score": 9,
+      "score": 10,
       "status": "excellent",
-      "topFinding": "100% instrumentation. All 10 MCP servers auto-log tool activity to ~/.claude/mcp-activity.jsonl via registerTrackedToolHandler(). ActivityTracker records started/completed/failed status with requestId, durationMs, server name, tool name, and sanitized args. Log rotation at 5MB. MetricsCollector tracks per-tool p50/p95/p99 latencies. project-oversight-mcp provides get_tool_activity + get_active_tools for querying. HTTP dashboard has live Tool Activity panel with 3s auto-refresh.",
-      "recommendation": "Wire MetricsCollector.recordCall() into registerTrackedToolHandler for automated latency percentile tracking",
-      "riskIfIgnored": "Low remaining risk - comprehensive activity tracking across all servers"
+      "topFinding": "100% instrumentation across all 11 MCP servers. MetricsCollector.recordCall() now wired into registerTrackedToolHandler - p50/p95/p99 latency tracking active for every tool call. ActivityTracker writes structured JSONL. 5MB rotation with field redaction. project-oversight-mcp provides 9 tools + 7 HTTP routes + SSE streaming.",
+      "recommendation": "Expose MetricsCollector data via a dashboard endpoint. Add alerting thresholds for p99 latency.",
+      "riskIfIgnored": "Low remaining risk - all monitoring infrastructure is active"
     },
     "database": {
       "score": 8,
       "status": "good",
       "topFinding": "rag-mcp healthCheck() wired into runServer() startup with retry logic. Adapter pattern supports ChromaDB, Qdrant, Redis. Graceful degradation on failure.",
-      "recommendation": "Add periodic health checks and connection pool monitoring",
-      "riskIfIgnored": "Post-startup connection drops still need manual detection"
+      "recommendation": "Add periodic health checks and connection pool monitoring.",
+      "riskIfIgnored": "Post-startup connection drops need manual detection"
     },
     "performance": {
       "score": 9,
       "status": "excellent",
-      "topFinding": "CI benchmark with trend detection: downloads previous run's artifact, compares per-server build times, warns on >5s increase per server or >20% total regression. 120s SLA enforced. npm workspaces dependency hoisting reduces install time. Single npm install for all 12 packages.",
-      "recommendation": "Consider tracking benchmark trends over time in a dashboard or summary report",
-      "riskIfIgnored": "Low remaining risk - automated regression detection in place"
+      "topFinding": "CI benchmark with trend detection: compares per-server build times vs previous artifact, warns on >5s per-server or >20% total regression. 120s total SLA. npm workspaces dependency hoisting. MetricsCollector has p50/p95/p99 ring buffer (1000 samples) but is not wired into production.",
+      "recommendation": "Wire MetricsCollector into registerTrackedToolHandler. Make benchmark SLA enforcement blocking (currently advisory warning only).",
+      "riskIfIgnored": "Runtime performance data is invisible - no production latency percentiles collected"
     },
     "documentation": {
-      "score": 9,
+      "score": 10,
       "status": "excellent",
-      "topFinding": "Comprehensive documentation: README, QUICKSTART, CONTRIBUTING.md, CLAUDE.md, CHANGELOG. mcp-shared/API.md with full export reference and usage examples. docs/component-browser.html for interactive component discovery. All 10 MCP servers have CHANGELOG.md. All 86 components have standardized metadata. Full link audit: 59 broken links fixed across 18 files (0 broken links remaining).",
-      "recommendation": "Add JSDoc/TSDoc comments to mcp-shared source for IDE tooltips. Consider auto-generating API docs.",
-      "riskIfIgnored": "Low remaining risk - comprehensive documentation with verified links"
+      "topFinding": "TOOLS-INDEX.md Quick Stats updated to accurate counts (11 servers, 47 agents, 19 skills). Broken TOC link fixed (30+ → 47+). Comprehensive docs: README, QUICKSTART, CONTRIBUTING, CLAUDE.md, CHANGELOG. mcp-shared/API.md. component-browser.html. All 11 MCP servers have CHANGELOG.md.",
+      "recommendation": "Add JSDoc to mcp-shared source. Create missing GitHub releases for v1.1.0-v2.2.0.",
+      "riskIfIgnored": "Low remaining risk - documentation is comprehensive and accurate"
     },
     "specifications": {
       "score": 7,
       "status": "good",
-      "topFinding": "5 Architecture Decision Records in docs/decisions/ document key decisions: mcp-shared extraction (001), per-component versioning (002), manifest v2 design (003), npm workspaces (004), CI pipeline design (005). MCP tool schemas serve as implicit API specs via Zod. component-versions.json schema is self-documenting.",
-      "recommendation": "Add ADRs for future significant decisions. Consider formal spec for component-versions.json schema.",
+      "topFinding": "5 ADRs in docs/decisions/ covering mcp-shared extraction, per-component versioning, manifest v2, npm workspaces, CI pipeline design. Zod schemas serve as implicit API specs. No ADRs for pre-v2.3.0 decisions (agent structure, skill format, hook design).",
+      "recommendation": "Add ADR for project-oversight-mcp and activity tracking architecture. Consider formal schema for component-versions.json.",
       "riskIfIgnored": "Future decisions may lack documented rationale"
     },
     "projectDocs": {
       "score": 7,
       "status": "good",
-      "topFinding": "CHANGELOG.md tracks all versions (v1.3.0-v2.3.0). docs/decisions/ directory with 5 ADRs and index. Per-MCP-server CHANGELOG.md files (10 total). pm-dashboard.json tracks 29 tasks across 13 assessments. 2 GitHub releases with detailed notes. Auto-memory preserves cross-session context.",
-      "recommendation": "Add retrospective documents after major milestones. Consider automated CHANGELOG generation from commit messages.",
-      "riskIfIgnored": "Historical context for decisions may fade without written records"
+      "topFinding": "23 CHANGELOG entries, 5 ADRs, 4 GitHub releases. Per-MCP-server CHANGELOG.md files (11 total). pm-dashboard.json tracks 36 tasks across 16 assessments. Auto-memory preserves cross-session context.",
+      "recommendation": "Create missing GitHub releases for v1.1.0-v2.2.0. Add retrospective docs after major milestones.",
+      "riskIfIgnored": "Historical context gaps between changelog and GitHub releases"
     },
     "progress": {
       "score": 10,
       "status": "excellent",
-      "topFinding": "35/35 tasks completed. v2.3.1 committed, tagged, pushed, and released on GitHub. 59 broken links fixed across 18 files. Clean working tree. All validation passing (lint 0 errors, frontmatter 0 errors, version index in sync). Project health score increased from initial 4.8 to 8.7 across 14 assessments.",
-      "recommendation": "Plan v2.4.0 priorities.",
-      "riskIfIgnored": "No active risks - project is in excellent state"
+      "topFinding": "All 6 assessment tasks (t37-t42) completed: CI matrices updated, CORS fixed, MetricsCollector wired, dashboard redesigned, npm audit enforced, TOOLS-INDEX stats updated. 42/42 lifetime tasks completed. 1,480+ tests all passing. 13 workspace packages build clean.",
+      "recommendation": "Continue with remaining recommendations: JSDoc for mcp-shared, missing GitHub releases, benchmark SLA enforcement.",
+      "riskIfIgnored": "No critical gaps remaining"
     }
   },
   "tasks": [
     {
-      "id": "t1",
-      "title": "Add unit tests to remaining 8 MCP servers",
+      "id": "t37",
+      "title": "Add project-oversight-mcp to CI build and test matrices",
       "status": "done",
       "priority": 1,
       "impact": "high",
-      "effort": "high",
-      "expert": "qa",
-      "quadrant": "major-project"
+      "effort": "low",
+      "expert": "devops",
+      "quadrant": "quick-win"
     },
     {
-      "id": "t2",
-      "title": "Create root-level CI/CD pipeline (GitHub Actions)",
+      "id": "t38",
+      "title": "Fix CORS wildcard in serve.ts (replace * with origin validation)",
       "status": "done",
       "priority": 2,
       "impact": "high",
-      "effort": "medium",
-      "expert": "devops",
+      "effort": "low",
+      "expert": "security",
       "quadrant": "quick-win"
     },
     {
-      "id": "t3",
-      "title": "Add structured logging to MCP servers",
+      "id": "t39",
+      "title": "Wire MetricsCollector.recordCall() into registerTrackedToolHandler",
       "status": "done",
       "priority": 3,
-      "impact": "high",
-      "effort": "medium",
+      "impact": "medium",
+      "effort": "low",
       "expert": "monitoring",
       "quadrant": "quick-win"
     },
     {
-      "id": "t4",
-      "title": "Add input path/URL sanitization to MCP tools",
+      "id": "t40",
+      "title": "Redesign multi-project dashboard HTML with proper layout and UX",
       "status": "done",
       "priority": 4,
       "impact": "high",
-      "effort": "low",
-      "expert": "security",
-      "quadrant": "quick-win"
+      "effort": "high",
+      "expert": "uiux",
+      "quadrant": "major-project"
     },
     {
-      "id": "t5",
-      "title": "Extract shared MCP server base library",
+      "id": "t41",
+      "title": "Make npm audit fail CI on high-severity CVEs",
       "status": "done",
       "priority": 5,
       "impact": "medium",
-      "effort": "high",
-      "expert": "architecture",
-      "quadrant": "major-project"
+      "effort": "low",
+      "expert": "security",
+      "quadrant": "quick-win"
     },
     {
-      "id": "t6",
-      "title": "Wire healthCheck() into MCP server startup lifecycle",
+      "id": "t42",
+      "title": "Update TOOLS-INDEX.md Quick Stats table (stale counts)",
       "status": "done",
       "priority": 6,
-      "impact": "medium",
-      "effort": "low",
-      "expert": "database",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t7",
-      "title": "Add ESLint + config at repo root",
-      "status": "done",
-      "priority": 7,
-      "impact": "medium",
-      "effort": "low",
-      "expert": "development",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t8",
-      "title": "Add dependency vulnerability scanning (npm audit in CI)",
-      "status": "done",
-      "priority": 8,
-      "impact": "medium",
-      "effort": "low",
-      "expert": "security",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t9",
-      "title": "Add MCP build benchmarks to CI",
-      "status": "done",
-      "priority": 9,
-      "impact": "low",
-      "effort": "medium",
-      "expert": "performance",
-      "quadrant": "fill-in"
-    },
-    {
-      "id": "t10",
-      "title": "Migrate servers to use runServer() factory",
-      "status": "done",
-      "priority": 10,
-      "impact": "medium",
-      "effort": "medium",
-      "expert": "architecture",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t11",
-      "title": "Fail CI on high-severity npm audit + use execFile()",
-      "status": "done",
-      "priority": 11,
-      "impact": "high",
-      "effort": "low",
-      "expert": "security",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t12",
-      "title": "Add requestId and durationMs to tool handler logging",
-      "status": "done",
-      "priority": 12,
-      "impact": "medium",
-      "effort": "low",
-      "expert": "monitoring",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t13",
-      "title": "Add code coverage reporting to CI",
-      "status": "done",
-      "priority": 13,
-      "impact": "medium",
-      "effort": "medium",
-      "expert": "devops",
-      "quadrant": "fill-in"
-    },
-    {
-      "id": "t14",
-      "title": "Add basePath=process.cwd() to all sanitizePath calls",
-      "status": "done",
-      "priority": 14,
-      "impact": "high",
-      "effort": "low",
-      "expert": "security",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t15",
-      "title": "Make CI secrets scan fail build on findings",
-      "status": "done",
-      "priority": 15,
-      "impact": "medium",
-      "effort": "low",
-      "expert": "security",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t16",
-      "title": "Add all 10 servers to CI test matrix",
-      "status": "done",
-      "priority": 16,
-      "impact": "high",
-      "effort": "low",
-      "expert": "devops",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t17",
-      "title": "Add log file output option to structured logger",
-      "status": "done",
-      "priority": 17,
-      "impact": "medium",
-      "effort": "medium",
-      "expert": "monitoring",
-      "quadrant": "fill-in"
-    },
-    {
-      "id": "t18",
-      "title": "Set up npm workspaces for monorepo",
-      "status": "done",
-      "priority": 18,
-      "impact": "medium",
-      "effort": "high",
-      "expert": "architecture",
-      "quadrant": "major-project"
-    },
-    {
-      "id": "t19",
-      "title": "Add pre-commit hooks (husky + lint-staged)",
-      "status": "done",
-      "priority": 19,
-      "impact": "medium",
-      "effort": "low",
-      "expert": "development",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t20",
-      "title": "Add log rotation and metrics collector to mcp-shared",
-      "status": "done",
-      "priority": 20,
-      "impact": "high",
-      "effort": "medium",
-      "expert": "monitoring",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t21",
-      "title": "Add commandHealthCheck to exec-based servers",
-      "status": "done",
-      "priority": 21,
-      "impact": "medium",
-      "effort": "low",
-      "expert": "networking",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t22",
-      "title": "Persist CI benchmark results as artifacts with SLA",
-      "status": "done",
-      "priority": 22,
-      "impact": "medium",
-      "effort": "low",
-      "expert": "performance",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t23",
-      "title": "Add startup time tracking to runServer",
-      "status": "done",
-      "priority": 23,
       "impact": "low",
       "effort": "low",
-      "expert": "performance",
-      "quadrant": "fill-in"
-    },
-    {
-      "id": "t24",
-      "title": "Add dark/light theme toggle and keyboard navigation to web dashboards",
-      "status": "done",
-      "priority": 24,
-      "impact": "medium",
-      "effort": "low",
-      "expert": "uiux",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t25",
-      "title": "Add versioning, installation manifest, update-check skill, and v2.1.49 agent features",
-      "status": "done",
-      "priority": 25,
-      "impact": "high",
-      "effort": "medium",
-      "expert": "product",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t26",
-      "title": "Implement per-component versioning and granular update checking",
-      "status": "done",
-      "priority": 26,
-      "impact": "high",
-      "effort": "high",
-      "expert": "product",
-      "quadrant": "major-project"
-    },
-    {
-      "id": "t27",
-      "title": "Commit and release per-component versioning work (v2.3.0)",
-      "status": "done",
-      "priority": 27,
-      "impact": "high",
-      "effort": "low",
-      "expert": "progress",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t28",
-      "title": "Add Architecture Decision Records (ADRs)",
-      "status": "done",
-      "priority": 28,
-      "impact": "medium",
-      "effort": "medium",
-      "expert": "projectDocs",
-      "quadrant": "fill-in"
-    },
-    {
-      "id": "t29",
-      "title": "Add tests for generate-version-index.mjs and update-component.sh",
-      "status": "done",
-      "priority": 29,
-      "impact": "medium",
-      "effort": "medium",
-      "expert": "qa",
-      "quadrant": "fill-in"
-    },
-    {
-      "id": "t30",
-      "title": "Add test:scripts as dedicated CI job",
-      "status": "done",
-      "priority": 30,
-      "impact": "medium",
-      "effort": "low",
-      "expert": "devops",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t31",
-      "title": "Enable branch protection on main with required status checks",
-      "status": "done",
-      "priority": 31,
-      "impact": "high",
-      "effort": "low",
-      "expert": "devops",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t32",
-      "title": "Add mcp-shared API docs and CONTRIBUTING.md",
-      "status": "done",
-      "priority": 32,
-      "impact": "medium",
-      "effort": "medium",
       "expert": "documentation",
       "quadrant": "fill-in"
-    },
-    {
-      "id": "t33",
-      "title": "Add benchmark trend detection to CI",
-      "status": "done",
-      "priority": 33,
-      "impact": "medium",
-      "effort": "medium",
-      "expert": "performance",
-      "quadrant": "fill-in"
-    },
-    {
-      "id": "t34",
-      "title": "Create web-based component browser",
-      "status": "done",
-      "priority": 34,
-      "impact": "medium",
-      "effort": "medium",
-      "expert": "product",
-      "quadrant": "fill-in"
-    },
-    {
-      "id": "t35",
-      "title": "Fix 59 broken internal links across 18 documentation files",
-      "status": "done",
-      "priority": 35,
-      "impact": "high",
-      "effort": "medium",
-      "expert": "documentation",
-      "quadrant": "quick-win"
-    },
-    {
-      "id": "t36",
-      "title": "Build project-oversight-mcp with cross-server activity tracking",
-      "status": "done",
-      "priority": 36,
-      "impact": "high",
-      "effort": "high",
-      "expert": "monitoring",
-      "quadrant": "major-project"
     }
   ],
-  "risks": [
-    {
-      "id": "r1",
-      "description": "RESOLVED - All 10 MCP servers have unit tests (1,098 tests). CI runs all tests.",
-      "severity": "low",
-      "likelihood": "low",
-      "expert": "qa",
-      "mitigation": "RESOLVED"
-    },
-    {
-      "id": "r2",
-      "description": "RESOLVED - CI/CD pipeline with 12+ jobs now in place",
-      "severity": "low",
-      "likelihood": "low",
-      "expert": "devops",
-      "mitigation": "RESOLVED"
-    },
-    {
-      "id": "r3",
-      "description": "RESOLVED - CI now fails on high-severity npm audit findings",
-      "severity": "low",
-      "likelihood": "low",
-      "expert": "security",
-      "mitigation": "RESOLVED"
-    },
-    {
-      "id": "r4",
-      "description": "RESOLVED - All 10 servers log requestId + durationMs on every tool call",
-      "severity": "low",
-      "likelihood": "low",
-      "expert": "monitoring",
-      "mitigation": "RESOLVED"
-    },
-    {
-      "id": "r5",
-      "description": "RESOLVED - All servers now use execFile() with argument arrays; no shell invocation",
-      "severity": "low",
-      "likelihood": "low",
-      "expert": "security",
-      "mitigation": "RESOLVED"
-    },
-    {
-      "id": "r6",
-      "description": "RESOLVED - All sanitizePath() calls constrained to process.cwd() via basePath",
-      "severity": "low",
-      "likelihood": "low",
-      "expert": "security",
-      "mitigation": "RESOLVED"
-    },
-    {
-      "id": "r7",
-      "description": "RESOLVED - v2.3.0 committed, tagged, pushed, and released on GitHub",
-      "severity": "low",
-      "likelihood": "low",
-      "expert": "progress",
-      "mitigation": "RESOLVED"
-    }
-  ],
+  "risks": [],
   "technicalDebt": [
     {
-      "id": "d1",
-      "item": "RESOLVED - All 10 servers use runServer() factory. Zero duplicated boilerplate.",
-      "category": "architecture",
+      "id": "d9",
+      "item": "19 changelog versions (v1.1.0-v2.2.0) have no GitHub release",
+      "category": "process",
       "impact": "low",
-      "effort": "done",
-      "interestRate": "declining"
-    },
-    {
-      "id": "d2",
-      "item": "RESOLVED - ESLint at 0 errors, 0 warnings. All rules enforced as errors. CI uses --max-warnings 0.",
-      "category": "code",
-      "impact": "low",
-      "effort": "done",
-      "interestRate": "declining"
-    },
-    {
-      "id": "d3",
-      "item": "RESOLVED - Structured JSON logging replaces console.error() in all 10 servers",
-      "category": "infrastructure",
-      "impact": "low",
-      "effort": "done",
-      "interestRate": "declining"
-    },
-    {
-      "id": "d4",
-      "item": "RESOLVED - healthCheck() wired into rag-mcp startup via runServer() with retry logic",
-      "category": "code",
-      "impact": "low",
-      "effort": "done",
-      "interestRate": "declining"
-    },
-    {
-      "id": "d5",
-      "item": "RESOLVED - npm workspaces monorepo with 12 packages, shared tsconfig.base.json, single npm install",
-      "category": "architecture",
-      "impact": "low",
-      "effort": "done",
-      "interestRate": "declining"
-    },
-    {
-      "id": "d6",
-      "item": "RESOLVED - Log rotation, MetricsCollector with p50/p95/p99, startup time tracking all in place",
-      "category": "infrastructure",
-      "impact": "low",
-      "effort": "done",
-      "interestRate": "declining"
-    },
-    {
-      "id": "d7",
-      "item": "RESOLVED - 56 tests added for versioning scripts (generate-version-index, manifest-helper, update-component)",
-      "category": "testing",
-      "impact": "low",
-      "effort": "done",
-      "interestRate": "declining"
+      "effort": "hours",
+      "interestRate": "stable"
     }
   ],
   "history": [
     {
       "date": "2026-02-20T12:00:00Z",
-      "scores": {
-        "qa": 4, "uiux": 6, "security": 5, "devops": 4, "networking": 5,
-        "development": 7, "architecture": 6, "product": 8, "api": 8,
-        "monitoring": 2, "database": 5, "performance": 5, "documentation": 8,
-        "specifications": 0, "projectDocs": 0, "progress": 0
-      }
+      "scores": { "qa": 4, "uiux": 6, "security": 5, "devops": 4, "networking": 5, "development": 7, "architecture": 6, "product": 8, "api": 8, "monitoring": 2, "database": 5, "performance": 5, "documentation": 8, "specifications": 0, "projectDocs": 0, "progress": 0 }
     },
     {
       "date": "2026-02-20T14:00:00Z",
-      "scores": {
-        "qa": 5, "uiux": 6, "security": 6, "devops": 7, "networking": 5,
-        "development": 8, "architecture": 6, "product": 8, "api": 8,
-        "monitoring": 2, "database": 5, "performance": 5, "documentation": 8,
-        "specifications": 0, "projectDocs": 0, "progress": 0
-      }
+      "scores": { "qa": 5, "uiux": 6, "security": 6, "devops": 7, "networking": 5, "development": 8, "architecture": 6, "product": 8, "api": 8, "monitoring": 2, "database": 5, "performance": 5, "documentation": 8, "specifications": 0, "projectDocs": 0, "progress": 0 }
     },
     {
       "date": "2026-02-20T17:00:00Z",
-      "scores": {
-        "qa": 7, "uiux": 7, "security": 7, "devops": 7, "networking": 7,
-        "development": 8, "architecture": 7, "product": 8, "api": 8,
-        "monitoring": 6, "database": 8, "performance": 7, "documentation": 8,
-        "specifications": 0, "projectDocs": 0, "progress": 0
-      }
+      "scores": { "qa": 7, "uiux": 7, "security": 7, "devops": 7, "networking": 7, "development": 8, "architecture": 7, "product": 8, "api": 8, "monitoring": 6, "database": 8, "performance": 7, "documentation": 8, "specifications": 0, "projectDocs": 0, "progress": 0 }
     },
     {
       "date": "2026-02-20T19:00:00Z",
-      "scores": {
-        "qa": 7, "uiux": 7, "security": 8, "devops": 8, "networking": 7,
-        "development": 9, "architecture": 7, "product": 8, "api": 8,
-        "monitoring": 8, "database": 8, "performance": 8, "documentation": 8,
-        "specifications": 0, "projectDocs": 0, "progress": 0
-      }
+      "scores": { "qa": 7, "uiux": 7, "security": 8, "devops": 8, "networking": 7, "development": 9, "architecture": 7, "product": 8, "api": 8, "monitoring": 8, "database": 8, "performance": 8, "documentation": 8, "specifications": 0, "projectDocs": 0, "progress": 0 }
     },
     {
       "date": "2026-02-20T20:00:00Z",
-      "scores": {
-        "qa": 4, "uiux": 7, "security": 6, "devops": 5, "networking": 7,
-        "development": 5, "architecture": 5, "product": 8, "api": 8,
-        "monitoring": 6, "database": 8, "performance": 7, "documentation": 8,
-        "specifications": 0, "projectDocs": 0, "progress": 0
-      }
+      "scores": { "qa": 4, "uiux": 7, "security": 6, "devops": 5, "networking": 7, "development": 5, "architecture": 5, "product": 8, "api": 8, "monitoring": 6, "database": 8, "performance": 7, "documentation": 8, "specifications": 0, "projectDocs": 0, "progress": 0 }
     },
     {
       "date": "2026-02-21T06:30:00Z",
-      "scores": {
-        "qa": 7, "uiux": 7, "security": 8, "devops": 7, "networking": 7,
-        "development": 7, "architecture": 8, "product": 8, "api": 8,
-        "monitoring": 6, "database": 8, "performance": 7, "documentation": 8,
-        "specifications": 0, "projectDocs": 0, "progress": 0
-      }
+      "scores": { "qa": 7, "uiux": 7, "security": 8, "devops": 7, "networking": 7, "development": 7, "architecture": 8, "product": 8, "api": 8, "monitoring": 6, "database": 8, "performance": 7, "documentation": 8, "specifications": 0, "projectDocs": 0, "progress": 0 }
     },
     {
       "date": "2026-02-21T07:00:00Z",
-      "scores": {
-        "qa": 8, "uiux": 7, "security": 8, "devops": 8, "networking": 7,
-        "development": 8, "architecture": 8, "product": 8, "api": 8,
-        "monitoring": 7, "database": 8, "performance": 7, "documentation": 8,
-        "specifications": 0, "projectDocs": 0, "progress": 0
-      }
+      "scores": { "qa": 8, "uiux": 7, "security": 8, "devops": 8, "networking": 7, "development": 8, "architecture": 8, "product": 8, "api": 8, "monitoring": 7, "database": 8, "performance": 7, "documentation": 8, "specifications": 0, "projectDocs": 0, "progress": 0 }
     },
     {
       "date": "2026-02-21T08:00:00Z",
-      "scores": {
-        "qa": 8, "uiux": 8, "security": 8, "devops": 8, "networking": 8,
-        "development": 8, "architecture": 8, "product": 8, "api": 8,
-        "monitoring": 8, "database": 8, "performance": 8, "documentation": 8,
-        "specifications": 0, "projectDocs": 0, "progress": 0
-      }
+      "scores": { "qa": 8, "uiux": 8, "security": 8, "devops": 8, "networking": 8, "development": 8, "architecture": 8, "product": 8, "api": 8, "monitoring": 8, "database": 8, "performance": 8, "documentation": 8, "specifications": 0, "projectDocs": 0, "progress": 0 }
     },
     {
       "date": "2026-02-21T10:00:00Z",
-      "scores": {
-        "qa": 8, "uiux": 8, "security": 8, "devops": 8, "networking": 8,
-        "development": 8, "architecture": 8, "product": 8, "api": 8,
-        "monitoring": 8, "database": 8, "performance": 8, "documentation": 8,
-        "specifications": 5, "projectDocs": 5, "progress": 7
-      }
+      "scores": { "qa": 8, "uiux": 8, "security": 8, "devops": 8, "networking": 8, "development": 8, "architecture": 8, "product": 8, "api": 8, "monitoring": 8, "database": 8, "performance": 8, "documentation": 8, "specifications": 5, "projectDocs": 5, "progress": 7 }
     },
     {
       "date": "2026-02-21T11:00:00Z",
-      "scores": {
-        "qa": 8, "uiux": 8, "security": 8, "devops": 8, "networking": 8,
-        "development": 8, "architecture": 8, "product": 8, "api": 8,
-        "monitoring": 8, "database": 8, "performance": 8, "documentation": 8,
-        "specifications": 5, "projectDocs": 5, "progress": 8
-      }
+      "scores": { "qa": 8, "uiux": 8, "security": 8, "devops": 8, "networking": 8, "development": 8, "architecture": 8, "product": 8, "api": 8, "monitoring": 8, "database": 8, "performance": 8, "documentation": 8, "specifications": 5, "projectDocs": 5, "progress": 8 }
     },
     {
       "date": "2026-02-20T13:00:00Z",
-      "scores": {
-        "qa": 8, "uiux": 8, "security": 8, "devops": 9, "networking": 8,
-        "development": 8, "architecture": 8, "product": 9, "api": 8,
-        "monitoring": 8, "database": 8, "performance": 8, "documentation": 8,
-        "specifications": 5, "projectDocs": 5, "progress": 9
-      }
+      "scores": { "qa": 8, "uiux": 8, "security": 8, "devops": 9, "networking": 8, "development": 8, "architecture": 8, "product": 9, "api": 8, "monitoring": 8, "database": 8, "performance": 8, "documentation": 8, "specifications": 5, "projectDocs": 5, "progress": 9 }
     },
     {
       "date": "2026-02-20T14:00:00Z",
-      "scores": {
-        "qa": 9, "uiux": 8, "security": 8, "devops": 9, "networking": 8,
-        "development": 9, "architecture": 9, "product": 9, "api": 8,
-        "monitoring": 8, "database": 8, "performance": 8, "documentation": 8,
-        "specifications": 7, "projectDocs": 7, "progress": 9
-      }
+      "scores": { "qa": 9, "uiux": 8, "security": 8, "devops": 9, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 8, "monitoring": 8, "database": 8, "performance": 8, "documentation": 8, "specifications": 7, "projectDocs": 7, "progress": 9 }
     },
     {
       "date": "2026-02-20T15:00:00Z",
-      "scores": {
-        "qa": 9, "uiux": 8, "security": 8, "devops": 9, "networking": 8,
-        "development": 9, "architecture": 9, "product": 9, "api": 8,
-        "monitoring": 8, "database": 8, "performance": 8, "documentation": 8,
-        "specifications": 7, "projectDocs": 7, "progress": 10
-      }
+      "scores": { "qa": 9, "uiux": 8, "security": 8, "devops": 9, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 8, "monitoring": 8, "database": 8, "performance": 8, "documentation": 8, "specifications": 7, "projectDocs": 7, "progress": 10 }
     },
     {
       "date": "2026-02-20T16:00:00Z",
-      "scores": {
-        "qa": 9, "uiux": 8, "security": 8, "devops": 10, "networking": 8,
-        "development": 9, "architecture": 9, "product": 9, "api": 8,
-        "monitoring": 8, "database": 8, "performance": 9, "documentation": 9,
-        "specifications": 7, "projectDocs": 7, "progress": 10
-      }
+      "scores": { "qa": 9, "uiux": 8, "security": 8, "devops": 10, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 8, "monitoring": 8, "database": 8, "performance": 9, "documentation": 9, "specifications": 7, "projectDocs": 7, "progress": 10 }
     },
     {
       "date": "2026-02-20T18:00:00Z",
-      "scores": {
-        "qa": 9, "uiux": 8, "security": 8, "devops": 10, "networking": 8,
-        "development": 9, "architecture": 9, "product": 9, "api": 8,
-        "monitoring": 9, "database": 8, "performance": 9, "documentation": 9,
-        "specifications": 7, "projectDocs": 7, "progress": 10
-      }
+      "scores": { "qa": 9, "uiux": 8, "security": 8, "devops": 10, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 8, "monitoring": 9, "database": 8, "performance": 9, "documentation": 9, "specifications": 7, "projectDocs": 7, "progress": 10 }
+    },
+    {
+      "date": "2026-02-20T19:00:00Z",
+      "scores": { "qa": 9, "uiux": 6, "security": 8, "devops": 9, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 8, "monitoring": 9, "database": 8, "performance": 9, "documentation": 9, "specifications": 7, "projectDocs": 7, "progress": 9 }
+    },
+    {
+      "date": "2026-02-20T20:30:00Z",
+      "scores": { "qa": 9, "uiux": 8, "security": 9, "devops": 10, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 8, "monitoring": 10, "database": 8, "performance": 9, "documentation": 10, "specifications": 7, "projectDocs": 7, "progress": 10 }
     }
   ]
 }

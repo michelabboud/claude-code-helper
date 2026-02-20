@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.0 (2026-02-20)
+
+### Security
+- Fixed CORS wildcard: replaced `Access-Control-Allow-Origin: *` with localhost-only origin + `Vary: Origin` header
+
+### Changed
+- Complete dashboard HTML redesign: SVG radial gauges, tabbed panels, summary stats, heatmap comparison, animated transitions
+- Upload zone hidden in HTTP mode (data comes from API auto-discovery)
+
+### Infrastructure
+- Added to CI build and test matrices
+
 ## 1.1.0 (2026-02-20)
 
 ### Added

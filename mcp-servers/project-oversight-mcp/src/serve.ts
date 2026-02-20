@@ -88,9 +88,10 @@ function validateSessionId(id: string): boolean {
 
 function corsHeaders(): Record<string, string> {
   return {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": `http://127.0.0.1:${PORT}`,
     "Access-Control-Allow-Methods": "GET, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
+    "Vary": "Origin",
   };
 }
 
@@ -110,7 +111,9 @@ function errorRes(res: http.ServerResponse, message: string, status = 400): void
 /** Discover all project dashboards */
 async function discoverProjects(): Promise<Array<Record<string, unknown>>> {
   const projects: Array<Record<string, unknown>> = [];
+  const seen = new Set<string>();
 
+  // 1. Scan central store (~/.claude/pm-dashboard/*)
   try {
     const entries = await readdir(CENTRAL_STORE, { withFileTypes: true });
     for (const entry of entries) {
@@ -119,8 +122,8 @@ async function discoverProjects(): Promise<Array<Record<string, unknown>>> {
       try {
         const content = await readFile(dashPath, "utf-8");
         const data = JSON.parse(content) as Record<string, unknown>;
-        // Ensure projectName is set
         if (!data.projectName) data.projectName = entry.name;
+        seen.add(String(data.projectName));
         projects.push(data);
       } catch {
         // Skip invalid files
@@ -128,6 +131,21 @@ async function discoverProjects(): Promise<Array<Record<string, unknown>>> {
     }
   } catch {
     // Central store doesn't exist yet
+  }
+
+  // 2. Auto-detect cwd project (.claude/pm-dashboard.json)
+  try {
+    const cwdDash = path.join(process.cwd(), ".claude", "pm-dashboard.json");
+    const content = await readFile(cwdDash, "utf-8");
+    const data = JSON.parse(content) as Record<string, unknown>;
+    const name = String(data.projectName || path.basename(process.cwd()));
+    if (!data.projectName) data.projectName = name;
+    if (!seen.has(name)) {
+      (data as Record<string, unknown>)._source = "local";
+      projects.push(data);
+    }
+  } catch {
+    // No dashboard in cwd
   }
 
   return projects;

@@ -106,6 +106,8 @@ export function registerTrackedToolHandler(
       const durationMs = measureDuration(startTime);
       const isError = result.isError === true;
 
+      instance.metrics.recordCall(name, durationMs, isError);
+
       if (isError) {
         instance.activity.toolFailed(requestId, name, durationMs, "Tool returned error response");
       } else {
@@ -115,6 +117,7 @@ export function registerTrackedToolHandler(
       return result;
     } catch (error) {
       const durationMs = measureDuration(startTime);
+      instance.metrics.recordCall(name, durationMs, true);
       instance.activity.toolFailed(
         requestId,
         name,

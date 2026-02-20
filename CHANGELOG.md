@@ -15,6 +15,35 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.4.1] - 2026-02-20
+
+### Security & CI Hardening
+
+- **CORS fix**: Replaced `Access-Control-Allow-Origin: *` with localhost-only origin in project-oversight-mcp serve.ts
+- **npm audit enforced**: `npm audit --audit-level=high` now fails CI instead of warning only
+- **CI matrices updated**: project-oversight-mcp added to both build and test matrices (11/11 servers covered)
+
+### MetricsCollector Wired
+
+- `registerTrackedToolHandler()` now calls `metrics.recordCall()` on every tool call — p50/p95/p99 latency tracking is active across all 11 servers
+
+### Dashboard Redesign
+
+- Complete rewrite of `multi-project.html` with professional monitoring-grade design
+- SVG radial score gauges, grouped domain bars (Quality/Security/Engineering/Infrastructure/Product)
+- Summary stats cards (projects, avg score, critical risks, active tools)
+- Tabbed bottom panel: Comparison (heatmap) / Risks / Tools / Logs
+- Animated transitions, responsive layout, improved dark/light themes
+- Upload zone hidden in HTTP mode (auto-discovers from API)
+
+### Documentation
+
+- Updated TOOLS-INDEX.md Quick Stats: 11 MCP servers, 47 agents, 19 skills
+- Fixed broken TOC anchor link (30+ → 47+)
+- PM dashboard SKILL.md updated to write directly to central store
+
+---
+
 ## [2.4.0] - 2026-02-20
 
 ### New MCP Server: Project Oversight

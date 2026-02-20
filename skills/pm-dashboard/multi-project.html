@@ -1,523 +1,668 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Multi-Project Health Overview</title>
+<title>Project Health Monitor</title>
 <style>
-  :root, [data-theme="dark"] {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --border: #30363d;
-    --text: #e6edf3;
-    --text-dim: #8b949e;
-    --accent: #58a6ff;
-    --green: #3fb950;
-    --yellow: #d29922;
-    --red: #f85149;
-    --purple: #bc8cff;
-    --radius: 12px;
-  }
-
-  [data-theme="light"] {
-    --bg: #f6f8fa;
-    --surface: #ffffff;
-    --border: #d0d7de;
-    --text: #1f2328;
-    --text-dim: #656d76;
-    --accent: #0969da;
-    --green: #1a7f37;
-    --yellow: #9a6700;
-    --red: #cf222e;
-    --purple: #8250df;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 24px;
-  }
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .header h1 { font-size: 24px; font-weight: 600; }
-  .header-sub { color: var(--text-dim); font-size: 13px; margin-top: 4px; }
-
-  .btn {
-    background: var(--accent);
-    color: var(--bg);
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 13px;
-    margin-left: 8px;
-  }
-
-  .btn:hover { opacity: 0.9; }
-  .btn-secondary { background: var(--border); color: var(--text); }
-
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px; }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-  }
-
-  .card h2 {
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-dim);
-    margin-bottom: 16px;
-  }
-
-  .card-full { grid-column: 1 / -1; }
-
-  /* Project cards */
-  .project-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    position: relative;
-    transition: border-color 0.2s;
-  }
-
-  .project-card:hover { border-color: var(--accent); }
-
-  .project-name {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .project-meta {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-bottom: 16px;
-  }
-
-  .project-score {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 28px;
-    font-weight: 700;
-  }
-
-  .project-score small {
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--text-dim);
-  }
-
-  /* Mini bars */
-  .mini-bars { display: flex; flex-direction: column; gap: 4px; }
-
-  .mini-bar-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-  }
-
-  .mini-bar-label {
-    width: 80px;
-    color: var(--text-dim);
-    flex-shrink: 0;
-    text-align: right;
-  }
-
-  .mini-bar-bg {
-    flex: 1;
-    height: 8px;
-    background: var(--bg);
-    border-radius: 4px;
-    overflow: hidden;
-  }
-
-  .mini-bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s;
-  }
-
-  .mini-bar-value {
-    width: 24px;
-    font-weight: 600;
-    font-size: 11px;
-    flex-shrink: 0;
-  }
-
-  /* Comparison table */
-  .comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  .comparison-table th {
-    text-align: left;
-    padding: 8px 12px;
-    border-bottom: 2px solid var(--border);
-    color: var(--text-dim);
-    font-weight: 500;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .comparison-table td {
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .comparison-table tr:last-child td { border-bottom: none; }
-
-  .comparison-table .domain-name { color: var(--text-dim); }
-
-  .score-cell {
-    font-weight: 600;
-    text-align: center;
-    min-width: 50px;
-  }
-
-  .score-cell.best { background: rgba(63, 185, 80, 0.1); }
-  .score-cell.worst { background: rgba(248, 81, 73, 0.1); }
-
-  /* Risk list */
-  .risk-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-  }
-
-  .risk-item:last-child { border-bottom: none; }
-
-  .risk-badge {
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 3px;
-    min-width: 48px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  .risk-badge.critical { background: var(--red); color: white; }
-  .risk-badge.high { background: #da3633; color: white; }
-  .risk-badge.medium { background: var(--yellow); color: var(--bg); }
-  .risk-badge.low { background: var(--border); color: var(--text); }
-
-  .risk-project {
-    font-weight: 600;
-    min-width: 100px;
-    flex-shrink: 0;
-  }
-
-  .risk-desc { flex: 1; }
-
-  /* Upload zone */
-  .upload-zone {
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 40px;
-    text-align: center;
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: border-color 0.2s;
-    margin-bottom: 24px;
-  }
-
-  .upload-zone:hover, .upload-zone.dragover {
-    border-color: var(--accent);
-    color: var(--text);
-  }
-
-  .upload-zone p { margin-top: 8px; font-size: 13px; }
-
-  .empty-state {
-    text-align: center;
-    padding: 40px;
-    color: var(--text-dim);
-  }
-
-  /* Live log panel */
-  .log-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 24px;
-  }
-
-  .log-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .log-panel-header h2 { margin-bottom: 0; }
-
-  .log-status {
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-weight: 600;
-  }
-
-  .log-status.connected { background: var(--green); color: white; }
-  .log-status.disconnected { background: var(--border); color: var(--text-dim); }
-
-  .log-viewer {
-    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-    font-size: 11px;
-    line-height: 1.5;
-    padding: 12px 16px;
-    max-height: 300px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
-
-  .log-entry { padding: 1px 0; border-bottom: 1px solid rgba(48,54,61,0.3); }
-  .log-entry:last-child { border-bottom: none; }
-  .log-time { color: var(--text-dim); margin-right: 8px; }
-
-  /* Tool activity panel */
-  .tool-activity-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 24px;
-  }
-
-  .tool-activity-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .tool-activity-header h2 { margin-bottom: 0; }
-
-  .active-tools-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 10px;
-    padding: 12px 16px;
-  }
-
-  .active-tool-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .active-tool-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: var(--accent);
-    animation: pulse-bar 1.5s ease-in-out infinite;
-  }
-
-  @keyframes pulse-bar {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  .active-tool-name {
-    font-weight: 600;
-    font-size: 13px;
-    color: var(--accent);
-  }
-
-  .active-tool-server {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 2px;
-  }
-
-  .active-tool-meta {
-    font-size: 10px;
-    color: var(--text-dim);
-    margin-top: 4px;
-    display: flex;
-    gap: 10px;
-  }
-
-  .tool-activity-list {
-    padding: 12px 16px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .activity-entry {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 0;
-    font-size: 12px;
-    border-bottom: 1px solid rgba(48,54,61,0.2);
-  }
-
-  .activity-entry:last-child { border-bottom: none; }
-
-  .activity-status {
-    font-size: 10px;
-    padding: 1px 6px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-transform: uppercase;
-    min-width: 65px;
-    text-align: center;
-  }
-
-  .activity-status.started { background: var(--accent); color: white; }
-  .activity-status.completed { background: var(--green); color: white; }
-  .activity-status.failed { background: var(--red); color: white; }
-
-  .activity-server { color: var(--purple); font-size: 11px; }
-  .activity-tool { font-weight: 600; font-size: 12px; }
-  .activity-duration { color: var(--text-dim); font-size: 11px; margin-left: auto; }
-  .activity-time { color: var(--text-dim); font-size: 10px; }
-
-  @media (max-width: 700px) {
-    .grid { grid-template-columns: 1fr; }
-  }
+:root {
+  --bg:        #0b0f1a;
+  --surface:   #111827;
+  --surface2:  #1a2235;
+  --border:    #1f2d45;
+  --border2:   #2a3a55;
+  --text:      #e2e8f0;
+  --text-dim:  #64748b;
+  --text-mid:  #94a3b8;
+  --accent:    #3b82f6;
+  --accent2:   #60a5fa;
+  --green:     #22c55e;
+  --yellow:    #f59e0b;
+  --orange:    #f97316;
+  --red:       #ef4444;
+  --purple:    #a78bfa;
+  --radius:    10px;
+  --radius-sm: 6px;
+  --shadow:    0 4px 24px rgba(0,0,0,0.4);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+}
+[data-theme="light"] {
+  --bg:        #f1f5f9;
+  --surface:   #ffffff;
+  --surface2:  #f8fafc;
+  --border:    #e2e8f0;
+  --border2:   #cbd5e1;
+  --text:      #0f172a;
+  --text-dim:  #94a3b8;
+  --text-mid:  #64748b;
+  --accent:    #2563eb;
+  --accent2:   #3b82f6;
+  --green:     #16a34a;
+  --yellow:    #d97706;
+  --orange:    #ea580c;
+  --red:       #dc2626;
+  --purple:    #7c3aed;
+  --shadow:    0 4px 24px rgba(0,0,0,0.08);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 14px; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* ---- Layout ---- */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-logo {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: white;
+  flex-shrink: 0;
+}
+.topbar-title { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+.topbar-subtitle { font-size: 11px; color: var(--text-dim); }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+
+.main { padding: 24px; max-width: 1600px; margin: 0 auto; width: 100%; }
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-size: 12px; font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+.btn-primary:hover { background: var(--accent2); border-color: var(--accent2); }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-mid);
+  border-color: var(--border2);
+}
+.btn-ghost:hover { background: var(--surface2); color: var(--text); }
+.btn-icon {
+  padding: 6px 8px;
+  font-size: 14px;
+}
+
+/* ---- Stats bar ---- */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.stat-card.blue::before  { background: var(--accent); }
+.stat-card.green::before { background: var(--green); }
+.stat-card.red::before   { background: var(--red); }
+.stat-card.purple::before{ background: var(--purple); }
+.stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
+.stat-value { font-size: 28px; font-weight: 700; line-height: 1.2; margin-top: 4px; }
+.stat-sub   { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+/* ---- Section header ---- */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-mid); }
+
+/* ---- Project cards grid ---- */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  cursor: default;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  animation: fadeSlideIn 0.3s ease both;
+}
+.project-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pc-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 18px; }
+
+.pc-gauge {
+  flex-shrink: 0;
+  position: relative;
+  width: 72px; height: 72px;
+}
+.pc-gauge svg { transform: rotate(-90deg); }
+.pc-gauge-track { fill: none; stroke: var(--border); stroke-width: 6; }
+.pc-gauge-fill  { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1); }
+.pc-gauge-label {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  pointer-events: none;
+}
+.pc-gauge-score { font-size: 18px; font-weight: 700; line-height: 1; }
+.pc-gauge-denom { font-size: 9px; color: var(--text-dim); }
+
+.pc-info { flex: 1; min-width: 0; }
+.pc-name { font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.pc-date { font-size: 11px; color: var(--text-dim); margin-bottom: 8px; }
+.pc-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.badge {
+  font-size: 10px; font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.badge-tasks    { color: var(--accent2);  border-color: rgba(59,130,246,0.3); background: rgba(59,130,246,0.08); }
+.badge-risks    { color: var(--red);      border-color: rgba(239,68,68,0.3);  background: rgba(239,68,68,0.08); }
+.badge-debts    { color: var(--yellow);   border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); }
+.badge-assessed { color: var(--text-dim); border-color: var(--border2);       background: transparent; }
+
+/* ---- Expert domain bars ---- */
+.domain-groups { display: flex; flex-direction: column; gap: 12px; }
+.domain-group-label {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px;
+  color: var(--text-dim); margin-bottom: 5px;
+}
+.domain-bars { display: flex; flex-direction: column; gap: 3px; }
+.domain-row { display: flex; align-items: center; gap: 8px; }
+.domain-lbl { font-size: 10px; color: var(--text-mid); width: 76px; flex-shrink: 0; text-align: right; }
+.domain-track { flex: 1; height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.domain-fill  { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+.domain-val   { font-size: 10px; font-weight: 600; width: 18px; flex-shrink: 0; text-align: right; }
+
+/* ---- Bottom tabs panel ---- */
+.tabs-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.tabs-nav {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.tab-btn {
+  padding: 10px 18px;
+  font-size: 12px; font-weight: 600;
+  color: var(--text-dim);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s;
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: -1px;
+}
+.tab-btn:hover  { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-count {
+  background: var(--border2);
+  color: var(--text-mid);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  font-weight: 700;
+}
+.tab-count.alert { background: rgba(239,68,68,0.2); color: var(--red); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ---- Comparison tab ---- */
+.comparison-wrap { overflow-x: auto; padding: 16px; }
+.comparison-table {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+}
+.comparison-table th {
+  padding: 8px 12px; border-bottom: 2px solid var(--border);
+  color: var(--text-dim); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+  font-weight: 600; white-space: nowrap;
+}
+.comparison-table td {
+  padding: 6px 12px; border-bottom: 1px solid var(--border);
+}
+.comparison-table tr:last-child td { border-bottom: none; }
+.comparison-table .overall-row td { font-weight: 700; border-top: 2px solid var(--border); }
+.domain-cell { color: var(--text-mid); font-size: 11px; white-space: nowrap; }
+.score-chip {
+  display: inline-block;
+  min-width: 36px; padding: 3px 8px;
+  border-radius: 5px;
+  font-weight: 700; font-size: 12px;
+  text-align: center;
+}
+
+/* ---- Risks tab ---- */
+.risks-list { padding: 4px 0; }
+.risk-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  transition: background 0.1s;
+}
+.risk-row:hover { background: var(--surface2); }
+.risk-row:last-child { border-bottom: none; }
+.sev-badge {
+  font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px;
+  padding: 2px 7px; border-radius: 4px; flex-shrink: 0;
+  min-width: 54px; text-align: center;
+}
+.sev-critical { background: rgba(239,68,68,0.15); color: #ff6b6b; border: 1px solid rgba(239,68,68,0.3); }
+.sev-high     { background: rgba(249,115,22,0.15); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
+.sev-medium   { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+.sev-low      { background: rgba(100,116,139,0.15); color: var(--text-mid); border: 1px solid var(--border2); }
+.risk-proj { font-weight: 600; min-width: 110px; color: var(--accent2); flex-shrink: 0; }
+.risk-desc { flex: 1; color: var(--text-mid); }
+
+/* ---- Tool Activity tab ---- */
+.tools-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.tools-section { padding: 12px 16px; }
+.tools-section + .tools-section { border-left: 1px solid var(--border); }
+.tools-section-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--text-dim); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.pulse-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.7); }
+}
+.active-tool-card {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px; margin-bottom: 8px;
+  position: relative; overflow: hidden;
+}
+.active-tool-card::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--accent);
+  animation: pulse-bar 1.5s ease-in-out infinite;
+}
+@keyframes pulse-bar {
+  0%,100% { opacity: 1; } 50% { opacity: 0.2; }
+}
+.atc-name   { font-weight: 600; font-size: 12px; color: var(--accent2); }
+.atc-server { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+.atc-meta   { font-size: 10px; color: var(--text-dim); margin-top: 4px; display: flex; gap: 10px; }
+.activity-scroll { max-height: 260px; overflow-y: auto; }
+.act-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0; border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+.act-row:last-child { border-bottom: none; }
+.act-status {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  padding: 2px 6px; border-radius: 4px; flex-shrink: 0; min-width: 60px; text-align: center;
+}
+.act-started   { background: rgba(59,130,246,0.15); color: var(--accent2); }
+.act-completed { background: rgba(34,197,94,0.15); color: var(--green); }
+.act-failed    { background: rgba(239,68,68,0.15); color: var(--red); }
+.act-server { color: var(--purple); font-size: 10px; }
+.act-tool   { font-weight: 600; flex: 1; }
+.act-dur    { color: var(--text-dim); font-size: 10px; margin-left: auto; }
+.act-time   { color: var(--text-dim); font-size: 9px; }
+
+/* ---- Logs tab ---- */
+.log-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 16px; border-bottom: 1px solid var(--border);
+}
+.conn-badge {
+  font-size: 10px; font-weight: 700; padding: 2px 9px; border-radius: 9999px;
+  display: flex; align-items: center; gap: 5px;
+}
+.conn-badge.on  { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+.conn-badge.off { background: var(--surface2); color: var(--text-dim); border: 1px solid var(--border2); }
+.log-scroll {
+  font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+  font-size: 11px; line-height: 1.6;
+  padding: 10px 16px;
+  max-height: 320px; overflow-y: auto;
+  white-space: pre-wrap; word-break: break-all;
+}
+.log-line { padding: 1px 0; }
+.log-line:hover { background: var(--surface2); border-radius: 2px; }
+.log-ts { color: var(--text-dim); user-select: none; margin-right: 8px; }
+
+/* ---- Empty state ---- */
+.empty-state {
+  text-align: center;
+  padding: 64px 24px;
+  animation: fadeSlideIn 0.4s ease;
+}
+.empty-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--surface2);
+  border: 2px dashed var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; margin: 0 auto 16px;
+}
+.empty-state h2 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.empty-state p  { font-size: 13px; color: var(--text-dim); max-width: 360px; margin: 0 auto 24px; }
+
+/* ---- Upload zone ---- */
+.upload-zone {
+  border: 2px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  margin-bottom: 24px;
+  animation: fadeSlideIn 0.3s ease;
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--accent);
+  background: rgba(59,130,246,0.04);
+}
+.upload-zone .upz-icon { font-size: 28px; margin-bottom: 8px; opacity: 0.6; }
+.upload-zone p { font-size: 13px; color: var(--text-dim); }
+.upload-zone small { font-size: 11px; color: var(--border2); margin-top: 4px; display: block; }
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .tools-layout { grid-template-columns: 1fr; }
+  .tools-section + .tools-section { border-left: none; border-top: 1px solid var(--border); }
+}
+@media (max-width: 600px) {
+  .stats-bar { grid-template-columns: 1fr 1fr; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .main { padding: 16px; }
+  .topbar { padding: 0 16px; }
+}
+@media (max-width: 380px) {
+  .stats-bar { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
+<div class="app">
 
-<div class="header">
-  <div>
-    <h1>Multi-Project Health Overview</h1>
-    <div class="header-sub" id="headerSub">Load project dashboard files to compare</div>
-  </div>
-  <div>
-    <input type="file" id="fileInput" accept=".json" multiple style="display:none" onchange="handleFiles(event)">
-    <button class="btn" onclick="document.getElementById('fileInput').click()">Add Projects</button>
-    <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
-    <button class="btn btn-secondary" onclick="toggleTheme()" id="themeToggle" title="Toggle theme (T)" style="margin-left:4px">&#9790;</button>
-  </div>
-</div>
-
-<div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
-  <div style="font-size:32px">+</div>
-  <p>Drop pm-dashboard.json files here or click to browse</p>
-  <p style="font-size:11px;margin-top:4px">Each file is at: &lt;project&gt;/.claude/pm-dashboard.json</p>
-</div>
-
-<!-- Project cards -->
-<div class="grid" id="projectCards"></div>
-
-<!-- Comparison table -->
-<div class="card card-full" id="comparisonCard" style="display:none; margin-bottom:20px">
-  <h2>Score Comparison</h2>
-  <div style="overflow-x:auto">
-    <table class="comparison-table" id="comparisonTable"></table>
-  </div>
-</div>
-
-<!-- Cross-project risks -->
-<div class="card card-full" id="risksCard" style="display:none; margin-bottom:20px">
-  <h2>Cross-Project Risk Summary</h2>
-  <div id="risksList"></div>
-</div>
-
-<!-- Tool activity panel (only visible when served via HTTP) -->
-<div class="tool-activity-panel" id="toolActivityPanel" style="display:none">
-  <div class="tool-activity-header">
-    <h2>Tool Activity</h2>
+<!-- Top bar -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">PH</div>
     <div>
-      <span class="log-status disconnected" id="toolActivityStatus">inactive</span>
-      <button class="btn btn-secondary" onclick="refreshToolActivity()" style="font-size:11px;padding:4px 10px;margin-left:8px">Refresh</button>
+      <div class="topbar-title">Project Health Monitor</div>
+      <div class="topbar-subtitle" id="headerSub">No projects loaded</div>
     </div>
   </div>
-  <div id="activeToolsSection">
-    <div style="padding:8px 16px;font-size:12px;font-weight:600;color:var(--text-dim);border-bottom:1px solid var(--border)">Currently Running</div>
-    <div class="active-tools-grid" id="activeToolsGrid">
-      <div style="color:var(--text-dim);font-size:12px;padding:8px 0">No active tools</div>
-    </div>
+  <div class="topbar-right">
+    <span id="lastRefresh" style="font-size:11px;color:var(--text-dim);display:none"></span>
+    <button class="btn btn-ghost btn-icon" id="importBtn" onclick="document.getElementById('fileInput').click()" title="Import JSON files">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+      Import
+    </button>
+    <button class="btn btn-ghost" onclick="clearAll()" id="clearBtn" style="display:none">Clear</button>
+    <button class="btn btn-ghost btn-icon" onclick="toggleTheme()" id="themeBtn" title="Toggle theme (T)">&#9790;</button>
   </div>
-  <div>
-    <div style="padding:8px 16px;font-size:12px;font-weight:600;color:var(--text-dim);border-bottom:1px solid var(--border)">Recent Activity</div>
-    <div class="tool-activity-list" id="toolActivityList">
-      <div style="color:var(--text-dim);font-size:12px">Loading...</div>
-    </div>
-  </div>
-</div>
+</header>
 
-<!-- Live log stream panel (only visible when served via HTTP) -->
-<div class="log-panel" id="logPanel" style="display:none">
-  <div class="log-panel-header">
-    <h2>Live Log Stream</h2>
-    <div>
-      <span class="log-status disconnected" id="logStatus">disconnected</span>
-      <button class="btn btn-secondary" onclick="clearLogs()" style="font-size:11px;padding:4px 10px;margin-left:8px">Clear</button>
+<div class="main">
+
+  <!-- Hidden file input -->
+  <input type="file" id="fileInput" accept=".json" multiple style="display:none" onchange="handleFiles(event)">
+
+  <!-- Upload zone (file:// only, no data) -->
+  <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()" style="display:none">
+    <div class="upz-icon">&#8659;</div>
+    <p>Drop <strong>pm-dashboard.json</strong> files here or click to browse</p>
+    <small>Each file lives at &lt;project&gt;/.claude/pm-dashboard.json</small>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar" id="statsBar" style="display:none">
+    <div class="stat-card blue">
+      <div class="stat-label">Projects</div>
+      <div class="stat-value" id="statProjects">0</div>
+      <div class="stat-sub">monitored</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Avg Score</div>
+      <div class="stat-value" id="statAvg">--</div>
+      <div class="stat-sub">out of 10</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Critical Risks</div>
+      <div class="stat-value" id="statRisks">0</div>
+      <div class="stat-sub">across all projects</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">Active Tools</div>
+      <div class="stat-value" id="statTools">--</div>
+      <div class="stat-sub" id="statToolsSub">awaiting data</div>
     </div>
   </div>
-  <div class="log-viewer" id="logViewer">Connecting to log stream...</div>
-</div>
+
+  <!-- Project cards -->
+  <div id="cardsWrap" style="display:none">
+    <div class="section-header">
+      <span class="section-title">Projects</span>
+    </div>
+    <div class="projects-grid" id="projectsGrid"></div>
+  </div>
+
+  <!-- Bottom tabs -->
+  <div class="tabs-panel" id="tabsPanel" style="display:none">
+    <div class="tabs-nav">
+      <button class="tab-btn active" data-tab="comparison" onclick="switchTab('comparison')">
+        Comparison <span class="tab-count" id="tcComparison">0</span>
+      </button>
+      <button class="tab-btn" data-tab="risks" onclick="switchTab('risks')">
+        Risks <span class="tab-count" id="tcRisks">0</span>
+      </button>
+      <button class="tab-btn" data-tab="tools" id="toolsTabBtn" onclick="switchTab('tools')" style="display:none">
+        Tools <span class="tab-count" id="tcTools">0</span>
+      </button>
+      <button class="tab-btn" id="logsTabBtn" data-tab="logs" onclick="switchTab('logs')" style="display:none">
+        Live Logs <span class="conn-badge off" id="logConnBadge" style="margin-left:4px">&#9679; off</span>
+      </button>
+    </div>
+
+    <!-- Comparison -->
+    <div class="tab-content active" id="tab-comparison">
+      <div class="comparison-wrap">
+        <table class="comparison-table" id="comparisonTable"></table>
+      </div>
+    </div>
+
+    <!-- Risks -->
+    <div class="tab-content" id="tab-risks">
+      <div class="risks-list" id="risksList"></div>
+    </div>
+
+    <!-- Tools -->
+    <div class="tab-content" id="tab-tools">
+      <div class="tools-layout">
+        <div class="tools-section">
+          <div class="tools-section-title"><span class="pulse-dot"></span> Currently Running</div>
+          <div id="activeToolsList"><div style="color:var(--text-dim);font-size:12px">No active tools</div></div>
+        </div>
+        <div class="tools-section">
+          <div class="tools-section-title">Recent Activity</div>
+          <div class="activity-scroll" id="activityList"><div style="color:var(--text-dim);font-size:12px">Loading...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logs -->
+    <div class="tab-content" id="tab-logs">
+      <div class="log-header">
+        <span class="conn-badge off" id="logStatusBadge">&#9679; Disconnected</span>
+        <button class="btn btn-ghost" onclick="clearLogs()" style="font-size:11px;padding:4px 10px">Clear</button>
+      </div>
+      <div class="log-scroll" id="logViewer">Connecting to log stream...</div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">&#128202;</div>
+    <h2>No Projects Loaded</h2>
+    <p>Import your <code>pm-dashboard.json</code> files to monitor project health across your portfolio.</p>
+    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/></svg>
+      Import JSON Files
+    </button>
+  </div>
+
+</div><!-- .main -->
+</div><!-- .app -->
 
 <script>
+// ============================================================
+// Constants
+// ============================================================
 const EXPERT_LABELS = {
   qa: 'QA & Testing', uiux: 'UI/UX', security: 'Security',
-  devops: 'DevOps', networking: 'Network', development: 'Development',
-  architecture: 'Architecture', product: 'Product', api: 'API',
+  devops: 'DevOps', networking: 'Networking', development: 'Development',
+  architecture: 'Architecture', product: 'Product', api: 'API Design',
   monitoring: 'Monitoring', database: 'Database', performance: 'Performance',
   documentation: 'Docs', specifications: 'Specs',
-  projectDocs: 'Proj Docs', progress: 'Progress'
+  projectDocs: 'Project Docs', progress: 'Progress'
 };
 const EXPERT_KEYS = Object.keys(EXPERT_LABELS);
 
+const DOMAIN_GROUPS = [
+  { label: 'Quality',        keys: ['qa', 'uiux', 'performance', 'documentation'] },
+  { label: 'Security',       keys: ['security', 'networking'] },
+  { label: 'Engineering',    keys: ['development', 'architecture', 'api', 'database'] },
+  { label: 'Infrastructure', keys: ['devops', 'monitoring'] },
+  { label: 'Product',        keys: ['product', 'specifications', 'projectDocs', 'progress'] }
+];
+
+// ============================================================
+// State
+// ============================================================
 let projects = [];
 
-function scoreColor(score) {
-  if (score === null || score === undefined) return 'var(--border)';
-  if (score >= 9) return 'var(--green)';
-  if (score >= 7) return '#3fb950';
-  if (score >= 5) return 'var(--yellow)';
-  if (score >= 3) return 'var(--red)';
-  return '#f85149';
+// ============================================================
+// Color helpers
+// ============================================================
+function scoreColor(s) {
+  if (s == null) return 'var(--text-dim)';
+  if (s >= 9)  return 'var(--green)';
+  if (s >= 7.5) return '#4ade80';
+  if (s >= 6)  return '#a3e635';
+  if (s >= 5)  return 'var(--yellow)';
+  if (s >= 3)  return 'var(--orange)';
+  return 'var(--red)';
 }
 
+function scoreHeatBg(s) {
+  if (s == null) return 'rgba(100,116,139,0.12)';
+  if (s >= 9)   return 'rgba(34,197,94,0.18)';
+  if (s >= 7.5) return 'rgba(74,222,128,0.14)';
+  if (s >= 6)   return 'rgba(163,230,53,0.12)';
+  if (s >= 5)   return 'rgba(245,158,11,0.15)';
+  if (s >= 3)   return 'rgba(249,115,22,0.15)';
+  return 'rgba(239,68,68,0.18)';
+}
+
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = String(s || '');
+  return d.innerHTML;
+}
+
+function timeAgo(ts) {
+  if (!ts) return 'unknown';
+  const diff = Date.now() - new Date(ts).getTime();
+  if (diff < 60000)   return Math.round(diff / 1000) + 's ago';
+  if (diff < 3600000) return Math.round(diff / 60000) + 'm ago';
+  if (diff < 86400000) return Math.round(diff / 3600000) + 'h ago';
+  return Math.round(diff / 86400000) + 'd ago';
+}
+
+function fmtDur(ms) {
+  if (ms == null) return '';
+  if (ms < 1000) return ms + 'ms';
+  return (ms / 1000).toFixed(1) + 's';
+}
+
+// ============================================================
+// Core data management
+// ============================================================
 function addProject(data) {
-  // Prevent duplicate by projectName
-  const existing = projects.findIndex(p => p.projectName === data.projectName);
-  if (existing >= 0) {
-    projects[existing] = data;
-  } else {
-    projects.push(data);
-  }
+  const idx = projects.findIndex(p => p.projectName === data.projectName);
+  if (idx >= 0) projects[idx] = data;
+  else projects.push(data);
   render();
 }
 
@@ -526,149 +671,260 @@ function clearAll() {
   render();
 }
 
+// ============================================================
+// SVG Gauge
+// ============================================================
+function buildGauge(score) {
+  const r = 28, cx = 36, cy = 36;
+  const circ = 2 * Math.PI * r;
+  const pct = score != null ? Math.max(0, Math.min(10, score)) / 10 : 0;
+  const offset = circ * (1 - pct);
+  const color = scoreColor(score);
+  const disp = score != null ? score : '--';
+  return `
+    <div class="pc-gauge">
+      <svg width="72" height="72" viewBox="0 0 72 72">
+        <circle class="pc-gauge-track" cx="${cx}" cy="${cy}" r="${r}"/>
+        <circle class="pc-gauge-fill"
+          cx="${cx}" cy="${cy}" r="${r}"
+          stroke="${color}"
+          stroke-dasharray="${circ}"
+          stroke-dashoffset="${offset}"
+          style="transition:stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1)"/>
+      </svg>
+      <div class="pc-gauge-label">
+        <span class="pc-gauge-score" style="color:${color}">${disp}</span>
+        <span class="pc-gauge-denom">/10</span>
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// Render functions
+// ============================================================
 function render() {
+  const hasProjects = projects.length > 0;
+  const isHttp = location.protocol === 'http:' || location.protocol === 'https:';
+  const isFile = location.protocol === 'file:';
+
+  // Header subtitle
   document.getElementById('headerSub').textContent =
-    projects.length === 0
-      ? 'Load project dashboard files to compare'
-      : `${projects.length} project${projects.length > 1 ? 's' : ''} loaded`;
+    !hasProjects ? 'No projects loaded'
+    : `${projects.length} project${projects.length !== 1 ? 's' : ''} monitored`;
 
-  document.getElementById('uploadZone').style.display = projects.length === 0 ? '' : 'none';
+  // Upload zone: file:// + no projects
+  document.getElementById('uploadZone').style.display =
+    (isFile && !hasProjects) ? '' : 'none';
 
+  // Empty state
+  document.getElementById('emptyState').style.display = !hasProjects ? '' : 'none';
+
+  // Stats bar
+  document.getElementById('statsBar').style.display = hasProjects ? '' : 'none';
+
+  // Cards
+  document.getElementById('cardsWrap').style.display = hasProjects ? '' : 'none';
+
+  // Tabs panel
+  document.getElementById('tabsPanel').style.display = hasProjects ? '' : 'none';
+
+  // Clear button
+  document.getElementById('clearBtn').style.display = hasProjects ? '' : 'none';
+
+  // Import btn - in HTTP mode, always show
+  if (isHttp) document.getElementById('importBtn').style.display = '';
+
+  if (!hasProjects) return;
+
+  updateStats();
   renderCards();
   renderComparison();
   renderRisks();
 }
 
-function renderCards() {
-  const container = document.getElementById('projectCards');
-  container.innerHTML = '';
+function updateStats() {
+  document.getElementById('statProjects').textContent = projects.length;
 
-  projects.forEach(proj => {
+  const scores = projects.map(p => p.overallScore).filter(s => s != null);
+  const avg = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : '--';
+  const avgEl = document.getElementById('statAvg');
+  avgEl.textContent = avg;
+  if (avg !== '--') avgEl.style.color = scoreColor(parseFloat(avg));
+
+  const critCount = projects.reduce((acc, p) =>
+    acc + (p.risks || []).filter(r => r.severity === 'critical').length, 0);
+  document.getElementById('statRisks').textContent = critCount;
+
+  document.getElementById('lastRefresh').textContent = 'Updated ' + new Date().toLocaleTimeString();
+  document.getElementById('lastRefresh').style.display = '';
+}
+
+function renderCards() {
+  const grid = document.getElementById('projectsGrid');
+  grid.innerHTML = '';
+  projects.forEach((proj, i) => {
     const card = document.createElement('div');
     card.className = 'project-card';
+    card.style.animationDelay = (i * 40) + 'ms';
 
     const experts = proj.experts || {};
     const score = proj.overallScore;
-    const color = scoreColor(score);
-    const taskCount = (proj.tasks || []).length;
-    const riskCount = (proj.risks || []).filter(r => r.severity === 'critical' || r.severity === 'high').length;
+    const tasks = proj.tasks || [];
+    const risks = proj.risks || [];
+    const debts = proj.technicalDebt || [];
+    const critRisks = risks.filter(r => r.severity === 'critical' || r.severity === 'high').length;
 
-    let miniBars = '';
-    EXPERT_KEYS.forEach(key => {
-      const exp = experts[key] || {};
-      const s = exp.score;
-      const pct = s != null ? s * 10 : 0;
-      const c = scoreColor(s);
-      miniBars += `
-        <div class="mini-bar-row">
-          <span class="mini-bar-label">${EXPERT_LABELS[key]}</span>
-          <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:${pct}%;background:${c}"></div></div>
-          <span class="mini-bar-value" style="color:${c}">${s != null ? s : '--'}</span>
+    // Badges
+    const badges = [
+      `<span class="badge badge-tasks">${tasks.length} tasks</span>`,
+      critRisks > 0 ? `<span class="badge badge-risks">${critRisks} risks</span>` : '',
+      debts.length > 0 ? `<span class="badge badge-debts">${debts.length} debts</span>` : '',
+      `<span class="badge badge-assessed">${proj.assessmentCount || 0}x assessed</span>`
+    ].filter(Boolean).join('');
+
+    // Domain group bars
+    let groupsHtml = '';
+    DOMAIN_GROUPS.forEach(grp => {
+      let rowsHtml = '';
+      grp.keys.forEach(k => {
+        const exp = experts[k] || {};
+        const s = exp.score;
+        const pct = s != null ? s * 10 : 0;
+        const c = scoreColor(s);
+        rowsHtml += `
+          <div class="domain-row">
+            <span class="domain-lbl">${EXPERT_LABELS[k]}</span>
+            <div class="domain-track"><div class="domain-fill" style="width:${pct}%;background:${c}"></div></div>
+            <span class="domain-val" style="color:${c}">${s != null ? s : '--'}</span>
+          </div>`;
+      });
+      groupsHtml += `
+        <div>
+          <div class="domain-group-label">${grp.label}</div>
+          <div class="domain-bars">${rowsHtml}</div>
         </div>`;
     });
 
     card.innerHTML = `
-      <div class="project-name">${proj.projectName || 'Unknown'}</div>
-      <div class="project-meta">${taskCount} tasks / ${riskCount} high risks / assessed ${proj.assessmentCount || 0}x</div>
-      <div class="project-score" style="color:${color}">${score != null ? score : '--'}<small>/10</small></div>
-      <div class="mini-bars">${miniBars}</div>
+      <div class="pc-header">
+        ${buildGauge(score)}
+        <div class="pc-info">
+          <div class="pc-name" title="${escHtml(proj.projectName)}">${escHtml(proj.projectName || 'Unknown')}</div>
+          <div class="pc-date">Last assessed ${timeAgo(proj.lastAssessment)}</div>
+          <div class="pc-badges">${badges}</div>
+        </div>
+      </div>
+      <div class="domain-groups">${groupsHtml}</div>
     `;
-    container.appendChild(card);
+    grid.appendChild(card);
   });
 }
 
 function renderComparison() {
-  const card = document.getElementById('comparisonCard');
   const table = document.getElementById('comparisonTable');
 
-  if (projects.length < 2) {
-    card.style.display = 'none';
+  if (projects.length === 0) {
+    table.innerHTML = '<tr><td style="padding:20px;color:var(--text-dim);text-align:center">Load at least one project to see the comparison.</td></tr>';
+    document.getElementById('tcComparison').textContent = projects.length;
     return;
   }
-  card.style.display = '';
+
+  document.getElementById('tcComparison').textContent = projects.length;
 
   // Header
-  let header = '<thead><tr><th>Domain</th>';
-  projects.forEach(p => { header += `<th style="text-align:center">${p.projectName || 'Unknown'}</th>`; });
-  header += '</tr></thead>';
+  let html = '<thead><tr><th>Domain</th>';
+  projects.forEach(p => {
+    html += `<th style="text-align:center">${escHtml(p.projectName || 'Unknown')}</th>`;
+  });
+  html += '</tr></thead><tbody>';
 
-  // Body
-  let body = '<tbody>';
   EXPERT_KEYS.forEach(key => {
-    body += `<tr><td class="domain-name">${EXPERT_LABELS[key]}</td>`;
-    const scores = projects.map(p => (p.experts && p.experts[key] && p.experts[key].score) || null);
-    const validScores = scores.filter(s => s !== null);
-    const best = validScores.length > 0 ? Math.max(...validScores) : null;
-    const worst = validScores.length > 0 ? Math.min(...validScores) : null;
+    const scores = projects.map(p => (p.experts && p.experts[key] && p.experts[key].score) ?? null);
+    const valid = scores.filter(s => s != null);
+    const best = valid.length > 0 ? Math.max(...valid) : null;
+    const worst = valid.length > 0 ? Math.min(...valid) : null;
 
+    html += `<tr><td class="domain-cell">${escHtml(EXPERT_LABELS[key])}</td>`;
     scores.forEach(s => {
-      const color = scoreColor(s);
-      let cls = 'score-cell';
-      if (s !== null && validScores.length > 1) {
-        if (s === best) cls += ' best';
-        if (s === worst && worst !== best) cls += ' worst';
+      let ring = '';
+      if (s != null && valid.length > 1) {
+        if (s === best) ring = ' 0 0 0 1px rgba(34,197,94,0.6)';
+        else if (s === worst && worst !== best) ring = ' 0 0 0 1px rgba(239,68,68,0.5)';
       }
-      body += `<td class="${cls}" style="color:${color}">${s != null ? s : '--'}</td>`;
+      const bg = scoreHeatBg(s);
+      const col = scoreColor(s);
+      html += `<td style="text-align:center;padding:5px 8px">
+        <span class="score-chip" style="background:${bg};color:${col};${ring ? 'box-shadow:' + ring : ''}">${s != null ? s : '--'}</span>
+      </td>`;
     });
-    body += '</tr>';
+    html += '</tr>';
   });
 
   // Overall row
-  body += '<tr style="font-weight:700;border-top:2px solid var(--border)"><td>Overall</td>';
+  html += '<tr class="overall-row"><td class="domain-cell" style="font-weight:700;color:var(--text)">Overall</td>';
   projects.forEach(p => {
     const s = p.overallScore;
-    body += `<td class="score-cell" style="color:${scoreColor(s)}">${s != null ? s : '--'}</td>`;
+    html += `<td style="text-align:center;padding:5px 8px">
+      <span class="score-chip" style="background:${scoreHeatBg(s)};color:${scoreColor(s)};font-size:13px">${s != null ? s : '--'}</span>
+    </td>`;
   });
-  body += '</tr></tbody>';
-
-  table.innerHTML = header + body;
+  html += '</tr></tbody>';
+  table.innerHTML = html;
 }
 
 function renderRisks() {
-  const card = document.getElementById('risksCard');
   const list = document.getElementById('risksList');
-
-  const allRisks = [];
-  projects.forEach(proj => {
-    (proj.risks || []).forEach(r => {
-      allRisks.push({ ...r, projectName: proj.projectName });
-    });
+  const all = [];
+  projects.forEach(p => {
+    (p.risks || []).forEach(r => all.push({ ...r, projectName: p.projectName }));
   });
 
-  if (allRisks.length === 0) {
-    card.style.display = 'none';
+  document.getElementById('tcRisks').textContent = all.length;
+  const critCount = all.filter(r => r.severity === 'critical').length;
+  const tc = document.getElementById('tcRisks');
+  if (critCount > 0) { tc.className = 'tab-count alert'; tc.textContent = all.length; }
+  else { tc.className = 'tab-count'; }
+
+  if (all.length === 0) {
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-dim);font-size:13px">No risks recorded across projects.</div>';
     return;
   }
-  card.style.display = '';
 
-  // Sort: critical first, then high, medium, low
   const order = { critical: 0, high: 1, medium: 2, low: 3 };
-  allRisks.sort((a, b) => (order[a.severity] || 4) - (order[b.severity] || 4));
+  all.sort((a, b) => (order[a.severity] ?? 4) - (order[b.severity] ?? 4));
 
-  list.innerHTML = '';
-  allRisks.forEach(r => {
-    const item = document.createElement('div');
-    item.className = 'risk-item';
-    item.innerHTML = `
-      <span class="risk-badge ${r.severity}">${r.severity}</span>
-      <span class="risk-project">${r.projectName}</span>
-      <span class="risk-desc">${r.description}</span>
-    `;
-    list.appendChild(item);
+  list.innerHTML = all.map(r => `
+    <div class="risk-row">
+      <span class="sev-badge sev-${r.severity || 'low'}">${escHtml(r.severity || 'low')}</span>
+      <span class="risk-proj">${escHtml(r.projectName)}</span>
+      <span class="risk-desc">${escHtml(r.description || '')}</span>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// Tab management
+// ============================================================
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => {
+    c.classList.toggle('active', c.id === 'tab-' + name);
   });
 }
 
+// ============================================================
 // File handling
+// ============================================================
 function handleFiles(event) {
-  const files = event.target.files;
-  for (const file of files) {
+  for (const file of event.target.files) {
     const reader = new FileReader();
     reader.onload = e => {
       try {
-        const data = JSON.parse(e.target.result);
-        addProject(data);
+        addProject(JSON.parse(e.target.result));
       } catch (err) {
-        alert('Invalid JSON: ' + file.name + ' - ' + err.message);
+        alert('Invalid JSON: ' + file.name + '\n' + err.message);
       }
     };
     reader.readAsText(file);
@@ -677,228 +933,185 @@ function handleFiles(event) {
 }
 
 // Drag and drop
-const zone = document.getElementById('uploadZone');
 document.body.addEventListener('dragover', e => {
   e.preventDefault();
-  zone.classList.add('dragover');
-  zone.style.display = '';
+  const zone = document.getElementById('uploadZone');
+  if (location.protocol === 'file:') {
+    zone.style.display = '';
+    zone.classList.add('dragover');
+  }
 });
 document.body.addEventListener('dragleave', e => {
+  const zone = document.getElementById('uploadZone');
   zone.classList.remove('dragover');
   if (projects.length > 0) zone.style.display = 'none';
 });
 document.body.addEventListener('drop', e => {
   e.preventDefault();
+  const zone = document.getElementById('uploadZone');
   zone.classList.remove('dragover');
-  const files = e.dataTransfer.files;
-  for (const file of files) {
+  for (const file of e.dataTransfer.files) {
     if (!file.name.endsWith('.json')) continue;
     const reader = new FileReader();
     reader.onload = ev => {
-      try {
-        addProject(JSON.parse(ev.target.result));
-      } catch (err) {
-        alert('Invalid JSON: ' + file.name);
-      }
+      try { addProject(JSON.parse(ev.target.result)); }
+      catch { alert('Invalid JSON: ' + file.name); }
     };
     reader.readAsText(file);
   }
 });
 
-// Theme toggle
-function getTheme() { return localStorage.getItem('pm-dashboard-theme') || 'dark'; }
-function applyTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  const btn = document.getElementById('themeToggle');
-  btn.textContent = theme === 'dark' ? '\u263E' : '\u2600';
-  localStorage.setItem('pm-dashboard-theme', theme);
+// ============================================================
+// Theme
+// ============================================================
+function getTheme() { return localStorage.getItem('phm-theme') || 'dark'; }
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('themeBtn').textContent = t === 'dark' ? '\u263E' : '\u2600';
+  localStorage.setItem('phm-theme', t);
 }
 function toggleTheme() { applyTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
-document.addEventListener('keydown', (e) => {
-  if (e.target.tagName === 'INPUT') return;
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.key.toLowerCase() === 't') { toggleTheme(); e.preventDefault(); }
 });
 applyTheme(getTheme());
 
-// =========================================================================
-// API Auto-Fetch (when served via HTTP, silently skip on file://)
-// =========================================================================
+// ============================================================
+// Initial render
+// ============================================================
+render();
 
-const isHttp = location.protocol === 'http:' || location.protocol === 'https:';
+// ============================================================
+// HTTP-only: API, SSE, Tools
+// ============================================================
+const IS_HTTP = location.protocol === 'http:' || location.protocol === 'https:';
 
-if (isHttp) {
-  // Auto-load projects from API
+if (IS_HTTP) {
+  // Show HTTP-only tabs
+  document.getElementById('toolsTabBtn').style.display = '';
+  document.getElementById('logsTabBtn').style.display = '';
+
+  // ---- Auto-fetch projects ----
   fetch('/api/projects')
-    .then(res => res.json())
+    .then(r => r.ok ? r.json() : Promise.reject())
     .then(data => {
       if (Array.isArray(data) && data.length > 0) {
-        data.forEach(proj => addProject(proj));
-        document.getElementById('headerSub').textContent =
-          `${projects.length} project${projects.length > 1 ? 's' : ''} loaded (auto-discovered)`;
+        data.forEach(p => addProject(p));
       }
     })
-    .catch(() => {
-      // API not available — fall back to manual upload
-    });
+    .catch(() => {});
 
-  // =========================================================================
-  // SSE Log Streaming
-  // =========================================================================
-
-  const logPanel = document.getElementById('logPanel');
-  const logViewer = document.getElementById('logViewer');
-  const logStatusEl = document.getElementById('logStatus');
-  const MAX_LOG_ENTRIES = 200;
+  // ---- SSE logs ----
+  const MAX_LOGS = 200;
   let logEntries = [];
 
-  logPanel.style.display = '';
-
-  function addLogEntry(text, timestamp) {
-    const time = timestamp ? new Date(timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
-    logEntries.push({ time, text });
-    if (logEntries.length > MAX_LOG_ENTRIES) {
-      logEntries = logEntries.slice(-MAX_LOG_ENTRIES);
-    }
-    renderLogs();
+  function addLog(text, ts) {
+    const t = ts ? new Date(ts).toLocaleTimeString() : new Date().toLocaleTimeString();
+    logEntries.push({ t, text });
+    if (logEntries.length > MAX_LOGS) logEntries = logEntries.slice(-MAX_LOGS);
+    renderLogViewer();
   }
 
-  function renderLogs() {
-    logViewer.innerHTML = logEntries.map(e =>
-      `<div class="log-entry"><span class="log-time">${e.time}</span>${escapeHtml(e.text)}</div>`
-    ).join('');
-    logViewer.scrollTop = logViewer.scrollHeight;
-  }
-
-  function escapeHtml(str) {
-    const d = document.createElement('div');
-    d.textContent = str;
-    return d.innerHTML;
+  function renderLogViewer() {
+    document.getElementById('logViewer').innerHTML =
+      logEntries.map(e =>
+        `<div class="log-line"><span class="log-ts">${e.t}</span>${escHtml(e.text)}</div>`
+      ).join('');
+    const v = document.getElementById('logViewer');
+    v.scrollTop = v.scrollHeight;
   }
 
   function clearLogs() {
     logEntries = [];
-    logViewer.innerHTML = '<div style="color:var(--text-dim)">Logs cleared</div>';
+    document.getElementById('logViewer').innerHTML =
+      '<div style="color:var(--text-dim);font-size:12px;padding:4px 0">Logs cleared.</div>';
+  }
+  window.clearLogs = clearLogs;
+
+  function setLogStatus(on) {
+    const badge1 = document.getElementById('logConnBadge');
+    const badge2 = document.getElementById('logStatusBadge');
+    const cls = on ? 'conn-badge on' : 'conn-badge off';
+    const txt = on ? '\u25CF Connected' : '\u25CF Disconnected';
+    badge1.className = cls; badge1.textContent = txt;
+    badge2.className = cls; badge2.textContent = txt;
   }
 
   function connectSSE() {
     const es = new EventSource('/api/logs/stream');
-
     es.onopen = () => {
-      logStatusEl.textContent = 'connected';
-      logStatusEl.className = 'log-status connected';
-      logViewer.innerHTML = '<div style="color:var(--text-dim)">Connected. Waiting for log entries...</div>';
+      setLogStatus(true);
+      document.getElementById('logViewer').innerHTML =
+        '<div style="color:var(--text-dim);font-size:12px;padding:4px 0">Connected. Waiting for entries...</div>';
     };
-
-    es.onmessage = (event) => {
+    es.onmessage = ev => {
       try {
-        const data = JSON.parse(event.data);
-        const text = typeof data.line === 'string' ? data.line : JSON.stringify(data);
-        addLogEntry(text, data.timestamp);
-      } catch {
-        addLogEntry(event.data);
-      }
+        const d = JSON.parse(ev.data);
+        addLog(typeof d.line === 'string' ? d.line : JSON.stringify(d), d.timestamp);
+      } catch { addLog(ev.data); }
     };
-
     es.onerror = () => {
-      logStatusEl.textContent = 'disconnected';
-      logStatusEl.className = 'log-status disconnected';
+      setLogStatus(false);
       es.close();
-      // Reconnect after 5 seconds
       setTimeout(connectSSE, 5000);
     };
   }
-
   connectSSE();
 
-  // =========================================================================
-  // Tool Activity Panel
-  // =========================================================================
-
-  const toolActivityPanel = document.getElementById('toolActivityPanel');
-  const toolActivityStatus = document.getElementById('toolActivityStatus');
-  const activeToolsGrid = document.getElementById('activeToolsGrid');
-  const toolActivityList = document.getElementById('toolActivityList');
-
-  toolActivityPanel.style.display = '';
-
-  function formatDuration(ms) {
-    if (ms == null) return '';
-    if (ms < 1000) return ms + 'ms';
-    return (ms / 1000).toFixed(1) + 's';
-  }
-
-  function timeAgo(ts) {
-    const diff = Date.now() - new Date(ts).getTime();
-    if (diff < 60000) return Math.round(diff / 1000) + 's ago';
-    if (diff < 3600000) return Math.round(diff / 60000) + 'm ago';
-    return Math.round(diff / 3600000) + 'h ago';
-  }
-
+  // ---- Tool activity ----
   function renderActiveTools(tools) {
+    const el = document.getElementById('activeToolsList');
     if (!tools || tools.length === 0) {
-      activeToolsGrid.innerHTML = '<div style="color:var(--text-dim);font-size:12px;padding:8px 0">No active tools</div>';
+      el.innerHTML = '<div style="color:var(--text-dim);font-size:12px">No active tools</div>';
+      document.getElementById('statTools').textContent = '0';
+      document.getElementById('statToolsSub').textContent = 'tools running';
       return;
     }
-
-    activeToolsGrid.innerHTML = tools.map(t => `
+    document.getElementById('statTools').textContent = tools.length;
+    document.getElementById('statToolsSub').textContent = 'tools running';
+    document.getElementById('tcTools').textContent = tools.length;
+    el.innerHTML = tools.map(t => `
       <div class="active-tool-card">
-        <div class="active-tool-name">${escapeHtml(t.tool)}</div>
-        <div class="active-tool-server">${escapeHtml(t.server)}</div>
-        <div class="active-tool-meta">
+        <div class="atc-name">${escHtml(t.tool)}</div>
+        <div class="atc-server">${escHtml(t.server)}</div>
+        <div class="atc-meta">
           <span>Started ${timeAgo(t.timestamp)}</span>
-          <span>${escapeHtml(t.projectDir || '')}</span>
+          ${t.projectDir ? `<span>${escHtml(t.projectDir)}</span>` : ''}
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
-  function renderActivityList(entries) {
+  function renderActivity(entries) {
+    const el = document.getElementById('activityList');
     if (!entries || entries.length === 0) {
-      toolActivityList.innerHTML = '<div style="color:var(--text-dim);font-size:12px">No recent activity</div>';
+      el.innerHTML = '<div style="color:var(--text-dim);font-size:12px">No recent activity</div>';
       return;
     }
-
-    toolActivityList.innerHTML = entries.map(e => `
-      <div class="activity-entry">
-        <span class="activity-status ${e.status}">${e.status}</span>
-        <span class="activity-server">${escapeHtml(e.server)}</span>
-        <span class="activity-tool">${escapeHtml(e.tool)}</span>
-        <span class="activity-duration">${formatDuration(e.durationMs)}</span>
-        <span class="activity-time">${timeAgo(e.timestamp)}</span>
-      </div>
-    `).join('');
+    el.innerHTML = entries.map(e => `
+      <div class="act-row">
+        <span class="act-status act-${e.status}">${escHtml(e.status)}</span>
+        <span class="act-server">${escHtml(e.server)}</span>
+        <span class="act-tool">${escHtml(e.tool)}</span>
+        <span class="act-dur">${fmtDur(e.durationMs)}</span>
+        <span class="act-time">${timeAgo(e.timestamp)}</span>
+      </div>`).join('');
   }
 
-  async function refreshToolActivity() {
+  async function refreshTools() {
     try {
-      const [activeRes, activityRes] = await Promise.all([
+      const [ar, er] = await Promise.all([
         fetch('/api/tools/active'),
-        fetch('/api/tools/activity?limit=30'),
+        fetch('/api/tools/activity?limit=30')
       ]);
-
-      if (activeRes.ok) {
-        const activeData = await activeRes.json();
-        renderActiveTools(activeData.tools || []);
-      }
-
-      if (activityRes.ok) {
-        const activityData = await activityRes.json();
-        renderActivityList(activityData.entries || []);
-      }
-
-      toolActivityStatus.textContent = 'live';
-      toolActivityStatus.className = 'log-status connected';
-    } catch {
-      toolActivityStatus.textContent = 'error';
-      toolActivityStatus.className = 'log-status disconnected';
-    }
+      if (ar.ok) { const d = await ar.json(); renderActiveTools(d.tools || []); }
+      if (er.ok) { const d = await er.json(); renderActivity(d.entries || []); }
+    } catch {}
   }
+  window.refreshToolActivity = refreshTools;
 
-  // Initial fetch
-  refreshToolActivity();
-
-  // Auto-refresh every 3 seconds
-  setInterval(refreshToolActivity, 3000);
+  refreshTools();
+  setInterval(refreshTools, 3000);
 }
 </script>
 </body>
