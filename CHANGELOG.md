@@ -15,6 +15,23 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.3.1] - 2026-02-20
+
+### CI & Infrastructure Improvements
+
+- Added dedicated `test-scripts` CI job for versioning infrastructure tests (31 + 19 + 6 assertions)
+- Added benchmark trend detection: CI now downloads previous run's artifact and compares per-server build times, warning on >20% regression or >5s per-server increase
+- Enabled branch protection on `main` with 9 required status checks (strict mode, force push blocked)
+
+### Documentation
+
+- Added `mcp-servers/mcp-shared/API.md` — complete API reference with usage examples for all exports
+- Added `CONTRIBUTING.md` — contributor guide covering dev workflow, conventions, and submission process
+
+### New Features
+
+- Added `docs/component-browser.html` — web-based searchable/filterable browser of all 86 components with dark/light theme, keyboard shortcuts, and responsive layout
+
 ## [2.3.0] - 2026-02-20
 
 ### Per-Component Versioning, npm Workspaces & Architecture Decision Records

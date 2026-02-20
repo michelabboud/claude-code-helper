@@ -281,6 +281,35 @@ jobs:
           echo "component-versions.json is in sync"
 
   # ──────────────────────────────────────────────
+  # Job 8c: Test versioning scripts
+  # ──────────────────────────────────────────────
+  test-scripts:
+    name: Test Scripts
+    runs-on: ubuntu-latest
+    needs: install
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules
+          key: nm-${{ hashFiles('package-lock.json') }}
+
+      - name: Run version index tests
+        run: node --test scripts/__tests__/generate-version-index.test.mjs
+
+      - name: Run manifest helper tests
+        run: bash scripts/__tests__/manifest-helper.test.sh
+
+      - name: Run update-component tests
+        run: bash scripts/__tests__/update-component.test.sh
+
+  # ──────────────────────────────────────────────
   # Job 9: Shell script validation
   # ──────────────────────────────────────────────
   shellcheck:
@@ -385,6 +414,25 @@ jobs:
           path: node_modules
           key: nm-${{ hashFiles('package-lock.json') }}
 
+      - name: Download previous benchmark
+        id: prev-benchmark
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          name: benchmark-results
+          workflow: ci.yml
+          branch: main
+          search_artifacts: true
+          if_no_artifact_found: warn
+        continue-on-error: true
+
+      - name: Save previous results
+        if: steps.prev-benchmark.outcome == 'success'
+        run: |
+          if [ -f benchmark-results.json ]; then
+            cp benchmark-results.json previous-benchmark.json
+            echo "Previous benchmark found"
+          fi
+
       - name: Build shared library
         working-directory: mcp-servers/mcp-shared
         run: npm run build
@@ -453,6 +501,50 @@ jobs:
           name: benchmark-results
           path: benchmark-results.json
           retention-days: 90
+
+      - name: Compare with previous benchmark
+        if: steps.prev-benchmark.outcome == 'success' && hashFiles('previous-benchmark.json') != ''
+        run: |
+          echo ""
+          echo "=== Benchmark Trend Analysis ==="
+          echo ""
+
+          # Compare total build times
+          PREV_TOTAL=$(jq '.totalBuildTimeMs' previous-benchmark.json)
+          CURR_TOTAL=$(jq '.totalBuildTimeMs' benchmark-results.json)
+          DIFF=$((CURR_TOTAL - PREV_TOTAL))
+          PCT=$(( (DIFF * 100) / (PREV_TOTAL > 0 ? PREV_TOTAL : 1) ))
+
+          if [ "$DIFF" -gt 0 ]; then
+            echo "Total: ${CURR_TOTAL}ms (+${DIFF}ms, +${PCT}%)"
+          else
+            echo "Total: ${CURR_TOTAL}ms (${DIFF}ms, ${PCT}%)"
+          fi
+
+          # Compare per-server build times
+          echo ""
+          echo "Per-server comparison:"
+          jq -r '.servers[] | "\(.server) \(.buildTimeMs)"' benchmark-results.json | while read -r server curr_ms; do
+            prev_ms=$(jq -r --arg s "$server" '.servers[] | select(.server == $s) | .buildTimeMs' previous-benchmark.json 2>/dev/null)
+            if [ -n "$prev_ms" ] && [ "$prev_ms" != "null" ]; then
+              diff_ms=$((curr_ms - prev_ms))
+              if [ "$diff_ms" -gt 5000 ]; then
+                echo "::warning::$server: ${curr_ms}ms (+${diff_ms}ms) — significant regression"
+              elif [ "$diff_ms" -gt 0 ]; then
+                echo "  $server: ${curr_ms}ms (+${diff_ms}ms)"
+              else
+                echo "  $server: ${curr_ms}ms (${diff_ms}ms)"
+              fi
+            else
+              echo "  $server: ${curr_ms}ms (new)"
+            fi
+          done
+
+          # Warn if total regression exceeds 20%
+          if [ "$PCT" -gt 20 ]; then
+            echo ""
+            echo "::warning::Build time regression of ${PCT}% detected (${PREV_TOTAL}ms → ${CURR_TOTAL}ms)"
+          fi
 
   # ──────────────────────────────────────────────
   # Job 12: Markdown link validation

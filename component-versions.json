@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "repoVersion": "2.3.0",
-  "generatedAt": "2026-02-20T10:50:29.455Z",
+  "repoVersion": "2.3.1",
+  "generatedAt": "2026-02-20T11:12:38.047Z",
   "components": {
     "agents/domain-experts/android-dev": {
       "type": "agent",
