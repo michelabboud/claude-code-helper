@@ -23,6 +23,9 @@ import { runServer, registerTrackedToolHandler, generateRequestId, measureDurati
 
 const execFileAsync = promisify(execFile);
 
+const SERVER_NAME = "code-review-mcp";
+const SERVER_VERSION = "1.0.0";
+
 // Tool input schemas
 const LintFileSchema = z.object({
   filePath: z.string().describe("Path to the file to lint"),
@@ -150,6 +153,39 @@ async function findDuplicates(directory: string, minLines: number = 5): Promise<
   }
 }
 
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**Code quality analysis** — linting, security scanning, complexity analysis, and duplicate detection for Claude Code.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`lint_file\` | Run linter on a file (ESLint, Pylint, Rubocop) |`,
+    `| \`security_scan\` | Scan code for vulnerabilities (Bandit, Semgrep, Snyk) |`,
+    `| \`analyze_complexity\` | Analyze cyclomatic complexity and maintainability |`,
+    `| \`find_duplicates\` | Detect duplicate code blocks across files |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                          → Quick greeting + status check`,
+    `hello {"verbose": true}                           → Full server info and tool catalog`,
+    `lint_file {"filePath": "src/app.ts", "linter": "eslint"}  → Lint a file`,
+    `security_scan {"targetPath": "src/", "scanner": "semgrep"} → Security scan`,
+    `analyze_complexity {"filePath": "src/app.ts", "language": "javascript"} → Complexity`,
+    `find_duplicates {"directory": "src/"}             → Find duplicate code`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
+}
+
 // Start server
 runServer({
   name: "code-review-mcp",
@@ -255,6 +291,22 @@ runServer({
             idempotentHint: true,
           },
         },
+        {
+          name: "hello",
+          description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+            },
+            required: [],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
       ],
     };
   });
@@ -327,6 +379,26 @@ runServer({
               },
             ],
           };
+          break;
+        }
+
+        case "hello": {
+          const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+          if (!verbose) {
+            response = {
+              content: [{
+                type: "text",
+                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+              }],
+            };
+          } else {
+            response = {
+              content: [{
+                type: "text",
+                text: buildHelloVerbose(),
+              }],
+            };
+          }
           break;
         }
 

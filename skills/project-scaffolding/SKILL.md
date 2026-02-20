@@ -3,7 +3,7 @@ skill_name: Project Scaffolding
 description: Generate project scaffolding, boilerplate code, and project structure for React, Next.js, Express, NestJS, FastAPI, Django, and more
 category: Development
 priority: P1
-argument-hint: '<project-type> [name] [options]'
+argument-hint: '<project-type> [name] [options] | hello | hello ID'
 allowed-tools: Read, Write, Edit, Bash, Glob
 version: 1.0.0
 author: Michel Abboud
@@ -202,6 +202,21 @@ Templates support variables:
 - `{{author}}` - Author name (from git config)
 - `{{description}}` - Project description
 - `{{license}}` - License type
+
+## Handshake Protocol
+
+### `hello`
+Respond with:
+> 👋 Hello! I'm **Project Scaffolding** v1.0.0. Generate project scaffolding and boilerplate for React, Next.js, Express, NestJS, FastAPI, Django, and more. Use `/project-scaffolding hello ID` for the full guide.
+
+### `hello ID`
+Respond with complete skill information:
+- **Name**: Project Scaffolding v1.0.0
+- **Description**: Generate project scaffolding, boilerplate code, and project structure for React, Next.js, Express, NestJS, FastAPI, Django, and more
+- **How to invoke**: `/project-scaffolding <project-type> [name] [options]`
+- **Available arguments**: `<project-type> [name] [options] | hello | hello ID`
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ## Changelog
 

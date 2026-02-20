@@ -13,6 +13,9 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
+const SERVER_NAME = "dependency-management-mcp";
+const SERVER_VERSION = "1.0.0";
+
 // Tool input schemas
 const AnalyzeDependenciesSchema = z.object({
   project_path: z.string().describe("Path to project"),
@@ -499,6 +502,47 @@ function generateSBOM(deps: Record<string, string>, devDeps: Record<string, stri
   }
 }
 
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**Dependency management** — vulnerability scanning, license checking, duplicate detection, bundle size, SBOM generation for Claude Code.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`analyze_dependencies\` | Analyze dependency tree with size, version, and relationships |`,
+    `| \`find_vulnerabilities\` | Scan for known CVEs with severity filtering |`,
+    `| \`suggest_updates\` | Recommend safe updates with changelog links |`,
+    `| \`check_licenses\` | Verify license compatibility against allowed list |`,
+    `| \`find_duplicates\` | Identify duplicate packages with version conflicts |`,
+    `| \`bundle_size_impact\` | Estimate bundle size with lighter alternatives |`,
+    `| \`unused_dependencies\` | Find installed but unimported packages |`,
+    `| \`generate_sbom\` | Create Software Bill of Materials (CycloneDX or SPDX) |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                                               → Quick greeting + status check`,
+    `hello {"verbose": true}                                                → Full server info and tool catalog`,
+    `analyze_dependencies {"project_path": ".", "package_manager": "npm"}  → Analyze dependency tree`,
+    `find_vulnerabilities {"project_path": ".", "package_manager": "npm"}  → Scan for vulnerabilities`,
+    `suggest_updates {"project_path": ".", "package_manager": "npm"}       → Suggest safe updates`,
+    `check_licenses {"project_path": ".", "package_manager": "npm", "allowed_licenses": ["MIT"]}  → Check licenses`,
+    `find_duplicates {"project_path": ".", "package_manager": "npm"}       → Find duplicate packages`,
+    `bundle_size_impact {"package_name": "lodash", "package_manager": "npm"}  → Estimate bundle size`,
+    `unused_dependencies {"project_path": ".", "package_manager": "npm"}   → Find unused dependencies`,
+    `generate_sbom {"project_path": ".", "format": "cyclonedx", "package_manager": "npm"}  → Generate SBOM`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
+}
+
 // MCP Server
 runServer({ name: "dependency-management-mcp", version: "1.0.0" }, (instance) => {
 const { server, logger } = instance;
@@ -697,6 +741,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           idempotentHint: true,
         },
       },
+        {
+          name: "hello",
+          description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+            },
+            required: [],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
     ],
   };
 });
@@ -1110,6 +1170,26 @@ registerTrackedToolHandler(instance, async (request) => {
         };
         break;
       }
+
+        case "hello": {
+          const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+          if (!verbose) {
+            response = {
+              content: [{
+                type: "text",
+                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+              }],
+            };
+          } else {
+            response = {
+              content: [{
+                type: "text",
+                text: buildHelloVerbose(),
+              }],
+            };
+          }
+          break;
+        }
 
       default:
         throw new Error(`Unknown tool: ${name}`);

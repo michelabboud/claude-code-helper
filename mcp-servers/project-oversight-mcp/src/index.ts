@@ -34,6 +34,9 @@ import {
 } from "mcp-shared";
 import type { ActivityEntry } from "mcp-shared";
 
+const SERVER_NAME = "project-oversight-mcp";
+const SERVER_VERSION = "1.0.0";
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -398,6 +401,53 @@ export function buildComparisonMatrix(
 }
 
 // ---------------------------------------------------------------------------
+// Hello Verbose
+// ---------------------------------------------------------------------------
+
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**Project health monitoring** — multi-project dashboards, score comparison, log access, MCP activity tracking.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`list_project_dashboards\` | Discover all projects with PM dashboard data in the central store |`,
+    `| \`get_project_dashboard\` | Read a specific project's full PM dashboard or a section |`,
+    `| \`compare_projects\` | Compare health scores across multiple projects |`,
+    `| \`sync_project_dashboard\` | Copy a project's dashboard to the central store |`,
+    `| \`get_logs\` | Read Claude Code logs (history, debug, session) with optional search filter |`,
+    `| \`tail_logs\` | Return the last N lines from a Claude Code log source |`,
+    `| \`open_dashboard\` | Launch the multi-project HTTP dashboard server in the browser |`,
+    `| \`get_tool_activity\` | Query recent MCP tool activity across all servers |`,
+    `| \`get_active_tools\` | Show MCP tools that are currently running right now |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                                           → Quick greeting + status check`,
+    `hello {"verbose": true}                                            → Full server info and tool catalog`,
+    `list_project_dashboards {}                                         → List all tracked projects`,
+    `get_project_dashboard {"projectName": "my-app"}                   → Full dashboard for a project`,
+    `compare_projects {"projects": ["my-app", "other-app"]}            → Compare project scores`,
+    `sync_project_dashboard {"sourcePath": "/path/to/project"}         → Sync dashboard to central store`,
+    `get_logs {"source": "history"}                                     → Read history log`,
+    `tail_logs {"source": "debug", "lines": 100}                       → Tail debug log`,
+    `open_dashboard {}                                                  → Open browser dashboard`,
+    `get_tool_activity {"server": "code-review-mcp", "limit": 20}      → Recent tool activity`,
+    `get_active_tools {}                                                → Currently running tools`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
+}
+
+// ---------------------------------------------------------------------------
 // Server
 // ---------------------------------------------------------------------------
 
@@ -646,6 +696,22 @@ runServer(
                   description: "Consider 'started' entries older than this (ms) as stale/stuck (default: 300000 = 5 min)",
                 },
               },
+            },
+            annotations: {
+              readOnlyHint: true,
+              destructiveHint: false,
+              idempotentHint: true,
+            },
+          },
+          {
+            name: "hello",
+            description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+            inputSchema: {
+              type: "object",
+              properties: {
+                verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+              },
+              required: [],
             },
             annotations: {
               readOnlyHint: true,
@@ -1055,6 +1121,26 @@ runServer(
                 tools: active,
               }
             );
+            break;
+          }
+
+          case "hello": {
+            const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+            if (!verbose) {
+              response = {
+                content: [{
+                  type: "text",
+                  text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+                }],
+              };
+            } else {
+              response = {
+                content: [{
+                  type: "text",
+                  text: buildHelloVerbose(),
+                }],
+              };
+            }
             break;
           }
 

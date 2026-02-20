@@ -5,6 +5,7 @@ category: Architecture
 priority: P1
 agent: database-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -864,6 +865,18 @@ Apply Database Design Patterns when:
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **Database Design Patterns** v1.0.0. Database schema design, normalization, indexing strategies, and migration patterns. Use `/database-design-patterns hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: Database Design Patterns v1.0.0
+- **What it covers**: Database schema design, migration strategies, indexing, query optimization, and scaling patterns for relational and NoSQL databases
+- **How to invoke**: `/database-design-patterns` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

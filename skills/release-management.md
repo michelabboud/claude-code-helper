@@ -5,6 +5,7 @@ category: DevOps & Deployment
 priority: P1
 agent: devops-infrastructure-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -1052,6 +1053,18 @@ Effective release management combines careful planning, automated processes, gra
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **Release Management** v1.0.0. Semantic versioning, release planning, deployment strategies, and rollback procedures. Use `/release-management hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: Release Management v1.0.0
+- **What it covers**: Semantic versioning, release types, release planning, deployment strategies (blue-green, canary, rolling), release automation, rollback procedures, feature flags, release notes, and monitoring
+- **How to invoke**: `/release-management` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

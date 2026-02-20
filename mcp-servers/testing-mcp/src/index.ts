@@ -66,6 +66,9 @@ interface TestAnalysis {
 
 const execFileAsync = promisify(execFile);
 
+const SERVER_NAME = "testing-mcp";
+const SERVER_VERSION = "1.0.0";
+
 // Tool input schemas
 const RunTestsSchema = z.object({
   testPath: z.string().describe("Path to test file or directory"),
@@ -413,6 +416,39 @@ function generateHTMLReport(results: TestResults, _includeFlaky: boolean): strin
 </html>`;
 }
 
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**Test automation** — execute tests, measure coverage, analyze test quality, and generate reports for Claude Code.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`run_tests\` | Execute tests with Jest, Pytest, Mocha, or Vitest |`,
+    `| \`get_coverage\` | Generate code coverage reports with threshold checking |`,
+    `| \`analyze_test_quality\` | Analyze assertion counts, mock usage, and flakiness |`,
+    `| \`generate_test_report\` | Generate Markdown/HTML/PDF test reports |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                          → Quick greeting + status check`,
+    `hello {"verbose": true}                           → Full server info and tool catalog`,
+    `run_tests {"testPath": "tests/", "framework": "jest"} → Run tests`,
+    `get_coverage {"testPath": "src/", "framework": "jest"} → Get coverage`,
+    `analyze_test_quality {"testPath": "tests/"}       → Analyze test quality`,
+    `generate_test_report {"resultsPath": "results.json", "format": "markdown"} → Report`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
+}
+
 // Start server
 runServer({
   name: "testing-mcp",
@@ -522,6 +558,22 @@ runServer({
             idempotentHint: true,
           },
         },
+        {
+          name: "hello",
+          description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+            },
+            required: [],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
       ],
     };
   });
@@ -566,6 +618,26 @@ runServer({
           const safePath = sanitizePath(resultsPath, process.cwd());
           const result = await generateTestReport(safePath, format, includeFlaky);
           response = { content: [{ type: "text", text: result }] };
+          break;
+        }
+
+        case "hello": {
+          const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+          if (!verbose) {
+            response = {
+              content: [{
+                type: "text",
+                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+              }],
+            };
+          } else {
+            response = {
+              content: [{
+                type: "text",
+                text: buildHelloVerbose(),
+              }],
+            };
+          }
           break;
         }
 

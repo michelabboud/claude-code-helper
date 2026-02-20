@@ -5,6 +5,7 @@ category: DevOps
 priority: P1
 agent: devops-infrastructure-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -1037,6 +1038,18 @@ Invoke the CI Best Practices skill when:
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **CI Best Practices** v1.0.0. Continuous integration best practices, GitHub Actions, testing pipelines. Use `/ci-best-practices hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: CI Best Practices v1.0.0
+- **What it covers**: CI pipeline design, parallel execution, caching strategies, quality gates, GitHub Actions workflows, automated testing in CI, and DevOps best practices
+- **How to invoke**: `/ci-best-practices` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

@@ -5,6 +5,7 @@ category: Architecture
 priority: P1
 agent: api-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -1039,6 +1040,18 @@ app.enableCors({
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **API Design Patterns** v1.0.0. REST API design, GraphQL patterns, API versioning, and documentation best practices. Use `/api-design-patterns hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: API Design Patterns v1.0.0
+- **What it covers**: REST API design, GraphQL patterns, API versioning, error handling, authentication, rate limiting, pagination, caching strategies, and API security best practices
+- **How to invoke**: `/api-design-patterns` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

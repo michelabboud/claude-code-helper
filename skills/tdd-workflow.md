@@ -5,6 +5,7 @@ category: Development Workflows
 priority: P1
 agent: qa-testing-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -1067,6 +1068,18 @@ TDD is a powerful technique that leads to better design, higher confidence, and 
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **Test-Driven Development (TDD) Workflow** v1.0.0. Red-Green-Refactor cycle, test-first development, and TDD best practices. Use `/tdd-workflow hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: Test-Driven Development (TDD) Workflow v1.0.0
+- **What it covers**: Red-Green-Refactor cycle, test-first development principles, TDD step-by-step workflow, TDD patterns, common pitfalls, TDD in different contexts, and tools and frameworks
+- **How to invoke**: `/tdd-workflow` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

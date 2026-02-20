@@ -20,6 +20,9 @@ import { z } from "zod";
 import * as fs from "fs/promises";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
+const SERVER_NAME = "uiux-review-mcp";
+const SERVER_VERSION = "1.0.0";
+
 // Shared interfaces for design analysis data structures
 interface DesignFinding {
   category: string;
@@ -1448,6 +1451,49 @@ function generateMermaidWireframe(_description: string, _designType: string): st
     class G,H,I cardStyle`;
 }
 
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**UI/UX review** — design analysis, WCAG accessibility audits, typography, spacing, color, wireframes for Claude Code.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`analyze_design\` | Comprehensive UI/UX analysis of design screenshots |`,
+    `| \`check_accessibility\` | WCAG accessibility audit with contrast, focus, touch targets |`,
+    `| \`review_typography\` | Typography analysis: hierarchy, readability, font pairing |`,
+    `| \`validate_spacing\` | Spacing consistency validation against grid system |`,
+    `| \`check_color_scheme\` | Color palette analysis: contrast, harmony, brand consistency |`,
+    `| \`suggest_improvements\` | Prioritized improvement suggestions with effort estimates |`,
+    `| \`generate_wireframe\` | Generate wireframes in HTML, ASCII, or Mermaid format |`,
+    `| \`compare_designs\` | A/B comparison of two design versions with scored metrics |`,
+    `| \`check_usability\` | Nielsen's usability heuristics evaluation |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                                  → Quick greeting + status check`,
+    `hello {"verbose": true}                                   → Full server info and tool catalog`,
+    `analyze_design {"imagePath": "screenshot.png"}           → Full design analysis`,
+    `check_accessibility {"imagePath": "screenshot.png"}      → WCAG accessibility audit`,
+    `review_typography {"imagePath": "screenshot.png"}        → Typography review`,
+    `validate_spacing {"imagePath": "screenshot.png"}         → Spacing validation`,
+    `check_color_scheme {"imagePath": "screenshot.png"}       → Color scheme analysis`,
+    `suggest_improvements {"imagePath": "screenshot.png"}     → Improvement suggestions`,
+    `generate_wireframe {"designDescription": "hero section", "designType": "desktop", "format": "html"}  → Wireframe`,
+    `compare_designs {"imagePathA": "v1.png", "imagePathB": "v2.png", "comparisonType": "ab_test"}  → A/B compare`,
+    `check_usability {"imagePath": "screenshot.png"}          → Usability heuristics`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
+}
+
 // MCP Server
 runServer({ name: "uiux-review-mcp", version: "1.0.0" }, (instance) => {
 const { server, logger } = instance;
@@ -1742,6 +1788,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           idempotentHint: true,
         },
       },
+        {
+          name: "hello",
+          description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+            },
+            required: [],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
     ],
   };
 });
@@ -1831,6 +1893,26 @@ registerTrackedToolHandler(instance, async (request) => {
         response = { content: [{ type: "text", text: `Usability assessment:\n\n${result}` }] };
         break;
       }
+
+        case "hello": {
+          const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+          if (!verbose) {
+            response = {
+              content: [{
+                type: "text",
+                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+              }],
+            };
+          } else {
+            response = {
+              content: [{
+                type: "text",
+                text: buildHelloVerbose(),
+              }],
+            };
+          }
+          break;
+        }
 
       default:
         throw new Error(`Unknown tool: ${name}`);

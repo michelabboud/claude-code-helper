@@ -5,6 +5,7 @@ category: Performance
 priority: P1
 agent: redis-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -574,6 +575,18 @@ class CacheMetrics {
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **Caching Expert** v1.0.0. Caching strategies, Redis patterns, CDN configuration, and cache invalidation. Use `/caching-expert hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: Caching Expert v1.0.0
+- **What it covers**: Static cache, object cache (Redis/Memcached), HTTP cache with Cache-Control headers and ETags, CDN cache with CloudFront and Cloudflare, multi-layer caching strategies, and monitoring metrics
+- **How to invoke**: `/caching-expert` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

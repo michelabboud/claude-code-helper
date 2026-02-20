@@ -23,6 +23,9 @@ import { config } from "dotenv";
 import { createVectorDatabase, type VectorDatabase, type VectorDocument } from "./vector-db-adapter.js";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
+const SERVER_NAME = "rag-mcp";
+const SERVER_VERSION = "1.0.0";
+
 // Load environment variables
 config();
 
@@ -105,6 +108,47 @@ function chunkText(text: string, chunkSize: number): string[] {
   }
 
   return chunks;
+}
+
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**Semantic codebase search** — vector indexing, similarity search, and context retrieval for AI agents.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`index_codebase\` | Index an entire codebase directory for semantic search |`,
+    `| \`index_file\` | Index a single file for semantic search |`,
+    `| \`semantic_search\` | Search codebase using natural language query |`,
+    `| \`find_similar_code\` | Find code similar to a given snippet |`,
+    `| \`get_relevant_context\` | Get relevant code context within a token budget |`,
+    `| \`list_collections\` | List all available vector collections |`,
+    `| \`get_collection_stats\` | Get statistics for a specific collection |`,
+    `| \`delete_collection\` | Delete a vector collection |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                          → Quick greeting + status check`,
+    `hello {"verbose": true}                           → Full server info and tool catalog`,
+    `index_codebase {"rootPath": "/path/to/project"}  → Index a codebase`,
+    `index_file {"filePath": "/path/to/file.ts"}      → Index a single file`,
+    `semantic_search {"query": "how does auth work?"} → Search semantically`,
+    `find_similar_code {"codeSnippet": "function login..."} → Find similar code`,
+    `get_relevant_context {"task": "implement logout"} → Get task context`,
+    `list_collections {}                               → List collections`,
+    `get_collection_stats {"collectionName": "codebase"} → Collection stats`,
+    `delete_collection {"collectionName": "old-index"} → Delete collection`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
 }
 
 runServer({
@@ -605,6 +649,22 @@ runServer({
           required: ["collectionName"],
         },
       },
+      {
+        name: "hello",
+        description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+          },
+          required: [],
+        },
+        annotations: {
+          readOnlyHint: true,
+          destructiveHint: false,
+          idempotentHint: true,
+        },
+      },
     ],
   }));
 
@@ -674,6 +734,26 @@ runServer({
           const validated = DeleteCollectionSchema.parse(args);
           const result = await deleteCollection(validated);
           response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "hello": {
+          const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+          if (!verbose) {
+            response = {
+              content: [{
+                type: "text",
+                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+              }],
+            };
+          } else {
+            response = {
+              content: [{
+                type: "text",
+                text: buildHelloVerbose(),
+              }],
+            };
+          }
           break;
         }
 

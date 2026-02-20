@@ -2,6 +2,7 @@
 skill_name: update-check
 description: Check if your claude-code-helper installation is up to date. Reads the local manifest and compares against the latest component-versions index on GitHub. Supports checking all components at once or a single component by name. Never auto-updates - always shows what's available and lets you decide.
 version: 2.0.0
+argument-hint: '[component] | hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -180,6 +181,19 @@ If the component is **REMOVED UPSTREAM**, note that it is no longer maintained i
 2. **NEVER run git pull, install scripts, or any destructive commands.** Only read data and report.
 3. If the user asks to update after seeing the report, remind them to review the changelog first, then provide the exact commands they can copy-paste and run themselves.
 4. The GitHub API has a 60 req/hour rate limit for unauthenticated requests. The `raw.githubusercontent.com` endpoint used here is less restrictive, but if rate-limited, say so and show the local manifest data.
+
+### `hello`
+Respond with:
+> 👋 Hello! I'm **update-check** v2.0.0. Check if your claude-code-helper installation is up to date. Use `/update-check hello ID` for the full guide.
+
+### `hello ID`
+Respond with complete skill information:
+- **Name**: update-check v2.0.0
+- **Description**: Check if your claude-code-helper installation is up to date. Reads the local manifest and compares against the latest component-versions index on GitHub. Supports checking all components at once or a single component by name. Never auto-updates - always shows what's available and lets you decide.
+- **How to invoke**: `/update-check [component]`
+- **Available arguments**: `[component] | hello | hello ID`
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ## Changelog
 

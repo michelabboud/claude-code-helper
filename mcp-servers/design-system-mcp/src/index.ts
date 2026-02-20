@@ -22,6 +22,9 @@ import * as path from "path";
 import { JSDOM } from "jsdom";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
+const SERVER_NAME = "design-system-mcp";
+const SERVER_VERSION = "1.0.0";
+
 // Tool input schemas
 const ValidateTokensSchema = z.object({
   tokensFile: z.string().describe("Path to design tokens JSON/CSS file"),
@@ -559,6 +562,41 @@ function generateHTMLReport(results: ValidationResult, includeRecommendations: b
 </html>`;
 }
 
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**Design system validation** — tokens, component compliance, color accessibility, and spacing consistency for Claude Code.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`validate_tokens\` | Validate design tokens for naming, color contrast, spacing, and typography |`,
+    `| \`check_component\` | Check component for design system compliance and accessibility |`,
+    `| \`validate_color_palette\` | Validate color palette for WCAG contrast compliance |`,
+    `| \`analyze_spacing\` | Analyze spacing values across stylesheets for scale consistency |`,
+    `| \`generate_report\` | Generate Markdown/HTML/JSON validation reports |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                          → Quick greeting + status check`,
+    `hello {"verbose": true}                           → Full server info and tool catalog`,
+    `validate_tokens {"tokensFile": "tokens.json"}     → Validate design tokens`,
+    `check_component {"componentPath": "Button.tsx", "designSystemPath": "ds.json"} → Check component`,
+    `validate_color_palette {"colorsFile": "colors.json"} → Validate colors`,
+    `analyze_spacing {"directory": "src/styles/"}      → Analyze spacing`,
+    `generate_report {"resultsPath": "results.json", "format": "markdown"} → Report`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
+}
+
 // Start server with runServer factory
 runServer({ name: "design-system-mcp", version: "1.0.0" }, (instance) => {
   const { server, logger } = instance;
@@ -678,6 +716,22 @@ runServer({ name: "design-system-mcp", version: "1.0.0" }, (instance) => {
             idempotentHint: true,
           },
         },
+        {
+          name: "hello",
+          description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+            },
+            required: [],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
       ],
     };
   });
@@ -731,6 +785,26 @@ runServer({ name: "design-system-mcp", version: "1.0.0" }, (instance) => {
           const safePath = sanitizePath(resultsPath, process.cwd());
           const result = await generateReport(safePath, format, includeRecommendations);
           response = { content: [{ type: "text", text: result }] };
+          break;
+        }
+
+        case "hello": {
+          const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+          if (!verbose) {
+            response = {
+              content: [{
+                type: "text",
+                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+              }],
+            };
+          } else {
+            response = {
+              content: [{
+                type: "text",
+                text: buildHelloVerbose(),
+              }],
+            };
+          }
           break;
         }
 

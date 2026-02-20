@@ -5,6 +5,7 @@ category: Testing
 priority: P1
 agent: qa-testing-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -874,6 +875,18 @@ Invoke the Contract Testing skill when:
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **Contract Testing** v1.0.0. Consumer-driven contract testing with Pact, API contracts, and provider verification. Use `/contract-testing hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: Contract Testing v1.0.0
+- **What it covers**: Contract testing for microservices using consumer-driven contracts, Pact framework, provider verification, and integration patterns to ensure services can communicate correctly
+- **How to invoke**: `/contract-testing` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

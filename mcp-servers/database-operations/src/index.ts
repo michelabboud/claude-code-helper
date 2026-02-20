@@ -12,6 +12,9 @@ import { z } from "zod";
 import * as fs from "fs/promises";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, sanitizeString, errorResponse } from "mcp-shared";
 
+const SERVER_NAME = "database-operations";
+const SERVER_VERSION = "1.0.0";
+
 // Type definitions
 interface FakeDataOptions {
   min?: number;
@@ -385,6 +388,47 @@ function validateMigrationSafety(sql: string): MigrationSafetyResult {
   };
 }
 
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**Database operations** — queries, schema inspection, migrations, data seeding, query optimization, backups for Claude Code.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`run_query\` | Execute SQL queries with parameter binding and dry-run mode |`,
+    `| \`inspect_schema\` | Get schema info: tables, columns, indexes, constraints |`,
+    `| \`generate_migration\` | Create migration files with up/down rollback support |`,
+    `| \`validate_migration\` | Check migration safety for breaking changes |`,
+    `| \`seed_data\` | Generate realistic test data for development |`,
+    `| \`explain_query\` | Get query execution plan and bottleneck analysis |`,
+    `| \`optimize_query\` | Suggest optimizations based on execution plan |`,
+    `| \`backup_database\` | Create database backups with optional compression |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                                        → Quick greeting + status check`,
+    `hello {"verbose": true}                                         → Full server info and tool catalog`,
+    `run_query {"query": "SELECT 1", "database": "mydb"}            → Execute SQL query`,
+    `inspect_schema {"database": "mydb"}                            → Inspect schema`,
+    `generate_migration {"description": "add users table", "changes": {"table": "users"}}  → Generate migration`,
+    `validate_migration {"migration_file": "migration.sql", "database": "mydb"}  → Validate migration`,
+    `seed_data {"table": "users", "count": 10, "schema": {"email": {"type": "email"}}}  → Seed data`,
+    `explain_query {"query": "SELECT * FROM users", "database": "mydb"}  → Explain query`,
+    `optimize_query {"query": "SELECT * FROM users", "database": "mydb"} → Optimize query`,
+    `backup_database {"database": "mydb", "output_path": "/backups/mydb.sql"}  → Backup database`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
+}
+
 // MCP Server
 runServer({ name: "database-operations", version: "1.0.0" }, (instance) => {
 const { server, logger } = instance;
@@ -597,6 +641,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           idempotentHint: true,
         },
       },
+        {
+          name: "hello",
+          description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+            },
+            required: [],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
     ],
   };
 });
@@ -884,6 +944,26 @@ registerTrackedToolHandler(instance, async (request) => {
         };
         break;
       }
+
+        case "hello": {
+          const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+          if (!verbose) {
+            response = {
+              content: [{
+                type: "text",
+                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+              }],
+            };
+          } else {
+            response = {
+              content: [{
+                type: "text",
+                text: buildHelloVerbose(),
+              }],
+            };
+          }
+          break;
+        }
 
       default:
         throw new Error(`Unknown tool: ${name}`);

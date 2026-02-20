@@ -1,7 +1,7 @@
 ---
 skill_name: Model Mode
 description: 'Switch between model modes or check current mode. Use /model-mode status to see current setting, /model-mode opus-only to always use Opus, /model-mode default for auto-switching.'
-argument-hint: '[status|default|opus-only|sonnet-only|haiku-only|custom]'
+argument-hint: '[status|default|opus-only|sonnet-only|haiku-only|custom] | hello | hello ID'
 user-invocable: true
 version: 1.0.0
 author: Michel Abboud
@@ -68,6 +68,19 @@ Read `~/.claude/CLAUDE.md` and report:
 
 ### Invalid argument
 If argument is not one of the above values, show usage help and list valid options.
+
+### `hello`
+Respond with:
+> 👋 Hello! I'm **Model Mode** v1.0.0. Switch MODEL_MODE in ~/.claude/CLAUDE.md without manual file editing. Use `/model-mode hello ID` for the full guide.
+
+### `hello ID`
+Respond with complete skill information:
+- **Name**: Model Mode v1.0.0
+- **Description**: Switch between model modes or check current mode. Use /model-mode status to see current setting, /model-mode opus-only to always use Opus, /model-mode default for auto-switching.
+- **How to invoke**: `/model-mode [mode]`
+- **Available arguments**: `[status|default|opus-only|sonnet-only|haiku-only|custom] | hello | hello ID`
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ## Notes
 

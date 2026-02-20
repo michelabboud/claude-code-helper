@@ -5,6 +5,7 @@ category: Testing
 priority: P1
 agent: qa-testing-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -867,6 +868,18 @@ Invoke the BDD Framework skill when:
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **BDD Framework Examples** v1.0.0. Behavior-Driven Development examples with Cucumber, Gherkin, and Jasmine. Use `/bdd-framework-examples hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: BDD Framework Examples v1.0.0
+- **What it covers**: Behavior-Driven Development using Cucumber (JavaScript/TypeScript), Behave (Python), SpecFlow (.NET/C#), Gherkin syntax, step definitions, and CI/CD integration
+- **How to invoke**: `/bdd-framework-examples` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

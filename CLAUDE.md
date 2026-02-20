@@ -302,12 +302,27 @@ The config-bundle implements model transparency:
 ### Integration Example
 `guides/subagents-guide/INTEGRATION-EXAMPLE.md` shows complete authentication system implementation using multiple coordinated agents - valuable reference for multi-agent workflows.
 
+## Hello Protocol (Universal Handshake)
+
+All tools in this repository implement the **Hello Protocol** — a universal handshake that lets users verify a tool is available and get its full API reference.
+
+| Tool type | Hello | Verbose |
+|-----------|-------|---------|
+| MCP server | `hello {}` | `hello {"verbose": true}` |
+| Skill | `/skill-name hello` | `/skill-name hello ID` |
+| Agent | `hello agent-name` | `hello agent-name ID` |
+
+**Full documentation**: [`docs/reference/hello-protocol.md`](docs/reference/hello-protocol.md)
+
+**MANDATORY for new tools**: Every new MCP server, skill, or agent MUST implement the Hello Protocol before being added to this repository. See the documentation for exact code patterns and checklists.
+
 ## Contributing Guidelines
 
 When adding new content:
 1. Place agents in `agents/domain-experts/` or `agents/mcp-integrated/`
 2. Place skills in `skills/` (commands are now unified into skills since v2.1.3)
 3. Add template version to `templates/` if creating new pattern
+4. **Implement the Hello Protocol** — see `docs/reference/hello-protocol.md` for the required pattern
 5. Update relevant README.md files
 6. Include installation instructions
 7. Test installation process

@@ -4,6 +4,7 @@ description: Generate comprehensive API documentation following OpenAPI 3.0 and 
 category: Documentation
 priority: P1
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -71,6 +72,21 @@ components:
 - [ ] Authentication requirements
 - [ ] Rate limiting information
 - [ ] Example requests and responses
+
+## Handshake Protocol
+
+### `hello`
+Respond with:
+> 👋 Hello! I'm **API Documentation** v1.0.0. Generate comprehensive API documentation following OpenAPI 3.0 and REST standards. Use `/api-documentation hello ID` for the full guide.
+
+### `hello ID`
+Respond with complete skill information:
+- **Name**: API Documentation v1.0.0
+- **Description**: Generate comprehensive API documentation following OpenAPI 3.0 and REST standards when creating or documenting APIs, endpoints, or web services
+- **How to invoke**: `/api-documentation [argument]`
+- **Available arguments**: `hello | hello ID`
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ## Changelog
 

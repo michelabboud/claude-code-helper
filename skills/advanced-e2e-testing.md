@@ -5,6 +5,7 @@ category: Testing
 priority: P1
 agent: qa-testing-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -789,6 +790,18 @@ Invoke the Advanced E2E Testing skill when:
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **Advanced E2E Testing** v1.0.0. Advanced end-to-end testing patterns with Playwright and Cypress. Use `/advanced-e2e-testing hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: Advanced E2E Testing v1.0.0
+- **What it covers**: Advanced end-to-end testing patterns for complex user journeys, workflows, authentication flows, API mocking, mobile responsive testing, and cross-browser testing
+- **How to invoke**: `/advanced-e2e-testing` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

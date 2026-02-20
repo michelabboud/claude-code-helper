@@ -5,6 +5,7 @@ category: Testing
 priority: P1
 agent: qa-testing-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -844,6 +845,18 @@ Invoke the Visual Regression Testing skill when:
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **Visual Regression Testing** v1.0.0. Visual regression testing with Percy, Chromatic, and screenshot comparison tools. Use `/visual-regression-testing hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: Visual Regression Testing v1.0.0
+- **What it covers**: Visual regression testing to catch unintended visual changes in web applications, covering tools like Percy, Chromatic, and Playwright screenshot comparison, baseline management, and CI integration
+- **How to invoke**: `/visual-regression-testing` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

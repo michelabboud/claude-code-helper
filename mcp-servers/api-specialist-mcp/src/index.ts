@@ -20,6 +20,9 @@ import { z } from "zod";
 import * as fs from "fs/promises";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, sanitizeUrl, errorResponse } from "mcp-shared";
 
+const SERVER_NAME = "api-specialist-mcp";
+const SERVER_VERSION = "1.0.0";
+
 // Type definitions for OpenAPI spec parsing
 interface ValidationIssue {
   severity: string;
@@ -1099,6 +1102,47 @@ function calculateAPIScore(issues: ValidationIssue[]): number {
   return Math.round(score);
 }
 
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**API specialist** — validation, endpoint testing, security auditing, load testing, and documentation generation for Claude Code.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`validate_openapi\` | Validate OpenAPI/Swagger spec for correctness and completeness |`,
+    `| \`test_endpoint\` | Make HTTP requests to test API endpoints with auth support |`,
+    `| \`check_api_security\` | Security audit: HTTPS, CORS, headers, rate limiting, injection |`,
+    `| \`analyze_api_structure\` | Analyze API design against REST/GraphQL best practices |`,
+    `| \`load_test\` | Load test endpoints with concurrent users and duration |`,
+    `| \`generate_api_docs\` | Generate docs from OpenAPI spec (Markdown, HTML, Postman) |`,
+    `| \`suggest_improvements\` | Prioritized improvement suggestions for performance and security |`,
+    `| \`validate_api_response\` | Validate API response against JSON schema |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                          → Quick greeting + status check`,
+    `hello {"verbose": true}                           → Full server info and tool catalog`,
+    `validate_openapi {"specPath": "openapi.json"}     → Validate OpenAPI spec`,
+    `test_endpoint {"url": "https://api.example.com/users", "method": "GET"}  → Test endpoint`,
+    `check_api_security {"apiUrl": "https://api.example.com"}  → Security audit`,
+    `analyze_api_structure {"specPath": "openapi.json"}        → Structure analysis`,
+    `load_test {"url": "https://api.example.com/", "method": "GET", "duration": 10, "concurrency": 5}  → Load test`,
+    `generate_api_docs {"specPath": "openapi.json", "format": "markdown"}     → Generate docs`,
+    `suggest_improvements {"specPath": "openapi.json"}         → Improvement suggestions`,
+    `validate_api_response {"response": "{}", "schema": "{}"}  → Validate response`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
+}
+
 // Start server
 runServer({ name: "api-specialist-mcp", version: "1.0.0" }, (instance) => {
   const { server, logger } = instance;
@@ -1369,6 +1413,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           idempotentHint: true,
         },
       },
+        {
+          name: "hello",
+          description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+            },
+            required: [],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
     ],
   };
 });
@@ -1502,6 +1562,26 @@ registerTrackedToolHandler(instance, async (request) => {
         };
         break;
       }
+
+        case "hello": {
+          const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+          if (!verbose) {
+            response = {
+              content: [{
+                type: "text",
+                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+              }],
+            };
+          } else {
+            response = {
+              content: [{
+                type: "text",
+                text: buildHelloVerbose(),
+              }],
+            };
+          }
+          break;
+        }
 
       default:
         throw new Error(`Unknown tool: ${name}`);

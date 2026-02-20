@@ -11,6 +11,9 @@ import {
 import { z } from "zod";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, errorResponse } from "mcp-shared";
 
+const SERVER_NAME = "n8n-automation-mcp";
+const SERVER_VERSION = "1.0.0";
+
 // Interfaces for n8n workflow types
 interface N8nNodeParameters {
   [key: string]: unknown;
@@ -778,6 +781,43 @@ function generateDataTransformation(inputFormat: Record<string, unknown>, output
   };
 }
 
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**n8n workflow automation** — generate workflows, optimize them, troubleshoot failures, suggest integrations, transform data.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`generate_workflow\` | Generate n8n workflow with trigger, processing, and action nodes |`,
+    `| \`optimize_workflow\` | Analyze workflow and suggest speed, reliability, and cost optimizations |`,
+    `| \`troubleshoot_workflow\` | Diagnose n8n workflow failures and provide solutions |`,
+    `| \`generate_error_workflow\` | Create error handling and monitoring workflow with notifications |`,
+    `| \`suggest_integrations\` | Suggest n8n nodes and integrations based on use case description |`,
+    `| \`generate_data_transformation\` | Create data transformation logic mapping source to target format |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                                       → Quick greeting + status check`,
+    `hello {"verbose": true}                                        → Full server info and tool catalog`,
+    `generate_workflow {"workflow_type": "webhook", "services": ["slack"], "trigger": "webhook", "actions": ["transform"]}  → Generate workflow`,
+    `optimize_workflow {"workflow": {...}, "focus_areas": ["speed", "reliability"]}   → Optimize workflow`,
+    `troubleshoot_workflow {"workflow": {...}, "error_log": "..."}                     → Troubleshoot failure`,
+    `generate_error_workflow {"main_workflow_id": "123", "notification_channels": ["slack"], "retry_strategy": "exponential_backoff"}  → Error handler`,
+    `suggest_integrations {"use_case": "sync CRM leads to Slack"}                     → Suggest integrations`,
+    `generate_data_transformation {"input_format": {...}, "output_format": {...}, "transformations": ["concatenate"]}  → Transform data`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
+}
+
 runServer({ name: "n8n-automation-mcp", version: "1.0.0" }, (instance) => {
 const { server, logger } = instance;
 
@@ -954,6 +994,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           idempotentHint: true,
         },
       },
+        {
+          name: "hello",
+          description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+            },
+            required: [],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
     ],
   };
 });
@@ -1101,6 +1157,26 @@ registerTrackedToolHandler(instance, async (request) => {
         };
         break;
       }
+
+        case "hello": {
+          const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+          if (!verbose) {
+            response = {
+              content: [{
+                type: "text",
+                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+              }],
+            };
+          } else {
+            response = {
+              content: [{
+                type: "text",
+                text: buildHelloVerbose(),
+              }],
+            };
+          }
+          break;
+        }
 
       default:
         throw new Error(`Unknown tool: ${name}`);

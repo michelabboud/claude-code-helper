@@ -3,7 +3,7 @@ skill_name: Code Review Workflow
 description: Comprehensive code review with security, quality, and performance analysis. Systematic review process with checklists and best practices.
 category: Quality
 priority: P1
-argument-hint: '[target-file-or-directory]'
+argument-hint: '[target-file-or-directory] | hello | hello ID'
 allowed-tools: Read, Grep, Glob
 agent: code-review-expert
 version: 1.0.0
@@ -287,6 +287,18 @@ Use this skill when:
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **Code Review Workflow** v1.0.0. Systematic code review process, PR templates, checklist, and review best practices. Use `/code-review-workflow hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: Code Review Workflow v1.0.0
+- **What it covers**: Comprehensive code review with security, quality, and performance analysis. Systematic review process with checklists, PR templates, and review best practices
+- **How to invoke**: `/code-review-workflow` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

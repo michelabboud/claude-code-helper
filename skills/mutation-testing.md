@@ -5,6 +5,7 @@ category: Testing
 priority: P1
 agent: qa-testing-expert
 version: 1.0.0
+argument-hint: 'hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -844,6 +845,18 @@ Invoke the Mutation Testing skill when:
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **Mutation Testing** v1.0.0. Mutation testing with Stryker and Mutmut to measure test suite quality. Use `/mutation-testing hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: Mutation Testing v1.0.0
+- **What it covers**: Mutation testing concepts, Stryker (JavaScript/TypeScript) and Mutmut (Python) setup, mutation operators, interpreting mutation scores, and strategies for improving test suite effectiveness
+- **How to invoke**: `/mutation-testing` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 skill_name: PM Dashboard
 description: 'Update the Project Manager dashboard with assessment scores, tasks, and risks. Use after running a project health assessment.'
-argument-hint: '[open|update|reset]'
+argument-hint: '[open|update|reset] | hello | hello ID'
 user-invocable: true
 version: 1.1.0
 author: Michel Abboud
@@ -142,6 +142,21 @@ cp ~/.claude/skills/pm-dashboard/dashboard.html .claude/pm-dashboard.html
 open .claude/pm-dashboard.html  # macOS
 xdg-open .claude/pm-dashboard.html  # Linux
 ```
+
+## Handshake Protocol
+
+### `hello`
+Respond with:
+> 👋 Hello! I'm **PM Dashboard** v1.1.0. Update the Project Manager dashboard with assessment scores, tasks, and risks. Use `/pm-dashboard hello ID` for the full guide.
+
+### `hello ID`
+Respond with complete skill information:
+- **Name**: PM Dashboard v1.1.0
+- **Description**: Update the Project Manager dashboard with assessment scores, tasks, and risks. Use after running a project health assessment.
+- **How to invoke**: `/pm-dashboard [open|update|reset]`
+- **Available arguments**: `[open|update|reset] | hello | hello ID`
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ## Changelog
 

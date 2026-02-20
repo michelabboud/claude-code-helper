@@ -3,7 +3,7 @@ skill_name: Testing Standards
 description: Generate comprehensive test suites and write tests following TDD and best practices. Use when generating unit tests, integration tests, E2E tests, or API tests for any code.
 category: Testing
 priority: P1
-argument-hint: '[target] [type]'
+argument-hint: '[target] [type] | hello | hello ID'
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 agent: qa-testing-expert
 version: 1.0.0
@@ -144,6 +144,21 @@ describe('UserService', () => {
   });
 });
 ```
+
+## Handshake Protocol
+
+### `hello`
+Respond with:
+> 👋 Hello! I'm **Testing Standards** v1.0.0. Generate comprehensive test suites following TDD and best practices. Use `/testing-standards hello ID` for the full guide.
+
+### `hello ID`
+Respond with complete skill information:
+- **Name**: Testing Standards v1.0.0
+- **Description**: Generate comprehensive test suites and write tests following TDD and best practices. Use when generating unit tests, integration tests, E2E tests, or API tests for any code.
+- **How to invoke**: `/testing-standards [target] [type]`
+- **Available arguments**: `[target] [type] | hello | hello ID`
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ## Changelog
 

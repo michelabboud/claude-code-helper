@@ -13,6 +13,9 @@ import * as fs from "fs/promises";
 import * as yaml from "js-yaml";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
+const SERVER_NAME = "cicd-pipeline-mcp";
+const SERVER_VERSION = "1.0.0";
+
 // Type definitions for pipeline structures
 interface PipelineStep {
   uses?: string;
@@ -626,6 +629,47 @@ function diagnosePipelineFailure(logs: string): Diagnosis {
 }
 
 // MCP Server
+function buildHelloVerbose(): string {
+  return [
+    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    ``,
+    `**CI/CD pipeline automation** — generate, optimize, validate, and deploy pipelines for GitHub Actions, GitLab CI, Jenkins, CircleCI.`,
+    ``,
+    `## Available Tools`,
+    ``,
+    `| Tool | Description |`,
+    `|------|-------------|`,
+    `| \`generate_pipeline\` | Generate CI/CD pipeline configuration for a platform and project type |`,
+    `| \`optimize_pipeline\` | Analyze existing pipeline and suggest speed/cost/reliability optimizations |`,
+    `| \`validate_pipeline\` | Check pipeline syntax, security issues, and best practice violations |`,
+    `| \`estimate_cost\` | Calculate estimated CI/CD runner costs based on usage |`,
+    `| \`troubleshoot_failure\` | Analyze pipeline failure logs and provide diagnosis with fixes |`,
+    `| \`security_scan_pipeline\` | Generate security scanning config (SAST, dependency, container, secret) |`,
+    `| \`generate_deployment\` | Create deployment workflow with blue-green, canary, rolling, or recreate strategy |`,
+    `| \`generate_rollback\` | Create rollback procedures for deployments |`,
+    `| \`hello\` | Handshake check — verify server is online |`,
+    ``,
+    `## Usage`,
+    ``,
+    `\`\`\``,
+    `hello {}                                              → Quick greeting + status check`,
+    `hello {"verbose": true}                              → Full server info and tool catalog`,
+    `generate_pipeline {"platform": "github-actions", "project_type": "nodejs", "features": ["testing", "build"]}  → Generate pipeline`,
+    `optimize_pipeline {"pipeline_file": ".github/workflows/ci.yml", "platform": "github-actions"}                 → Optimize pipeline`,
+    `validate_pipeline {"pipeline_file": ".github/workflows/ci.yml", "platform": "github-actions"}                 → Validate pipeline`,
+    `estimate_cost {"pipeline_file": ".github/workflows/ci.yml", "platform": "github-actions", "monthly_runs": 100} → Estimate cost`,
+    `troubleshoot_failure {"pipeline_file": "ci.yml", "failure_logs": "...", "platform": "github-actions"}          → Troubleshoot`,
+    `security_scan_pipeline {"pipeline_file": "ci.yml", "scan_types": ["sast", "dependency"]}                       → Add security scans`,
+    `generate_deployment {"strategy": "blue-green", "platform": "kubernetes"}                                        → Generate deployment`,
+    `generate_rollback {"deployment_platform": "kubernetes", "rollback_strategy": "previous-version"}                → Generate rollback`,
+    `\`\`\``,
+    ``,
+    `## Author`,
+    `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
+    `License: MIT`,
+  ].join("\n");
+}
+
 runServer({ name: "cicd-pipeline-mcp", version: "1.0.0" }, (instance) => {
 const { server, logger } = instance;
 
@@ -857,6 +901,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           idempotentHint: true,
         },
       },
+        {
+          name: "hello",
+          description: "Handshake check — verify this server is online. Returns a greeting. Pass verbose=true for the full tool catalog, usage guide, and server info.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              verbose: { type: "boolean", description: "If true, return full server info, all tools with descriptions, and usage guide" },
+            },
+            required: [],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
     ],
   };
 });
@@ -1232,6 +1292,26 @@ registerTrackedToolHandler(instance, async (request) => {
         };
         break;
       }
+
+        case "hello": {
+          const verbose = (args as { verbose?: boolean })?.verbose ?? false;
+          if (!verbose) {
+            response = {
+              content: [{
+                type: "text",
+                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+              }],
+            };
+          } else {
+            response = {
+              content: [{
+                type: "text",
+                text: buildHelloVerbose(),
+              }],
+            };
+          }
+          break;
+        }
 
       default:
         throw new Error(`Unknown tool: ${name}`);

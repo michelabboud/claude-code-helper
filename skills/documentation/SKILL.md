@@ -3,7 +3,7 @@ skill_name: Documentation
 description: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and API docs. Use when documenting code, generating docs, or improving project documentation.
 category: Documentation
 priority: P1
-argument-hint: '[target-file-or-directory]'
+argument-hint: '[target-file-or-directory] | hello | hello ID'
 allowed-tools: Read, Write, Edit, Grep, Glob
 version: 1.0.0
 author: Michel Abboud
@@ -150,6 +150,21 @@ Create a new user account.
 | Go | Package comments + `//` | godoc |
 | Rust | `///` doc comments | rustdoc |
 | Java | Javadoc (`/** */`) | Javadoc |
+
+## Handshake Protocol
+
+### `hello`
+Respond with:
+> 👋 Hello! I'm **Documentation** v1.0.0. Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and API docs. Use `/documentation hello ID` for the full guide.
+
+### `hello ID`
+Respond with complete skill information:
+- **Name**: Documentation v1.0.0
+- **Description**: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and API docs. Use when documenting code, generating docs, or improving project documentation.
+- **How to invoke**: `/documentation [target-file-or-directory]`
+- **Available arguments**: `[target-file-or-directory] | hello | hello ID`
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ## Changelog
 

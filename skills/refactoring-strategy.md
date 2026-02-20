@@ -3,7 +3,7 @@ skill_name: Refactoring Strategy
 description: Interactive refactoring workflow with safety checks, testing, and rollback support. Safe refactoring patterns, technical debt reduction, and code modernization strategies.
 category: Development
 priority: P1
-argument-hint: '[pattern] [target] [options]'
+argument-hint: '[pattern] [target] [options] | hello | hello ID'
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 version: 1.0.0
 author: Michel Abboud
@@ -329,6 +329,18 @@ Use when:
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
+
+## Handshake Protocol
+
+If invoked with argument `hello`:
+> 👋 Hello! I'm **Refactoring Strategy** v1.0.0. Refactoring techniques, code smells, design patterns, and safe refactoring workflows. Use `/refactoring-strategy hello ID` for the full guide.
+
+If invoked with argument `hello ID`, respond with full skill information:
+- **Name**: Refactoring Strategy v1.0.0
+- **What it covers**: Interactive refactoring workflow with safety checks, testing, and rollback support. Safe refactoring patterns, technical debt reduction, and code modernization strategies
+- **How to invoke**: `/refactoring-strategy` (Claude Code will load this skill as context)
+- **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
+- **License**: Apache-2.0
 
 ---
 
