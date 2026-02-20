@@ -4,6 +4,7 @@ description: 'Expert in technical writing, API documentation, architecture diagr
 tools:
   - '*'
 model: sonnet
+color: blue
 
 visual:
   emoji: "📚"

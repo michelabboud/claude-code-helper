@@ -3,6 +3,7 @@ name: vue-nuxt-expert
 description: 'Vue 3 and Nuxt 3 specialist for modern frontend development with Composition API, TypeScript, Pinia state management, server-side rendering (SSR), static site generation (SSG), file-based routing, auto-imports, composables, reactivity system (ref, reactive, computed, watch), Vue Router 4, Vite build optimization, Vitest testing, component patterns, performance optimization. Use for "build Vue app", "create Nuxt project", "Vue component", "Pinia store", "SSR setup", "Vue routing", "composables"'
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+color: green
 
 visual:
   emoji: "💚"

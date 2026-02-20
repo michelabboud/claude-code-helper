@@ -4,6 +4,7 @@ description: 'Expert in machine learning model development, training pipelines, 
 tools:
   - '*'
 model: sonnet
+color: purple
 
 visual:
   emoji: "🧠"

@@ -4,6 +4,7 @@ description: 'Expert in application security, OWASP Top 10, secure coding practi
 tools:
   - '*'
 model: sonnet
+color: red
 isolation: worktree
 
 # Visual Indicators (Phase 1)

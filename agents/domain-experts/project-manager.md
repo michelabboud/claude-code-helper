@@ -3,6 +3,7 @@ name: project-manager
 description: 'Strategic project management agent that assesses codebase health, consults domain experts, and recommends the highest-impact next action. Use when you need: project health assessment, task prioritization, "what should we do next?", expert consultation orchestration, technical debt triage, deployment readiness review, or sprint planning.'
 tools: Task, Read, Write, Edit, Bash, Grep, Glob
 model: opus
+color: blue
 background: true
 memory: project
 

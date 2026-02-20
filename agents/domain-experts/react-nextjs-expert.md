@@ -3,6 +3,7 @@ name: react-nextjs-expert
 description: 'React and Next.js specialist for modern web applications. Use for React 18+ components, Next.js 14+ App Router, Server Components, state management (Zustand, Jotai, Redux Toolkit), form handling (React Hook Form, Zod), data fetching (React Query, SWR), SSR/SSG, Server Actions, performance optimization, and testing. Examples: "create Next.js app", "build React component", "implement authentication", "optimize bundle size", "add server actions"'
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+color: cyan
 
 # Visual Indicators (Phase 1)
 visual:

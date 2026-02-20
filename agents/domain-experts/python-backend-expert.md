@@ -3,6 +3,7 @@ name: python-backend-expert
 description: 'Python backend specialist for modern web APIs and applications. Use for FastAPI, Django, Flask, async programming (asyncio, aiohttp), type hints, Pydantic models, SQLAlchemy ORM, database migrations (Alembic), testing (pytest), Celery background tasks, API documentation, and data science integrations. Examples: "create FastAPI endpoint", "build Django REST API", "implement async database queries", "set up Celery tasks", "add authentication"'
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+color: blue
 
 visual:
   emoji: "🐍"

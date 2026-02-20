@@ -15,6 +15,7 @@ tools:
   - Glob
   - Bash
 model: sonnet
+color: purple
 ---
 
 # RAG-Enhanced Context-Aware Coder

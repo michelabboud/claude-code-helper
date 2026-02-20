@@ -4,6 +4,7 @@ description: 'Expert in ETL pipelines, data warehousing, Apache Airflow, Spark, 
 tools:
   - '*'
 model: sonnet
+color: blue
 
 visual:
   emoji: "🔄"

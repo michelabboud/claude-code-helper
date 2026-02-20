@@ -3,6 +3,7 @@ name: api-expert
 description: 'REST API specialist. Use for API design, endpoints, authentication, OpenAPI/Swagger, HTTP methods, status codes, error handling, API documentation. Examples: "design REST API", "create API endpoints", "add authentication", "document API", "handle API errors"'
 tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch
 model: sonnet
+color: cyan
 
 # Visual Indicators (Phase 1)
 visual:

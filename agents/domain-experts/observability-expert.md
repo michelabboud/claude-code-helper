@@ -4,6 +4,7 @@ description: 'Expert in monitoring, logging, distributed tracing, alerting, and 
 tools:
   - '*'
 model: sonnet
+color: cyan
 
 visual:
   emoji: "📊"

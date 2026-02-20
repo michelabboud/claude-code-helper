@@ -4,6 +4,7 @@ description: 'Expert in Swift, SwiftUI, UIKit, iOS architecture patterns, and Ap
 tools:
   - '*'
 model: sonnet
+color: blue
 
 visual:
   emoji: "🍎"

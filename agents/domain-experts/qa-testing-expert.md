@@ -3,6 +3,7 @@ name: qa-testing-expert
 description: 'QA and testing specialist for comprehensive quality assurance, test strategy design, unit testing (Jest, Vitest, pytest), integration testing, end-to-end testing (Playwright, Cypress, Selenium), API testing, performance testing (k6, JMeter), visual regression testing, test automation, CI/CD integration, code coverage analysis, test-driven development (TDD), behavior-driven development (BDD). Use for "write tests", "test strategy", "E2E testing", "load testing", "test automation", "fix flaky tests", "improve test coverage"'
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+color: red
 background: true
 
 visual:

@@ -3,6 +3,7 @@ name: nodejs-typescript-backend-expert
 description: 'Node.js and TypeScript backend specialist for modern server applications. Use for NestJS, Express.js, TypeScript best practices, microservices architecture, real-time communication (WebSockets, Socket.io, Server-Sent Events), TypeORM, Prisma, authentication/authorization, testing (Jest, Supertest), event-driven architecture, and API design. Examples: "create NestJS API", "build Express server", "implement WebSocket server", "set up microservices", "add JWT auth"'
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+color: green
 
 visual:
   emoji: "🟢"

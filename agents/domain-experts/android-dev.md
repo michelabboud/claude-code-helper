@@ -3,6 +3,7 @@ name: android-dev
 description: 'Android development specialist. Use for Kotlin/Java code, XML layouts, Gradle, AndroidManifest, Room database, Jetpack Compose, ViewModel, LiveData, Coroutines. Examples: "create Android activity", "implement Room database", "fix Gradle issue", "build Compose UI"'
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+color: green
 
 visual:
   emoji: "🤖"
