@@ -15,7 +15,7 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 - Auto-discovered from nested `.claude/skills` directories (v2.1.6+)
 - Visible in slash command menu by default (opt-out with `user-invocable: false`)
 
-## Available Skills (19)
+## Available Skills (20)
 
 | Skill | Description | Category |
 |-------|-------------|----------|
@@ -37,6 +37,7 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 | **release-management** | Release workflows and versioning | DevOps |
 | **caching-expert** | Static, Object, HTTP, CDN caching | Performance |
 | **pm-dashboard** | Project Manager health dashboard management | Project Management |
+| **model-mode** | Switch model mode (default/opus-only/sonnet-only/haiku-only/custom) | Configuration |
 | **update-check** | Check for new releases (never auto-updates) | Maintenance |
 
 ## Installation
@@ -51,6 +52,7 @@ cp -r testing-standards ~/.claude/skills/
 cp -r documentation ~/.claude/skills/
 cp -r project-scaffolding ~/.claude/skills/
 cp -r pm-dashboard ~/.claude/skills/
+cp -r model-mode ~/.claude/skills/
 cp -r update-check ~/.claude/skills/
 ```
 
@@ -249,6 +251,23 @@ Comprehensive caching strategies.
 Manage the Project Manager health dashboard.
 
 **Covers**: 16 expert dimensions, scoring, task tracking, risk management, trend history
+
+---
+
+### Configuration Skills
+
+#### model-mode
+Switch the `MODEL_MODE` setting in `~/.claude/CLAUDE.md` without manual file editing.
+
+**Covers**: `default` (auto-switch), `opus-only`, `sonnet-only`, `haiku-only`, `custom` modes; status display; PLAN_MODEL / CODE_MODEL / QUICK_MODEL custom settings
+
+**Usage:**
+```bash
+/model-mode status        # Show current mode
+/model-mode opus-only     # Always use Opus (MAX plan)
+/model-mode default       # Restore auto-switching
+/model-mode custom        # Use per-task model settings
+```
 
 ## Creating Custom Skills
 
