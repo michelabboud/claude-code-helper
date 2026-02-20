@@ -1,0 +1,10 @@
+{
+  "name": "claude-code-helper-hooks",
+  "version": "1.0.0",
+  "description": "Dependencies for claude-code-helper hook scripts",
+  "private": true,
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "minimatch": "^9.0.0"
+  }
+}

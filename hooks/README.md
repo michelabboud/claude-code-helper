@@ -16,6 +16,7 @@ Hooks are automation scripts that execute in response to specific events in Clau
 
 | Hook | Event | Description |
 |------|-------|-------------|
+| **file-trigger-hook** | PreToolUse | Match file operations against agent triggers and inject context |
 | **security-scan** | PreToolUse | Scan for secrets and vulnerabilities before code changes |
 | **code-quality-gate** | PostToolUse | Enforce quality standards after changes |
 | **build-validation** | PostToolUse | Validate builds after code modifications |
@@ -175,6 +176,43 @@ chmod +x ~/.claude/hooks/security-scan.sh
 - Runs build after code changes
 - Reports failures
 - Suggests fixes
+
+---
+
+### file-trigger-hook
+
+**Event**: `PreToolUse`
+
+**Purpose**: Intercept Read/Edit/Write operations and automatically match them against agent file triggers, injecting context hints when a relevant agent is detected.
+
+**Files**: `file-trigger-hook.json` (config), `file-trigger-matcher.js` (script)
+
+**Dependencies**: `js-yaml`, `minimatch` — must be installed in `~/.claude/hooks/node_modules/`
+
+**Installation**:
+
+```bash
+# 1. Copy files
+cp hooks/file-trigger-hook.json hooks/file-trigger-matcher.js ~/.claude/hooks/
+cp hooks/package.json ~/.claude/hooks/
+
+# 2. Install dependencies into the hook's own node_modules
+#    (IMPORTANT: run from ~/.claude/hooks/ so deps are self-contained)
+cd ~/.claude/hooks && npm install
+
+# 3. Merge hook config into ~/.claude/settings.json
+#    (copy the hooks block from file-trigger-hook.json)
+```
+
+> **Why `NODE_PATH`?** The hook runs from whichever project directory Claude Code is open in. Without `NODE_PATH`, Node.js can't find `js-yaml` or `minimatch` if they're not in that project's `node_modules`. The command prefix `NODE_PATH=$HOME/.claude/hooks/node_modules` ensures the hook always resolves its own dependencies, regardless of the current project.
+
+**Behavior**:
+- Scans `~/.claude/agents/`, `.claude/agents/`, and `agents/` for agent files with `triggers.files` patterns
+- Matches the file being read/edited/written against those patterns
+- Returns `additionalContext` hinting which agent is relevant — Claude picks this up automatically
+- Logs matches to `~/.claude/logs/agent-triggers.log` for visibility
+
+---
 
 ## Creating Custom Hooks
 

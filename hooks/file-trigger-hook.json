@@ -8,7 +8,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node $HOME/.claude/hooks/file-trigger-matcher.js"
+            "command": "NODE_PATH=$HOME/.claude/hooks/node_modules node $HOME/.claude/hooks/file-trigger-matcher.js"
           }
         ]
       }
