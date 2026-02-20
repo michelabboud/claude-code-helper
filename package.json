@@ -15,6 +15,7 @@
     "mcp-servers/dependency-management",
     "mcp-servers/n8n-automation",
     "mcp-servers/rag-mcp",
+    "mcp-servers/project-oversight-mcp",
     "trigger-matcher"
   ],
   "scripts": {

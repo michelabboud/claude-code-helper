@@ -6,12 +6,11 @@
  */
 
 import {
-  CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import * as fs from "fs/promises";
-import { runServer, generateRequestId, measureDuration, sanitizePath, sanitizeString, errorResponse } from "mcp-shared";
+import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, sanitizeString, errorResponse } from "mcp-shared";
 
 // Type definitions
 interface FakeDataOptions {
@@ -387,7 +386,8 @@ function validateMigrationSafety(sql: string): MigrationSafetyResult {
 }
 
 // MCP Server
-runServer({ name: "database-operations", version: "1.0.0" }, ({ server, logger }) => {
+runServer({ name: "database-operations", version: "1.0.0" }, (instance) => {
+const { server, logger } = instance;
 
 // Tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -601,7 +601,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+registerTrackedToolHandler(instance, async (request) => {
   const { name, arguments: args } = request.params;
   const requestId = generateRequestId();
   const startTime = performance.now();

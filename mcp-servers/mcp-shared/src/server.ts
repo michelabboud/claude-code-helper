@@ -5,11 +5,15 @@
 
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { Logger } from "./logger.js";
-import { createLogger } from "./logger.js";
+import { createLogger, generateRequestId } from "./logger.js";
+import { measureDuration } from "./logger.js";
 import { runStartupHealthChecks, type HealthCheck, type HealthCheckOptions } from "./health.js";
 import type { MetricsCollector } from "./metrics.js";
 import { createMetricsCollector } from "./metrics.js";
+import type { ActivityTracker } from "./activity.js";
+import { createActivityTracker } from "./activity.js";
 
 export interface MCPServerOptions {
   name: string;
@@ -23,6 +27,7 @@ export interface MCPServerInstance {
   server: Server;
   logger: Logger;
   metrics: MetricsCollector;
+  activity: ActivityTracker;
   start: () => Promise<void>;
 }
 
@@ -32,6 +37,7 @@ export interface MCPServerInstance {
 export function createMCPServer(options: MCPServerOptions): MCPServerInstance {
   const logger = options.logger ?? createLogger(options.name);
   const metrics = createMetricsCollector();
+  const activity = createActivityTracker(options.name);
 
   const server = new Server(
     {
@@ -67,7 +73,57 @@ export function createMCPServer(options: MCPServerOptions): MCPServerInstance {
     logger.info("Server started", { transport: "stdio", startupMs });
   }
 
-  return { server, logger, metrics, start };
+  return { server, logger, metrics, activity, start };
+}
+
+/**
+ * Register a CallToolRequestSchema handler with automatic activity tracking.
+ *
+ * Wraps the handler so that every tool call is automatically logged to
+ * ~/.claude/mcp-activity.jsonl with started/completed/failed status.
+ * Individual servers don't need to manually call activity.toolStarted() etc.
+ *
+ * Usage:
+ *   registerTrackedToolHandler(instance, async (request) => { ... });
+ *
+ * This replaces:
+ *   server.setRequestHandler(CallToolRequestSchema, async (request) => { ... });
+ */
+export function registerTrackedToolHandler(
+  instance: MCPServerInstance,
+  handler: (request: { params: { name: string; arguments?: Record<string, unknown> } }) => Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }>,
+): void {
+  instance.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    const { name, arguments: args } = request.params;
+    const requestId = generateRequestId();
+    const startTime = performance.now();
+
+    instance.activity.toolStarted(requestId, name, args);
+
+    try {
+      const result = await handler(request);
+
+      const durationMs = measureDuration(startTime);
+      const isError = result.isError === true;
+
+      if (isError) {
+        instance.activity.toolFailed(requestId, name, durationMs, "Tool returned error response");
+      } else {
+        instance.activity.toolCompleted(requestId, name, durationMs);
+      }
+
+      return result;
+    } catch (error) {
+      const durationMs = measureDuration(startTime);
+      instance.activity.toolFailed(
+        requestId,
+        name,
+        durationMs,
+        error instanceof Error ? error.message : String(error),
+      );
+      throw error;
+    }
+  });
 }
 
 /**

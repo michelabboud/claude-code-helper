@@ -2,9 +2,9 @@
 
 **Complete toolkit for automated code quality, testing, design system validation, and AI-enhanced development using Claude AI**
 
-Ten specialized MCP (Model Context Protocol) servers that work together to create a comprehensive code review, quality assurance, and RAG-enhanced development pipeline. Perfect for use with Claude Desktop and Claude Code's multi-agent workflows!
+Eleven specialized MCP (Model Context Protocol) servers that work together to create a comprehensive code review, quality assurance, project oversight, and RAG-enhanced development pipeline. Perfect for use with Claude Desktop and Claude Code's multi-agent workflows!
 
-**Includes:** 6 production-ready servers (38 tools) with full agent configs + 4 experimental servers for advanced workflows.
+**Includes:** 7 production-ready servers (47 tools) with full agent configs + 4 experimental servers for advanced workflows.
 
 [![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/typescript-5.7.2-blue.svg)](https://www.typescriptlang.org)
@@ -175,9 +175,30 @@ Expert UI/UX design review from screenshots with accessibility audits and wirefr
 - `compare_designs` - A/B test comparison
 - `check_usability` - Nielsen's heuristics evaluation
 
-**Production-Ready Total:** 30 specialized tools across 5 servers
+### 7. **Project Oversight MCP** (`project-oversight-mcp`)
+Multi-project health oversight — dashboard aggregation, cross-project comparison, log streaming, and tool activity tracking.
 
-### 7. **CI/CD Pipeline MCP** (`cicd-pipeline`) 🧪 Experimental
+**Tools:**
+- `list_project_dashboards` - Discover all projects with PM dashboard data
+- `get_project_dashboard` - Read a specific project's full dashboard or section
+- `compare_projects` - Build comparison matrix across projects by domain
+- `sync_project_dashboard` - Copy project dashboard to central store
+- `get_logs` - Read logs from history, debug, or session sources
+- `tail_logs` - Return last N lines from a log source
+- `open_dashboard` - Launch HTTP dashboard with live updates
+- `get_tool_activity` - Query recent MCP tool call activity
+- `get_active_tools` - Show currently running MCP tools across all servers
+
+**Key Features:**
+- ✅ **Multi-project discovery** — Auto-scans `~/.claude/pm-dashboard/` for all projects
+- ✅ **Cross-project comparison** — Compare health scores across projects by domain
+- ✅ **Cross-server activity tracking** — See which MCP tools are running, where, and what they're doing
+- ✅ **Live streaming** — SSE-based real-time log + tool activity viewer in the browser
+- ✅ **HTTP dashboard** — Standalone web server with auto-discovery and live updates
+
+**Production-Ready Total:** 47 specialized tools across 7 servers
+
+### 8. **CI/CD Pipeline MCP** (`cicd-pipeline`) 🧪 Experimental
 Automates CI/CD pipeline operations, workflow management, and deployment processes.
 
 **Features:**
@@ -186,7 +207,7 @@ Automates CI/CD pipeline operations, workflow management, and deployment process
 - Workflow orchestration
 - CI/CD best practices enforcement
 
-### 8. **Database Operations MCP** (`database-operations`) 🧪 Experimental
+### 9. **Database Operations MCP** (`database-operations`) 🧪 Experimental
 Database migrations, queries, schema management, and optimization.
 
 **Features:**
@@ -195,7 +216,7 @@ Database migrations, queries, schema management, and optimization.
 - Schema validation and changes
 - Performance optimization
 
-### 9. **Dependency Management MCP** (`dependency-management`) 🧪 Experimental
+### 10. **Dependency Management MCP** (`dependency-management`) 🧪 Experimental
 Dependency analysis, updates, vulnerability scanning, and license compliance.
 
 **Features:**
@@ -204,7 +225,7 @@ Dependency analysis, updates, vulnerability scanning, and license compliance.
 - License compliance checking
 - Dependency graph analysis
 
-### 10. **n8n Automation MCP** (`n8n-automation`) 🧪 Experimental
+### 11. **n8n Automation MCP** (`n8n-automation`) 🧪 Experimental
 n8n workflow automation, integration management, and workflow orchestration.
 
 **Features:**
@@ -213,7 +234,7 @@ n8n workflow automation, integration management, and workflow orchestration.
 - Automation triggers and actions
 - Workflow monitoring
 
-**Total:** 30+ specialized tools across 9 servers (5 production + 4 experimental)
+**Total:** 47+ specialized tools across 11 servers (7 production + 4 experimental)
 
 ---
 
@@ -229,6 +250,7 @@ n8n workflow automation, integration management, and workflow orchestration.
 cd api-specialist-mcp && npm install && npm run build && cd ..
 cd code-review-mcp && npm install && npm run build && cd ..
 cd design-system-mcp && npm install && npm run build && cd ..
+cd project-oversight-mcp && npm install && npm run build && cd ..
 cd testing-mcp && npm install && npm run build && cd ..
 cd uiux-review-mcp && npm install && npm run build && cd ..
 
@@ -242,10 +264,11 @@ cd uiux-review-mcp && npm install && npm run build && cd ..
 # Navigate to mcp-servers directory
 cd /path/to/mcp-servers
 
-# Add all 5 production servers
+# Add all 7 production servers
 claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
 claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
 claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
+claude mcp add project-oversight -- node "$(pwd)/project-oversight-mcp/build/index.js"
 claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
 claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
 
@@ -273,6 +296,10 @@ Add to your `claude_desktop_config.json`:
     "design-system": {
       "command": "node",
       "args": ["/absolute/path/to/design-system-mcp/build/index.js"]
+    },
+    "project-oversight": {
+      "command": "node",
+      "args": ["/absolute/path/to/project-oversight-mcp/build/index.js"]
     },
     "testing": {
       "command": "node",

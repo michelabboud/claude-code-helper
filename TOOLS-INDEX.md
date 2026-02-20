@@ -15,6 +15,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
   - [Testing MCP](#testing-mcp-4-tools)
   - [Design System MCP](#design-system-mcp-5-tools)
   - [UI/UX Review MCP](#uiux-review-mcp-9-tools)
+  - [Project Oversight MCP](#project-oversight-mcp-9-tools)
   - [Database Operations MCP](#database-operations-mcp-5-tools)
 - [Example Agents (27 Agents)](#example-agents-27-agents)
   - [MCP Agents](#mcp-agents-9-agents)
@@ -42,8 +43,8 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 
 | Category | Count | Description |
 |----------|-------|-------------|
-| **MCP Servers** | 6 | Production-ready TypeScript servers with 30+ tools |
-| **MCP Tools** | 35+ | Individual automation tools across all servers |
+| **MCP Servers** | 7 | Production-ready TypeScript servers with 47+ tools |
+| **MCP Tools** | 47+ | Individual automation tools across all servers |
 | **Agents** | 44+ | MCP agents, sub-agents, and technology specialists |
 | **Skills** | 15+ | Workflow and testing skills |
 | **Commands** | 5 | Slash commands for common workflows |
@@ -56,7 +57,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 
 ---
 
-## MCP Servers (38+ Tools)
+## MCP Servers (47+ Tools)
 
 MCP (Model Context Protocol) servers provide specialized tools that extend Claude Code's capabilities. Each server is a TypeScript/Node.js application.
 
@@ -182,6 +183,30 @@ Comprehensive UI/UX design review and accessibility auditing.
 | `check_usability` | Nielsen's heuristics evaluation |
 
 **Installation:** `cd mcp-servers/uiux-review-mcp && npm install && npm run build`
+
+---
+
+### Project Oversight MCP (9 Tools)
+
+**Location:** [`mcp-servers/project-oversight-mcp/`](mcp-servers/project-oversight-mcp/)
+
+Multi-project health oversight with dashboard aggregation, cross-project comparison, tool activity tracking, and live log streaming.
+
+| Tool | Description |
+|------|-------------|
+| `list_project_dashboards` | Auto-discover all projects from `~/.claude/pm-dashboard/` |
+| `get_project_dashboard` | Read a specific project's full dashboard or section |
+| `compare_projects` | Cross-project health score comparison matrix |
+| `sync_project_dashboard` | Copy dashboards to central store for aggregation |
+| `get_logs` | Read Claude Code logs (history, debug, session) |
+| `tail_logs` | Tail last N lines from a log source with file metadata |
+| `open_dashboard` | Launch HTTP dashboard server with auto-discovery |
+| `get_tool_activity` | Query recent MCP tool call activity across all servers |
+| `get_active_tools` | Show currently running MCP tools in real time |
+
+**Key Features:** Cross-server activity tracking via `~/.claude/mcp-activity.jsonl`, SSE live streaming, HTTP dashboard with 7 routes, auto-shutdown after inactivity.
+
+**Installation:** `cd mcp-servers/project-oversight-mcp && npm install && npm run build`
 
 ---
 

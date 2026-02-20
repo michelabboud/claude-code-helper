@@ -14,12 +14,11 @@
  */
 
 import {
-  CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import * as fs from "fs/promises";
-import { runServer, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
+import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
 // Shared interfaces for design analysis data structures
 interface DesignFinding {
@@ -1450,7 +1449,8 @@ function generateMermaidWireframe(_description: string, _designType: string): st
 }
 
 // MCP Server
-runServer({ name: "uiux-review-mcp", version: "1.0.0" }, ({ server, logger }) => {
+runServer({ name: "uiux-review-mcp", version: "1.0.0" }, (instance) => {
+const { server, logger } = instance;
 
 // Tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -1746,7 +1746,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+registerTrackedToolHandler(instance, async (request) => {
   const { name, arguments: args } = request.params;
   const requestId = generateRequestId();
   const startTime = performance.now();

@@ -14,12 +14,11 @@
  */
 
 import {
-  CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import * as fs from "fs/promises";
-import { runServer, generateRequestId, measureDuration, sanitizePath, sanitizeUrl, errorResponse } from "mcp-shared";
+import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, sanitizeUrl, errorResponse } from "mcp-shared";
 
 // Type definitions for OpenAPI spec parsing
 interface ValidationIssue {
@@ -1101,7 +1100,8 @@ function calculateAPIScore(issues: ValidationIssue[]): number {
 }
 
 // Start server
-runServer({ name: "api-specialist-mcp", version: "1.0.0" }, ({ server, logger }) => {
+runServer({ name: "api-specialist-mcp", version: "1.0.0" }, (instance) => {
+  const { server, logger } = instance;
 
 // Tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -1373,7 +1373,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+registerTrackedToolHandler(instance, async (request) => {
   const { name, arguments: args } = request.params;
   const requestId = generateRequestId();
   const startTime = performance.now();

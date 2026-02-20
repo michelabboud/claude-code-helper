@@ -92,6 +92,7 @@ install_server "Code Review MCP" "code-review-mcp"
 install_server "Design System MCP" "design-system-mcp"
 install_server "Testing MCP" "testing-mcp"
 install_server "UI/UX Review MCP" "uiux-review-mcp"
+install_server "Project Oversight MCP" "project-oversight-mcp"
 
 # Get absolute paths
 echo "📍 Installation paths:"
@@ -101,6 +102,7 @@ CODE_REVIEW_PATH="$(cd code-review-mcp && pwd)/build/index.js"
 DESIGN_SYSTEM_PATH="$(cd design-system-mcp && pwd)/build/index.js"
 TESTING_PATH="$(cd testing-mcp && pwd)/build/index.js"
 UIUX_REVIEW_PATH="$(cd uiux-review-mcp && pwd)/build/index.js"
+OVERSIGHT_PATH="$(cd project-oversight-mcp && pwd)/build/index.js"
 
 echo "  • RAG MCP:            $RAG_PATH"
 echo "  • API Specialist MCP: $API_SPECIALIST_PATH"
@@ -108,6 +110,7 @@ echo "  • Code Review MCP:    $CODE_REVIEW_PATH"
 echo "  • Design System MCP:  $DESIGN_SYSTEM_PATH"
 echo "  • Testing MCP:        $TESTING_PATH"
 echo "  • UI/UX Review MCP:   $UIUX_REVIEW_PATH"
+echo "  • Project Oversight MCP: $OVERSIGHT_PATH"
 echo ""
 
 # Generate configuration
@@ -139,6 +142,10 @@ cat << EOF
     "uiux-review": {
       "command": "node",
       "args": ["$UIUX_REVIEW_PATH"]
+    },
+    "project-oversight": {
+      "command": "node",
+      "args": ["$OVERSIGHT_PATH"]
     }
   }
 }
@@ -173,6 +180,10 @@ cat > "$CONFIG_FILE" << EOF
     "uiux-review": {
       "command": "node",
       "args": ["$UIUX_REVIEW_PATH"]
+    },
+    "project-oversight": {
+      "command": "node",
+      "args": ["$OVERSIGHT_PATH"]
     }
   }
 }
@@ -194,6 +205,7 @@ echo "  claude mcp add code-review -- node \"$CODE_REVIEW_PATH\""
 echo "  claude mcp add design-system -- node \"$DESIGN_SYSTEM_PATH\""
 echo "  claude mcp add testing -- node \"$TESTING_PATH\""
 echo "  claude mcp add uiux-review -- node \"$UIUX_REVIEW_PATH\""
+echo "  claude mcp add project-oversight -- node \"$OVERSIGHT_PATH\""
 echo ""
 echo "Then verify with:"
 echo "  claude mcp list"

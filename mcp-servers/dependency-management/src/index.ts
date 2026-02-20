@@ -6,13 +6,12 @@
  */
 
 import {
-  CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import * as fs from "fs/promises";
 import * as path from "path";
-import { runServer, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
+import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
 // Tool input schemas
 const AnalyzeDependenciesSchema = z.object({
@@ -501,7 +500,8 @@ function generateSBOM(deps: Record<string, string>, devDeps: Record<string, stri
 }
 
 // MCP Server
-runServer({ name: "dependency-management-mcp", version: "1.0.0" }, ({ server, logger }) => {
+runServer({ name: "dependency-management-mcp", version: "1.0.0" }, (instance) => {
+const { server, logger } = instance;
 
 // Tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -701,7 +701,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+registerTrackedToolHandler(instance, async (request) => {
   const { name, arguments: args } = request.params;
   const requestId = generateRequestId();
   const startTime = performance.now();

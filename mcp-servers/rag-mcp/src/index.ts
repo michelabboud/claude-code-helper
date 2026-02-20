@@ -14,7 +14,6 @@
  */
 
 import {
-  CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
@@ -22,7 +21,7 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import { config } from "dotenv";
 import { createVectorDatabase, type VectorDatabase, type VectorDocument } from "./vector-db-adapter.js";
-import { runServer, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
+import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
 // Load environment variables
 config();
@@ -116,7 +115,8 @@ runServer({
     check: () => vectorDB.healthCheck(),
   }],
   healthCheckOptions: { maxRetries: 3, retryDelayMs: 2000, timeoutMs: 10000 },
-}, async ({ server, logger }) => {
+}, async (instance) => {
+  const { server, logger } = instance;
 
   logger.info("Using vector database", { type: dbType, host: dbConfig.host, port: dbConfig.port });
 
@@ -608,7 +608,7 @@ runServer({
     ],
   }));
 
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  registerTrackedToolHandler(instance, async (request) => {
     const { name, arguments: args } = request.params;
     const requestId = generateRequestId();
     const startTime = performance.now();

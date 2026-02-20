@@ -1,8 +1,8 @@
 {
   "projectName": "claude-code-helper",
   "lastAssessment": "2026-02-20T16:00:00Z",
-  "assessmentCount": 14,
-  "overallScore": 8.7,
+  "assessmentCount": 15,
+  "overallScore": 8.8,
   "experts": {
     "qa": {
       "score": 9,
@@ -68,11 +68,11 @@
       "riskIfIgnored": "Users may not understand expected input formats"
     },
     "monitoring": {
-      "score": 8,
-      "status": "good",
-      "topFinding": "100% instrumentation. Log rotation via MCP_LOG_MAX_SIZE_MB (default 10MB). MetricsCollector tracks per-tool p50/p95/p99 latencies. All servers log requestId + durationMs. Startup time tracked via startupMs.",
-      "recommendation": "Wire MetricsCollector.recordCall() into server tool handlers for automated latency tracking",
-      "riskIfIgnored": "Low remaining risk - log rotation prevents unbounded growth"
+      "score": 9,
+      "status": "excellent",
+      "topFinding": "100% instrumentation. All 10 MCP servers auto-log tool activity to ~/.claude/mcp-activity.jsonl via registerTrackedToolHandler(). ActivityTracker records started/completed/failed status with requestId, durationMs, server name, tool name, and sanitized args. Log rotation at 5MB. MetricsCollector tracks per-tool p50/p95/p99 latencies. project-oversight-mcp provides get_tool_activity + get_active_tools for querying. HTTP dashboard has live Tool Activity panel with 3s auto-refresh.",
+      "recommendation": "Wire MetricsCollector.recordCall() into registerTrackedToolHandler for automated latency percentile tracking",
+      "riskIfIgnored": "Low remaining risk - comprehensive activity tracking across all servers"
     },
     "database": {
       "score": 8,
@@ -91,9 +91,9 @@
     "documentation": {
       "score": 9,
       "status": "excellent",
-      "topFinding": "Comprehensive documentation: README, QUICKSTART, CONTRIBUTING.md, CLAUDE.md, CHANGELOG. mcp-shared/API.md with full export reference and usage examples. docs/component-browser.html for interactive component discovery. All 10 MCP servers have CHANGELOG.md. All 86 components have standardized metadata.",
+      "topFinding": "Comprehensive documentation: README, QUICKSTART, CONTRIBUTING.md, CLAUDE.md, CHANGELOG. mcp-shared/API.md with full export reference and usage examples. docs/component-browser.html for interactive component discovery. All 10 MCP servers have CHANGELOG.md. All 86 components have standardized metadata. Full link audit: 59 broken links fixed across 18 files (0 broken links remaining).",
       "recommendation": "Add JSDoc/TSDoc comments to mcp-shared source for IDE tooltips. Consider auto-generating API docs.",
-      "riskIfIgnored": "Low remaining risk - comprehensive documentation in place"
+      "riskIfIgnored": "Low remaining risk - comprehensive documentation with verified links"
     },
     "specifications": {
       "score": 7,
@@ -112,8 +112,8 @@
     "progress": {
       "score": 10,
       "status": "excellent",
-      "topFinding": "29/29 tasks completed. v2.3.0 committed, tagged, pushed, and released on GitHub. Clean working tree. All validation passing (lint 0 errors, frontmatter 0 errors, version index in sync). 90 total commits. Project health score increased from initial 4.8 to 8.5 across 13 assessments.",
-      "recommendation": "All v2.3.1 tasks complete. Plan v2.4.0 priorities.",
+      "topFinding": "35/35 tasks completed. v2.3.1 committed, tagged, pushed, and released on GitHub. 59 broken links fixed across 18 files. Clean working tree. All validation passing (lint 0 errors, frontmatter 0 errors, version index in sync). Project health score increased from initial 4.8 to 8.7 across 14 assessments.",
+      "recommendation": "Plan v2.4.0 priorities.",
       "riskIfIgnored": "No active risks - project is in excellent state"
     }
   },
@@ -457,6 +457,26 @@
       "effort": "medium",
       "expert": "product",
       "quadrant": "fill-in"
+    },
+    {
+      "id": "t35",
+      "title": "Fix 59 broken internal links across 18 documentation files",
+      "status": "done",
+      "priority": 35,
+      "impact": "high",
+      "effort": "medium",
+      "expert": "documentation",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t36",
+      "title": "Build project-oversight-mcp with cross-server activity tracking",
+      "status": "done",
+      "priority": 36,
+      "impact": "high",
+      "effort": "high",
+      "expert": "monitoring",
+      "quadrant": "major-project"
     }
   ],
   "risks": [
@@ -699,6 +719,15 @@
         "qa": 9, "uiux": 8, "security": 8, "devops": 10, "networking": 8,
         "development": 9, "architecture": 9, "product": 9, "api": 8,
         "monitoring": 8, "database": 8, "performance": 9, "documentation": 9,
+        "specifications": 7, "projectDocs": 7, "progress": 10
+      }
+    },
+    {
+      "date": "2026-02-20T18:00:00Z",
+      "scores": {
+        "qa": 9, "uiux": 8, "security": 8, "devops": 10, "networking": 8,
+        "development": 9, "architecture": 9, "product": 9, "api": 8,
+        "monitoring": 9, "database": 8, "performance": 9, "documentation": 9,
         "specifications": 7, "projectDocs": 7, "progress": 10
       }
     }

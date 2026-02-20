@@ -14,7 +14,6 @@
  */
 
 import {
-  CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
@@ -22,7 +21,7 @@ import { execFile } from "child_process";
 import { promisify } from "util";
 import * as fs from "fs/promises";
 import * as path from "path";
-import { runServer, generateRequestId, measureDuration, sanitizePath, errorResponse, commandHealthCheck } from "mcp-shared";
+import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse, commandHealthCheck } from "mcp-shared";
 
 // Interfaces for test analysis data structures
 interface TestSummary {
@@ -421,7 +420,8 @@ runServer({
   healthChecks: [
     commandHealthCheck("npx"),
   ],
-}, ({ server, logger }) => {
+}, (instance) => {
+  const { server, logger } = instance;
   // Tool handlers
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
@@ -526,7 +526,7 @@ runServer({
     };
   });
 
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  registerTrackedToolHandler(instance, async (request) => {
     const { name, arguments: args } = request.params;
     const requestId = generateRequestId();
     const startTime = performance.now();

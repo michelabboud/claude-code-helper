@@ -261,6 +261,155 @@
     color: var(--text-dim);
   }
 
+  /* Live log panel */
+  .log-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+  }
+
+  .log-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .log-panel-header h2 { margin-bottom: 0; }
+
+  .log-status {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .log-status.connected { background: var(--green); color: white; }
+  .log-status.disconnected { background: var(--border); color: var(--text-dim); }
+
+  .log-viewer {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 12px 16px;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .log-entry { padding: 1px 0; border-bottom: 1px solid rgba(48,54,61,0.3); }
+  .log-entry:last-child { border-bottom: none; }
+  .log-time { color: var(--text-dim); margin-right: 8px; }
+
+  /* Tool activity panel */
+  .tool-activity-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+  }
+
+  .tool-activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tool-activity-header h2 { margin-bottom: 0; }
+
+  .active-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .active-tool-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .active-tool-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    animation: pulse-bar 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-bar {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .active-tool-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  .active-tool-server {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .active-tool-meta {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .tool-activity-list {
+    padding: 12px 16px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .activity-entry {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(48,54,61,0.2);
+  }
+
+  .activity-entry:last-child { border-bottom: none; }
+
+  .activity-status {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    min-width: 65px;
+    text-align: center;
+  }
+
+  .activity-status.started { background: var(--accent); color: white; }
+  .activity-status.completed { background: var(--green); color: white; }
+  .activity-status.failed { background: var(--red); color: white; }
+
+  .activity-server { color: var(--purple); font-size: 11px; }
+  .activity-tool { font-weight: 600; font-size: 12px; }
+  .activity-duration { color: var(--text-dim); font-size: 11px; margin-left: auto; }
+  .activity-time { color: var(--text-dim); font-size: 10px; }
+
   @media (max-width: 700px) {
     .grid { grid-template-columns: 1fr; }
   }
@@ -302,6 +451,41 @@
 <div class="card card-full" id="risksCard" style="display:none; margin-bottom:20px">
   <h2>Cross-Project Risk Summary</h2>
   <div id="risksList"></div>
+</div>
+
+<!-- Tool activity panel (only visible when served via HTTP) -->
+<div class="tool-activity-panel" id="toolActivityPanel" style="display:none">
+  <div class="tool-activity-header">
+    <h2>Tool Activity</h2>
+    <div>
+      <span class="log-status disconnected" id="toolActivityStatus">inactive</span>
+      <button class="btn btn-secondary" onclick="refreshToolActivity()" style="font-size:11px;padding:4px 10px;margin-left:8px">Refresh</button>
+    </div>
+  </div>
+  <div id="activeToolsSection">
+    <div style="padding:8px 16px;font-size:12px;font-weight:600;color:var(--text-dim);border-bottom:1px solid var(--border)">Currently Running</div>
+    <div class="active-tools-grid" id="activeToolsGrid">
+      <div style="color:var(--text-dim);font-size:12px;padding:8px 0">No active tools</div>
+    </div>
+  </div>
+  <div>
+    <div style="padding:8px 16px;font-size:12px;font-weight:600;color:var(--text-dim);border-bottom:1px solid var(--border)">Recent Activity</div>
+    <div class="tool-activity-list" id="toolActivityList">
+      <div style="color:var(--text-dim);font-size:12px">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Live log stream panel (only visible when served via HTTP) -->
+<div class="log-panel" id="logPanel" style="display:none">
+  <div class="log-panel-header">
+    <h2>Live Log Stream</h2>
+    <div>
+      <span class="log-status disconnected" id="logStatus">disconnected</span>
+      <button class="btn btn-secondary" onclick="clearLogs()" style="font-size:11px;padding:4px 10px;margin-left:8px">Clear</button>
+    </div>
+  </div>
+  <div class="log-viewer" id="logViewer">Connecting to log stream...</div>
 </div>
 
 <script>
@@ -535,6 +719,187 @@ document.addEventListener('keydown', (e) => {
   if (e.key.toLowerCase() === 't') { toggleTheme(); e.preventDefault(); }
 });
 applyTheme(getTheme());
+
+// =========================================================================
+// API Auto-Fetch (when served via HTTP, silently skip on file://)
+// =========================================================================
+
+const isHttp = location.protocol === 'http:' || location.protocol === 'https:';
+
+if (isHttp) {
+  // Auto-load projects from API
+  fetch('/api/projects')
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data) && data.length > 0) {
+        data.forEach(proj => addProject(proj));
+        document.getElementById('headerSub').textContent =
+          `${projects.length} project${projects.length > 1 ? 's' : ''} loaded (auto-discovered)`;
+      }
+    })
+    .catch(() => {
+      // API not available — fall back to manual upload
+    });
+
+  // =========================================================================
+  // SSE Log Streaming
+  // =========================================================================
+
+  const logPanel = document.getElementById('logPanel');
+  const logViewer = document.getElementById('logViewer');
+  const logStatusEl = document.getElementById('logStatus');
+  const MAX_LOG_ENTRIES = 200;
+  let logEntries = [];
+
+  logPanel.style.display = '';
+
+  function addLogEntry(text, timestamp) {
+    const time = timestamp ? new Date(timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
+    logEntries.push({ time, text });
+    if (logEntries.length > MAX_LOG_ENTRIES) {
+      logEntries = logEntries.slice(-MAX_LOG_ENTRIES);
+    }
+    renderLogs();
+  }
+
+  function renderLogs() {
+    logViewer.innerHTML = logEntries.map(e =>
+      `<div class="log-entry"><span class="log-time">${e.time}</span>${escapeHtml(e.text)}</div>`
+    ).join('');
+    logViewer.scrollTop = logViewer.scrollHeight;
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function clearLogs() {
+    logEntries = [];
+    logViewer.innerHTML = '<div style="color:var(--text-dim)">Logs cleared</div>';
+  }
+
+  function connectSSE() {
+    const es = new EventSource('/api/logs/stream');
+
+    es.onopen = () => {
+      logStatusEl.textContent = 'connected';
+      logStatusEl.className = 'log-status connected';
+      logViewer.innerHTML = '<div style="color:var(--text-dim)">Connected. Waiting for log entries...</div>';
+    };
+
+    es.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        const text = typeof data.line === 'string' ? data.line : JSON.stringify(data);
+        addLogEntry(text, data.timestamp);
+      } catch {
+        addLogEntry(event.data);
+      }
+    };
+
+    es.onerror = () => {
+      logStatusEl.textContent = 'disconnected';
+      logStatusEl.className = 'log-status disconnected';
+      es.close();
+      // Reconnect after 5 seconds
+      setTimeout(connectSSE, 5000);
+    };
+  }
+
+  connectSSE();
+
+  // =========================================================================
+  // Tool Activity Panel
+  // =========================================================================
+
+  const toolActivityPanel = document.getElementById('toolActivityPanel');
+  const toolActivityStatus = document.getElementById('toolActivityStatus');
+  const activeToolsGrid = document.getElementById('activeToolsGrid');
+  const toolActivityList = document.getElementById('toolActivityList');
+
+  toolActivityPanel.style.display = '';
+
+  function formatDuration(ms) {
+    if (ms == null) return '';
+    if (ms < 1000) return ms + 'ms';
+    return (ms / 1000).toFixed(1) + 's';
+  }
+
+  function timeAgo(ts) {
+    const diff = Date.now() - new Date(ts).getTime();
+    if (diff < 60000) return Math.round(diff / 1000) + 's ago';
+    if (diff < 3600000) return Math.round(diff / 60000) + 'm ago';
+    return Math.round(diff / 3600000) + 'h ago';
+  }
+
+  function renderActiveTools(tools) {
+    if (!tools || tools.length === 0) {
+      activeToolsGrid.innerHTML = '<div style="color:var(--text-dim);font-size:12px;padding:8px 0">No active tools</div>';
+      return;
+    }
+
+    activeToolsGrid.innerHTML = tools.map(t => `
+      <div class="active-tool-card">
+        <div class="active-tool-name">${escapeHtml(t.tool)}</div>
+        <div class="active-tool-server">${escapeHtml(t.server)}</div>
+        <div class="active-tool-meta">
+          <span>Started ${timeAgo(t.timestamp)}</span>
+          <span>${escapeHtml(t.projectDir || '')}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderActivityList(entries) {
+    if (!entries || entries.length === 0) {
+      toolActivityList.innerHTML = '<div style="color:var(--text-dim);font-size:12px">No recent activity</div>';
+      return;
+    }
+
+    toolActivityList.innerHTML = entries.map(e => `
+      <div class="activity-entry">
+        <span class="activity-status ${e.status}">${e.status}</span>
+        <span class="activity-server">${escapeHtml(e.server)}</span>
+        <span class="activity-tool">${escapeHtml(e.tool)}</span>
+        <span class="activity-duration">${formatDuration(e.durationMs)}</span>
+        <span class="activity-time">${timeAgo(e.timestamp)}</span>
+      </div>
+    `).join('');
+  }
+
+  async function refreshToolActivity() {
+    try {
+      const [activeRes, activityRes] = await Promise.all([
+        fetch('/api/tools/active'),
+        fetch('/api/tools/activity?limit=30'),
+      ]);
+
+      if (activeRes.ok) {
+        const activeData = await activeRes.json();
+        renderActiveTools(activeData.tools || []);
+      }
+
+      if (activityRes.ok) {
+        const activityData = await activityRes.json();
+        renderActivityList(activityData.entries || []);
+      }
+
+      toolActivityStatus.textContent = 'live';
+      toolActivityStatus.className = 'log-status connected';
+    } catch {
+      toolActivityStatus.textContent = 'error';
+      toolActivityStatus.className = 'log-status disconnected';
+    }
+  }
+
+  // Initial fetch
+  refreshToolActivity();
+
+  // Auto-refresh every 3 seconds
+  setInterval(refreshToolActivity, 3000);
+}
 </script>
 </body>
 </html>

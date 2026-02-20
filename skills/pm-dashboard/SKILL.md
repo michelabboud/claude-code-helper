@@ -1,9 +1,9 @@
 ---
 skill_name: PM Dashboard
 description: 'Update the Project Manager dashboard with assessment scores, tasks, and risks. Use after running a project health assessment.'
-argument-hint: '[open|update|reset]'
+argument-hint: '[open|update|reset|sync]'
 user-invocable: true
-version: 1.0.0
+version: 1.1.0
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -19,6 +19,7 @@ Manage the Project Manager dashboard data file used by both the terminal and web
 - `/pm-dashboard update` - Write/update assessment data after an expert consultation
 - `/pm-dashboard open` - Open the web dashboard in the browser
 - `/pm-dashboard reset` - Reset all scores to start a fresh assessment
+- `/pm-dashboard sync` - Sync project dashboard to the central store for multi-project monitoring
 
 ## Data File Location
 
@@ -127,6 +128,19 @@ cat > .claude/pm-dashboard.json << 'DASHBOARD_EOF'
 DASHBOARD_EOF
 ```
 
+### Central Store Sync
+
+After writing the dashboard file, also sync it to the central store for multi-project monitoring:
+
+```bash
+# Sync to central store (enables multi-project dashboard auto-discovery)
+PROJECT_NAME=$(basename "$(pwd)")
+mkdir -p ~/.claude/pm-dashboard/"$PROJECT_NAME"
+cp .claude/pm-dashboard.json ~/.claude/pm-dashboard/"$PROJECT_NAME"/pm-dashboard.json
+```
+
+This enables the project-oversight-mcp server and multi-project dashboard to auto-discover all projects.
+
 To open the web dashboard:
 ```bash
 # Copy dashboard HTML to project and open
@@ -136,6 +150,11 @@ xdg-open .claude/pm-dashboard.html  # Linux
 ```
 
 ## Changelog
+
+### 1.1.0 (2026-02-20)
+- Added `/pm-dashboard sync` command for central store sync
+- Added central store sync instructions for PM agent
+- Dashboard auto-discovery support via `~/.claude/pm-dashboard/`
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release

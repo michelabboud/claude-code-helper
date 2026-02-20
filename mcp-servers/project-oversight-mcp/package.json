@@ -1,0 +1,35 @@
+{
+  "name": "project-oversight-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for multi-project oversight — dashboard aggregation, health comparison, and log streaming",
+  "type": "module",
+  "bin": {
+    "project-oversight-mcp": "./build/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "npm run build",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+  },
+  "keywords": ["mcp", "oversight", "dashboard", "logs", "project-health", "multi-project"],
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "mcp-shared": "*",
+    "zod": "^3.23.8"
+  },
+  "jest": {
+    "testMatch": ["<rootDir>/build/**/*.test.js"],
+    "testPathIgnorePatterns": ["/node_modules/", "/src/"]
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^22.10.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.0",
+    "typescript": "^5.7.2"
+  }
+}
