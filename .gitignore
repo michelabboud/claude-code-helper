@@ -13,6 +13,7 @@
 # Build outputs (all subdirectories)
 **/build/
 **/dist/
+**/coverage/
 **/*.js.map
 **/.cache/
 

@@ -189,7 +189,7 @@ export function loadConfigFile(
     }
 
     return config;
-  } catch (error) {
+  } catch {
     // Silently skip invalid files
     return null;
   }
@@ -530,7 +530,7 @@ export function saveConfigFile(
 
     fs.writeFileSync(filePath, JSON.stringify(config, null, 2) + '\n');
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

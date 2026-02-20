@@ -46,8 +46,11 @@ const MODEL_VARIANTS: Record<string, { size: string; description: string }> = {
  * Runs entirely in Node.js without external API calls
  * Uses sentence-transformers/all-MiniLM-L6-v2 (384 dimensions)
  */
+// Type for the feature extraction pipeline callable
+type FeatureExtractionPipelineFn = (text: string | string[], options?: Record<string, unknown>) => Promise<{ data: Float32Array }>;
+
 export class LocalEmbeddingGenerator implements EmbeddingGenerator {
-  private pipeline: any = null;
+  private pipelineFn: FeatureExtractionPipelineFn | null = null;
   private modelName = "Xenova/all-MiniLM-L6-v2";
   private dimension = 384;
   private modelVariant: string;
@@ -57,7 +60,7 @@ export class LocalEmbeddingGenerator implements EmbeddingGenerator {
   }
 
   async initialize(): Promise<void> {
-    if (this.pipeline) return;
+    if (this.pipelineFn) return;
 
     const { pipeline } = await import("@huggingface/transformers");
 
@@ -67,7 +70,7 @@ export class LocalEmbeddingGenerator implements EmbeddingGenerator {
     console.error(`   Model variant: ${variantInfo.description} (${variantInfo.size})`);
 
     // Configure pipeline options
-    const pipelineOptions: any = {};
+    const pipelineOptions: Record<string, unknown> = {};
 
     if (this.modelVariant === "quantized") {
       // Use default quantized model (model_quantized.onnx - INT8, 23 MB)
@@ -75,7 +78,7 @@ export class LocalEmbeddingGenerator implements EmbeddingGenerator {
     }
     // For "default" variant, no options needed - uses full precision model.onnx
 
-    this.pipeline = await pipeline("feature-extraction", this.modelName, pipelineOptions);
+    this.pipelineFn = await pipeline("feature-extraction", this.modelName, pipelineOptions) as unknown as FeatureExtractionPipelineFn;
 
     console.error(`✅ Local embedding model loaded (${this.dimension} dimensions)`);
   }
@@ -83,7 +86,7 @@ export class LocalEmbeddingGenerator implements EmbeddingGenerator {
   async generate(text: string): Promise<number[]> {
     await this.initialize();
 
-    const output = await this.pipeline(text, {
+    const output = await this.pipelineFn!(text, {
       pooling: "mean",
       normalize: true,
     });
@@ -118,8 +121,17 @@ export class LocalEmbeddingGenerator implements EmbeddingGenerator {
  * Requires OPENAI_API_KEY environment variable
  * Uses text-embedding-3-small (1536 dimensions)
  */
+// Type for the OpenAI client's embeddings interface
+interface OpenAIClient {
+  embeddings: {
+    create(params: { model: string; input: string | string[] }): Promise<{
+      data: Array<{ embedding: number[] }>;
+    }>;
+  };
+}
+
 export class OpenAIEmbeddingGenerator implements EmbeddingGenerator {
-  private client: any = null;
+  private client: OpenAIClient | null = null;
   private modelName = "text-embedding-3-small";
   private dimension = 1536;
 
@@ -142,7 +154,7 @@ export class OpenAIEmbeddingGenerator implements EmbeddingGenerator {
   async generate(text: string): Promise<number[]> {
     await this.initialize();
 
-    const response = await this.client.embeddings.create({
+    const response = await this.client!.embeddings.create({
       model: this.modelName,
       input: text,
     });
@@ -153,12 +165,12 @@ export class OpenAIEmbeddingGenerator implements EmbeddingGenerator {
   async generateBatch(texts: string[]): Promise<number[][]> {
     await this.initialize();
 
-    const response = await this.client.embeddings.create({
+    const response = await this.client!.embeddings.create({
       model: this.modelName,
       input: texts,
     });
 
-    return response.data.map((item: any) => item.embedding);
+    return response.data.map((item) => item.embedding);
   }
 
   getDimension(): number {

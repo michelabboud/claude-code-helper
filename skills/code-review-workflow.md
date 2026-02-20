@@ -1,13 +1,31 @@
 ---
 skill_name: Code Review Workflow
-description: Systematic code review process with checklists and best practices for thorough, constructive reviews
-category: Development Workflows
+description: Comprehensive code review with security, quality, and performance analysis. Systematic review process with checklists and best practices.
+category: Quality
 priority: P1
+argument-hint: '[target-file-or-directory]'
+allowed-tools: Read, Grep, Glob
+agent: code-review-expert
 ---
 
 # Code Review Workflow Skill
 
 Comprehensive guide to conducting effective, thorough code reviews with focus on quality, security, and maintainability.
+
+## Usage
+
+```
+/code-review-workflow                    # Review current changes
+/code-review-workflow src/api/auth.ts    # Review specific file
+/code-review-workflow src/services/      # Review directory
+```
+
+## Analysis Areas
+
+- **Security**: Vulnerabilities, injection risks, auth issues
+- **Quality**: Code smells, complexity, maintainability
+- **Performance**: Bottlenecks, memory issues, optimization opportunities
+- **Best Practices**: Patterns, conventions, documentation
 
 ## Overview
 

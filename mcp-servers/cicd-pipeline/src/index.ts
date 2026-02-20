@@ -5,8 +5,6 @@
  * Provides pipeline generation, optimization, validation, and troubleshooting tools
  */
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -14,6 +12,105 @@ import {
 import { z } from "zod";
 import * as fs from "fs/promises";
 import * as yaml from "js-yaml";
+import { runServer, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
+
+// Type definitions for pipeline structures
+interface PipelineStep {
+  uses?: string;
+  run?: string;
+  with?: Record<string, unknown>;
+  env?: Record<string, string>;
+}
+
+interface PipelineJob {
+  "runs-on": string;
+  needs?: string[];
+  if?: string;
+  steps: PipelineStep[];
+}
+
+interface GithubActionsPipeline {
+  name: string;
+  on: {
+    push: { branches: string[] };
+    pull_request: Record<string, unknown>;
+  };
+  jobs: Record<string, PipelineJob>;
+}
+
+interface GenericPipeline {
+  platform: string;
+  project_type: string;
+  features: string[];
+  message: string;
+  note: string;
+}
+
+type Pipeline = GithubActionsPipeline | GenericPipeline;
+
+interface PipelineOptions {
+  node_version?: string;
+  python_version?: string;
+  parallel_jobs?: boolean;
+  caching?: boolean;
+}
+
+interface Optimization {
+  type: string;
+  impact: string;
+  time_saved?: string;
+  cost_saved?: string;
+  description: string;
+  implementation?: string;
+}
+
+interface OptimizationResult {
+  optimizations: Optimization[];
+  estimated_improvement: string;
+}
+
+interface ValidationIssue {
+  severity: string;
+  message: string;
+  category?: string;
+  type?: string;
+  recommendation?: string;
+}
+
+interface ValidationResult {
+  valid: boolean;
+  errors: ValidationIssue[];
+  warnings: ValidationIssue[];
+  summary: string;
+}
+
+interface DiagnosisSolution {
+  priority: string;
+  fix: string;
+  command?: string;
+  implementation?: string;
+  check?: string;
+  suggestion?: string;
+}
+
+interface Diagnosis {
+  error_type?: string;
+  severity?: string;
+  root_cause?: string;
+  solutions: DiagnosisSolution[];
+}
+
+interface ScanStep {
+  name: string;
+  tool: string;
+  step: PipelineStep;
+}
+
+interface DeploymentConfig {
+  strategy: string;
+  description: string;
+  steps: (string | null | false)[];
+}
 
 // Tool input schemas
 const GeneratePipelineSchema = z.object({
@@ -72,23 +169,10 @@ const GenerateRollbackSchema = z.object({
   automated: z.boolean().optional().describe("Enable automated rollback"),
 });
 
-// MCP Server
-const server = new Server(
-  {
-    name: "cicd-pipeline-mcp",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
-
 // Pipeline templates
 const pipelineTemplates = {
   "github-actions": {
-    nodejs: (options: any) => ({
+    nodejs: (options?: PipelineOptions) => ({
       name: "CI Pipeline",
       on: {
         push: { branches: ["main", "develop"] },
@@ -143,7 +227,7 @@ const pipelineTemplates = {
         }
       }
     }),
-    python: (options: any) => ({
+    python: (options?: PipelineOptions) => ({
       name: "CI Pipeline",
       on: {
         push: { branches: ["main", "develop"] },
@@ -178,7 +262,7 @@ const pipelineTemplates = {
         }
       }
     }),
-    go: (options: any) => ({
+    go: (_options?: PipelineOptions) => ({
       name: "CI Pipeline",
       on: {
         push: { branches: ["main", "develop"] },
@@ -200,7 +284,7 @@ const pipelineTemplates = {
         }
       }
     }),
-    rust: (options: any) => ({
+    rust: (_options?: PipelineOptions) => ({
       name: "CI Pipeline",
       on: {
         push: { branches: ["main", "develop"] },
@@ -221,7 +305,7 @@ const pipelineTemplates = {
         }
       }
     }),
-    java: (options: any) => ({
+    java: (_options?: PipelineOptions) => ({
       name: "CI Pipeline",
       on: {
         push: { branches: ["main", "develop"] },
@@ -242,7 +326,7 @@ const pipelineTemplates = {
         }
       }
     }),
-    docker: (options: any) => ({
+    docker: (_options?: PipelineOptions) => ({
       name: "CI Pipeline",
       on: {
         push: { branches: ["main", "develop"] },
@@ -268,7 +352,7 @@ const pipelineTemplates = {
 };
 
 // Helper functions
-function addSecurityScan(pipeline: any, platform: string): any {
+function addSecurityScan(pipeline: GithubActionsPipeline, platform: string): GithubActionsPipeline {
   if (platform === "github-actions") {
     pipeline.jobs.security = {
       "runs-on": "ubuntu-latest",
@@ -284,8 +368,8 @@ function addSecurityScan(pipeline: any, platform: string): any {
   return pipeline;
 }
 
-function addDeployment(pipeline: any, target: string): any {
-  const deployJobs: Record<string, any> = {
+function addDeployment(pipeline: GithubActionsPipeline, target: string): GithubActionsPipeline {
+  const deployJobs: Record<string, PipelineJob> = {
     vercel: {
       "runs-on": "ubuntu-latest",
       needs: ["build"],
@@ -340,8 +424,8 @@ function addDeployment(pipeline: any, target: string): any {
   return pipeline;
 }
 
-function analyzeForOptimizations(pipelineContent: string, platform: string): any {
-  const optimizations: any[] = [];
+function analyzeForOptimizations(pipelineContent: string, platform: string): OptimizationResult {
+  const optimizations: Optimization[] = [];
   const contentLower = pipelineContent.toLowerCase();
 
   // Check for caching
@@ -397,9 +481,9 @@ function analyzeForOptimizations(pipelineContent: string, platform: string): any
   };
 }
 
-function validatePipelineContent(content: string, platform: string, strict: boolean): any {
-  const warnings: any[] = [];
-  const errors: any[] = [];
+function validatePipelineContent(content: string, platform: string, strict: boolean): ValidationResult {
+  const warnings: ValidationIssue[] = [];
+  const errors: ValidationIssue[] = [];
   const contentLower = content.toLowerCase();
 
   // Check for outdated actions
@@ -468,9 +552,9 @@ function validatePipelineContent(content: string, platform: string, strict: bool
   };
 }
 
-function diagnosePipelineFailure(logs: string): any {
+function diagnosePipelineFailure(logs: string): Diagnosis {
   const logLower = logs.toLowerCase();
-  const diagnosis: any = { solutions: [] };
+  const diagnosis: Diagnosis = { solutions: [] };
 
   // Common failure patterns
   if (logLower.includes("cannot find module") || logLower.includes("module not found")) {
@@ -541,6 +625,9 @@ function diagnosePipelineFailure(logs: string): any {
 
   return diagnosis;
 }
+
+// MCP Server
+runServer({ name: "cicd-pipeline-mcp", version: "1.0.0" }, ({ server, logger }) => {
 
 // Tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -776,16 +863,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const requestId = generateRequestId();
+  const startTime = performance.now();
+
+  logger.info("Tool called", { requestId, tool: name, args });
 
   try {
+    let response;
+
     switch (name) {
       case "generate_pipeline": {
         const { platform, project_type, features, deployment_target, options } = GeneratePipelineSchema.parse(args);
 
-        let pipeline: any;
+        let pipeline: Pipeline;
 
         if (platform === "github-actions") {
-          const templates = pipelineTemplates["github-actions"] as Record<string, (options: any) => any>;
+          const templates = pipelineTemplates["github-actions"] as Record<string, (options?: PipelineOptions) => GithubActionsPipeline>;
           const templateFn = templates[project_type];
           if (templateFn) {
             pipeline = templateFn(options);
@@ -815,85 +908,93 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const yamlOutput = yaml.dump(pipeline);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: `# Generated ${platform} pipeline for ${project_type}\n# Features: ${features.join(", ")}\n${deployment_target ? `# Deployment: ${deployment_target}\n` : ""}\n${yamlOutput}`,
           }],
         };
+        break;
       }
 
       case "optimize_pipeline": {
         const { pipeline_file, platform, focus_areas } = OptimizePipelineSchema.parse(args);
+        const safePipelineFile = sanitizePath(pipeline_file, process.cwd());
 
         let content: string;
         try {
-          content = await fs.readFile(pipeline_file, "utf-8");
+          content = await fs.readFile(safePipelineFile, "utf-8");
         } catch {
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
                 error: "Could not read pipeline file",
-                file: pipeline_file,
+                file: safePipelineFile,
                 suggestion: "Verify file path and permissions"
               }, null, 2),
             }],
             isError: true,
           };
+          break;
         }
 
         const analysis = analyzeForOptimizations(content, platform);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              file: pipeline_file,
+              file: safePipelineFile,
               platform,
               focus_areas: focus_areas || ["speed", "cost"],
               ...analysis
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "validate_pipeline": {
         const { pipeline_file, platform, strict } = ValidatePipelineSchema.parse(args);
+        const safePipelineFile = sanitizePath(pipeline_file, process.cwd());
 
         let content: string;
         try {
-          content = await fs.readFile(pipeline_file, "utf-8");
+          content = await fs.readFile(safePipelineFile, "utf-8");
         } catch {
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
                 error: "Could not read pipeline file",
-                file: pipeline_file
+                file: safePipelineFile
               }, null, 2),
             }],
             isError: true,
           };
+          break;
         }
 
         const validation = validatePipelineContent(content, platform, strict || false);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              file: pipeline_file,
+              file: safePipelineFile,
               platform,
               strict: strict || false,
               ...validation
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "estimate_cost": {
         const { pipeline_file, platform, monthly_runs } = EstimateCostSchema.parse(args);
+        const safePipelineFile = sanitizePath(pipeline_file, process.cwd());
 
         // Cost estimation based on typical job durations
         const costPerMinute: Record<string, number> = {
@@ -908,11 +1009,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const monthlyCost = monthly_runs * estimatedJobs * estimatedJobMinutes * (costPerMinute[platform] || 0.008);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              file: pipeline_file,
+              file: safePipelineFile,
               platform,
               monthly_runs,
               breakdown: {
@@ -931,29 +1032,33 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "troubleshoot_failure": {
         const { pipeline_file, failure_logs, platform } = TroubleshootFailureSchema.parse(args);
+        const safePipelineFile = sanitizePath(pipeline_file, process.cwd());
 
         const diagnosis = diagnosePipelineFailure(failure_logs);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              file: pipeline_file,
+              file: safePipelineFile,
               platform,
               diagnosis
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "security_scan_pipeline": {
         const { pipeline_file, scan_types, tools } = SecurityScanPipelineSchema.parse(args);
+        const safePipelineFile = sanitizePath(pipeline_file, process.cwd());
 
-        const scanSteps: any = {};
+        const scanSteps: Record<string, ScanStep> = {};
 
         if (scan_types.includes("sast")) {
           scanSteps.sast = {
@@ -998,22 +1103,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           };
         }
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              pipeline_file,
+              pipeline_file: safePipelineFile,
               added_scans: scanSteps,
-              configuration: yaml.dump({ jobs: { security: { steps: Object.values(scanSteps).map((s: any) => s.step) } } })
+              configuration: yaml.dump({ jobs: { security: { steps: Object.values(scanSteps).map((s: ScanStep) => s.step) } } })
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "generate_deployment": {
         const { strategy, platform, health_checks, rollback } = GenerateDeploymentSchema.parse(args);
 
-        const deploymentConfigs: Record<string, any> = {
+        const deploymentConfigs: Record<string, DeploymentConfig> = {
           "blue-green": {
             strategy: "blue-green",
             description: "Deploy to inactive environment, then switch traffic",
@@ -1057,7 +1163,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const config = deploymentConfigs[strategy];
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -1075,12 +1181,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "generate_rollback": {
         const { deployment_platform, rollback_strategy, automated } = GenerateRollbackSchema.parse(args);
 
-        const rollbackConfigs: Record<string, any> = {
+        const rollbackConfigs: Record<string, Record<string, string>> = {
           kubernetes: {
             "previous-version": "kubectl rollout undo deployment/app",
             "specific-version": "kubectl rollout undo deployment/app --to-revision=N",
@@ -1103,7 +1210,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
         };
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -1123,30 +1230,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
-  } catch (error: any) {
-    return {
-      content: [{
-        type: "text",
-        text: `Error: ${error.message}`,
-      }],
-      isError: true,
-    };
+
+    const durationMs = measureDuration(startTime);
+    logger.info("Tool completed", { requestId, tool: name, durationMs });
+    return response;
+  } catch (error: unknown) {
+    const durationMs = measureDuration(startTime);
+    logger.error("Tool failed", { requestId, tool: name, durationMs, error: error instanceof Error ? error.message : String(error) });
+    return errorResponse(error, name);
   }
 });
 
-// Start server
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("CI/CD Pipeline MCP Server running on stdio");
-}
-
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+}); // runServer

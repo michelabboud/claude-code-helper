@@ -10,6 +10,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "prepare": "npm run build",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "inspector": "npx @modelcontextprotocol/inspector build/index.js"
   },
   "keywords": [
@@ -26,12 +27,16 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
+    "mcp-shared": "file:../mcp-shared",
     "zod": "^3.23.8",
     "js-yaml": "^4.1.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.0",
     "@types/node": "^22.10.2",
     "@types/js-yaml": "^4.0.9",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.0",
     "typescript": "^5.7.2"
   },
   "engines": {

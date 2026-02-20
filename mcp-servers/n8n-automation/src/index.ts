@@ -5,13 +5,99 @@
  * Provides n8n workflow generation, optimization, and troubleshooting tools
  */
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
+import { runServer, generateRequestId, measureDuration, errorResponse } from "mcp-shared";
+
+// Interfaces for n8n workflow types
+interface N8nNodeParameters {
+  [key: string]: unknown;
+}
+
+interface N8nNodeCredentials {
+  [key: string]: string;
+}
+
+interface N8nNode {
+  type: string;
+  typeVersion: number;
+  name: string;
+  position: number[];
+  parameters: N8nNodeParameters;
+  credentials?: N8nNodeCredentials;
+}
+
+interface N8nNodeTemplate {
+  type: string;
+  typeVersion: number;
+  parameters: N8nNodeParameters;
+  credentials?: N8nNodeCredentials;
+}
+
+interface N8nConnection {
+  main: Array<Array<{ node: string; type: string; index: number }>>;
+}
+
+interface N8nWorkflow {
+  name?: string;
+  nodes?: N8nNode[];
+  connections?: Record<string, N8nConnection>;
+  [key: string]: unknown;
+}
+
+interface WorkflowAnalysis {
+  total_nodes: number;
+  node_types: string[];
+  has_error_handling: boolean;
+  has_retry_logic: boolean;
+  estimated_execution_time: string;
+  complexity: string;
+}
+
+interface Optimization {
+  type: string;
+  impact: string;
+  description: string;
+  implementation: string;
+  expected_improvement: string;
+}
+
+interface DiagnosisSolution {
+  priority: string;
+  fix: string;
+  implementation?: Record<string, unknown>;
+  resources?: string[];
+}
+
+interface Diagnosis {
+  error_type: string;
+  severity: string;
+  root_cause?: string;
+  solutions: DiagnosisSolution[];
+}
+
+interface IntegrationSuggestions {
+  recommended_workflow: {
+    trigger: string;
+    nodes: Array<{ name: string; purpose: string }>;
+  };
+  alternative_tools: Array<{ tool: string; reason: string }>;
+}
+
+interface DataMapping {
+  output: string;
+  expression: string;
+  type: string;
+}
+
+interface TransformExpression {
+  type: string;
+  example: string;
+  description: string;
+}
 
 // Tool input schemas
 const GenerateWorkflowSchema = z.object({
@@ -22,14 +108,14 @@ const GenerateWorkflowSchema = z.object({
 });
 
 const OptimizeWorkflowSchema = z.object({
-  workflow: z.any().describe("Current workflow JSON"),
+  workflow: z.record(z.string(), z.unknown()).describe("Current workflow JSON"),
   focus_areas: z.array(z.enum(["speed", "reliability", "cost"])).optional().describe("Optimization focus"),
 });
 
 const TroubleshootWorkflowSchema = z.object({
-  workflow: z.any().describe("Workflow configuration"),
+  workflow: z.record(z.string(), z.unknown()).describe("Workflow configuration"),
   error_log: z.string().describe("Error messages"),
-  execution_data: z.any().optional().describe("Last execution data"),
+  execution_data: z.record(z.string(), z.unknown()).optional().describe("Last execution data"),
 });
 
 const GenerateErrorWorkflowSchema = z.object({
@@ -44,26 +130,13 @@ const SuggestIntegrationsSchema = z.object({
 });
 
 const GenerateDataTransformationSchema = z.object({
-  input_format: z.any().describe("Source data structure"),
-  output_format: z.any().describe("Target data structure"),
+  input_format: z.record(z.string(), z.unknown()).describe("Source data structure"),
+  output_format: z.record(z.string(), z.unknown()).describe("Target data structure"),
   transformations: z.array(z.string()).describe("Required transformations"),
 });
 
-// MCP Server
-const server = new Server(
-  {
-    name: "n8n-automation-mcp",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
-
 // n8n node templates
-const nodeTemplates: Record<string, any> = {
+const nodeTemplates: Record<string, N8nNodeTemplate> = {
   webhook: {
     type: "n8n-nodes-base.webhook",
     typeVersion: 1,
@@ -163,9 +236,9 @@ const nodeTemplates: Record<string, any> = {
 };
 
 // Helper functions
-function generateWorkflowNodes(services: string[], actions: string[], trigger: string): any[] {
-  const nodes: any[] = [];
-  let position = [250, 300];
+function generateWorkflowNodes(services: string[], actions: string[], trigger: string): N8nNode[] {
+  const nodes: N8nNode[] = [];
+  const position = [250, 300];
 
   // Add trigger node
   if (trigger === "webhook") {
@@ -228,8 +301,8 @@ function generateWorkflowNodes(services: string[], actions: string[], trigger: s
   return nodes;
 }
 
-function generateConnections(nodes: any[]): Record<string, any> {
-  const connections: Record<string, any> = {};
+function generateConnections(nodes: N8nNode[]): Record<string, N8nConnection> {
+  const connections: Record<string, N8nConnection> = {};
 
   for (let i = 0; i < nodes.length - 1; i++) {
     const currentNode = nodes[i];
@@ -243,15 +316,14 @@ function generateConnections(nodes: any[]): Record<string, any> {
   return connections;
 }
 
-function analyzeWorkflow(workflow: any): any {
-  const nodes = workflow.nodes || [];
-  const connections = workflow.connections || {};
+function analyzeWorkflow(workflow: N8nWorkflow): WorkflowAnalysis {
+  const nodes: N8nNode[] = (workflow.nodes as N8nNode[]) || [];
 
-  const analysis = {
+  const analysis: WorkflowAnalysis = {
     total_nodes: nodes.length,
-    node_types: nodes.map((n: any) => n.type),
-    has_error_handling: nodes.some((n: any) => n.name?.toLowerCase().includes("error")),
-    has_retry_logic: nodes.some((n: any) =>
+    node_types: nodes.map((n: N8nNode) => n.type),
+    has_error_handling: nodes.some((n: N8nNode) => n.name?.toLowerCase().includes("error")),
+    has_retry_logic: nodes.some((n: N8nNode) =>
       n.parameters?.retryOnFail || n.name?.toLowerCase().includes("retry")
     ),
     estimated_execution_time: `${nodes.length * 0.5}s average`,
@@ -261,14 +333,14 @@ function analyzeWorkflow(workflow: any): any {
   return analysis;
 }
 
-function generateOptimizations(workflow: any, focusAreas: string[]): any[] {
-  const optimizations: any[] = [];
-  const nodes = workflow.nodes || [];
+function generateOptimizations(workflow: N8nWorkflow, focusAreas: string[]): Optimization[] {
+  const optimizations: Optimization[] = [];
+  const nodes: N8nNode[] = (workflow.nodes as N8nNode[]) || [];
 
   // Speed optimizations
   if (focusAreas.includes("speed")) {
     // Check for sequential API calls that could be parallel
-    const httpNodes = nodes.filter((n: any) => n.type?.includes("httpRequest"));
+    const httpNodes = nodes.filter((n: N8nNode) => n.type?.includes("httpRequest"));
     if (httpNodes.length > 2) {
       optimizations.push({
         type: "parallelization",
@@ -292,7 +364,7 @@ function generateOptimizations(workflow: any, focusAreas: string[]): any[] {
   // Reliability optimizations
   if (focusAreas.includes("reliability")) {
     // Check for error handling
-    const hasErrorHandler = nodes.some((n: any) =>
+    const hasErrorHandler = nodes.some((n: N8nNode) =>
       n.type?.includes("errorTrigger") || n.name?.toLowerCase().includes("error")
     );
 
@@ -330,9 +402,9 @@ function generateOptimizations(workflow: any, focusAreas: string[]): any[] {
   return optimizations;
 }
 
-function diagnoseWorkflowError(errorLog: string, workflow: any): any {
+function diagnoseWorkflowError(errorLog: string, _workflow: N8nWorkflow): Diagnosis {
   const logLower = errorLog.toLowerCase();
-  const diagnosis: any = {
+  const diagnosis: Diagnosis = {
     error_type: "unknown",
     severity: "medium",
     solutions: []
@@ -430,9 +502,9 @@ function diagnoseWorkflowError(errorLog: string, workflow: any): any {
   return diagnosis;
 }
 
-function generateErrorWorkflow(mainWorkflowId: string, channels: string[], retryStrategy: string): any {
-  const nodes: any[] = [];
-  let position = [250, 300];
+function generateErrorWorkflow(mainWorkflowId: string, channels: string[], retryStrategy: string): Record<string, unknown> {
+  const nodes: N8nNode[] = [];
+  const position = [250, 300];
 
   // Error trigger
   nodes.push({
@@ -499,7 +571,7 @@ function generateErrorWorkflow(mainWorkflowId: string, channels: string[], retry
   position[0] += 200;
 
   // Add retry logic based on strategy
-  const retryConfig: Record<string, any> = {
+  const retryConfig: Record<string, Record<string, unknown>> = {
     immediate: { wait: 0, maxRetries: 3 },
     exponential_backoff: { wait: "2^retryCount seconds", maxRetries: 5 },
     fixed_delay: { wait: 30, maxRetries: 3 }
@@ -517,9 +589,9 @@ function generateErrorWorkflow(mainWorkflowId: string, channels: string[], retry
   };
 }
 
-function suggestIntegrations(useCase: string, existingTools: string[]): any {
+function suggestIntegrations(useCase: string, existingTools: string[]): IntegrationSuggestions {
   const useCaseLower = useCase.toLowerCase();
-  const suggestions: any = {
+  const suggestions: IntegrationSuggestions = {
     recommended_workflow: { trigger: "", nodes: [] },
     alternative_tools: []
   };
@@ -601,9 +673,9 @@ function suggestIntegrations(useCase: string, existingTools: string[]): any {
   return suggestions;
 }
 
-function generateDataTransformation(inputFormat: any, outputFormat: any, transformations: string[]): any {
-  const mappings: any[] = [];
-  const expressions: any[] = [];
+function generateDataTransformation(inputFormat: Record<string, unknown>, outputFormat: Record<string, unknown>, transformations: string[]): Record<string, unknown> {
+  const mappings: DataMapping[] = [];
+  const expressions: TransformExpression[] = [];
 
   // Generate mappings from input to output structure
   const inputKeys = Object.keys(inputFormat);
@@ -626,8 +698,9 @@ function generateDataTransformation(inputFormat: any, outputFormat: any, transfo
     } else {
       // Check nested properties
       for (const inKey of inputKeys) {
-        if (typeof inputFormat[inKey] === "object" && inputFormat[inKey] !== null) {
-          for (const nestedKey of Object.keys(inputFormat[inKey])) {
+        const inputValue = inputFormat[inKey];
+        if (typeof inputValue === "object" && inputValue !== null) {
+          for (const nestedKey of Object.keys(inputValue as Record<string, unknown>)) {
             if (nestedKey.toLowerCase() === outKey.toLowerCase()) {
               mappings.push({
                 output: outKey,
@@ -705,6 +778,8 @@ function generateDataTransformation(inputFormat: any, outputFormat: any, transfo
     ]
   };
 }
+
+runServer({ name: "n8n-automation-mcp", version: "1.0.0" }, ({ server, logger }) => {
 
 // Tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -885,8 +960,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const requestId = generateRequestId();
+  const startTime = performance.now();
+
+  logger.info("Tool called", { requestId, tool: name, args });
 
   try {
+    let response;
+
     switch (name) {
       case "generate_workflow": {
         const { workflow_type, services, trigger, actions } = GenerateWorkflowSchema.parse(args);
@@ -906,7 +987,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           }
         };
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -920,15 +1001,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "optimize_workflow": {
         const { workflow, focus_areas } = OptimizeWorkflowSchema.parse(args);
+        const typedWorkflow = workflow as N8nWorkflow;
 
-        const analysis = analyzeWorkflow(workflow);
-        const optimizations = generateOptimizations(workflow, focus_areas || ["speed", "reliability"]);
+        const analysis = analyzeWorkflow(typedWorkflow);
+        const optimizations = generateOptimizations(typedWorkflow, focus_areas || ["speed", "reliability"]);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -940,18 +1023,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "troubleshoot_workflow": {
         const { workflow, error_log, execution_data } = TroubleshootWorkflowSchema.parse(args);
+        const typedWorkflow = workflow as N8nWorkflow;
 
-        const diagnosis = diagnoseWorkflowError(error_log, workflow);
+        const diagnosis = diagnoseWorkflowError(error_log, typedWorkflow);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              workflow_name: workflow.name || "Unknown",
+              workflow_name: typedWorkflow.name || "Unknown",
               diagnosis,
               execution_context: execution_data ? {
                 last_successful_node: execution_data.lastNodeExecuted,
@@ -960,6 +1045,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "generate_error_workflow": {
@@ -967,7 +1053,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const errorWorkflow = generateErrorWorkflow(main_workflow_id, notification_channels, retry_strategy);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -981,6 +1067,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "suggest_integrations": {
@@ -988,7 +1075,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const suggestions = suggestIntegrations(use_case, existing_tools || []);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -998,6 +1085,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "generate_data_transformation": {
@@ -1005,36 +1093,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const transformation = generateDataTransformation(input_format, output_format, transformations);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify(transformation, null, 2),
           }],
         };
+        break;
       }
 
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
-  } catch (error: any) {
-    return {
-      content: [{
-        type: "text",
-        text: `Error: ${error.message}`,
-      }],
-      isError: true,
-    };
+
+    const durationMs = measureDuration(startTime);
+    logger.info("Tool completed", { requestId, tool: name, durationMs });
+    return response;
+  } catch (error: unknown) {
+    const durationMs = measureDuration(startTime);
+    logger.error("Tool failed", { requestId, tool: name, durationMs, error: error instanceof Error ? error.message : String(error) });
+    return errorResponse(error, name);
   }
 });
 
-// Start server
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("n8n Automation MCP Server running on stdio");
-}
-
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+}); // runServer

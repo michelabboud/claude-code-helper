@@ -13,8 +13,6 @@
  * Created with assistance from Claude Code (Anthropic)
  */
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -24,6 +22,7 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import { config } from "dotenv";
 import { createVectorDatabase, type VectorDatabase, type VectorDocument } from "./vector-db-adapter.js";
+import { runServer, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
 // Load environment variables
 config();
@@ -35,33 +34,12 @@ const dbConfig = {
   port: parseInt(process.env.VECTOR_DB_PORT || (dbType === "chromadb" ? "8000" : dbType === "redis" ? "6379" : "6333")),
 };
 
-console.error(`🔌 Using vector database: ${dbType.toUpperCase()} at ${dbConfig.host}:${dbConfig.port}`);
-
 // Embedding configuration
 const embeddingType = (process.env.EMBEDDING_TYPE || "local") as "local" | "openai";
 const modelVariant = (process.env.MODEL_VARIANT || "default").toLowerCase();
 
-if (dbType !== "chromadb") {
-  console.error(`🧠 Embedding provider: ${embeddingType.toUpperCase()}`);
-  if (embeddingType === "local") {
-    console.error(`   Model variant: ${modelVariant}`);
-  }
-}
-
-// Create database adapter (will be initialized async)
+// Database adapter (initialized inside runServer setup)
 let vectorDB: VectorDatabase;
-let dbInitPromise: Promise<void>;
-
-// Initialize database async
-dbInitPromise = (async () => {
-  try {
-    vectorDB = await createVectorDatabase(dbType, dbConfig, embeddingType, modelVariant);
-    console.error(`✅ ${dbType.toUpperCase()} database initialized successfully`);
-  } catch (error) {
-    console.error(`❌ Failed to initialize ${dbType}:`, error);
-    process.exit(1);
-  }
-})();
 
 // Tool input schemas
 const IndexCodebaseSchema = z.object({
@@ -75,14 +53,14 @@ const IndexCodebaseSchema = z.object({
 const IndexFileSchema = z.object({
   filePath: z.string().describe("Path to file to index"),
   collectionName: z.string().default("codebase").describe("Collection to add to"),
-  metadata: z.record(z.any()).optional().describe("Additional metadata"),
+  metadata: z.record(z.unknown()).optional().describe("Additional metadata"),
 });
 
 const SemanticSearchSchema = z.object({
   query: z.string().describe("Natural language query (e.g., 'how does authentication work?')"),
   collectionName: z.string().default("codebase").describe("Collection to search"),
   nResults: z.number().default(5).describe("Number of results to return"),
-  filter: z.record(z.any()).optional().describe("Metadata filters"),
+  filter: z.record(z.unknown()).optional().describe("Metadata filters"),
 });
 
 const FindSimilarCodeSchema = z.object({
@@ -108,60 +86,7 @@ const DeleteCollectionSchema = z.object({
   collectionName: z.string().describe("Collection to delete"),
 });
 
-// Helper functions
-async function readFileRecursive(
-  dirPath: string,
-  filePatterns?: string[],
-  excludePatterns?: string[]
-): Promise<{ path: string; content: string }[]> {
-  const results: { path: string; content: string }[] = [];
-
-  const shouldExclude = (filePath: string): boolean => {
-    if (!excludePatterns) return false;
-    return excludePatterns.some((pattern) => {
-      const regex = new RegExp(pattern.replace(/\*/g, ".*"));
-      return regex.test(filePath);
-    });
-  };
-
-  const shouldInclude = (filePath: string): boolean => {
-    if (!filePatterns || filePatterns.length === 0) return true;
-    return filePatterns.some((pattern) => {
-      const regex = new RegExp(pattern.replace(/\*/g, ".*").replace(/\./g, "\\."));
-      return regex.test(filePath);
-    });
-  };
-
-  async function traverse(currentPath: string) {
-    try {
-      const entries = await fs.readdir(currentPath, { withFileTypes: true });
-
-      for (const entry of entries) {
-        const fullPath = path.join(currentPath, entry.name);
-        const relativePath = path.relative(dirPath, fullPath);
-
-        if (shouldExclude(relativePath)) continue;
-
-        if (entry.isDirectory()) {
-          await traverse(fullPath);
-        } else if (entry.isFile() && shouldInclude(entry.name)) {
-          try {
-            const content = await fs.readFile(fullPath, "utf-8");
-            results.push({ path: relativePath, content });
-          } catch (error) {
-            console.error(`Error reading file ${fullPath}:`, error);
-          }
-        }
-      }
-    } catch (error) {
-      console.error(`Error traversing directory ${currentPath}:`, error);
-    }
-  }
-
-  await traverse(dirPath);
-  return results;
-}
-
+// Helper function (pure - no logger dependency)
 function chunkText(text: string, chunkSize: number): string[] {
   const chunks: string[] = [];
   const lines = text.split("\n");
@@ -183,520 +108,586 @@ function chunkText(text: string, chunkSize: number): string[] {
   return chunks;
 }
 
-// Tool implementations
-async function indexCodebase(args: z.infer<typeof IndexCodebaseSchema>) {
+runServer({
+  name: "rag-mcp",
+  version: "1.0.0",
+  healthChecks: [{
+    name: `${dbType}-connection`,
+    check: () => vectorDB.healthCheck(),
+  }],
+  healthCheckOptions: { maxRetries: 3, retryDelayMs: 2000, timeoutMs: 10000 },
+}, async ({ server, logger }) => {
+
+  logger.info("Using vector database", { type: dbType, host: dbConfig.host, port: dbConfig.port });
+
+  if (dbType !== "chromadb") {
+    logger.info("Embedding provider configured", { type: embeddingType, variant: modelVariant });
+  }
+
+  // Initialize database
   try {
-    const { rootPath, collectionName, filePatterns, excludePatterns, chunkSize } = args;
+    vectorDB = await createVectorDatabase(dbType, dbConfig, embeddingType, modelVariant);
+    logger.info("Database initialized", { type: dbType });
+  } catch (error) {
+    logger.error("Failed to initialize database", { type: dbType, error: error instanceof Error ? error.message : String(error) });
+    process.exit(1);
+  }
 
-    // Create collection via adapter
-    await vectorDB.createCollection(collectionName);
+  // Helper function (uses logger)
+  async function readFileRecursive(
+    dirPath: string,
+    filePatterns?: string[],
+    excludePatterns?: string[]
+  ): Promise<{ path: string; content: string }[]> {
+    const results: { path: string; content: string }[] = [];
 
-    // Read all files
-    const files = await readFileRecursive(rootPath, filePatterns, excludePatterns);
+    const shouldExclude = (filePath: string): boolean => {
+      if (!excludePatterns) return false;
+      return excludePatterns.some((pattern) => {
+        const regex = new RegExp(pattern.replace(/\*/g, ".*"));
+        return regex.test(filePath);
+      });
+    };
 
-    let totalChunks = 0;
-    const fileStats: Record<string, number> = {};
+    const shouldInclude = (filePath: string): boolean => {
+      if (!filePatterns || filePatterns.length === 0) return true;
+      return filePatterns.some((pattern) => {
+        const regex = new RegExp(pattern.replace(/\*/g, ".*").replace(/\./g, "\\."));
+        return regex.test(filePath);
+      });
+    };
 
-    // Index each file
-    for (const file of files) {
-      const chunks = chunkText(file.content, chunkSize);
-      fileStats[file.path] = chunks.length;
-      totalChunks += chunks.length;
+    async function traverse(currentPath: string) {
+      try {
+        const entries = await fs.readdir(currentPath, { withFileTypes: true });
+
+        for (const entry of entries) {
+          const fullPath = path.join(currentPath, entry.name);
+          const relativePath = path.relative(dirPath, fullPath);
+
+          if (shouldExclude(relativePath)) continue;
+
+          if (entry.isDirectory()) {
+            await traverse(fullPath);
+          } else if (entry.isFile() && shouldInclude(entry.name)) {
+            try {
+              const content = await fs.readFile(fullPath, "utf-8");
+              results.push({ path: relativePath, content });
+            } catch (error) {
+              logger.error("Error reading file", { file: fullPath, error: error instanceof Error ? error.message : String(error) });
+            }
+          }
+        }
+      } catch (error) {
+        logger.error("Error traversing directory", { directory: currentPath, error: error instanceof Error ? error.message : String(error) });
+      }
+    }
+
+    await traverse(dirPath);
+    return results;
+  }
+
+  // Tool implementations
+  async function indexCodebase(args: z.infer<typeof IndexCodebaseSchema>) {
+    try {
+      const { rootPath, collectionName, filePatterns, excludePatterns, chunkSize } = args;
+
+      // Create collection via adapter
+      await vectorDB.createCollection(collectionName);
+
+      // Read all files
+      const files = await readFileRecursive(rootPath, filePatterns, excludePatterns);
+
+      let totalChunks = 0;
+      const fileStats: Record<string, number> = {};
+
+      // Index each file
+      for (const file of files) {
+        const chunks = chunkText(file.content, chunkSize);
+        fileStats[file.path] = chunks.length;
+        totalChunks += chunks.length;
+
+        const documents: VectorDocument[] = chunks.map((chunk, i) => ({
+          id: `${file.path}::chunk${i}`,
+          content: chunk,
+          metadata: {
+            filePath: file.path,
+            chunkIndex: i,
+            totalChunks: chunks.length,
+          },
+        }));
+
+        await vectorDB.addDocuments(collectionName, documents);
+      }
+
+      return {
+        success: true,
+        collection: collectionName,
+        filesIndexed: files.length,
+        totalChunks,
+        fileStats,
+        message: `Successfully indexed ${files.length} files with ${totalChunks} chunks`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: String(error),
+      };
+    }
+  }
+
+  async function indexFile(args: z.infer<typeof IndexFileSchema>) {
+    try {
+      const { filePath, collectionName, metadata } = args;
+
+      await vectorDB.createCollection(collectionName);
+
+      const content = await fs.readFile(filePath, "utf-8");
+      const chunks = chunkText(content, 1000);
 
       const documents: VectorDocument[] = chunks.map((chunk, i) => ({
-        id: `${file.path}::chunk${i}`,
+        id: `${filePath}::chunk${i}`,
         content: chunk,
         metadata: {
-          filePath: file.path,
+          filePath,
           chunkIndex: i,
           totalChunks: chunks.length,
+          ...metadata,
         },
       }));
 
       await vectorDB.addDocuments(collectionName, documents);
+
+      return {
+        success: true,
+        file: filePath,
+        chunks: chunks.length,
+        message: `Successfully indexed ${filePath} with ${chunks.length} chunks`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: String(error),
+      };
     }
-
-    return {
-      success: true,
-      collection: collectionName,
-      filesIndexed: files.length,
-      totalChunks,
-      fileStats,
-      message: `Successfully indexed ${files.length} files with ${totalChunks} chunks`,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: String(error),
-    };
   }
-}
 
-async function indexFile(args: z.infer<typeof IndexFileSchema>) {
-  try {
-    const { filePath, collectionName, metadata } = args;
+  async function semanticSearch(args: z.infer<typeof SemanticSearchSchema>) {
+    try {
+      const { query, collectionName, nResults, filter } = args;
 
-    await vectorDB.createCollection(collectionName);
+      const results = await vectorDB.search(collectionName, query, { nResults, filter });
 
-    const content = await fs.readFile(filePath, "utf-8");
-    const chunks = chunkText(content, 1000);
-
-    const documents: VectorDocument[] = chunks.map((chunk, i) => ({
-      id: `${filePath}::chunk${i}`,
-      content: chunk,
-      metadata: {
-        filePath,
-        chunkIndex: i,
-        totalChunks: chunks.length,
-        ...metadata,
-      },
-    }));
-
-    await vectorDB.addDocuments(collectionName, documents);
-
-    return {
-      success: true,
-      file: filePath,
-      chunks: chunks.length,
-      message: `Successfully indexed ${filePath} with ${chunks.length} chunks`,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: String(error),
-    };
-  }
-}
-
-async function semanticSearch(args: z.infer<typeof SemanticSearchSchema>) {
-  try {
-    const { query, collectionName, nResults, filter } = args;
-
-    const results = await vectorDB.search(collectionName, query, { nResults, filter });
-
-    return {
-      success: true,
-      query,
-      results,
-      count: results.length,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: String(error),
-    };
-  }
-}
-
-async function findSimilarCode(args: z.infer<typeof FindSimilarCodeSchema>) {
-  try {
-    const { codeSnippet, collectionName, nResults, threshold } = args;
-
-    const searchResults = await vectorDB.search(collectionName, codeSnippet, { nResults });
-
-    let formattedResults = searchResults.map((r) => ({
-      content: r.content,
-      metadata: r.metadata,
-      similarity: r.score != null ? r.score : 1 - (r.distance || 0),
-    }));
-
-    if (threshold) {
-      formattedResults = formattedResults.filter((r) => r.similarity >= threshold);
+      return {
+        success: true,
+        query,
+        results,
+        count: results.length,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: String(error),
+      };
     }
-
-    return {
-      success: true,
-      results: formattedResults,
-      count: formattedResults.length,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: String(error),
-    };
   }
-}
 
-async function getRelevantContext(args: z.infer<typeof GetRelevantContextSchema>) {
-  try {
-    const { task, collectionName, maxTokens } = args;
+  async function findSimilarCode(args: z.infer<typeof FindSimilarCodeSchema>) {
+    try {
+      const { codeSnippet, collectionName, nResults, threshold } = args;
 
-    const searchResults = await vectorDB.search(collectionName, task, { nResults: 20 });
+      const searchResults = await vectorDB.search(collectionName, codeSnippet, { nResults });
 
-    // Accumulate context up to maxTokens (rough estimate: 1 token ≈ 4 chars)
-    const maxChars = maxTokens * 4;
-    let totalChars = 0;
-    const contextChunks: Array<{
-      content: string;
-      metadata: any;
-      file: string;
-    }> = [];
+      let formattedResults = searchResults.map((r) => ({
+        content: r.content,
+        metadata: r.metadata,
+        similarity: r.score != null ? r.score : 1 - (r.distance || 0),
+      }));
 
-    for (const result of searchResults) {
-      if (totalChars + result.content.length > maxChars) break;
+      if (threshold) {
+        formattedResults = formattedResults.filter((r) => r.similarity >= threshold);
+      }
 
-      contextChunks.push({
-        content: result.content,
-        metadata: result.metadata,
-        file: (result.metadata.filePath as string) || "unknown",
-      });
-
-      totalChars += result.content.length;
+      return {
+        success: true,
+        results: formattedResults,
+        count: formattedResults.length,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: String(error),
+      };
     }
+  }
 
-    // Group by file
-    const byFile: Record<string, string[]> = {};
-    for (const chunk of contextChunks) {
-      if (!byFile[chunk.file]) byFile[chunk.file] = [];
-      byFile[chunk.file].push(chunk.content);
+  async function getRelevantContext(args: z.infer<typeof GetRelevantContextSchema>) {
+    try {
+      const { task, collectionName, maxTokens } = args;
+
+      const searchResults = await vectorDB.search(collectionName, task, { nResults: 20 });
+
+      // Accumulate context up to maxTokens (rough estimate: 1 token ~ 4 chars)
+      const maxChars = maxTokens * 4;
+      let totalChars = 0;
+      const contextChunks: Array<{
+        content: string;
+        metadata: Record<string, unknown>;
+        file: string;
+      }> = [];
+
+      for (const result of searchResults) {
+        if (totalChars + result.content.length > maxChars) break;
+
+        contextChunks.push({
+          content: result.content,
+          metadata: result.metadata,
+          file: (result.metadata.filePath as string) || "unknown",
+        });
+
+        totalChars += result.content.length;
+      }
+
+      // Group by file
+      const byFile: Record<string, string[]> = {};
+      for (const chunk of contextChunks) {
+        if (!byFile[chunk.file]) byFile[chunk.file] = [];
+        byFile[chunk.file].push(chunk.content);
+      }
+
+      return {
+        success: true,
+        task,
+        context: contextChunks,
+        byFile,
+        totalChars,
+        estimatedTokens: Math.ceil(totalChars / 4),
+        filesIncluded: Object.keys(byFile),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: String(error),
+      };
     }
-
-    return {
-      success: true,
-      task,
-      context: contextChunks,
-      byFile,
-      totalChars,
-      estimatedTokens: Math.ceil(totalChars / 4),
-      filesIncluded: Object.keys(byFile),
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: String(error),
-    };
   }
-}
 
-async function listCollections(args: z.infer<typeof ListCollectionsSchema>) {
-  try {
-    const collections = await vectorDB.listCollections();
+  async function listCollections(_args: z.infer<typeof ListCollectionsSchema>) {
+    try {
+      const collections = await vectorDB.listCollections();
 
-    return {
-      success: true,
-      collections,
-      total: collections.length,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: String(error),
-    };
+      return {
+        success: true,
+        collections,
+        total: collections.length,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: String(error),
+      };
+    }
   }
-}
 
-async function getCollectionStats(args: z.infer<typeof GetCollectionStatsSchema>) {
-  try {
-    const { collectionName } = args;
+  async function getCollectionStats(args: z.infer<typeof GetCollectionStatsSchema>) {
+    try {
+      const { collectionName } = args;
 
-    const stats = await vectorDB.getCollectionStats(collectionName);
+      const stats = await vectorDB.getCollectionStats(collectionName);
 
-    return {
-      success: true,
-      collection: collectionName,
-      totalChunks: stats.totalChunks,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: String(error),
-    };
+      return {
+        success: true,
+        collection: collectionName,
+        totalChunks: stats.totalChunks,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: String(error),
+      };
+    }
   }
-}
 
-async function deleteCollection(args: z.infer<typeof DeleteCollectionSchema>) {
-  try {
-    const { collectionName } = args;
+  async function deleteCollection(args: z.infer<typeof DeleteCollectionSchema>) {
+    try {
+      const { collectionName } = args;
 
-    await vectorDB.deleteCollection(collectionName);
+      await vectorDB.deleteCollection(collectionName);
 
-    return {
-      success: true,
-      message: `Collection '${collectionName}' deleted successfully`,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: String(error),
-    };
+      return {
+        success: true,
+        message: `Collection '${collectionName}' deleted successfully`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: String(error),
+      };
+    }
   }
-}
 
-// Create MCP server
-const server = new Server(
-  {
-    name: "rag-mcp",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
+  // Register tool handlers
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({
+    tools: [
+      {
+        name: "index_codebase",
+        description:
+          "Index an entire codebase directory for semantic search. Recursively processes files and creates vector embeddings.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            rootPath: {
+              type: "string",
+              description: "Root directory path to index",
+            },
+            collectionName: {
+              type: "string",
+              description: "Name for the vector collection",
+              default: "codebase",
+            },
+            filePatterns: {
+              type: "array",
+              items: { type: "string" },
+              description: "File patterns to include (e.g., ['*.ts', '*.js', '*.py'])",
+            },
+            excludePatterns: {
+              type: "array",
+              items: { type: "string" },
+              description: "Patterns to exclude (e.g., ['node_modules/**', 'build/**'])",
+            },
+            chunkSize: {
+              type: "number",
+              description: "Maximum characters per code chunk",
+              default: 1000,
+            },
+          },
+          required: ["rootPath"],
+        },
+      },
+      {
+        name: "index_file",
+        description: "Index a single file for semantic search",
+        inputSchema: {
+          type: "object",
+          properties: {
+            filePath: {
+              type: "string",
+              description: "Path to file to index",
+            },
+            collectionName: {
+              type: "string",
+              description: "Collection to add to",
+              default: "codebase",
+            },
+            metadata: {
+              type: "object",
+              description: "Additional metadata",
+            },
+          },
+          required: ["filePath"],
+        },
+      },
+      {
+        name: "semantic_search",
+        description:
+          "Search codebase using natural language query. Returns most relevant code snippets.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            query: {
+              type: "string",
+              description: "Natural language query (e.g., 'how does authentication work?')",
+            },
+            collectionName: {
+              type: "string",
+              description: "Collection to search",
+              default: "codebase",
+            },
+            nResults: {
+              type: "number",
+              description: "Number of results to return",
+              default: 5,
+            },
+            filter: {
+              type: "object",
+              description: "Metadata filters",
+            },
+          },
+          required: ["query"],
+        },
+      },
+      {
+        name: "find_similar_code",
+        description: "Find code similar to a given snippet",
+        inputSchema: {
+          type: "object",
+          properties: {
+            codeSnippet: {
+              type: "string",
+              description: "Code snippet to find similar matches for",
+            },
+            collectionName: {
+              type: "string",
+              description: "Collection to search",
+              default: "codebase",
+            },
+            nResults: {
+              type: "number",
+              description: "Number of similar results",
+              default: 5,
+            },
+            threshold: {
+              type: "number",
+              description: "Similarity threshold (0-1)",
+            },
+          },
+          required: ["codeSnippet"],
+        },
+      },
+      {
+        name: "get_relevant_context",
+        description:
+          "Get relevant code context for a specific task. Returns context within token budget.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            task: {
+              type: "string",
+              description: "Task description (e.g., 'implement user logout')",
+            },
+            collectionName: {
+              type: "string",
+              description: "Collection to query",
+              default: "codebase",
+            },
+            maxTokens: {
+              type: "number",
+              description: "Maximum tokens of context to return",
+              default: 4000,
+            },
+          },
+          required: ["task"],
+        },
+      },
+      {
+        name: "list_collections",
+        description: "List all available vector collections",
+        inputSchema: {
+          type: "object",
+          properties: {},
+        },
+      },
+      {
+        name: "get_collection_stats",
+        description: "Get statistics for a specific collection",
+        inputSchema: {
+          type: "object",
+          properties: {
+            collectionName: {
+              type: "string",
+              description: "Collection name",
+            },
+          },
+          required: ["collectionName"],
+        },
+      },
+      {
+        name: "delete_collection",
+        description: "Delete a vector collection",
+        inputSchema: {
+          type: "object",
+          properties: {
+            collectionName: {
+              type: "string",
+              description: "Collection to delete",
+            },
+          },
+          required: ["collectionName"],
+        },
+      },
+    ],
+  }));
 
-// Register tool handlers
-server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: [
-    {
-      name: "index_codebase",
-      description:
-        "Index an entire codebase directory for semantic search. Recursively processes files and creates vector embeddings.",
-      inputSchema: {
-        type: "object",
-        properties: {
-          rootPath: {
-            type: "string",
-            description: "Root directory path to index",
-          },
-          collectionName: {
-            type: "string",
-            description: "Name for the vector collection",
-            default: "codebase",
-          },
-          filePatterns: {
-            type: "array",
-            items: { type: "string" },
-            description: "File patterns to include (e.g., ['*.ts', '*.js', '*.py'])",
-          },
-          excludePatterns: {
-            type: "array",
-            items: { type: "string" },
-            description: "Patterns to exclude (e.g., ['node_modules/**', 'build/**'])",
-          },
-          chunkSize: {
-            type: "number",
-            description: "Maximum characters per code chunk",
-            default: 1000,
-          },
-        },
-        required: ["rootPath"],
-      },
-    },
-    {
-      name: "index_file",
-      description: "Index a single file for semantic search",
-      inputSchema: {
-        type: "object",
-        properties: {
-          filePath: {
-            type: "string",
-            description: "Path to file to index",
-          },
-          collectionName: {
-            type: "string",
-            description: "Collection to add to",
-            default: "codebase",
-          },
-          metadata: {
-            type: "object",
-            description: "Additional metadata",
-          },
-        },
-        required: ["filePath"],
-      },
-    },
-    {
-      name: "semantic_search",
-      description:
-        "Search codebase using natural language query. Returns most relevant code snippets.",
-      inputSchema: {
-        type: "object",
-        properties: {
-          query: {
-            type: "string",
-            description: "Natural language query (e.g., 'how does authentication work?')",
-          },
-          collectionName: {
-            type: "string",
-            description: "Collection to search",
-            default: "codebase",
-          },
-          nResults: {
-            type: "number",
-            description: "Number of results to return",
-            default: 5,
-          },
-          filter: {
-            type: "object",
-            description: "Metadata filters",
-          },
-        },
-        required: ["query"],
-      },
-    },
-    {
-      name: "find_similar_code",
-      description: "Find code similar to a given snippet",
-      inputSchema: {
-        type: "object",
-        properties: {
-          codeSnippet: {
-            type: "string",
-            description: "Code snippet to find similar matches for",
-          },
-          collectionName: {
-            type: "string",
-            description: "Collection to search",
-            default: "codebase",
-          },
-          nResults: {
-            type: "number",
-            description: "Number of similar results",
-            default: 5,
-          },
-          threshold: {
-            type: "number",
-            description: "Similarity threshold (0-1)",
-          },
-        },
-        required: ["codeSnippet"],
-      },
-    },
-    {
-      name: "get_relevant_context",
-      description:
-        "Get relevant code context for a specific task. Returns context within token budget.",
-      inputSchema: {
-        type: "object",
-        properties: {
-          task: {
-            type: "string",
-            description: "Task description (e.g., 'implement user logout')",
-          },
-          collectionName: {
-            type: "string",
-            description: "Collection to query",
-            default: "codebase",
-          },
-          maxTokens: {
-            type: "number",
-            description: "Maximum tokens of context to return",
-            default: 4000,
-          },
-        },
-        required: ["task"],
-      },
-    },
-    {
-      name: "list_collections",
-      description: "List all available vector collections",
-      inputSchema: {
-        type: "object",
-        properties: {},
-      },
-    },
-    {
-      name: "get_collection_stats",
-      description: "Get statistics for a specific collection",
-      inputSchema: {
-        type: "object",
-        properties: {
-          collectionName: {
-            type: "string",
-            description: "Collection name",
-          },
-        },
-        required: ["collectionName"],
-      },
-    },
-    {
-      name: "delete_collection",
-      description: "Delete a vector collection",
-      inputSchema: {
-        type: "object",
-        properties: {
-          collectionName: {
-            type: "string",
-            description: "Collection to delete",
-          },
-        },
-        required: ["collectionName"],
-      },
-    },
-  ],
-}));
-
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  try {
-    // Ensure database is initialized
-    await dbInitPromise;
-
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
+    const requestId = generateRequestId();
+    const startTime = performance.now();
 
-    switch (name) {
-      case "index_codebase": {
-        const validated = IndexCodebaseSchema.parse(args);
-        const result = await indexCodebase(validated);
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+    logger.info("Tool called", { requestId, tool: name, args });
+
+    try {
+      let response;
+
+      switch (name) {
+        case "index_codebase": {
+          const validated = IndexCodebaseSchema.parse(args);
+          const safePath = sanitizePath(validated.rootPath, process.cwd());
+          const result = await indexCodebase({ ...validated, rootPath: safePath });
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "index_file": {
+          const validated = IndexFileSchema.parse(args);
+          const safePath = sanitizePath(validated.filePath, process.cwd());
+          const result = await indexFile({ ...validated, filePath: safePath });
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "semantic_search": {
+          const validated = SemanticSearchSchema.parse(args);
+          const result = await semanticSearch(validated);
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "find_similar_code": {
+          const validated = FindSimilarCodeSchema.parse(args);
+          const result = await findSimilarCode(validated);
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "get_relevant_context": {
+          const validated = GetRelevantContextSchema.parse(args);
+          const result = await getRelevantContext(validated);
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "list_collections": {
+          const validated = ListCollectionsSchema.parse(args);
+          const result = await listCollections(validated);
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "get_collection_stats": {
+          const validated = GetCollectionStatsSchema.parse(args);
+          const result = await getCollectionStats(validated);
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "delete_collection": {
+          const validated = DeleteCollectionSchema.parse(args);
+          const result = await deleteCollection(validated);
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        default:
+          throw new Error(`Unknown tool: ${name}`);
       }
 
-      case "index_file": {
-        const validated = IndexFileSchema.parse(args);
-        const result = await indexFile(validated);
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
-      }
-
-      case "semantic_search": {
-        const validated = SemanticSearchSchema.parse(args);
-        const result = await semanticSearch(validated);
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
-      }
-
-      case "find_similar_code": {
-        const validated = FindSimilarCodeSchema.parse(args);
-        const result = await findSimilarCode(validated);
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
-      }
-
-      case "get_relevant_context": {
-        const validated = GetRelevantContextSchema.parse(args);
-        const result = await getRelevantContext(validated);
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
-      }
-
-      case "list_collections": {
-        const validated = ListCollectionsSchema.parse(args);
-        const result = await listCollections(validated);
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
-      }
-
-      case "get_collection_stats": {
-        const validated = GetCollectionStatsSchema.parse(args);
-        const result = await getCollectionStats(validated);
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
-      }
-
-      case "delete_collection": {
-        const validated = DeleteCollectionSchema.parse(args);
-        const result = await deleteCollection(validated);
-        return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
-      }
-
-      default:
-        throw new Error(`Unknown tool: ${name}`);
+      const durationMs = measureDuration(startTime);
+      logger.info("Tool completed", { requestId, tool: name, durationMs });
+      return response;
+    } catch (error: unknown) {
+      const durationMs = measureDuration(startTime);
+      logger.error("Tool failed", { requestId, tool: name, durationMs, error: error instanceof Error ? error.message : String(error) });
+      return errorResponse(error, name);
     }
-  } catch (error) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify({ error: String(error) }, null, 2),
-        },
-      ],
-      isError: true,
-    };
-  }
-});
-
-// Start server
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("RAG MCP Server running on stdio");
-}
-
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
+  });
 });

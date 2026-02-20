@@ -13,15 +13,131 @@
  * Created with assistance from Claude Code (Anthropic)
  */
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 import * as fs from "fs/promises";
-import * as path from "path";
+import { runServer, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
+
+// Shared interfaces for design analysis data structures
+interface DesignFinding {
+  category: string;
+  score: number;
+  observations: string[];
+  issues: string[];
+  priority?: string;
+}
+
+interface DesignRecommendation {
+  priority: string;
+  category: string;
+  issue: string;
+  suggestion: string;
+  impact: string;
+}
+
+interface AccessibilityIssue {
+  check: string;
+  wcagCriterion: string;
+  level: string;
+  status: string;
+  findings?: Record<string, unknown>[];
+  notes?: string;
+}
+
+interface TypographyFinding {
+  aspect: string;
+  score: number;
+  observations: string[];
+  issues: string[];
+}
+
+interface TypographyRecommendation {
+  priority: string;
+  suggestion: string;
+  reasoning: string;
+  implementation: string;
+}
+
+interface SpacingFinding {
+  element: string;
+  spacing: string;
+  compliant: boolean;
+  note: string;
+}
+
+interface SpacingIssue {
+  element: string;
+  current: string;
+  suggested: string;
+  reasoning: string;
+}
+
+interface ColorPaletteEntry {
+  color: string;
+  usage: string;
+  percentage: number;
+}
+
+interface ColorFinding {
+  check: string;
+  status: string;
+  details?: Record<string, unknown>[];
+  observations?: string[];
+  brandColorsUsed?: number;
+  brandColorsTotal?: number;
+}
+
+interface ColorIssue {
+  issue: string;
+  recommendation: string;
+}
+
+interface Improvement {
+  priority: string;
+  category: string;
+  title: string;
+  problem: string;
+  solution: string;
+  impact: string;
+  effort: string;
+}
+
+interface DesignDifference {
+  aspect: string;
+  versionA: string;
+  versionB: string;
+  winner: string;
+}
+
+interface HeuristicScore {
+  heuristic: string;
+  score: number;
+  observations: string[];
+  issues: string[];
+}
+
+interface UsabilityRecommendation {
+  priority: string;
+  heuristic: string;
+  suggestion: string;
+  impact: string;
+}
+
+interface WireframeDescription {
+  type: string;
+  format: string;
+  improvements: string[];
+  layout: string;
+}
+
+interface ActionPlan {
+  phase1: { title: string; items: Improvement[] };
+  phase2: { title: string; items: Improvement[] };
+  phase3: { title: string; items: Improvement[] };
+}
 
 // Tool input schemas
 const AnalyzeDesignSchema = z.object({
@@ -132,19 +248,6 @@ const CheckUsabilitySchema = z.object({
   ])).optional().describe("Usability heuristics to check"),
 });
 
-// MCP Server
-const server = new Server(
-  {
-    name: "uiux-review-mcp",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
-
 // Helper functions
 async function analyzeDesign(
   imagePath: string,
@@ -154,17 +257,14 @@ async function analyzeDesign(
 ): Promise<string> {
   try {
     // Read and encode image
-    const imageBuffer = await fs.readFile(imagePath);
-    const base64Image = imageBuffer.toString("base64");
-    const ext = path.extname(imagePath).toLowerCase();
-    const mimeType = getMimeType(ext);
+    await fs.readFile(imagePath);
 
     const analysis = {
       designType: designType || "unknown",
       overallScore: 0,
-      findings: [] as any[],
-      recommendations: [] as any[],
-      wireframe: null as any,
+      findings: [] as DesignFinding[],
+      recommendations: [] as DesignRecommendation[],
+      wireframe: null as WireframeDescription | null,
     };
 
     // This is a framework - in production, Claude would analyze the actual image
@@ -351,9 +451,9 @@ async function analyzeDesign(
         analysis.recommendations.filter(r => r.priority === "high").length
       } high priority improvements.`,
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Design analysis failed: ${error.message}`,
+      error: `Design analysis failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -367,9 +467,9 @@ async function checkAccessibility(
     const results = {
       wcagLevel,
       conformance: "partial",
-      criticalIssues: [] as any[],
-      warnings: [] as any[],
-      passed: [] as any[],
+      criticalIssues: [] as AccessibilityIssue[],
+      warnings: [] as AccessibilityIssue[],
+      passed: [] as AccessibilityIssue[],
     };
 
     const checksToRun = checks || [
@@ -472,9 +572,9 @@ async function checkAccessibility(
         ? "Address critical issues before launch"
         : "Minor improvements recommended",
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Accessibility check failed: ${error.message}`,
+      error: `Accessibility check failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -486,8 +586,8 @@ async function reviewTypography(
   try {
     const review = {
       overallScore: 8,
-      findings: [] as any[],
-      recommendations: [] as any[],
+      findings: [] as TypographyFinding[],
+      recommendations: [] as TypographyRecommendation[],
     };
 
     const aspectsToCheck = aspects || [
@@ -588,9 +688,9 @@ async function reviewTypography(
     ];
 
     return JSON.stringify(review, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Typography review failed: ${error.message}`,
+      error: `Typography review failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -598,14 +698,14 @@ async function reviewTypography(
 async function validateSpacing(
   imagePath: string,
   baseUnit?: number,
-  checkConsistency: boolean = true
+  _checkConsistency: boolean = true
 ): Promise<string> {
   try {
     const validation = {
       baseUnit: baseUnit || 8,
       consistency: "good",
-      findings: [] as any[],
-      issues: [] as any[],
+      findings: [] as SpacingFinding[],
+      issues: [] as SpacingIssue[],
     };
 
     validation.findings = [
@@ -667,9 +767,9 @@ async function validateSpacing(
         ? `Adjust ${validation.issues.length} spacing values to align with ${validation.baseUnit}px grid`
         : "Spacing is consistent and follows grid system",
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Spacing validation failed: ${error.message}`,
+      error: `Spacing validation failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -681,9 +781,9 @@ async function checkColorScheme(
 ): Promise<string> {
   try {
     const analysis = {
-      palette: [] as any[],
-      findings: [] as any[],
-      issues: [] as any[],
+      palette: [] as ColorPaletteEntry[],
+      findings: [] as ColorFinding[],
+      issues: [] as ColorIssue[],
     };
 
     const checksToRun = checks || ["contrast", "harmony", "accessibility"];
@@ -750,9 +850,9 @@ async function checkColorScheme(
       issues: analysis.issues,
       overallRating: analysis.issues.length === 0 ? "good" : "needs improvement",
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Color scheme check failed: ${error.message}`,
+      error: `Color scheme check failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -863,9 +963,9 @@ async function suggestImprovements(
       improvements,
       actionPlan: generateActionPlan(improvements),
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Improvement suggestions failed: ${error.message}`,
+      error: `Improvement suggestions failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -886,9 +986,9 @@ async function generateWireframe(
     }
     
     return JSON.stringify({ error: "Unsupported format" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Wireframe generation failed: ${error.message}`,
+      error: `Wireframe generation failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -908,7 +1008,7 @@ async function compareDesigns(
       versionB: {
         scores: {} as Record<string, number>,
       },
-      differences: [] as any[],
+      differences: [] as DesignDifference[],
       recommendation: "",
     };
 
@@ -965,9 +1065,9 @@ async function compareDesigns(
         versionB: scoreB.toFixed(1),
       },
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Design comparison failed: ${error.message}`,
+      error: `Design comparison failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -980,9 +1080,9 @@ async function checkUsability(
   try {
     const results = {
       overallScore: 7,
-      heuristicScores: [] as any[],
-      issues: [] as any[],
-      recommendations: [] as any[],
+      heuristicScores: [] as HeuristicScore[],
+      issues: [] as Record<string, unknown>[],
+      recommendations: [] as UsabilityRecommendation[],
     };
 
     const heuristicsToCheck = heuristics || [
@@ -1083,25 +1183,14 @@ async function checkUsability(
     ];
 
     return JSON.stringify(results, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Usability check failed: ${error.message}`,
+      error: `Usability check failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
 
 // Utility functions
-function getMimeType(ext: string): string {
-  const types: Record<string, string> = {
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".png": "image/png",
-    ".gif": "image/gif",
-    ".webp": "image/webp",
-  };
-  return types[ext] || "image/jpeg";
-}
-
 function getGrade(score: number): string {
   if (score >= 9) return "A (Excellent)";
   if (score >= 8) return "B (Good)";
@@ -1110,7 +1199,7 @@ function getGrade(score: number): string {
   return "F (Poor)";
 }
 
-function generateImprovedWireframe(designType: string): any {
+function generateImprovedWireframe(designType: string): WireframeDescription {
   return {
     type: designType,
     format: "description",
@@ -1128,7 +1217,7 @@ function generateImprovedWireframe(designType: string): any {
   };
 }
 
-function calculateTotalEffort(improvements: any[]): string {
+function calculateTotalEffort(improvements: Improvement[]): string {
   const efforts = improvements.map(i => i.effort);
   const low = efforts.filter(e => e === "Low").length;
   const medium = efforts.filter(e => e === "Medium").length;
@@ -1138,7 +1227,7 @@ function calculateTotalEffort(improvements: any[]): string {
   return `~${hours} hours`;
 }
 
-function generateActionPlan(improvements: any[]): any {
+function generateActionPlan(improvements: Improvement[]): ActionPlan {
   return {
     phase1: {
       title: "Critical Fixes (Week 1)",
@@ -1340,7 +1429,7 @@ Annotations:
   }
 }
 
-function generateMermaidWireframe(description: string, designType: string): string {
+function generateMermaidWireframe(_description: string, _designType: string): string {
   return `graph TD
     A[Header: Logo + Navigation] --> B[Hero Section]
     B --> C[Main Headline]
@@ -1359,6 +1448,9 @@ function generateMermaidWireframe(description: string, designType: string): stri
     classDef cardStyle fill:#f9f9f9,stroke:#333,stroke-width:2px
     class G,H,I cardStyle`;
 }
+
+// MCP Server
+runServer({ name: "uiux-review-mcp", version: "1.0.0" }, ({ server, logger }) => {
 
 // Tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -1656,158 +1748,102 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const requestId = generateRequestId();
+  const startTime = performance.now();
+
+  logger.info("Tool called", { requestId, tool: name, args });
 
   try {
+    let response;
+
     switch (name) {
       case "analyze_design": {
-        const { imagePath, designType, checkpoints, includeWireframe } = 
+        const { imagePath: rawImagePath, designType, checkpoints, includeWireframe } =
           AnalyzeDesignSchema.parse(args);
+        const imagePath = sanitizePath(rawImagePath, process.cwd());
         const result = await analyzeDesign(imagePath, designType, checkpoints, includeWireframe);
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Design analysis results:\n\n${result}`,
-            },
-          ],
-        };
+        response = { content: [{ type: "text", text: `Design analysis results:\n\n${result}` }] };
+        break;
       }
 
       case "check_accessibility": {
-        const { imagePath, wcagLevel, checks } = CheckAccessibilitySchema.parse(args);
+        const { imagePath: rawImagePath, wcagLevel, checks } = CheckAccessibilitySchema.parse(args);
+        const imagePath = sanitizePath(rawImagePath, process.cwd());
         const result = await checkAccessibility(imagePath, wcagLevel, checks);
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Accessibility audit results:\n\n${result}`,
-            },
-          ],
-        };
+        response = { content: [{ type: "text", text: `Accessibility audit results:\n\n${result}` }] };
+        break;
       }
 
       case "review_typography": {
-        const { imagePath, aspects } = ReviewTypographySchema.parse(args);
+        const { imagePath: rawImagePath, aspects } = ReviewTypographySchema.parse(args);
+        const imagePath = sanitizePath(rawImagePath, process.cwd());
         const result = await reviewTypography(imagePath, aspects);
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Typography review:\n\n${result}`,
-            },
-          ],
-        };
+        response = { content: [{ type: "text", text: `Typography review:\n\n${result}` }] };
+        break;
       }
 
       case "validate_spacing": {
-        const { imagePath, baseUnit, checkConsistency } = ValidateSpacingSchema.parse(args);
+        const { imagePath: rawImagePath, baseUnit, checkConsistency } = ValidateSpacingSchema.parse(args);
+        const imagePath = sanitizePath(rawImagePath, process.cwd());
         const result = await validateSpacing(imagePath, baseUnit, checkConsistency);
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Spacing validation:\n\n${result}`,
-            },
-          ],
-        };
+        response = { content: [{ type: "text", text: `Spacing validation:\n\n${result}` }] };
+        break;
       }
 
       case "check_color_scheme": {
-        const { imagePath, brandColors, checks } = CheckColorSchemeSchema.parse(args);
+        const { imagePath: rawImagePath, brandColors, checks } = CheckColorSchemeSchema.parse(args);
+        const imagePath = sanitizePath(rawImagePath, process.cwd());
         const result = await checkColorScheme(imagePath, brandColors, checks);
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Color scheme analysis:\n\n${result}`,
-            },
-          ],
-        };
+        response = { content: [{ type: "text", text: `Color scheme analysis:\n\n${result}` }] };
+        break;
       }
 
       case "suggest_improvements": {
-        const { imagePath, focusAreas, priority } = SuggestImprovementsSchema.parse(args);
+        const { imagePath: rawImagePath, focusAreas, priority } = SuggestImprovementsSchema.parse(args);
+        const imagePath = sanitizePath(rawImagePath, process.cwd());
         const result = await suggestImprovements(imagePath, focusAreas, priority);
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Improvement suggestions:\n\n${result}`,
-            },
-          ],
-        };
+        response = { content: [{ type: "text", text: `Improvement suggestions:\n\n${result}` }] };
+        break;
       }
 
       case "generate_wireframe": {
-        const { designDescription, designType, format, includeAnnotations } = 
+        const { designDescription, designType, format, includeAnnotations } =
           GenerateWireframeSchema.parse(args);
-        const result = await generateWireframe(
-          designDescription, 
-          designType, 
-          format, 
-          includeAnnotations
-        );
-        return {
-          content: [
-            {
-              type: "text",
-              text: result,
-            },
-          ],
-        };
+        const result = await generateWireframe(designDescription, designType, format, includeAnnotations);
+        response = { content: [{ type: "text", text: result }] };
+        break;
       }
 
       case "compare_designs": {
-        const { imagePathA, imagePathB, comparisonType, metrics } = 
+        const { imagePathA: rawImagePathA, imagePathB: rawImagePathB, comparisonType, metrics } =
           CompareDesignsSchema.parse(args);
+        const imagePathA = sanitizePath(rawImagePathA, process.cwd());
+        const imagePathB = sanitizePath(rawImagePathB, process.cwd());
         const result = await compareDesigns(imagePathA, imagePathB, comparisonType, metrics);
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Design comparison:\n\n${result}`,
-            },
-          ],
-        };
+        response = { content: [{ type: "text", text: `Design comparison:\n\n${result}` }] };
+        break;
       }
 
       case "check_usability": {
-        const { imagePath, userFlow, heuristics } = CheckUsabilitySchema.parse(args);
+        const { imagePath: rawImagePath, userFlow, heuristics } = CheckUsabilitySchema.parse(args);
+        const imagePath = sanitizePath(rawImagePath, process.cwd());
         const result = await checkUsability(imagePath, userFlow, heuristics);
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Usability assessment:\n\n${result}`,
-            },
-          ],
-        };
+        response = { content: [{ type: "text", text: `Usability assessment:\n\n${result}` }] };
+        break;
       }
 
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
-  } catch (error: any) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: ${error.message}`,
-        },
-      ],
-      isError: true,
-    };
+
+    const durationMs = measureDuration(startTime);
+    logger.info("Tool completed", { requestId, tool: name, durationMs });
+    return response;
+  } catch (error: unknown) {
+    const durationMs = measureDuration(startTime);
+    logger.error("Tool failed", { requestId, tool: name, durationMs, error: error instanceof Error ? error.message : String(error) });
+    return { ...errorResponse(error, name) };
   }
 });
 
-// Start server
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("UI/UX Review MCP Server running on stdio");
-}
-
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+}); // runServer

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Project Health Overview</title>
+<style>
+  :root, [data-theme="dark"] {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --radius: 12px;
+  }
+
+  [data-theme="light"] {
+    --bg: #f6f8fa;
+    --surface: #ffffff;
+    --border: #d0d7de;
+    --text: #1f2328;
+    --text-dim: #656d76;
+    --accent: #0969da;
+    --green: #1a7f37;
+    --yellow: #9a6700;
+    --red: #cf222e;
+    --purple: #8250df;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header h1 { font-size: 24px; font-weight: 600; }
+  .header-sub { color: var(--text-dim); font-size: 13px; margin-top: 4px; }
+
+  .btn {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    margin-left: 8px;
+  }
+
+  .btn:hover { opacity: 0.9; }
+  .btn-secondary { background: var(--border); color: var(--text); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-bottom: 24px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .card h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+
+  .card-full { grid-column: 1 / -1; }
+
+  /* Project cards */
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    transition: border-color 0.2s;
+  }
+
+  .project-card:hover { border-color: var(--accent); }
+
+  .project-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .project-meta {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+
+  .project-score {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .project-score small {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-dim);
+  }
+
+  /* Mini bars */
+  .mini-bars { display: flex; flex-direction: column; gap: 4px; }
+
+  .mini-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+  }
+
+  .mini-bar-label {
+    width: 80px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  .mini-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .mini-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s;
+  }
+
+  .mini-bar-value {
+    width: 24px;
+    font-weight: 600;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  /* Comparison table */
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .comparison-table th {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-dim);
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .comparison-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .comparison-table tr:last-child td { border-bottom: none; }
+
+  .comparison-table .domain-name { color: var(--text-dim); }
+
+  .score-cell {
+    font-weight: 600;
+    text-align: center;
+    min-width: 50px;
+  }
+
+  .score-cell.best { background: rgba(63, 185, 80, 0.1); }
+  .score-cell.worst { background: rgba(248, 81, 73, 0.1); }
+
+  /* Risk list */
+  .risk-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .risk-item:last-child { border-bottom: none; }
+
+  .risk-badge {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    min-width: 48px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .risk-badge.critical { background: var(--red); color: white; }
+  .risk-badge.high { background: #da3633; color: white; }
+  .risk-badge.medium { background: var(--yellow); color: var(--bg); }
+  .risk-badge.low { background: var(--border); color: var(--text); }
+
+  .risk-project {
+    font-weight: 600;
+    min-width: 100px;
+    flex-shrink: 0;
+  }
+
+  .risk-desc { flex: 1; }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: border-color 0.2s;
+    margin-bottom: 24px;
+  }
+
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  .upload-zone p { margin-top: 8px; font-size: 13px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 700px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Multi-Project Health Overview</h1>
+    <div class="header-sub" id="headerSub">Load project dashboard files to compare</div>
+  </div>
+  <div>
+    <input type="file" id="fileInput" accept=".json" multiple style="display:none" onchange="handleFiles(event)">
+    <button class="btn" onclick="document.getElementById('fileInput').click()">Add Projects</button>
+    <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+    <button class="btn btn-secondary" onclick="toggleTheme()" id="themeToggle" title="Toggle theme (T)" style="margin-left:4px">&#9790;</button>
+  </div>
+</div>
+
+<div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+  <div style="font-size:32px">+</div>
+  <p>Drop pm-dashboard.json files here or click to browse</p>
+  <p style="font-size:11px;margin-top:4px">Each file is at: &lt;project&gt;/.claude/pm-dashboard.json</p>
+</div>
+
+<!-- Project cards -->
+<div class="grid" id="projectCards"></div>
+
+<!-- Comparison table -->
+<div class="card card-full" id="comparisonCard" style="display:none; margin-bottom:20px">
+  <h2>Score Comparison</h2>
+  <div style="overflow-x:auto">
+    <table class="comparison-table" id="comparisonTable"></table>
+  </div>
+</div>
+
+<!-- Cross-project risks -->
+<div class="card card-full" id="risksCard" style="display:none; margin-bottom:20px">
+  <h2>Cross-Project Risk Summary</h2>
+  <div id="risksList"></div>
+</div>
+
+<script>
+const EXPERT_LABELS = {
+  qa: 'QA & Testing', uiux: 'UI/UX', security: 'Security',
+  devops: 'DevOps', networking: 'Network', development: 'Development',
+  architecture: 'Architecture', product: 'Product', api: 'API',
+  monitoring: 'Monitoring', database: 'Database', performance: 'Performance',
+  documentation: 'Docs', specifications: 'Specs',
+  projectDocs: 'Proj Docs', progress: 'Progress'
+};
+const EXPERT_KEYS = Object.keys(EXPERT_LABELS);
+
+let projects = [];
+
+function scoreColor(score) {
+  if (score === null || score === undefined) return 'var(--border)';
+  if (score >= 9) return 'var(--green)';
+  if (score >= 7) return '#3fb950';
+  if (score >= 5) return 'var(--yellow)';
+  if (score >= 3) return 'var(--red)';
+  return '#f85149';
+}
+
+function addProject(data) {
+  // Prevent duplicate by projectName
+  const existing = projects.findIndex(p => p.projectName === data.projectName);
+  if (existing >= 0) {
+    projects[existing] = data;
+  } else {
+    projects.push(data);
+  }
+  render();
+}
+
+function clearAll() {
+  projects = [];
+  render();
+}
+
+function render() {
+  document.getElementById('headerSub').textContent =
+    projects.length === 0
+      ? 'Load project dashboard files to compare'
+      : `${projects.length} project${projects.length > 1 ? 's' : ''} loaded`;
+
+  document.getElementById('uploadZone').style.display = projects.length === 0 ? '' : 'none';
+
+  renderCards();
+  renderComparison();
+  renderRisks();
+}
+
+function renderCards() {
+  const container = document.getElementById('projectCards');
+  container.innerHTML = '';
+
+  projects.forEach(proj => {
+    const card = document.createElement('div');
+    card.className = 'project-card';
+
+    const experts = proj.experts || {};
+    const score = proj.overallScore;
+    const color = scoreColor(score);
+    const taskCount = (proj.tasks || []).length;
+    const riskCount = (proj.risks || []).filter(r => r.severity === 'critical' || r.severity === 'high').length;
+
+    let miniBars = '';
+    EXPERT_KEYS.forEach(key => {
+      const exp = experts[key] || {};
+      const s = exp.score;
+      const pct = s != null ? s * 10 : 0;
+      const c = scoreColor(s);
+      miniBars += `
+        <div class="mini-bar-row">
+          <span class="mini-bar-label">${EXPERT_LABELS[key]}</span>
+          <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:${pct}%;background:${c}"></div></div>
+          <span class="mini-bar-value" style="color:${c}">${s != null ? s : '--'}</span>
+        </div>`;
+    });
+
+    card.innerHTML = `
+      <div class="project-name">${proj.projectName || 'Unknown'}</div>
+      <div class="project-meta">${taskCount} tasks / ${riskCount} high risks / assessed ${proj.assessmentCount || 0}x</div>
+      <div class="project-score" style="color:${color}">${score != null ? score : '--'}<small>/10</small></div>
+      <div class="mini-bars">${miniBars}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderComparison() {
+  const card = document.getElementById('comparisonCard');
+  const table = document.getElementById('comparisonTable');
+
+  if (projects.length < 2) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = '';
+
+  // Header
+  let header = '<thead><tr><th>Domain</th>';
+  projects.forEach(p => { header += `<th style="text-align:center">${p.projectName || 'Unknown'}</th>`; });
+  header += '</tr></thead>';
+
+  // Body
+  let body = '<tbody>';
+  EXPERT_KEYS.forEach(key => {
+    body += `<tr><td class="domain-name">${EXPERT_LABELS[key]}</td>`;
+    const scores = projects.map(p => (p.experts && p.experts[key] && p.experts[key].score) || null);
+    const validScores = scores.filter(s => s !== null);
+    const best = validScores.length > 0 ? Math.max(...validScores) : null;
+    const worst = validScores.length > 0 ? Math.min(...validScores) : null;
+
+    scores.forEach(s => {
+      const color = scoreColor(s);
+      let cls = 'score-cell';
+      if (s !== null && validScores.length > 1) {
+        if (s === best) cls += ' best';
+        if (s === worst && worst !== best) cls += ' worst';
+      }
+      body += `<td class="${cls}" style="color:${color}">${s != null ? s : '--'}</td>`;
+    });
+    body += '</tr>';
+  });
+
+  // Overall row
+  body += '<tr style="font-weight:700;border-top:2px solid var(--border)"><td>Overall</td>';
+  projects.forEach(p => {
+    const s = p.overallScore;
+    body += `<td class="score-cell" style="color:${scoreColor(s)}">${s != null ? s : '--'}</td>`;
+  });
+  body += '</tr></tbody>';
+
+  table.innerHTML = header + body;
+}
+
+function renderRisks() {
+  const card = document.getElementById('risksCard');
+  const list = document.getElementById('risksList');
+
+  const allRisks = [];
+  projects.forEach(proj => {
+    (proj.risks || []).forEach(r => {
+      allRisks.push({ ...r, projectName: proj.projectName });
+    });
+  });
+
+  if (allRisks.length === 0) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = '';
+
+  // Sort: critical first, then high, medium, low
+  const order = { critical: 0, high: 1, medium: 2, low: 3 };
+  allRisks.sort((a, b) => (order[a.severity] || 4) - (order[b.severity] || 4));
+
+  list.innerHTML = '';
+  allRisks.forEach(r => {
+    const item = document.createElement('div');
+    item.className = 'risk-item';
+    item.innerHTML = `
+      <span class="risk-badge ${r.severity}">${r.severity}</span>
+      <span class="risk-project">${r.projectName}</span>
+      <span class="risk-desc">${r.description}</span>
+    `;
+    list.appendChild(item);
+  });
+}
+
+// File handling
+function handleFiles(event) {
+  const files = event.target.files;
+  for (const file of files) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target.result);
+        addProject(data);
+      } catch (err) {
+        alert('Invalid JSON: ' + file.name + ' - ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+  event.target.value = '';
+}
+
+// Drag and drop
+const zone = document.getElementById('uploadZone');
+document.body.addEventListener('dragover', e => {
+  e.preventDefault();
+  zone.classList.add('dragover');
+  zone.style.display = '';
+});
+document.body.addEventListener('dragleave', e => {
+  zone.classList.remove('dragover');
+  if (projects.length > 0) zone.style.display = 'none';
+});
+document.body.addEventListener('drop', e => {
+  e.preventDefault();
+  zone.classList.remove('dragover');
+  const files = e.dataTransfer.files;
+  for (const file of files) {
+    if (!file.name.endsWith('.json')) continue;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        addProject(JSON.parse(ev.target.result));
+      } catch (err) {
+        alert('Invalid JSON: ' + file.name);
+      }
+    };
+    reader.readAsText(file);
+  }
+});
+
+// Theme toggle
+function getTheme() { return localStorage.getItem('pm-dashboard-theme') || 'dark'; }
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeToggle');
+  btn.textContent = theme === 'dark' ? '\u263E' : '\u2600';
+  localStorage.setItem('pm-dashboard-theme', theme);
+}
+function toggleTheme() { applyTheme(getTheme() === 'dark' ? 'light' : 'dark'); }
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key.toLowerCase() === 't') { toggleTheme(); e.preventDefault(); }
+});
+applyTheme(getTheme());
+</script>
+</body>
+</html>

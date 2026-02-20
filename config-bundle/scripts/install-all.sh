@@ -181,4 +181,13 @@ if ! command -v claude &> /dev/null; then
     echo ""
 fi
 
+# Write installation manifest
+if [ -f "$REPO_ROOT/scripts/manifest-helper.sh" ]; then
+    source "$REPO_ROOT/scripts/manifest-helper.sh"
+    AGENT_COUNT=$(ls ~/.claude/agents 2>/dev/null | wc -l | tr -d ' ')
+    SKILL_COUNT=$(find ~/.claude/skills -maxdepth 2 -name "SKILL.md" -o -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+    HOOK_COUNT=$(ls ~/.claude/hooks/*.json 2>/dev/null | wc -l | tr -d ' ')
+    update_manifest "config-bundle" "{\"agents\": ${AGENT_COUNT}, \"skills\": ${SKILL_COUNT}, \"hooks\": ${HOOK_COUNT}}"
+fi
+
 echo "Enjoy your optimized Claude Code experience! 🚀"

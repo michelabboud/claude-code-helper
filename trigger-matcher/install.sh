@@ -120,4 +120,11 @@ echo ""
 echo -e "${YELLOW}Note:${NC} The trigger system requires Claude Code hooks to be enabled."
 echo "Hooks are configured in ~/.claude/settings.json"
 echo ""
+# Write installation manifest
+if [ -f "$REPO_ROOT/scripts/manifest-helper.sh" ]; then
+    source "$REPO_ROOT/scripts/manifest-helper.sh"
+    HOOK_COUNT=$(ls "${HOOKS_DIR}"/*.json 2>/dev/null | wc -l | tr -d ' ')
+    update_manifest "trigger-matcher" "{\"hooks\": ${HOOK_COUNT}}"
+fi
+
 echo "For documentation, see: trigger-matcher/README.md"

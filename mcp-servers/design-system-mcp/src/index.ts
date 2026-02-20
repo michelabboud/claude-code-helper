@@ -13,8 +13,6 @@
  * Created with assistance from Claude Code (Anthropic)
  */
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -22,8 +20,8 @@ import {
 import { z } from "zod";
 import * as fs from "fs/promises";
 import * as path from "path";
-import { parse as parseCSS } from "css";
 import { JSDOM } from "jsdom";
+import { runServer, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
 // Tool input schemas
 const ValidateTokensSchema = z.object({
@@ -63,32 +61,19 @@ const GenerateReportSchema = z.object({
   includeRecommendations: z.boolean().optional().describe("Include fix recommendations"),
 });
 
-// MCP Server
-const server = new Server(
-  {
-    name: "design-system-mcp",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
-
 // Design token validation
 interface DesignTokens {
   colors?: Record<string, string>;
   spacing?: Record<string, string>;
-  typography?: Record<string, any>;
-  [key: string]: any;
+  typography?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
 interface ValidationResult {
   valid: boolean;
   errors: Array<{ rule: string; message: string; severity: string }>;
   warnings: Array<{ rule: string; message: string }>;
-  stats: Record<string, any>;
+  stats: Record<string, unknown>;
 }
 
 // Helper functions
@@ -122,10 +107,10 @@ async function validateTokens(
 
     result.valid = result.errors.length === 0;
     return result;
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       valid: false,
-      errors: [{ rule: "file_load", message: error.message, severity: "error" }],
+      errors: [{ rule: "file_load", message: error instanceof Error ? error.message : String(error), severity: "error" }],
       warnings: [],
       stats: {},
     };
@@ -203,7 +188,7 @@ function validateTypographyScale(tokens: DesignTokens, result: ValidationResult)
   
   const fontSizes = Object.entries(tokens.typography)
     .filter(([key]) => key.includes("size") || key.includes("fontSize"))
-    .map(([, value]: [string, any]) => parseFloat(String(value).replace(/px|rem|em/g, "")));
+    .map(([, value]: [string, unknown]) => parseFloat(String(value).replace(/px|rem|em/g, "")));
   
   // Check if it follows a modular scale (e.g., 1.25 ratio)
   const ratios = [];
@@ -232,7 +217,7 @@ async function checkComponent(
 ): Promise<ValidationResult> {
   try {
     const componentContent = await fs.readFile(componentPath, "utf-8");
-    const designSystem = JSON.parse(await fs.readFile(designSystemPath, "utf-8"));
+    const designSystem: DesignTokens = JSON.parse(await fs.readFile(designSystemPath, "utf-8")) as DesignTokens;
     
     const result: ValidationResult = {
       valid: true,
@@ -253,17 +238,17 @@ async function checkComponent(
 
     result.valid = result.errors.length === 0;
     return result;
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       valid: false,
-      errors: [{ rule: "component_check", message: error.message, severity: "error" }],
+      errors: [{ rule: "component_check", message: error instanceof Error ? error.message : String(error), severity: "error" }],
       warnings: [],
       stats: {},
     };
   }
 }
 
-function checkTokenUsage(content: string, designSystem: any, result: ValidationResult): void {
+function checkTokenUsage(content: string, _designSystem: DesignTokens, result: ValidationResult): void {
   // Check for hard-coded values that should use tokens
   const hardcodedColors = content.match(/#[0-9a-fA-F]{3,6}|rgb\(|rgba\(/g) || [];
   const hardcodedSpacing = content.match(/\d+px(?!\s*\))/g) || [];
@@ -325,10 +310,10 @@ async function checkAccessibility(content: string, result: ValidationResult): Pr
     }
     
     result.stats.accessibilityChecks = 3;
-  } catch (error: any) {
+  } catch (error: unknown) {
     result.warnings.push({
       rule: "accessibility",
-      message: `Could not parse HTML for accessibility checks: ${error.message}`,
+      message: `Could not parse HTML for accessibility checks: ${error instanceof Error ? error.message : String(error)}`,
     });
   }
 }
@@ -358,7 +343,7 @@ async function validateColorPalette(
   wcagLevel: string = "AA"
 ): Promise<ValidationResult> {
   try {
-    const colors = JSON.parse(await fs.readFile(colorsFile, "utf-8"));
+    const colors: Record<string, string> = JSON.parse(await fs.readFile(colorsFile, "utf-8")) as Record<string, string>;
     const result: ValidationResult = {
       valid: true,
       errors: [],
@@ -375,8 +360,8 @@ async function validateColorPalette(
     
     for (let i = 0; i < colorEntries.length; i++) {
       for (let j = i + 1; j < colorEntries.length; j++) {
-        const [key1, color1] = colorEntries[i];
-        const [key2, color2] = colorEntries[j];
+        const [, color1] = colorEntries[i];
+        const [, color2] = colorEntries[j];
         const ratio = calculateContrastRatio(color1 as string, color2 as string);
         
         totalPairs++;
@@ -391,17 +376,17 @@ async function validateColorPalette(
     result.stats.compliancePercentage = ((passingPairs / totalPairs) * 100).toFixed(1);
     
     return result;
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       valid: false,
-      errors: [{ rule: "color_palette", message: error.message, severity: "error" }],
+      errors: [{ rule: "color_palette", message: error instanceof Error ? error.message : String(error), severity: "error" }],
       warnings: [],
       stats: {},
     };
   }
 }
 
-async function analyzeSpacing(directory: string, baseUnit: number = 8): Promise<any> {
+async function analyzeSpacing(directory: string, baseUnit: number = 8): Promise<Record<string, unknown>> {
   try {
     const files = await getStyleFiles(directory);
     const spacingValues: number[] = [];
@@ -427,8 +412,8 @@ async function analyzeSpacing(directory: string, baseUnit: number = 8): Promise<
         suggested: Math.round(v / baseUnit) * baseUnit,
       })),
     };
-  } catch (error: any) {
-    return { error: error.message };
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? error.message : String(error) };
   }
 }
 
@@ -438,33 +423,33 @@ async function generateReport(
   includeRecommendations: boolean = false
 ): Promise<string> {
   try {
-    const results = JSON.parse(await fs.readFile(resultsPath, "utf-8"));
-    
+    const results: ValidationResult = JSON.parse(await fs.readFile(resultsPath, "utf-8")) as ValidationResult;
+
     if (format === "json") {
       return JSON.stringify(results, null, 2);
     }
-    
+
     if (format === "markdown") {
       return generateMarkdownReport(results, includeRecommendations);
     }
-    
+
     if (format === "html") {
       return generateHTMLReport(results, includeRecommendations);
     }
-    
+
     return JSON.stringify(results, null, 2);
-  } catch (error: any) {
-    return JSON.stringify({ error: error.message }, null, 2);
+  } catch (error: unknown) {
+    return JSON.stringify({ error: error instanceof Error ? error.message : String(error) }, null, 2);
   }
 }
 
 // Utility functions
-function getAllKeys(obj: any, prefix: string = ""): string[] {
+function getAllKeys(obj: Record<string, unknown>, prefix: string = ""): string[] {
   let keys: string[] = [];
   for (const [key, value] of Object.entries(obj)) {
     const fullKey = prefix ? `${prefix}-${key}` : key;
     if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-      keys = keys.concat(getAllKeys(value, fullKey));
+      keys = keys.concat(getAllKeys(value as Record<string, unknown>, fullKey));
     } else {
       keys.push(fullKey);
     }
@@ -509,7 +494,7 @@ async function getStyleFiles(directory: string): Promise<string[]> {
   return files;
 }
 
-function generateMarkdownReport(results: any, includeRecommendations: boolean): string {
+function generateMarkdownReport(results: ValidationResult, includeRecommendations: boolean): string {
   let report = `# Design System Validation Report\n\n`;
   report += `## Summary\n`;
   report += `- Valid: ${results.valid ? "✅ Yes" : "❌ No"}\n`;
@@ -518,7 +503,7 @@ function generateMarkdownReport(results: any, includeRecommendations: boolean): 
   
   if (results.errors?.length > 0) {
     report += `## Errors\n`;
-    results.errors.forEach((err: any) => {
+    results.errors.forEach((err) => {
       report += `- **${err.rule}**: ${err.message}\n`;
     });
     report += `\n`;
@@ -526,7 +511,7 @@ function generateMarkdownReport(results: any, includeRecommendations: boolean): 
   
   if (results.warnings?.length > 0) {
     report += `## Warnings\n`;
-    results.warnings.forEach((warn: any) => {
+    results.warnings.forEach((warn) => {
       report += `- **${warn.rule}**: ${warn.message}\n`;
     });
     report += `\n`;
@@ -549,7 +534,7 @@ function generateMarkdownReport(results: any, includeRecommendations: boolean): 
   return report;
 }
 
-function generateHTMLReport(results: any, includeRecommendations: boolean): string {
+function generateHTMLReport(results: ValidationResult, includeRecommendations: boolean): string {
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -575,220 +560,191 @@ function generateHTMLReport(results: any, includeRecommendations: boolean): stri
 </html>`;
 }
 
-// Tool handlers
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: [
-      {
-        name: "validate_tokens",
-        description: "Validate design tokens for naming conventions, color contrast, spacing scales, and typography scales. Ensures consistency across your design system.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            tokensFile: { type: "string", description: "Path to design tokens JSON/CSS file" },
-            rules: {
-              type: "array",
-              items: {
-                type: "string",
-                enum: ["naming_convention", "color_contrast", "spacing_scale", "typography_scale"]
-              },
-              description: "Validation rules to apply"
-            },
-          },
-          required: ["tokensFile"],
-        },
-        annotations: {
-          readOnlyHint: true,
-          destructiveHint: false,
-          idempotentHint: true,
-        },
-      },
-      {
-        name: "check_component",
-        description: "Check component for design system compliance including token usage, accessibility, responsive design, and API consistency.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            componentPath: { type: "string", description: "Path to component file" },
-            designSystemPath: { type: "string", description: "Path to design system config" },
-            checks: {
-              type: "array",
-              items: {
-                type: "string",
-                enum: ["token_usage", "accessibility", "responsive_design", "component_api"]
-              },
-              description: "Checks to perform"
-            },
-          },
-          required: ["componentPath", "designSystemPath"],
-        },
-        annotations: {
-          readOnlyHint: true,
-          destructiveHint: false,
-          idempotentHint: true,
-        },
-      },
-      {
-        name: "validate_color_palette",
-        description: "Validate color palette for WCAG contrast compliance. Checks all color combinations for accessibility.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            colorsFile: { type: "string", description: "Path to colors configuration" },
-            wcagLevel: {
-              type: "string",
-              enum: ["AA", "AAA"],
-              description: "WCAG compliance level"
-            },
-          },
-          required: ["colorsFile"],
-        },
-        annotations: {
-          readOnlyHint: true,
-          destructiveHint: false,
-          idempotentHint: true,
-        },
-      },
-      {
-        name: "analyze_spacing",
-        description: "Analyze spacing values across stylesheets to ensure consistency with your spacing scale. Identifies non-compliant values.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            directory: { type: "string", description: "Directory to analyze" },
-            baseUnit: { type: "number", description: "Base spacing unit (default: 8)" },
-          },
-          required: ["directory"],
-        },
-        annotations: {
-          readOnlyHint: true,
-          destructiveHint: false,
-          idempotentHint: true,
-        },
-      },
-      {
-        name: "generate_report",
-        description: "Generate comprehensive design system validation reports in multiple formats with optional recommendations.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            resultsPath: { type: "string", description: "Path to validation results JSON" },
-            format: {
-              type: "string",
-              enum: ["markdown", "html", "json"],
-              description: "Report format"
-            },
-            includeRecommendations: {
-              type: "boolean",
-              description: "Include fix recommendations"
-            },
-          },
-          required: ["resultsPath", "format"],
-        },
-        annotations: {
-          readOnlyHint: true,
-          destructiveHint: false,
-          idempotentHint: true,
-        },
-      },
-    ],
-  };
-});
-
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params;
-
-  try {
-    switch (name) {
-      case "validate_tokens": {
-        const { tokensFile, rules } = ValidateTokensSchema.parse(args);
-        const result = await validateTokens(tokensFile, rules);
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      case "check_component": {
-        const { componentPath, designSystemPath, checks } = CheckComponentSchema.parse(args);
-        const result = await checkComponent(componentPath, designSystemPath, checks);
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      case "validate_color_palette": {
-        const { colorsFile, wcagLevel } = ValidateColorPaletteSchema.parse(args);
-        const result = await validateColorPalette(colorsFile, wcagLevel);
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      case "analyze_spacing": {
-        const { directory, baseUnit } = AnalyzeSpacingSchema.parse(args);
-        const result = await analyzeSpacing(directory, baseUnit);
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(result, null, 2),
-            },
-          ],
-        };
-      }
-
-      case "generate_report": {
-        const { resultsPath, format, includeRecommendations } = GenerateReportSchema.parse(args);
-        const result = await generateReport(resultsPath, format, includeRecommendations);
-        return {
-          content: [
-            {
-              type: "text",
-              text: result,
-            },
-          ],
-        };
-      }
-
-      default:
-        throw new Error(`Unknown tool: ${name}`);
-    }
-  } catch (error: any) {
+// Start server with runServer factory
+runServer({ name: "design-system-mcp", version: "1.0.0" }, ({ server, logger }) => {
+  // Tool handlers
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
-      content: [
+      tools: [
         {
-          type: "text",
-          text: `Error: ${error.message}`,
+          name: "validate_tokens",
+          description: "Validate design tokens for naming conventions, color contrast, spacing scales, and typography scales. Ensures consistency across your design system.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              tokensFile: { type: "string", description: "Path to design tokens JSON/CSS file" },
+              rules: {
+                type: "array",
+                items: {
+                  type: "string",
+                  enum: ["naming_convention", "color_contrast", "spacing_scale", "typography_scale"]
+                },
+                description: "Validation rules to apply"
+              },
+            },
+            required: ["tokensFile"],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
+        {
+          name: "check_component",
+          description: "Check component for design system compliance including token usage, accessibility, responsive design, and API consistency.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              componentPath: { type: "string", description: "Path to component file" },
+              designSystemPath: { type: "string", description: "Path to design system config" },
+              checks: {
+                type: "array",
+                items: {
+                  type: "string",
+                  enum: ["token_usage", "accessibility", "responsive_design", "component_api"]
+                },
+                description: "Checks to perform"
+              },
+            },
+            required: ["componentPath", "designSystemPath"],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
+        {
+          name: "validate_color_palette",
+          description: "Validate color palette for WCAG contrast compliance. Checks all color combinations for accessibility.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              colorsFile: { type: "string", description: "Path to colors configuration" },
+              wcagLevel: {
+                type: "string",
+                enum: ["AA", "AAA"],
+                description: "WCAG compliance level"
+              },
+            },
+            required: ["colorsFile"],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
+        {
+          name: "analyze_spacing",
+          description: "Analyze spacing values across stylesheets to ensure consistency with your spacing scale. Identifies non-compliant values.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              directory: { type: "string", description: "Directory to analyze" },
+              baseUnit: { type: "number", description: "Base spacing unit (default: 8)" },
+            },
+            required: ["directory"],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
+        },
+        {
+          name: "generate_report",
+          description: "Generate comprehensive design system validation reports in multiple formats with optional recommendations.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              resultsPath: { type: "string", description: "Path to validation results JSON" },
+              format: {
+                type: "string",
+                enum: ["markdown", "html", "json"],
+                description: "Report format"
+              },
+              includeRecommendations: {
+                type: "boolean",
+                description: "Include fix recommendations"
+              },
+            },
+            required: ["resultsPath", "format"],
+          },
+          annotations: {
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+          },
         },
       ],
-      isError: true,
     };
-  }
-});
+  });
 
-// Start server
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Design System MCP Server running on stdio");
-}
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    const { name, arguments: args } = request.params;
+    const requestId = generateRequestId();
+    const startTime = performance.now();
 
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
+    logger.info("Tool called", { requestId, tool: name, args });
+
+    try {
+      let response;
+
+      switch (name) {
+        case "validate_tokens": {
+          const { tokensFile, rules } = ValidateTokensSchema.parse(args);
+          const safePath = sanitizePath(tokensFile, process.cwd());
+          const result = await validateTokens(safePath, rules);
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "check_component": {
+          const { componentPath, designSystemPath, checks } = CheckComponentSchema.parse(args);
+          const safeComponentPath = sanitizePath(componentPath, process.cwd());
+          const safeDesignSystemPath = sanitizePath(designSystemPath, process.cwd());
+          const result = await checkComponent(safeComponentPath, safeDesignSystemPath, checks);
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "validate_color_palette": {
+          const { colorsFile, wcagLevel } = ValidateColorPaletteSchema.parse(args);
+          const safePath = sanitizePath(colorsFile, process.cwd());
+          const result = await validateColorPalette(safePath, wcagLevel);
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "analyze_spacing": {
+          const { directory, baseUnit } = AnalyzeSpacingSchema.parse(args);
+          const safeDirectory = sanitizePath(directory, process.cwd());
+          const result = await analyzeSpacing(safeDirectory, baseUnit);
+          response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
+          break;
+        }
+
+        case "generate_report": {
+          const { resultsPath, format, includeRecommendations } = GenerateReportSchema.parse(args);
+          const safePath = sanitizePath(resultsPath, process.cwd());
+          const result = await generateReport(safePath, format, includeRecommendations);
+          response = { content: [{ type: "text", text: result }] };
+          break;
+        }
+
+        default:
+          throw new Error(`Unknown tool: ${name}`);
+      }
+
+      const durationMs = measureDuration(startTime);
+      logger.info("Tool completed", { requestId, tool: name, durationMs });
+      return response;
+    } catch (error: unknown) {
+      const durationMs = measureDuration(startTime);
+      logger.error("Tool failed", { requestId, tool: name, durationMs, error: error instanceof Error ? error.message : String(error) });
+      return errorResponse(error, name);
+    }
+  });
 });

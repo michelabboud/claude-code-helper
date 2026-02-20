@@ -3,6 +3,7 @@ name: devops-infrastructure-expert
 description: 'DevOps and Infrastructure specialist for containers, orchestration, CI/CD, and cloud deployments. Use for Docker, Kubernetes, CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins), cloud platforms (AWS, GCP, Azure), Infrastructure as Code (Terraform, Pulumi), monitoring, logging, and deployment strategies. Examples: "create Dockerfile", "set up Kubernetes deployment", "build CI/CD pipeline", "deploy to AWS", "configure monitoring"'
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+isolation: worktree
 
 visual:
   emoji: "🚀"

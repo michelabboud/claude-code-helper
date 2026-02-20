@@ -3,6 +3,7 @@ name: performance-optimizer
 description: 'Performance optimization specialist. Use for speed improvements, bundle size reduction, memory optimization, caching strategies, profiling, performance auditing. Examples: "optimize performance", "reduce bundle size", "fix memory leak", "improve loading speed", "analyze performance"'
 tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch
 model: opus
+background: true
 
 visual:
   emoji: "⚡"

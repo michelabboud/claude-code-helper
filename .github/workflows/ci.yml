@@ -1,0 +1,447 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ──────────────────────────────────────────────
+  # Job 1: Build all MCP servers
+  # ──────────────────────────────────────────────
+  build-mcp-servers:
+    name: Build MCP Servers
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - api-specialist-mcp
+          - code-review-mcp
+          - design-system-mcp
+          - testing-mcp
+          - uiux-review-mcp
+          - cicd-pipeline
+          - database-operations
+          - dependency-management
+          - n8n-automation
+          - rag-mcp
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mcp-servers/${{ matrix.server }}/package.json
+
+      - name: Build shared library
+        working-directory: mcp-servers/mcp-shared
+        run: npm install && npm run build
+
+      - name: Install dependencies
+        working-directory: mcp-servers/${{ matrix.server }}
+        run: npm install
+
+      - name: Build
+        working-directory: mcp-servers/${{ matrix.server }}
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -f "mcp-servers/${{ matrix.server }}/build/index.js" ]; then
+            echo "::error::Build artifact missing: mcp-servers/${{ matrix.server }}/build/index.js"
+            exit 1
+          fi
+          echo "Build verified: mcp-servers/${{ matrix.server }}/build/index.js"
+
+  # ──────────────────────────────────────────────
+  # Job 2: Build and test mcp-shared library
+  # ──────────────────────────────────────────────
+  test-mcp-shared:
+    name: Test MCP Shared
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mcp-servers/mcp-shared/package.json
+
+      - name: Install dependencies
+        working-directory: mcp-servers/mcp-shared
+        run: npm install
+
+      - name: Build
+        working-directory: mcp-servers/mcp-shared
+        run: npm run build
+
+      - name: Run tests
+        working-directory: mcp-servers/mcp-shared
+        run: npm test
+
+  # ──────────────────────────────────────────────
+  # Job 2b: Test MCP servers (servers with tests)
+  # ──────────────────────────────────────────────
+  test-mcp-servers:
+    name: Test MCP Servers
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - code-review-mcp
+          - api-specialist-mcp
+          - design-system-mcp
+          - testing-mcp
+          - uiux-review-mcp
+          - cicd-pipeline
+          - database-operations
+          - dependency-management
+          - n8n-automation
+          - rag-mcp
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build shared library
+        working-directory: mcp-servers/mcp-shared
+        run: npm install && npm run build
+
+      - name: Install dependencies
+        working-directory: mcp-servers/${{ matrix.server }}
+        run: npm install
+
+      - name: Run tests
+        working-directory: mcp-servers/${{ matrix.server }}
+        run: npm test
+
+  # ──────────────────────────────────────────────
+  # Job 3: Build and test trigger-matcher
+  # ──────────────────────────────────────────────
+  test-trigger-matcher:
+    name: Test Trigger Matcher
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: trigger-matcher/package.json
+
+      - name: Install dependencies
+        working-directory: trigger-matcher
+        run: npm install
+
+      - name: Build
+        working-directory: trigger-matcher
+        run: npm run build
+
+      - name: Run tests
+        working-directory: trigger-matcher
+        run: npm test
+
+  # ──────────────────────────────────────────────
+  # Job 3: Lint TypeScript
+  # ──────────────────────────────────────────────
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install lint dependencies
+        run: npm install
+
+      - name: Run ESLint (zero tolerance)
+        run: npx eslint --max-warnings 0 .
+
+  # ──────────────────────────────────────────────
+  # Job 3b: TypeScript type checking
+  # ──────────────────────────────────────────────
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dir: mcp-servers/mcp-shared
+          - dir: trigger-matcher
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.dir }}
+        run: npm install
+
+      - name: Type check
+        working-directory: ${{ matrix.dir }}
+        run: npx tsc --noEmit
+
+  # ──────────────────────────────────────────────
+  # Job 4: Validate agent/skill/command frontmatter
+  # ──────────────────────────────────────────────
+  validate-frontmatter:
+    name: Validate Frontmatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install yaml parser
+        run: npm install --no-save yaml
+
+      - name: Validate frontmatter
+        run: node scripts/validate-frontmatter.mjs
+
+  # ──────────────────────────────────────────────
+  # Job 5: Shell script validation
+  # ──────────────────────────────────────────────
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck
+        run: |
+          find . -name '*.sh' \
+            -not -path '*/node_modules/*' \
+            -not -path '*/venv/*' \
+            -not -path '*/build/*' \
+            -not -path '*/demo/*' \
+            | while read -r script; do
+              echo "Checking: $script"
+              shellcheck --severity=warning "$script" || true
+            done
+
+          # Strict check on critical install scripts (fail the job if these have issues)
+          echo ""
+          echo "=== Strict check on install scripts ==="
+          shellcheck --severity=error \
+            mcp-servers/install-all.sh \
+            config-bundle/scripts/install-all.sh \
+            skills/pm-dashboard/pm-tui.sh
+
+  # ──────────────────────────────────────────────
+  # Job 6: Security scan
+  # ──────────────────────────────────────────────
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check for secrets in code
+        run: |
+          echo "Scanning for potential secrets..."
+          FOUND=0
+
+          # Check for hardcoded API keys, passwords, tokens in source files
+          if grep -rn --include='*.ts' --include='*.js' --include='*.json' \
+            -E '(api[_-]?key|password|secret|token)\s*[:=]\s*["\x27][A-Za-z0-9+/=]{20,}' \
+            --exclude-dir=node_modules \
+            --exclude-dir=build \
+            --exclude-dir=demo \
+            --exclude='package-lock.json' \
+            .; then
+            echo "::error::Potential secrets found in source files"
+            FOUND=1
+          fi
+
+          # Check for .env files that shouldn't be committed
+          if find . -name '.env' -not -path '*/node_modules/*' -not -name '.env.example' | grep -q .; then
+            echo "::error::.env file found in repository"
+            FOUND=1
+          fi
+
+          if [ "$FOUND" -eq 1 ]; then
+            echo "::error::Security scan failed - secrets or .env files detected"
+            exit 1
+          else
+            echo "No secrets detected"
+          fi
+
+      - name: Audit MCP server dependencies
+        run: |
+          echo "=== Dependency Audit ==="
+          AUDIT_FAILED=0
+
+          for dir in mcp-servers/*/; do
+            server=$(basename "$dir")
+            if [ -f "$dir/package.json" ]; then
+              echo ""
+              echo "--- $server ---"
+              cd "$dir"
+              npm install --ignore-scripts 2>/dev/null
+              npm audit --audit-level=high 2>/dev/null || {
+                echo "::error::High severity vulnerabilities in $server"
+                AUDIT_FAILED=1
+              }
+              cd - > /dev/null
+            fi
+          done
+
+          if [ "$AUDIT_FAILED" -eq 1 ]; then
+            echo ""
+            echo "::error::Some servers have high-severity vulnerabilities. Run 'npm audit fix' to resolve."
+            exit 1
+          fi
+
+  # ──────────────────────────────────────────────
+  # Job 7: Performance benchmarks (build time only)
+  # ──────────────────────────────────────────────
+  benchmark:
+    name: Build Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build shared library
+        working-directory: mcp-servers/mcp-shared
+        run: npm install && npm run build
+
+      - name: Benchmark MCP server builds
+        run: |
+          echo "MCP Server Build Times"
+          echo "======================"
+          TOTAL=0
+          FAILED=0
+          RESULTS="[]"
+          for dir in mcp-servers/*/; do
+            server=$(basename "$dir")
+            if [ "$server" = "mcp-shared" ]; then continue; fi
+            if [ ! -f "$dir/package.json" ]; then continue; fi
+            START=$(date +%s%N)
+            cd "$dir"
+            npm install --prefer-offline 2>/dev/null
+            if npm run build 2>/dev/null; then
+              END=$(date +%s%N)
+              ELAPSED=$(( (END - START) / 1000000 ))
+              echo "$server: ${ELAPSED}ms"
+              TOTAL=$((TOTAL + ELAPSED))
+              RESULTS=$(echo "$RESULTS" | jq --arg s "$server" --argjson t "$ELAPSED" '. + [{"server": $s, "buildTimeMs": $t}]')
+            else
+              echo "::error::$server: BUILD FAILED"
+              FAILED=$((FAILED + 1))
+            fi
+            cd - > /dev/null
+          done
+          echo ""
+          echo "Total build time: ${TOTAL}ms"
+
+          # Save results to JSON file
+          jq -n \
+            --argjson results "$RESULTS" \
+            --argjson total "$TOTAL" \
+            --argjson failed "$FAILED" \
+            --arg date "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg commit "${{ github.sha }}" \
+            '{
+              date: $date,
+              commit: $commit,
+              totalBuildTimeMs: $total,
+              failedBuilds: $failed,
+              servers: $results
+            }' > benchmark-results.json
+
+          echo ""
+          echo "=== Benchmark Results ==="
+          cat benchmark-results.json
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo "::error::$FAILED server(s) failed to build"
+            exit 1
+          fi
+
+          # Enforce total build time SLA (120 seconds = 120000ms)
+          if [ "$TOTAL" -gt 120000 ]; then
+            echo "::warning::Total build time (${TOTAL}ms) exceeds 120s SLA"
+          fi
+
+      - name: Upload benchmark results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark-results.json
+          retention-days: 90
+
+  # ──────────────────────────────────────────────
+  # Job 8: Markdown link validation
+  # ──────────────────────────────────────────────
+  validate-links:
+    name: Validate Links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check internal markdown links
+        run: |
+          echo "Checking internal markdown links..."
+          BROKEN=0
+
+          # Find all markdown links to local files
+          grep -rn --include='*.md' -oP '\[.*?\]\((?!https?://|#|mailto:)(.*?)\)' \
+            --exclude-dir=node_modules \
+            --exclude-dir=build \
+            --exclude-dir=demo \
+            --exclude-dir=venv \
+            . | while IFS= read -r line; do
+              file=$(echo "$line" | cut -d: -f1)
+              lineno=$(echo "$line" | cut -d: -f2)
+              # Extract the path from the markdown link
+              target=$(echo "$line" | grep -oP '\((?!https?://|#|mailto:)\K[^)#]+')
+
+              if [ -z "$target" ]; then
+                continue
+              fi
+
+              # Resolve relative to the file's directory
+              dir=$(dirname "$file")
+              resolved="$dir/$target"
+
+              if [ ! -e "$resolved" ] && [ ! -e "$target" ]; then
+                echo "::warning file=$file,line=$lineno::Broken link: $target"
+                BROKEN=1
+              fi
+            done
+
+          if [ "$BROKEN" -eq 0 ]; then
+            echo "All internal links valid"
+          fi

@@ -3,6 +3,7 @@ name: database-expert
 description: 'Database specialist for SQL, PostgreSQL, MySQL, SQLite, migrations, queries, optimization, schema design. Use for: database design, writing queries, migrations, performance tuning, indexing. Examples: "design database schema", "optimize this query", "create migration", "add indexes"'
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+memory: project
 
 # Visual Indicators (Phase 1)
 visual:

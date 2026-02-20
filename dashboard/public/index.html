@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root, [data-theme="dark"] {
+  --bg-0: #09090b; --bg-1: #131316; --bg-2: #1c1c22; --bg-3: #27272f;
+  --border: #27272f; --border-hover: #3f3f4a;
+  --text-0: #fafafa; --text-1: #a1a1aa; --text-2: #63636e;
+  --accent: #818cf8; --accent-hover: #6366f1; --accent-bg: rgba(129,140,248,0.07);
+  --green: #4ade80; --green-bg: rgba(74,222,128,0.07);
+  --yellow: #fbbf24; --yellow-bg: rgba(251,191,36,0.07);
+  --red: #f87171; --red-bg: rgba(248,113,113,0.07);
+  --blue: #60a5fa; --blue-bg: rgba(96,165,250,0.07);
+  --cyan: #22d3ee;
+  --ring-track: #27272f;
+  --radar-grid: rgba(99,99,110,0.2); --radar-fill: rgba(129,140,248,0.12);
+  --scrollbar: #27272f; --scrollbar-hover: #3f3f4a;
+}
+[data-theme="light"] {
+  --bg-0: #fafafa; --bg-1: #ffffff; --bg-2: #f4f4f5; --bg-3: #e4e4e7;
+  --border: #e4e4e7; --border-hover: #d4d4d8;
+  --text-0: #09090b; --text-1: #52525b; --text-2: #a1a1aa;
+  --accent: #6366f1; --accent-hover: #4f46e5; --accent-bg: rgba(99,102,241,0.05);
+  --green: #16a34a; --green-bg: rgba(22,163,74,0.05);
+  --yellow: #d97706; --yellow-bg: rgba(217,119,6,0.05);
+  --red: #dc2626; --red-bg: rgba(220,38,38,0.05);
+  --blue: #2563eb; --blue-bg: rgba(37,99,235,0.05);
+  --cyan: #0891b2;
+  --ring-track: #e4e4e7;
+  --radar-grid: rgba(0,0,0,0.08); --radar-fill: rgba(99,102,241,0.08);
+  --scrollbar: #d4d4d8; --scrollbar-hover: #a1a1aa;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-0); color: var(--text-0);
+  display: flex; overflow: hidden; font-size: 13px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 232px; background: var(--bg-1); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; flex-shrink: 0; z-index: 10;
+}
+.sidebar-header {
+  padding: 20px 16px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-header svg { width: 22px; height: 22px; color: var(--accent); flex-shrink: 0; }
+.sidebar-header span { font-size: 14px; font-weight: 600; }
+.sidebar-section { padding: 12px; }
+.sidebar-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--text-2); padding: 0 8px 8px; margin-top: 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px;
+  font-size: 13px; font-weight: 500; color: var(--text-1); cursor: pointer;
+  transition: all 0.12s; user-select: none; text-decoration: none;
+}
+.nav-item:hover { background: var(--bg-2); color: var(--text-0); }
+.nav-item.active { background: var(--accent-bg); color: var(--accent); }
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+.nav-item .badge {
+  margin-left: auto; font-size: 10px; font-weight: 600; padding: 1px 6px;
+  border-radius: 10px; background: var(--bg-3); color: var(--text-2);
+}
+.nav-item.active .badge { background: var(--accent-bg); color: var(--accent); }
+
+/* Project picker */
+.project-picker {
+  padding: 8px 12px; border-top: 1px solid var(--border); margin-top: auto;
+}
+.project-select {
+  width: 100%; padding: 7px 10px; border-radius: 6px; font-size: 12px;
+  background: var(--bg-2); color: var(--text-0); border: 1px solid var(--border);
+  cursor: pointer; font-family: inherit;
+}
+.project-select:focus { outline: none; border-color: var(--accent); }
+.project-select option { background: var(--bg-1); color: var(--text-0); }
+.project-meta-bar {
+  display: flex; gap: 12px; padding: 6px 2px 0; font-size: 10px; color: var(--text-2);
+}
+
+/* ── Main ── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+.topbar {
+  padding: 14px 24px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-title { font-size: 15px; font-weight: 600; }
+.topbar-subtitle { font-size: 12px; color: var(--text-2); }
+.topbar-actions { display: flex; align-items: center; gap: 6px; }
+.content { flex: 1; overflow-y: auto; padding: 20px 24px 40px; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 6px;
+  font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.12s;
+  border: 1px solid var(--border); background: var(--bg-2); color: var(--text-1);
+  font-family: inherit;
+}
+.btn:hover { border-color: var(--border-hover); color: var(--text-0); }
+.btn.active { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); }
+.btn-sm { padding: 4px 8px; font-size: 11px; }
+.btn svg { width: 14px; height: 14px; }
+
+/* ── Cards ── */
+.card {
+  background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px;
+  padding: 20px; transition: border-color 0.15s;
+}
+.card:hover { border-color: var(--border-hover); }
+.card-title {
+  font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-2); margin-bottom: 14px;
+}
+
+/* ── Grid ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
+.col-full { grid-column: 1 / -1; }
+
+/* ── Stat cards ── */
+.stat-card {
+  background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px;
+  padding: 16px 20px;
+}
+.stat-label { font-size: 11px; font-weight: 500; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.4px; }
+.stat-value { font-size: 28px; font-weight: 700; margin-top: 6px; font-variant-numeric: tabular-nums; }
+.stat-sub { font-size: 11px; color: var(--text-2); margin-top: 4px; }
+
+/* ── Expert bars ── */
+.expert-row {
+  display: flex; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+.expert-row:last-child { border-bottom: none; }
+.expert-name { width: 130px; font-size: 12px; color: var(--text-1); flex-shrink: 0; }
+.expert-bar-bg { flex: 1; height: 6px; background: var(--bg-3); border-radius: 3px; overflow: hidden; }
+.expert-bar { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+.expert-score { width: 40px; text-align: right; font-weight: 600; font-size: 12px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.expert-finding { font-size: 10px; color: var(--text-2); margin-left: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px; }
+
+/* ── Radar ── */
+.radar-wrap { display: flex; justify-content: center; align-items: center; min-height: 320px; }
+
+/* ── Priority matrix ── */
+.matrix { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; min-height: 240px; }
+.matrix-cell { background: var(--bg-0); border-radius: 6px; padding: 10px; }
+.matrix-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-2); margin-bottom: 6px; font-weight: 600; }
+.matrix-cell.qw { border-left: 2px solid var(--green); }
+.matrix-cell.mp { border-left: 2px solid var(--yellow); }
+.matrix-cell.fi { border-left: 2px solid var(--text-2); }
+.matrix-cell.rc { border-left: 2px solid var(--border); }
+.matrix-item { font-size: 11px; padding: 4px 6px; margin: 3px 0; background: var(--bg-1); border-radius: 4px; }
+
+/* ── Tasks table ── */
+.task-table { width: 100%; border-collapse: collapse; }
+.task-table th {
+  text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border);
+  font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-2);
+}
+.task-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 12px; }
+.task-table tr:last-child td { border-bottom: none; }
+.task-table tr:hover td { background: var(--bg-2); }
+.status-badge {
+  display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px;
+}
+.status-done { background: var(--green-bg); color: var(--green); }
+.status-todo { background: var(--bg-3); color: var(--text-2); }
+.status-progress { background: var(--blue-bg); color: var(--blue); }
+.impact-high { color: var(--red); }
+.impact-medium { color: var(--yellow); }
+.impact-low { color: var(--green); }
+
+/* ── Risks ── */
+.risk-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); gap: 10px; }
+.risk-row:last-child { border-bottom: none; }
+.risk-badge {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 2px 7px;
+  border-radius: 4px; min-width: 52px; text-align: center; flex-shrink: 0;
+}
+.risk-badge.critical { background: var(--red); color: white; }
+.risk-badge.high { background: var(--red-bg); color: var(--red); }
+.risk-badge.medium { background: var(--yellow-bg); color: var(--yellow); }
+.risk-badge.low { background: var(--bg-3); color: var(--text-2); }
+.risk-desc { font-size: 12px; flex: 1; }
+.risk-expert { font-size: 11px; color: var(--text-2); flex-shrink: 0; }
+
+/* ── Debt ── */
+.debt-row { display: flex; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); gap: 10px; font-size: 12px; }
+.debt-row:last-child { border-bottom: none; }
+.debt-rate { width: 16px; text-align: center; font-size: 14px; flex-shrink: 0; }
+.debt-item { flex: 1; }
+.debt-meta { font-size: 10px; color: var(--text-2); flex-shrink: 0; }
+
+/* ── Sparklines ── */
+.spark { display: flex; align-items: flex-end; gap: 2px; height: 24px; }
+.spark-bar { width: 5px; border-radius: 2px; transition: height 0.3s; }
+
+/* ── Logs ── */
+.log-toolbar {
+  display: flex; align-items: center; gap: 8px; padding: 12px 16px;
+  background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px 8px 0 0;
+  flex-wrap: wrap;
+}
+.log-search {
+  flex: 1; min-width: 200px; padding: 6px 10px; border-radius: 6px;
+  background: var(--bg-2); border: 1px solid var(--border); color: var(--text-0);
+  font-family: inherit; font-size: 12px;
+}
+.log-search:focus { outline: none; border-color: var(--accent); }
+.log-search::placeholder { color: var(--text-2); }
+.log-viewer {
+  background: var(--bg-1); border: 1px solid var(--border); border-top: none;
+  border-radius: 0 0 8px 8px; max-height: calc(100vh - 240px); overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace; font-size: 11.5px; line-height: 1.7;
+}
+.log-entry { display: flex; gap: 8px; padding: 2px 14px; border-bottom: 1px solid var(--border); align-items: baseline; }
+.log-entry:hover { background: var(--bg-2); }
+.log-time { color: var(--text-2); flex-shrink: 0; min-width: 85px; font-size: 10.5px; }
+.log-level {
+  flex-shrink: 0; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px;
+  text-transform: uppercase; min-width: 36px; text-align: center;
+}
+.log-level.debug { background: var(--bg-3); color: var(--text-2); }
+.log-level.info { background: var(--blue-bg); color: var(--blue); }
+.log-level.warn { background: var(--yellow-bg); color: var(--yellow); }
+.log-level.error { background: var(--red-bg); color: var(--red); }
+.log-component { color: var(--cyan); flex-shrink: 0; min-width: 80px; font-size: 10.5px; }
+.log-message { color: var(--text-1); word-break: break-all; white-space: pre-wrap; }
+.log-count { font-size: 11px; color: var(--text-2); padding: 0 8px; }
+
+/* ── Sessions ── */
+.session-card {
+  background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px;
+  padding: 14px 18px; cursor: pointer; transition: all 0.12s; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 16px;
+}
+.session-card:hover { border-color: var(--accent); background: var(--bg-2); }
+.session-card.active { border-color: var(--accent); }
+.session-id { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); }
+.session-info { flex: 1; }
+.session-info .slug { font-size: 13px; font-weight: 500; }
+.session-info .meta { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+.session-stats { display: flex; gap: 12px; font-size: 11px; color: var(--text-2); flex-shrink: 0; }
+
+.message-list { max-height: calc(100vh - 340px); overflow-y: auto; }
+.msg { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+.msg:hover { background: var(--bg-2); }
+.msg-role { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+.msg-role.user { color: var(--blue); }
+.msg-role.assistant { color: var(--green); }
+.msg-role.tool { color: var(--yellow); }
+.msg-content { font-size: 12px; color: var(--text-1); white-space: pre-wrap; word-break: break-word; max-height: 200px; overflow-y: auto; }
+.msg-time { font-size: 10px; color: var(--text-2); margin-top: 4px; }
+.tool-badge {
+  display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 6px;
+  border-radius: 3px; background: var(--yellow-bg); color: var(--yellow); margin-right: 4px;
+}
+
+/* ── Multi-project overview ── */
+.project-overview-card {
+  background: var(--bg-1); border: 1px solid var(--border); border-radius: 8px;
+  padding: 18px; cursor: pointer; transition: all 0.15s; position: relative;
+}
+.project-overview-card:hover { border-color: var(--accent); }
+.project-overview-card .name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.project-overview-card .path { font-size: 11px; color: var(--text-2); font-family: 'JetBrains Mono', monospace; margin-bottom: 12px; }
+.project-overview-card .score-big {
+  position: absolute; top: 18px; right: 20px; font-size: 28px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.project-overview-card .score-big small { font-size: 14px; font-weight: 400; color: var(--text-2); }
+.mini-bars { display: flex; flex-direction: column; gap: 3px; }
+.mini-bar-row { display: flex; align-items: center; gap: 6px; font-size: 10px; }
+.mini-bar-label { width: 72px; color: var(--text-2); text-align: right; flex-shrink: 0; }
+.mini-bar-bg { flex: 1; height: 4px; background: var(--bg-3); border-radius: 2px; overflow: hidden; }
+.mini-bar-fill { height: 100%; border-radius: 2px; }
+.mini-bar-val { width: 18px; font-weight: 600; flex-shrink: 0; font-size: 10px; }
+
+/* ── Empty state ── */
+.empty { text-align: center; padding: 48px 20px; color: var(--text-2); }
+.empty svg { width: 40px; height: 40px; margin-bottom: 12px; opacity: 0.4; }
+.empty p { font-size: 13px; margin-top: 6px; }
+
+/* ── Panels ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) { .grid-4 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 900px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .sidebar { width: 56px; }
+  .sidebar-header span, .nav-item span, .sidebar-label, .project-picker, .nav-item .badge { display: none; }
+  .nav-item { justify-content: center; padding: 10px; }
+  .sidebar-header { justify-content: center; padding: 16px 8px; }
+}
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    <span>Claude Code</span>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label">Monitor</div>
+    <a class="nav-item active" data-tab="overview" onclick="switchTab('overview')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span>All Projects</span>
+    </a>
+    <a class="nav-item" data-tab="health" onclick="switchTab('health')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <span>Health</span>
+    </a>
+    <a class="nav-item" data-tab="logs" onclick="switchTab('logs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+      <span>Activity Logs</span>
+      <span class="badge" id="log-badge">0</span>
+    </a>
+    <a class="nav-item" data-tab="sessions" onclick="switchTab('sessions')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      <span>Sessions</span>
+    </a>
+  </div>
+  <div class="project-picker" id="projectPicker">
+    <div class="sidebar-label">Active Project</div>
+    <select class="project-select" id="projectSelect" onchange="selectProject(this.value)">
+      <option value="">Loading...</option>
+    </select>
+    <div class="project-meta-bar" id="projectMetaBar"></div>
+  </div>
+</aside>
+
+<!-- ── Main ── -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <div>
+        <div class="topbar-title" id="topTitle">All Projects</div>
+        <div class="topbar-subtitle" id="topSubtitle">Multi-repo monitoring dashboard</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn" id="btnAutoRefresh" onclick="toggleAutoRefresh()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        Auto
+      </button>
+      <button class="btn" onclick="refreshData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Refresh
+      </button>
+      <button class="btn" onclick="toggleTheme()" title="Toggle theme (T)">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="content" id="content">
+
+    <!-- ── Overview Panel ── -->
+    <div class="panel active" id="panel-overview">
+      <div class="grid-3" id="projectGrid"></div>
+    </div>
+
+    <!-- ── Health Panel ── -->
+    <div class="panel" id="panel-health">
+      <div class="grid-4" id="statsRow"></div>
+      <div class="grid-2">
+        <div class="card" id="expertCard"><div class="card-title">Expert Scores</div><div id="expertScores"></div></div>
+        <div class="card"><div class="card-title">Radar Chart</div><div class="radar-wrap"><canvas id="radarCanvas" width="320" height="320"></canvas></div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Priority Matrix</div><div class="matrix" id="matrix"></div></div>
+        <div class="card"><div class="card-title">Score History</div><div id="historySparklines"></div></div>
+      </div>
+      <div class="card col-full" style="margin-bottom:14px"><div class="card-title">Tasks</div><div id="taskTable"></div></div>
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Risk Alerts</div><div id="risks"></div></div>
+        <div class="card"><div class="card-title">Technical Debt</div><div id="techDebt"></div></div>
+      </div>
+    </div>
+
+    <!-- ── Logs Panel ── -->
+    <div class="panel" id="panel-logs">
+      <div class="log-toolbar">
+        <button class="btn btn-sm active" data-level="DEBUG" onclick="toggleLogLevel(this)">Debug</button>
+        <button class="btn btn-sm active" data-level="INFO" onclick="toggleLogLevel(this)">Info</button>
+        <button class="btn btn-sm active" data-level="WARN" onclick="toggleLogLevel(this)">Warn</button>
+        <button class="btn btn-sm active" data-level="ERROR" onclick="toggleLogLevel(this)">Error</button>
+        <input class="log-search" id="logSearch" placeholder="Search logs..." oninput="filterLogs()">
+        <span class="log-count" id="logCount">0 entries</span>
+        <button class="btn btn-sm" onclick="scrollLogsToBottom()">Bottom</button>
+      </div>
+      <div class="log-viewer" id="logViewer"></div>
+    </div>
+
+    <!-- ── Sessions Panel ── -->
+    <div class="panel" id="panel-sessions">
+      <div class="grid-2">
+        <div>
+          <div class="card-title">Sessions</div>
+          <div id="sessionList"></div>
+        </div>
+        <div>
+          <div class="card-title" id="sessionDetailTitle">Select a session</div>
+          <div class="card" id="sessionDetail">
+            <div class="empty"><p>Click a session to view its messages</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Expert labels (16 experts) ──
+const EXPERT_LABELS = {
+  qa: 'QA & Testing', uiux: 'UI/UX Design', security: 'Security',
+  devops: 'DevOps & IT', networking: 'Networking', development: 'Development',
+  architecture: 'Architecture', product: 'Product/Specs', api: 'API Quality',
+  monitoring: 'Monitoring', database: 'Database', performance: 'Performance',
+  documentation: 'Documentation', specifications: 'Specifications',
+  projectDocs: 'Project Docs', progress: 'Progress'
+};
+const EXPERT_KEYS = Object.keys(EXPERT_LABELS);
+
+// ── State ──
+let state = {
+  activeTab: 'overview',
+  theme: localStorage.getItem('ccd-theme') || 'dark',
+  projects: [],
+  selectedProject: null,
+  pmData: null,
+  debugLogs: [],
+  sessions: [],
+  selectedSession: null,
+  sessionMessages: [],
+  autoRefresh: false,
+  autoRefreshId: null,
+  logLevels: { DEBUG: true, INFO: true, WARN: true, ERROR: true },
+  logSearch: ''
+};
+
+// ── Utilities ──
+function scoreColor(s) {
+  if (s == null || s === 0) return 'var(--text-2)';
+  if (s >= 9) return 'var(--green)';
+  if (s >= 7) return 'var(--blue)';
+  if (s >= 5) return 'var(--yellow)';
+  return 'var(--red)';
+}
+function scoreLabel(s) {
+  if (s == null) return 'N/A';
+  if (s >= 9) return 'Excellent'; if (s >= 7) return 'Good';
+  if (s >= 5) return 'Fair'; if (s >= 3) return 'Poor'; return 'Critical';
+}
+function relTime(d) {
+  if (!d) return 'Never';
+  const ms = Date.now() - new Date(d).getTime();
+  const m = Math.floor(ms / 60000);
+  if (m < 1) return 'just now'; if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+function fmtSize(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+  return (b / 1048576).toFixed(1) + ' MB';
+}
+function fmtTime(ts) {
+  if (!ts) return '';
+  try { return new Date(ts).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+  catch (_) { return ts; }
+}
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ── API ──
+async function api(url) {
+  try { const r = await fetch(url); if (!r.ok) return null; return await r.json(); }
+  catch (_) { return null; }
+}
+
+// ── Tab switching ──
+function switchTab(tab) {
+  state.activeTab = tab;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+  document.querySelectorAll('.panel').forEach(el => el.classList.toggle('active', el.id === 'panel-' + tab));
+  const titles = { overview: 'All Projects', health: 'Project Health', logs: 'Activity Logs', sessions: 'Sessions' };
+  const subs = { overview: 'Multi-repo monitoring dashboard', health: state.pmData?.projectName || 'Select a project', logs: 'Debug & runtime log viewer', sessions: 'Session transcript browser' };
+  document.getElementById('topTitle').textContent = titles[tab] || '';
+  document.getElementById('topSubtitle').textContent = subs[tab] || '';
+  if (tab === 'logs') loadDebugLogs();
+  if (tab === 'sessions') loadSessions();
+  if (tab === 'health') loadPMData();
+}
+
+// ── Theme ──
+function applyTheme(t) {
+  document.body.setAttribute('data-theme', t);
+  localStorage.setItem('ccd-theme', t);
+  state.theme = t;
+  const icon = document.getElementById('themeIcon');
+  icon.innerHTML = t === 'dark'
+    ? '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  if (state.pmData) drawRadar(state.pmData.experts || {});
+}
+function toggleTheme() { applyTheme(state.theme === 'dark' ? 'light' : 'dark'); }
+
+// ── Auto-refresh ──
+function toggleAutoRefresh() {
+  state.autoRefresh = !state.autoRefresh;
+  document.getElementById('btnAutoRefresh').classList.toggle('active', state.autoRefresh);
+  if (state.autoRefresh) {
+    state.autoRefreshId = setInterval(() => refreshData(), 4000);
+  } else {
+    clearInterval(state.autoRefreshId);
+    state.autoRefreshId = null;
+  }
+}
+
+// ── Project management ──
+async function loadProjects() {
+  state.projects = (await api('/api/projects')) || [];
+  const sel = document.getElementById('projectSelect');
+  sel.innerHTML = state.projects.map(p =>
+    `<option value="${esc(p.id)}">${esc(p.name)} ${p.overallScore != null ? '(' + p.overallScore + '/10)' : ''}</option>`
+  ).join('');
+  if (state.projects.length > 0 && !state.selectedProject) {
+    selectProject(state.projects[0].id);
+  }
+  renderOverview();
+}
+
+function selectProject(projectId) {
+  state.selectedProject = projectId;
+  document.getElementById('projectSelect').value = projectId;
+  const proj = state.projects.find(p => p.id === projectId);
+  document.getElementById('projectMetaBar').innerHTML = proj
+    ? `<span>${proj.sessionCount} sessions</span><span>${relTime(proj.lastActivity)}</span>`
+    : '';
+  loadPMData();
+  if (state.activeTab === 'sessions') loadSessions();
+}
+
+// ── Overview panel ──
+function renderOverview() {
+  const grid = document.getElementById('projectGrid');
+  if (state.projects.length === 0) {
+    grid.innerHTML = '<div class="empty col-full"><p>No Claude Code projects found.<br>Run Claude Code in a project to generate session data.</p></div>';
+    return;
+  }
+  grid.innerHTML = state.projects.map(p => {
+    const sc = p.overallScore;
+    const color = scoreColor(sc);
+    return `<div class="project-overview-card" onclick="selectProject('${esc(p.id)}');switchTab('health')">
+      <div class="name">${esc(p.name)}</div>
+      <div class="path">${esc(p.path)}</div>
+      <div class="score-big" style="color:${color}">${sc != null ? sc : '--'}<small>/10</small></div>
+      <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">${p.sessionCount} sessions &middot; ${relTime(p.lastActivity)}</div>
+      ${p.hasPMDashboard ? '<div style="font-size:10px;color:var(--green)">PM Dashboard available</div>' : '<div style="font-size:10px;color:var(--text-2)">No PM data yet</div>'}
+    </div>`;
+  }).join('');
+}
+
+// ── Health panel ──
+async function loadPMData() {
+  if (!state.selectedProject) return;
+  state.pmData = await api(`/api/projects/${state.selectedProject}/pm`);
+  if (!state.pmData) {
+    document.getElementById('statsRow').innerHTML = '';
+    document.getElementById('expertScores').innerHTML = '<div class="empty"><p>No PM dashboard data for this project.<br>Run a project assessment first.</p></div>';
+    return;
+  }
+  renderHealth();
+}
+
+function renderHealth() {
+  const d = state.pmData;
+  if (!d) return;
+
+  // Stats row
+  const riskCount = (d.risks || []).filter(r => r.severity === 'critical' || r.severity === 'high').length;
+  const todoCount = (d.tasks || []).filter(t => t.status === 'todo').length;
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="stat-label">Overall Health</div><div class="stat-value" style="color:${scoreColor(d.overallScore)}">${d.overallScore ?? '--'}<span style="font-size:14px;color:var(--text-2)">/10</span></div><div class="stat-sub">${scoreLabel(d.overallScore)}</div></div>
+    <div class="stat-card"><div class="stat-label">Assessments</div><div class="stat-value">${d.assessmentCount || 0}</div><div class="stat-sub">Last: ${relTime(d.lastAssessment)}</div></div>
+    <div class="stat-card"><div class="stat-label">Open Tasks</div><div class="stat-value">${todoCount}</div><div class="stat-sub">of ${(d.tasks||[]).length} total</div></div>
+    <div class="stat-card"><div class="stat-label">Active Risks</div><div class="stat-value" style="color:${riskCount > 0 ? 'var(--red)' : 'var(--green)'}">${riskCount}</div><div class="stat-sub">${riskCount === 0 ? 'All clear' : 'Need attention'}</div></div>`;
+
+  renderExperts(d.experts || {});
+  drawRadar(d.experts || {});
+  renderMatrix(d.tasks || []);
+  renderTasks(d.tasks || []);
+  renderRisks(d.risks || []);
+  renderDebt(d.technicalDebt || []);
+  renderHistory(d.history || []);
+}
+
+function renderExperts(experts) {
+  const c = document.getElementById('expertScores');
+  c.innerHTML = EXPERT_KEYS.map(k => {
+    const e = experts[k] || {};
+    const s = e.score;
+    const color = scoreColor(s);
+    const pct = s != null ? s * 10 : 0;
+    const finding = e.topFinding ? esc(e.topFinding).substring(0, 60) : '';
+    return `<div class="expert-row">
+      <div class="expert-name">${EXPERT_LABELS[k]}</div>
+      <div class="expert-bar-bg"><div class="expert-bar" style="width:${pct}%;background:${color}"></div></div>
+      <div class="expert-score" style="color:${color}">${s != null ? s + '/10' : '--'}</div>
+      <div class="expert-finding" title="${e.topFinding ? esc(e.topFinding) : ''}">${finding}</div>
+    </div>`;
+  }).join('');
+}
+
+function drawRadar(experts) {
+  const canvas = document.getElementById('radarCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height, cx = w/2, cy = h/2, r = 120;
+  ctx.clearRect(0, 0, w, h);
+  const n = EXPERT_KEYS.length;
+  const step = (2 * Math.PI) / n;
+  const cs = getComputedStyle(document.documentElement);
+  const gridC = cs.getPropertyValue('--radar-grid').trim();
+  const fillC = cs.getPropertyValue('--radar-fill').trim();
+  const accentC = cs.getPropertyValue('--accent').trim();
+  const labelC = cs.getPropertyValue('--text-2').trim();
+
+  // Grid
+  for (let ring = 2; ring <= 10; ring += 2) {
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const a = i * step - Math.PI/2;
+      const x = cx + (r*ring/10)*Math.cos(a), y = cy + (r*ring/10)*Math.sin(a);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = gridC; ctx.lineWidth = 1; ctx.stroke();
+  }
+  // Axes + labels
+  EXPERT_KEYS.forEach((k, i) => {
+    const a = i * step - Math.PI/2;
+    ctx.beginPath(); ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + r*Math.cos(a), cy + r*Math.sin(a));
+    ctx.strokeStyle = gridC; ctx.stroke();
+    const lx = cx + (r+18)*Math.cos(a), ly = cy + (r+18)*Math.sin(a);
+    ctx.fillStyle = labelC; ctx.font = '9px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(EXPERT_LABELS[k].split(' ')[0].substring(0, 8), lx, ly);
+  });
+  // Data
+  const vals = EXPERT_KEYS.map(k => (experts[k]?.score) || 0);
+  ctx.beginPath();
+  vals.forEach((v, i) => {
+    const a = i * step - Math.PI/2;
+    const x = cx + (r*v/10)*Math.cos(a), y = cy + (r*v/10)*Math.sin(a);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath(); ctx.fillStyle = fillC; ctx.fill();
+  ctx.strokeStyle = accentC; ctx.lineWidth = 1.5; ctx.stroke();
+  // Points
+  vals.forEach((v, i) => {
+    const a = i * step - Math.PI/2;
+    ctx.beginPath();
+    ctx.arc(cx + (r*v/10)*Math.cos(a), cy + (r*v/10)*Math.sin(a), 3, 0, 2*Math.PI);
+    ctx.fillStyle = scoreColor(v || null); ctx.fill();
+  });
+}
+
+function renderMatrix(tasks) {
+  const qw = [], mp = [], fi = [], rc = [];
+  tasks.forEach(t => {
+    if (t.status === 'done' || t.status === 'completed') return;
+    const item = `<div class="matrix-item">${esc(t.title)}</div>`;
+    if (t.quadrant === 'quick-win') qw.push(item);
+    else if (t.quadrant === 'major-project') mp.push(item);
+    else if (t.quadrant === 'fill-in') fi.push(item);
+    else rc.push(item);
+  });
+  document.getElementById('matrix').innerHTML = `
+    <div class="matrix-cell qw"><div class="matrix-label">Quick Wins</div>${qw.join('') || '<div style="font-size:11px;color:var(--text-2)">None</div>'}</div>
+    <div class="matrix-cell mp"><div class="matrix-label">Major Projects</div>${mp.join('') || '<div style="font-size:11px;color:var(--text-2)">None</div>'}</div>
+    <div class="matrix-cell fi"><div class="matrix-label">Fill-ins</div>${fi.join('') || '<div style="font-size:11px;color:var(--text-2)">None</div>'}</div>
+    <div class="matrix-cell rc"><div class="matrix-label">Reconsider</div>${rc.join('') || '<div style="font-size:11px;color:var(--text-2)">None</div>'}</div>`;
+}
+
+function renderTasks(tasks) {
+  if (!tasks.length) { document.getElementById('taskTable').innerHTML = '<div class="empty"><p>No tasks tracked</p></div>'; return; }
+  const sorted = [...tasks].sort((a, b) => (a.priority||99) - (b.priority||99));
+  let html = `<table class="task-table"><thead><tr><th>#</th><th>Status</th><th>Task</th><th>Impact</th><th>Effort</th><th>Expert</th><th>Quadrant</th></tr></thead><tbody>`;
+  sorted.forEach(t => {
+    const sc = t.status === 'done' || t.status === 'completed' ? 'done' : t.status === 'in-progress' || t.status === 'in_progress' ? 'progress' : 'todo';
+    const sl = sc === 'done' ? 'Done' : sc === 'progress' ? 'Active' : 'To Do';
+    html += `<tr><td>${t.priority || '-'}</td><td><span class="status-badge status-${sc}">${sl}</span></td><td>${esc(t.title)}</td><td class="impact-${t.impact || ''}">${t.impact || '-'}</td><td>${t.effort || '-'}</td><td>${t.expert || '-'}</td><td>${t.quadrant || '-'}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('taskTable').innerHTML = html;
+}
+
+function renderRisks(risks) {
+  const c = document.getElementById('risks');
+  if (!risks.length) { c.innerHTML = '<div class="empty"><p>No risks</p></div>'; return; }
+  c.innerHTML = risks.map(r => `<div class="risk-row">
+    <span class="risk-badge ${r.severity}">${r.severity}</span>
+    <span class="risk-desc">${esc(r.description)}</span>
+    <span class="risk-expert">${EXPERT_LABELS[r.expert] || r.expert}</span>
+  </div>`).join('');
+}
+
+function renderDebt(debt) {
+  const c = document.getElementById('techDebt');
+  if (!debt.length) { c.innerHTML = '<div class="empty"><p>No tech debt tracked</p></div>'; return; }
+  c.innerHTML = debt.map(d => {
+    const icon = d.interestRate === 'accruing' ? '&#x25B2;' : d.interestRate === 'stable' ? '&#x25CF;' : '&#x25BC;';
+    const color = d.interestRate === 'accruing' ? 'var(--red)' : d.interestRate === 'stable' ? 'var(--yellow)' : 'var(--green)';
+    return `<div class="debt-row"><span class="debt-rate" style="color:${color}">${icon}</span><span class="debt-item">${esc(d.item)}</span><span class="debt-meta">${d.category} / ${d.impact}</span></div>`;
+  }).join('');
+}
+
+function renderHistory(history) {
+  const c = document.getElementById('historySparklines');
+  if (!history.length) { c.innerHTML = '<div class="empty"><p>No history</p></div>'; return; }
+  c.innerHTML = EXPERT_KEYS.map(k => {
+    const scores = history.map(h => h.scores?.[k] || 0);
+    if (scores.every(s => s === 0)) return '';
+    const bars = scores.map(s => `<div class="spark-bar" style="height:${s*2.4}px;background:${scoreColor(s||null)}"></div>`).join('');
+    const last = scores[scores.length - 1];
+    return `<div style="display:flex;align-items:center;gap:8px;padding:3px 0">
+      <span style="font-size:10px;color:var(--text-2);width:72px;flex-shrink:0;text-align:right">${EXPERT_LABELS[k].split(' ')[0]}</span>
+      <div class="spark">${bars}</div>
+      <span style="font-size:11px;font-weight:600;width:24px;text-align:right;color:${scoreColor(last||null)}">${last||'--'}</span>
+    </div>`;
+  }).filter(Boolean).join('');
+}
+
+// ── Logs panel ──
+async function loadDebugLogs() {
+  state.debugLogs = (await api('/api/debug?lines=600')) || [];
+  document.getElementById('log-badge').textContent = state.debugLogs.length;
+  renderLogs();
+}
+
+function toggleLogLevel(btn) {
+  const level = btn.dataset.level;
+  state.logLevels[level] = !state.logLevels[level];
+  btn.classList.toggle('active', state.logLevels[level]);
+  renderLogs();
+}
+
+function filterLogs() {
+  state.logSearch = document.getElementById('logSearch').value.toLowerCase();
+  renderLogs();
+}
+
+function renderLogs() {
+  const viewer = document.getElementById('logViewer');
+  const filtered = state.debugLogs.filter(e => {
+    if (!state.logLevels[e.level]) return false;
+    if (state.logSearch && !(e.message.toLowerCase().includes(state.logSearch) || e.component.toLowerCase().includes(state.logSearch))) return false;
+    return true;
+  });
+  document.getElementById('logCount').textContent = filtered.length + ' entries';
+  viewer.innerHTML = filtered.map(e => `<div class="log-entry">
+    <span class="log-time">${fmtTime(e.timestamp)}</span>
+    <span class="log-level ${e.level.toLowerCase()}">${e.level.substring(0,3)}</span>
+    <span class="log-component">${esc(e.component)}</span>
+    <span class="log-message">${esc(e.message)}</span>
+  </div>`).join('');
+}
+
+function scrollLogsToBottom() {
+  const v = document.getElementById('logViewer');
+  v.scrollTop = v.scrollHeight;
+}
+
+// ── Sessions panel ──
+async function loadSessions() {
+  if (!state.selectedProject) return;
+  state.sessions = (await api(`/api/projects/${state.selectedProject}/sessions`)) || [];
+  renderSessionList();
+}
+
+function renderSessionList() {
+  const c = document.getElementById('sessionList');
+  if (!state.sessions.length) { c.innerHTML = '<div class="empty"><p>No sessions found</p></div>'; return; }
+  c.innerHTML = state.sessions.slice(0, 20).map(s => `<div class="session-card ${state.selectedSession === s.id ? 'active' : ''}" onclick="loadSession('${esc(s.id)}')">
+    <div class="session-info">
+      <div class="slug">${esc(s.slug || s.id.substring(0, 12) + '...')}</div>
+      <div class="meta">${relTime(s.modified)} &middot; ${s.sizeHuman} &middot; v${s.version || '?'}</div>
+    </div>
+    <div class="session-stats">
+      <span>${s.subagentCount} agents</span>
+      <span>${s.gitBranch || ''}</span>
+    </div>
+  </div>`).join('');
+}
+
+async function loadSession(id) {
+  state.selectedSession = id;
+  renderSessionList();
+  document.getElementById('sessionDetailTitle').textContent = 'Session: ' + id.substring(0, 12) + '...';
+  const msgs = (await api(`/api/projects/${state.selectedProject}/sessions/${id}?lines=150`)) || [];
+  renderSessionMessages(msgs);
+}
+
+function renderSessionMessages(msgs) {
+  const c = document.getElementById('sessionDetail');
+  const filtered = msgs.filter(m => m.type === 'user' || m.type === 'assistant');
+  if (!filtered.length) { c.innerHTML = '<div class="empty"><p>No messages in this session</p></div>'; return; }
+
+  let html = '<div class="message-list">';
+  filtered.forEach(m => {
+    const role = m.message?.role || m.type || 'unknown';
+    const content = m.message?.content;
+    let text = '';
+    let toolBadges = '';
+
+    if (typeof content === 'string') {
+      text = content.substring(0, 500);
+    } else if (Array.isArray(content)) {
+      content.forEach(block => {
+        if (block.type === 'text') text += (text ? '\n' : '') + block.text?.substring(0, 300);
+        if (block.type === 'tool_use') toolBadges += `<span class="tool-badge">${esc(block.name)}</span>`;
+        if (block.type === 'tool_result') {
+          const r = typeof block.content === 'string' ? block.content.substring(0, 200) : JSON.stringify(block.content)?.substring(0, 200);
+          text += (text ? '\n' : '') + '[result] ' + (r || '');
+        }
+      });
+    }
+    if (!text && !toolBadges) return;
+
+    html += `<div class="msg">
+      <div class="msg-role ${role}">${role}${toolBadges ? ' ' + toolBadges : ''}</div>
+      <div class="msg-content">${esc(text || '(no text)')}</div>
+      <div class="msg-time">${fmtTime(m.timestamp)}</div>
+    </div>`;
+  });
+  html += '</div>';
+  c.innerHTML = html;
+}
+
+// ── Refresh ──
+async function refreshData() {
+  await loadProjects();
+  if (state.activeTab === 'health') await loadPMData();
+  if (state.activeTab === 'logs') await loadDebugLogs();
+  if (state.activeTab === 'sessions') await loadSessions();
+}
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch (e.key.toLowerCase()) {
+    case 't': toggleTheme(); e.preventDefault(); break;
+    case '1': switchTab('overview'); e.preventDefault(); break;
+    case '2': switchTab('health'); e.preventDefault(); break;
+    case '3': switchTab('logs'); e.preventDefault(); break;
+    case '4': switchTab('sessions'); e.preventDefault(); break;
+    case 'r': refreshData(); e.preventDefault(); break;
+  }
+});
+
+// ── Init ──
+(async function init() {
+  applyTheme(state.theme);
+  await loadProjects();
+})();
+</script>
+</body>
+</html>

@@ -4,36 +4,40 @@ Reusable skills that teach Claude specialized knowledge, workflows, and best pra
 
 ## What Are Skills?
 
-Skills are knowledge modules that enhance Claude's capabilities in specific domains. Unlike commands (which are action-oriented), skills provide context, patterns, and expertise that Claude applies when relevant.
+Skills are knowledge modules that enhance Claude's capabilities in specific domains. They provide context, patterns, and expertise that Claude applies when relevant. Since Claude Code v2.1.3, skills and commands are **unified** — both use `/name` invocation syntax and support the same frontmatter options.
 
 **Key characteristics:**
 - Activated based on context and user requests
 - Provide comprehensive knowledge in a domain
 - Can include examples, patterns, and best practices
 - Hot-reload when saved (no restart needed)
-- Skills and commands are now unified (v2.1.3) - both use `/name` syntax
+- Invoked via `/name` syntax (e.g., `/refactoring-strategy`, `/testing-standards`)
 - Auto-discovered from nested `.claude/skills` directories (v2.1.6+)
 - Visible in slash command menu by default (opt-out with `user-invocable: false`)
 
-## Available Skills
+## Available Skills (19)
 
 | Skill | Description | Category |
 |-------|-------------|----------|
+| **documentation** | JSDoc/TSDoc, inline comments, README updates | Documentation |
 | **api-documentation** | OpenAPI 3.0 and REST documentation standards | Documentation |
-| **testing-standards** | Comprehensive testing guidelines | Testing |
+| **testing-standards** | Generate comprehensive test suites | Testing |
 | **tdd-workflow** | Red-Green-Refactor cycle and TDD patterns | Testing |
 | **bdd-framework-examples** | Cucumber, Behave, SpecFlow examples | Testing |
 | **contract-testing** | Pact and consumer-driven contracts | Testing |
 | **mutation-testing** | Stryker, PITest, Mutmut patterns | Testing |
 | **visual-regression-testing** | Percy, Chromatic, BackstopJS | Testing |
 | **advanced-e2e-testing** | Complex workflows, auth, mocking | Testing |
-| **code-review-workflow** | Systematic code review process | Quality |
-| **refactoring-strategy** | Safe refactoring patterns | Development |
+| **code-review-workflow** | Comprehensive code review with security/quality analysis | Quality |
+| **refactoring-strategy** | Interactive refactoring with safety checks and rollback | Development |
+| **project-scaffolding** | Generate project structure and boilerplate code | Development |
 | **api-design-patterns** | RESTful API design best practices | Development |
 | **database-design-patterns** | Schema design and optimization | Development |
 | **ci-best-practices** | CI/CD pipeline patterns | DevOps |
 | **release-management** | Release workflows and versioning | DevOps |
 | **caching-expert** | Static, Object, HTTP, CDN caching | Performance |
+| **pm-dashboard** | Project Manager health dashboard management | Project Management |
+| **update-check** | Check for new releases (never auto-updates) | Maintenance |
 
 ## Installation
 
@@ -44,6 +48,10 @@ mkdir -p ~/.claude/skills
 cp -r *.md ~/.claude/skills/
 cp -r api-documentation ~/.claude/skills/
 cp -r testing-standards ~/.claude/skills/
+cp -r documentation ~/.claude/skills/
+cp -r project-scaffolding ~/.claude/skills/
+cp -r pm-dashboard ~/.claude/skills/
+cp -r update-check ~/.claude/skills/
 ```
 
 ### Install All Skills (Project-Specific)
@@ -57,7 +65,7 @@ cp -r /path/to/skills/* .claude/skills/
 
 ```bash
 # Skills with subdirectories (SKILL.md format)
-cp -r api-documentation ~/.claude/skills/
+cp -r documentation ~/.claude/skills/
 
 # Standalone skill files
 cp tdd-workflow.md ~/.claude/skills/
@@ -81,8 +89,9 @@ Single `.md` file with frontmatter:
 
 ```markdown
 ---
-name: skill-name
+skill_name: My Skill
 description: When to activate this skill
+category: Development
 ---
 
 # Skill Content
@@ -90,7 +99,7 @@ description: When to activate this skill
 Knowledge, patterns, examples...
 ```
 
-**Location**: `~/.claude/skills/skill-name.md`
+**Location**: `~/.claude/skills/my-skill.md`
 
 ### Format 2: Directory with SKILL.md
 
@@ -117,10 +126,14 @@ Skills activate automatically based on context:
 # Claude applies TDD patterns and best practices
 ```
 
-Or reference explicitly:
+Or invoke explicitly:
 
 ```bash
-> Using the API design patterns skill, review my endpoint design
+/refactoring-strategy extract-method src/utils/parser.ts
+/testing-standards src/services/user-service unit
+/project-scaffolding nextjs-app my-app --typescript --tailwind
+/code-review-workflow src/api/auth.ts
+/documentation src/utils/helpers.ts
 ```
 
 ## Skill Reference
@@ -130,99 +143,80 @@ Or reference explicitly:
 #### tdd-workflow
 Red-Green-Refactor cycle, test-first development, TDD best practices.
 
-**Covers**:
-- Red-Green-Refactor cycle
-- TDD patterns (Fake It, Triangulation, Obvious)
-- When to use TDD
-- Common pitfalls
-- Framework-specific examples
+**Covers**: Red-Green-Refactor cycle, TDD patterns, when to use TDD, common pitfalls, framework-specific examples
+
+#### testing-standards
+Generate comprehensive test suites (unit, integration, E2E, API, component).
+
+**Covers**: AAA pattern, test generation, edge case identification, mock generation, multi-framework support (Jest, Vitest, pytest, RSpec, JUnit)
 
 #### bdd-framework-examples
 Behavior-Driven Development with Gherkin syntax.
 
-**Covers**:
-- Cucumber (JavaScript/Ruby)
-- Behave (Python)
-- SpecFlow (.NET)
-- Feature file structure
-- Step definitions
+**Covers**: Cucumber (JS/Ruby), Behave (Python), SpecFlow (.NET), feature files, step definitions
 
 #### contract-testing
 Consumer-driven contract testing patterns.
 
-**Covers**:
-- Pact framework
-- Provider verification
-- Consumer tests
-- Contract versioning
+**Covers**: Pact framework, provider verification, consumer tests, contract versioning
 
 #### mutation-testing
 Measure test quality through mutation analysis.
 
-**Covers**:
-- Stryker (JavaScript/TypeScript)
-- PITest (Java)
-- Mutmut (Python)
-- Mutation score interpretation
+**Covers**: Stryker (JS/TS), PITest (Java), Mutmut (Python), mutation score interpretation
 
 #### visual-regression-testing
 Catch visual bugs with screenshot comparison.
 
-**Covers**:
-- Percy integration
-- Chromatic for Storybook
-- BackstopJS setup
-- Baseline management
+**Covers**: Percy, Chromatic for Storybook, BackstopJS, baseline management
 
 #### advanced-e2e-testing
 Complex E2E testing scenarios.
 
-**Covers**:
-- Authentication flows
-- Multi-step workflows
-- API mocking
-- Flaky test handling
+**Covers**: Authentication flows, multi-step workflows, API mocking, flaky test handling
 
 ---
 
 ### Development Skills
 
+#### refactoring-strategy
+Interactive refactoring with safety checks, testing, and rollback support.
+
+**Covers**: Extract/rename/move/inline/simplify/modernize/optimize patterns, 7-step safety workflow, git checkpoints
+
+#### project-scaffolding
+Generate project structure and boilerplate for 16+ project types.
+
+**Covers**: React, Next.js, Vue, Express, NestJS, FastAPI, Django, monorepo, auth/database/Docker/CI setup
+
 #### api-design-patterns
 RESTful API design best practices.
 
-**Covers**:
-- Resource naming
-- HTTP methods
-- Status codes
-- Pagination
-- Versioning
+**Covers**: Resource naming, HTTP methods, status codes, pagination, versioning
 
 #### database-design-patterns
 Schema design and optimization.
 
-**Covers**:
-- Normalization
-- Indexing strategies
-- Query optimization
-- Migration patterns
-
-#### refactoring-strategy
-Safe, systematic code refactoring.
-
-**Covers**:
-- Extract patterns
-- Rename strategies
-- Move operations
-- Safety checks
+**Covers**: Normalization, indexing strategies, query optimization, migration patterns
 
 #### code-review-workflow
-Systematic code review process.
+Comprehensive code review with security, quality, and performance analysis.
 
-**Covers**:
-- Review checklist
-- Security review
-- Performance review
-- Feedback patterns
+**Covers**: Review checklist, security review, performance review, feedback patterns
+
+---
+
+### Documentation Skills
+
+#### documentation
+Add comprehensive documentation to code (JSDoc/TSDoc, inline comments, READMEs).
+
+**Covers**: JSDoc/TSDoc, Python docstrings, inline comments, README structure, API docs, language-specific conventions
+
+#### api-documentation
+OpenAPI 3.0 and REST documentation standards.
+
+**Covers**: OpenAPI spec format, documentation checklist, response schemas
 
 ---
 
@@ -231,20 +225,12 @@ Systematic code review process.
 #### ci-best-practices
 CI/CD pipeline patterns.
 
-**Covers**:
-- Pipeline structure
-- Caching strategies
-- Parallelization
-- Deployment gates
+**Covers**: Pipeline structure, caching strategies, parallelization, deployment gates
 
 #### release-management
 Release workflows and versioning.
 
-**Covers**:
-- Semantic versioning
-- Changelog generation
-- Release branches
-- Hotfix processes
+**Covers**: Semantic versioning, changelog generation, release branches, hotfix processes
 
 ---
 
@@ -253,11 +239,16 @@ Release workflows and versioning.
 #### caching-expert
 Comprehensive caching strategies.
 
-**Covers**:
-- Static file caching
-- Object caching (Redis, Memcached)
-- HTTP caching headers
-- CDN configuration
+**Covers**: Static file caching, object caching (Redis, Memcached), HTTP caching headers, CDN configuration
+
+---
+
+### Project Management Skills
+
+#### pm-dashboard
+Manage the Project Manager health dashboard.
+
+**Covers**: 16 expert dimensions, scoring, task tracking, risk management, trend history
 
 ## Creating Custom Skills
 
@@ -265,9 +256,11 @@ Comprehensive caching strategies.
 
 ```markdown
 ---
-name: my-custom-skill
+skill_name: My Custom Skill
 description: Describe when this skill should activate
 category: Development
+priority: P1
+allowed-tools: Read, Write, Edit
 ---
 
 # My Custom Skill
@@ -278,15 +271,6 @@ Brief introduction to what this skill teaches.
 ## Key Concepts
 - Concept 1
 - Concept 2
-
-## Patterns
-
-### Pattern Name
-Description and example...
-
-## Best Practices
-- Practice 1
-- Practice 2
 
 ## Examples
 
@@ -304,7 +288,7 @@ Description and example...
 
 | Field | Description | Version |
 |-------|-------------|---------|
-| `name` | Skill identifier | - |
+| `skill_name` | Skill display name | - |
 | `description` | When to activate (used for matching) | - |
 | `category` | Grouping category | - |
 | `priority` | P0-P3 priority level | - |
@@ -321,7 +305,7 @@ Description and example...
 
 ```yaml
 ---
-name: secure-deployment
+skill_name: Secure Deployment
 description: Deploy with security checks
 allowed-tools:
   - Read
@@ -338,6 +322,28 @@ hooks:
 ---
 ```
 
+### Argument Syntax (v2.1.19+)
+
+Skills can access arguments passed by the user:
+
+```markdown
+---
+skill_name: Deploy
+description: Deploy to environment
+argument-hint: <environment>
+allowed-tools: Bash
+---
+
+Deploy to the $ARGUMENTS environment.
+
+# Bracket syntax for indexed access
+First argument: $ARGUMENTS[0]
+
+# Shorthand syntax (v2.1.19+)
+First argument: $0
+Second argument: $1
+```
+
 ### Session ID Access (v2.1.9+)
 
 Skills can access the current session ID using `${CLAUDE_SESSION_ID}` string substitution, enabling session-aware behavior like logging or state tracking.
@@ -350,23 +356,10 @@ Skills can access the current session ID using `${CLAUDE_SESSION_ID}` string sub
 4. **Update regularly** - Keep patterns current
 5. **Focus on one domain** - Don't mix unrelated topics
 
-## Skills vs Commands
-
-As of Claude Code v2.1.3, skills and commands are **unified** - they share the same mental model and behavior. Both can be invoked with `/name` syntax and both support the same frontmatter options.
-
-| Aspect | Skills | Commands |
-|--------|--------|----------|
-| Purpose | Teach knowledge | Perform actions |
-| Activation | Context-based or `/name` | Explicit `/name` invocation |
-| Content | Comprehensive | Lean instructions |
-| Format | Can be long | Should be short |
-| Example | TDD patterns | `/refactor` |
-| Invocation | `/tdd-workflow` | `/refactor` |
-
 ## Related Resources
 
-- [Commands Examples](../commands/) - Action-oriented commands
 - [Agents Examples](../agents/) - Specialized agents
+- [Hooks Examples](../hooks/) - Event automation
 - [Complete Guide](../../guides/complete-guide/) - Full Claude Code guide
 
 ---
@@ -381,4 +374,4 @@ As of Claude Code v2.1.3, skills and commands are **unified** - they share the s
 
 ---
 
-**Version**: 2.0.0 (updated for Claude Code CLI v2.1.22)
+**Version**: 3.0.0 (commands merged into skills, updated for Claude Code CLI v2.1.47)

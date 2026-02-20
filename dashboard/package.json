@@ -1,0 +1,13 @@
+{
+  "name": "claude-code-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Professional monitoring dashboard for Claude Code projects — health scores, log viewer, session browser",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}

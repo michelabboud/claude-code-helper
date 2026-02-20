@@ -226,6 +226,16 @@ echo "   \"What MCP tools do you have available?\""
 echo ""
 echo -e "${GREEN}✅ Installation complete!${NC}"
 echo ""
+# Write installation manifest
+SCRIPT_DIR_MCP="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+REPO_ROOT_MCP="$( cd "$SCRIPT_DIR_MCP/.." && pwd )"
+if [ -f "$REPO_ROOT_MCP/scripts/manifest-helper.sh" ]; then
+    export REPO_ROOT="$REPO_ROOT_MCP"
+    source "$REPO_ROOT_MCP/scripts/manifest-helper.sh"
+    SERVERS_LIST=$(ls -d */build/index.js 2>/dev/null | sed 's|/build/index.js||' | paste -sd ',' - | sed 's/,/", "/g')
+    update_manifest "mcp-servers" "{\"servers\": [\"${SERVERS_LIST}\"]}"
+fi
+
 echo "📚 Documentation:"
 echo "  • QUICKGUIDE.md - Get started quickly"
 echo "  • README.md - Feature overview"

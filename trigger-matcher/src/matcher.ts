@@ -313,7 +313,6 @@ function matchKeyword(
 function calculateFileMatchConfidence(filePath: string, pattern: string): number {
   // More specific patterns get higher confidence
   const specificity = pattern.split('/').length;
-  const hasWildcard = pattern.includes('*');
   const hasDoubleWildcard = pattern.includes('**');
 
   let confidence = 0.5;

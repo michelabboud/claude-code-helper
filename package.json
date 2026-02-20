@@ -1,0 +1,37 @@
+{
+  "name": "claude-code-helper",
+  "version": "2.2.0",
+  "private": true,
+  "description": "Comprehensive toolkit and learning resource for mastering Claude Code",
+  "scripts": {
+    "lint": "eslint .",
+    "validate": "node scripts/validate-frontmatter.mjs",
+    "build:mcp": "cd mcp-servers && for dir in */; do (cd \"$dir\" && npm install && npm run build); done",
+    "test:trigger-matcher": "cd trigger-matcher && npm install && npm run build && npm test",
+    "test:mcp-shared": "cd mcp-servers/mcp-shared && npm test",
+    "benchmark": "node scripts/benchmark-startup.mjs",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.0.0",
+    "yaml": "^2.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "lint-staged": {
+    "mcp-servers/*/src/**/*.ts": [
+      "eslint --no-warn-ignored --max-warnings 0"
+    ],
+    "trigger-matcher/src/**/*.ts": [
+      "eslint --no-warn-ignored --max-warnings 0"
+    ]
+  },
+  "license": "Apache-2.0",
+  "author": "Michel Abboud"
+}

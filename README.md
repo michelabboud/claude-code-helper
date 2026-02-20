@@ -27,8 +27,7 @@
 
 - **49 Agents** (14 MCP agents + 35 sub-agents)
 - **68 MCP Tools** across 10 servers (38 production + 30 experimental)
-- **16 Skills** (workflow and testing patterns)
-- **7 Commands** (development workflow automation)
+- **19 Skills** (workflows, testing, scaffolding, documentation, update-check, and more)
 - **Comprehensive guides, templates, and integration examples**
 
 ---
@@ -40,12 +39,12 @@ This repository contains everything you need to become productive with Claude Co
 | Component | Description | Best For |
 |-----------|-------------|----------|
 | **[Agents](#-agents)** | 46 agents (domain experts + MCP-integrated) | Specialized AI assistance |
-| **[Skills](#-skills)** | 16 reusable workflow skills | Workflows & patterns |
-| **[Commands](#-commands)** | 6 slash commands | Quick operations |
+| **[Skills](#-skills)** | 18 reusable workflow skills | Workflows, patterns & actions |
 | **[Guides](#-guides)** | Complete learning paths from zero to hero | Learning & Reference |
 | **[MCP Servers](#-mcp-servers)** | 10 specialized servers for code quality & automation | Automation & CI/CD |
 | **[Templates](#-templates)** | Starter templates for creating your own | Building Custom Tools |
 | **[Config Bundle](#-config-bundle)** | Production-ready global configuration | Setup & Optimization |
+| **[Dashboard](#-dashboard)** | Multi-repo monitoring with log viewer | Project monitoring |
 
 ---
 
@@ -56,7 +55,7 @@ This repository contains everything you need to become productive with Claude Co
 # 1. Read the zero-to-hero guide
 cat guides/complete-guide/00-ZERO-TO-HERO-GUIDE.md
 
-# 2. Install everything (agents, hooks, triggers, skills, commands)
+# 2. Install everything (agents, hooks, triggers, skills)
 cd config-bundle/scripts && ./install-all.sh
 
 # 3. Start using Claude Code
@@ -67,7 +66,7 @@ The install script installs:
 - 48 agents (domain experts + MCP-integrated)
 - 6 hook configurations (file, event, MCP triggers)
 - Triggers configuration (triggers.json + schema)
-- Skills, commands, and status lines
+- Skills and status lines
 
 ### For Intermediate Users
 ```bash
@@ -256,37 +255,19 @@ cp agents/mcp-integrated/*.json ~/.claude/agents/
 
 **[📁 Navigate to Skills →](./skills/)**
 
-16 reusable workflow skills for common development patterns.
+18 reusable skills for development workflows, testing, and project scaffolding.
 
 ### Available Skills
 - **Workflows:** Code review, refactoring, TDD, release management, CI best practices
-- **Testing:** Visual regression, contract testing, mutation testing, BDD, advanced E2E
-- **Architecture:** API design, API documentation, database design, caching patterns
+- **Testing:** Testing standards, visual regression, contract testing, mutation testing, BDD, advanced E2E
+- **Development:** Project scaffolding, API design, database design, caching patterns
+- **Documentation:** Code documentation, API documentation
+- **Project Management:** PM dashboard
+- **Maintenance:** Update check (`/update-check` - checks for new releases, never auto-updates)
 
 ### Installation
 ```bash
 cp -r skills/* ~/.claude/skills/
-```
-
----
-
-## ⚡ Commands
-
-**[📁 Navigate to Commands →](./commands/)**
-
-6 slash commands for quick development operations.
-
-### Available Commands
-- `/plan` - Planning workflows
-- `/review` - Code review
-- `/test-generate` - Generate tests
-- `/document` - Add documentation
-- `/scaffold` - Project scaffolding
-- `/refactor` - Code refactoring
-
-### Installation
-```bash
-cp commands/*.md ~/.claude/commands/
 ```
 
 ---
@@ -428,6 +409,26 @@ claude
 
 ---
 
+## 📊 Dashboard
+
+**Professional multi-repo monitoring dashboard for Claude Code projects.**
+
+```bash
+cd dashboard && npm install && npm run dev
+# Opens at http://localhost:3200
+```
+
+**Features:**
+- **Multi-project overview** - Auto-discovers all Claude Code projects with health scores
+- **PM Health view** - 16 expert scores, radar chart, priority matrix, tasks, risks, tech debt, sparklines
+- **Activity Logs** - Real-time debug log viewer with level filtering (DEBUG/INFO/WARN/ERROR), search, auto-refresh
+- **Session Browser** - View session transcripts, subagent activity, tool calls in human-readable format
+- **Dark/light theme** - Professional design with keyboard shortcuts (T, 1-4, R)
+
+The dashboard reads from `~/.claude/` (global logs, debug output, session transcripts) and `.claude/` (per-project PM data). No data is written — it's purely a monitoring tool.
+
+---
+
 ## 📖 Documentation Structure
 
 ```
@@ -445,10 +446,7 @@ claude-code-helper/
 │   └── README.md
 │
 ├── skills/                   # PRIMARY: Skills distribution
-│   └── [16 skill files/dirs]
-│
-├── commands/                 # PRIMARY: Commands distribution
-│   └── [6 command files]
+│   └── [18 skill files/dirs]
 │
 ├── hooks/                    # PRIMARY: Hooks distribution
 │   └── [5 hook files]
@@ -473,6 +471,7 @@ claude-code-helper/
 │   ├── subagents-guide/      # Advanced agent patterns
 │   └── advanced-patterns/    # Production patterns
 │
+├── dashboard/                # Multi-repo monitoring dashboard
 ├── config-bundle/            # Production-ready global config
 └── templates/                # Starter templates
 ```
@@ -491,7 +490,7 @@ claude-code-helper/
 5. Study [Sub-Agents Guide](./guides/subagents-guide/README.md)
 6. Explore [Domain Expert Agents](./agents/domain-experts/)
 7. Try [Integration Example](./guides/subagents-guide/INTEGRATION-EXAMPLE.md)
-8. Install [Skills](./skills/) and [Commands](./commands/)
+8. Install [Skills](./skills/)
 
 ### Path 3: Advanced User (Week 5+)
 9. Set up [MCP Servers](./mcp-servers/)
@@ -568,9 +567,8 @@ cd config-bundle && ./scripts/install-all.sh && cd ..
 cp agents/domain-experts/*.md ~/.claude/agents/
 cp agents/mcp-integrated/*.json ~/.claude/agents/
 
-# Install skills and commands
+# Install skills
 cp -r skills/* ~/.claude/skills/
-cp commands/*.md ~/.claude/commands/
 
 # Install MCP servers (builds all servers)
 cd mcp-servers && ./install-all.sh
@@ -852,7 +850,7 @@ No attribution is legally required, but it is appreciated!
 
 Need help?
 1. Check [Guides](./guides/) for learning resources
-2. Browse [Agents](./agents/), [Skills](./skills/), [Commands](./commands/) for working code
+2. Browse [Agents](./agents/) and [Skills](./skills/) for working code
 3. Read [Troubleshooting](./guides/complete-guide/04-TROUBLESHOOTING.md)
 4. Ask in [Community Forums](https://reddit.com/r/ClaudeAI)
 5. Open an [Issue](https://github.com/yourusername/claude-code-helper/issues)

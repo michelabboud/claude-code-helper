@@ -141,7 +141,7 @@ async function cleanup() {
   try {
     await vectorDB.deleteCollection(TEST_COLLECTION);
     log("✅ Deleted test collection", "green");
-  } catch (error) {
+  } catch {
     // Collection might not exist, that's ok
   }
 

@@ -15,6 +15,104 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.2.0] - 2026-02-20
+
+### Versioning, Self-Update Check & v2.1.49 Feature Adoption
+
+#### Installation Manifest
+- Install scripts now write `~/.claude/claude-code-helper.json` tracking installed version, components, and timestamps
+- `scripts/manifest-helper.sh` provides shared `get_repo_version()` and `update_manifest()` for all install scripts
+- Manifest is additive - running one install script doesn't erase another's data
+
+#### Self-Update Check (`/update-check`)
+- New skill: reads local manifest and checks GitHub API for latest release
+- **Never auto-updates** - purely informational, shows commands user can copy-paste
+- Reports: up-to-date, update available (with release notes), or no manifest found
+
+#### Version Sync
+- `package.json` version bumped from 1.9.0 to 2.2.0 to match CHANGELOG
+- `scripts/sync-version.sh` maintainer utility for creating git tags and GitHub releases
+
+#### v2.1.49 Agent Feature Adoption
+- `background: true` added to: project-manager, qa-testing-expert, performance-optimizer
+- `memory: project` added to: project-manager, git-expert, database-expert
+- `isolation: worktree` added to: devops-infrastructure-expert, security-expert
+
+### Commands Merged into Skills
+
+Since Claude Code v2.1.3 unified skills and commands, the separate `commands/` directory has been merged into `skills/`. All 5 commands are now proper skills with enhanced content.
+
+#### Merged Commands
+- `document.md` → `skills/documentation/SKILL.md` (expanded from 7 lines to comprehensive documentation skill)
+- `scaffold.md` → `skills/project-scaffolding/SKILL.md` (converted to skill format with full project type catalog)
+- `refactor.md` → merged into `skills/refactoring-strategy.md` (added workflow, patterns table, safety requirements)
+- `review.md` → merged into `skills/code-review-workflow.md` (added usage examples, analysis areas)
+- `test-generate.md` → merged into `skills/testing-standards/SKILL.md` (enhanced with generation features, framework table, example output)
+
+#### Improvements
+- Fixed frontmatter: `name` → `skill_name` in `api-documentation`, `testing-standards`, `pm-dashboard`
+- Added `argument-hint` and `allowed-tools` to refactoring-strategy, code-review-workflow, testing-standards
+- Added `agent` field to code-review-workflow
+- Removed non-standard `dependencies` field from testing-standards
+- Total skills: 15 → 18 (3 new directories + 5 commands merged into existing/new skills)
+- Assessed 3 new PM expert dimensions: specifications (5), projectDocs (5), progress (7)
+
+#### Removed
+- `commands/` directory (all content preserved in skills/)
+
+---
+
+## [2.1.0] - 2026-02-20
+
+### Project Manager Enhancements & Monitoring Dashboard
+
+Major feature release: expanded the PM agent from 13 to 16 domain experts, added a structured "What's Next?" decision algorithm, and introduced a professional multi-repo monitoring dashboard with real-time log viewer.
+
+### Added
+
+#### 3 New PM Expert Dimensions
+- **#14 Specifications Expert** - Analyzes requirements, acceptance criteria, edge case coverage. Includes 6 requirements elicitation prompts for when specs are missing or incomplete.
+- **#15 Project Documentation Expert** - Evaluates ADRs, retrospectives, lessons learned, institutional memory. Distinct from Documentation Expert (#13) which covers code/API docs.
+- **#16 Progress Expert** - Scores task resumability, cold-start pickup readiness, parallel agent enablement. Includes a resumability checklist for agentic development workflows.
+
+#### "What's Next?" Decision Algorithm
+6-step repeatable process for answering "what should we do next?":
+1. **Check Blockers** - Unblock stalled work first (highest opportunity cost)
+2. **Check Accruing Debt** - Address compounding tech debt before it gets worse
+3. **Score Floor Rule** - Any domain ≤ 3 is a project-level risk
+4. **Quick Wins First** - High impact + low effort for best ROI
+5. **Consider Momentum** - Prefer same-domain work to reduce context-switching
+6. **Formulate Recommendation** - Structured WHAT/WHY/RISK/EFFORT/SCORES output
+
+#### Monitoring Dashboard (`dashboard/`)
+Professional multi-repo monitoring dashboard for Claude Code projects:
+- **Multi-project overview** - Discovers and displays all Claude Code projects automatically
+- **PM Health view** - Expert scores, radar chart, priority matrix, tasks, risks, tech debt, sparklines
+- **Activity Logs** - Real-time debug log viewer with level filtering (DEBUG/INFO/WARN/ERROR), search, and auto-refresh
+- **Session Browser** - View session transcripts, subagent activity, tool calls
+- **Express server** - Reads from `~/.claude/`, `.claude/`, and debug logs
+- **Professional UI** - Inter + JetBrains Mono fonts, dark/light theme, keyboard shortcuts (T/1/2/3/4/R)
+- Run with `cd dashboard && npm run dev` → http://localhost:3200
+
+### Changed
+- PM agent now consults **16 experts** (up from 13)
+- Dashboard ASCII template includes 3 new expert rows
+- Trigger keywords now include `"what next"` and `"what's next"`
+- `pm-dashboard.json` schema includes `specifications`, `projectDocs`, `progress` expert keys
+- All dashboard renderers (HTML, multi-project HTML, TUI) updated for 16 experts
+- `overallScore` recalculated to include 3 new dimensions
+
+### Files Modified
+- `agents/domain-experts/project-manager.md` - 3 expert sections, dashboard rows, algorithm, triggers
+- `.claude/pm-dashboard.json` - 3 new experts, 8 history entries updated
+- `skills/pm-dashboard/SKILL.md` - Schema docs for new expert keys
+- `skills/pm-dashboard/dashboard.html` - EXPERT_LABELS + DEMO_DATA
+- `skills/pm-dashboard/multi-project.html` - EXPERT_LABELS
+- `skills/pm-dashboard/pm-tui.sh` - EXPERTS array
+- `dashboard/` - New: package.json, server.js, public/index.html
+
+---
+
 ## [2.0.0] - 2026-01-25
 
 ### 🎯 Agent Triggers System - Deterministic Agent Routing & Automation

@@ -41,11 +41,13 @@ This guide provides step-by-step instructions for installing and configuring the
 
 Install Claude Code:
 ```bash
-# macOS/Linux
-curl -fsSL https://install.claude.ai/code | sh
+# Recommended (macOS/Linux)
+curl -fsSL https://claude.ai/install.sh | sh
 
-# Or follow instructions at: https://claude.ai/code
+# Or see: https://docs.anthropic.com/en/docs/claude-code/getting-started
 ```
+
+> **Note:** npm installation (`npm install -g @anthropic-ai/claude-code`) is deprecated since v2.1.15. Use the official installer above.
 
 Verify installation:
 ```bash
@@ -683,8 +685,8 @@ claude-code-helper/
 **AI Assistance:** Created with Claude Code (Anthropic)
 **License:** Apache-2.0
 
-**Version:** 1.4.0
-**Last Updated:** 2026-01-11
+**Version:** 1.5.0
+**Last Updated:** 2026-02-20
 
 ---
 

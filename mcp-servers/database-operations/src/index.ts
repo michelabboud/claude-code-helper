@@ -5,19 +5,78 @@
  * Provides database operations, migrations, schema inspection, and query optimization tools
  */
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { exec } from "child_process";
-import { promisify } from "util";
 import * as fs from "fs/promises";
-import * as path from "path";
+import { runServer, generateRequestId, measureDuration, sanitizePath, sanitizeString, errorResponse } from "mcp-shared";
 
-const execAsync = promisify(exec);
+// Type definitions
+interface FakeDataOptions {
+  min?: number;
+  max?: number;
+  options?: unknown[];
+}
+
+interface MigrationChanges {
+  table: string;
+  add_columns?: Array<{
+    name: string;
+    type: string;
+    nullable?: boolean;
+    default?: unknown;
+  }>;
+  drop_columns?: string[];
+  modify_columns?: Array<{
+    name: string;
+    type?: string;
+    nullable?: boolean;
+    default?: unknown;
+  }>;
+  add_indexes?: Array<{
+    name: string;
+    columns: string[];
+    unique?: boolean;
+  }>;
+}
+
+interface QuerySuggestion {
+  type: string;
+  severity: string;
+  message: string;
+  example?: string;
+  columns?: string[];
+}
+
+interface QueryAnalysis {
+  query_complexity: string;
+  suggestions: QuerySuggestion[];
+  estimated_improvement: string;
+}
+
+interface MigrationWarning {
+  severity: string;
+  type: string;
+  message: string;
+  recommendation: string;
+}
+
+interface MigrationSafetyResult {
+  safe: boolean;
+  warnings: MigrationWarning[];
+  recommendation: string;
+}
+
+interface SchemaInfo {
+  database: string;
+  inspected_at: string;
+  tables: string[];
+  message: string;
+  indexes_included?: boolean;
+  constraints_included?: boolean;
+}
 
 // Tool input schemas
 const RunQuerySchema = z.object({
@@ -93,21 +152,8 @@ const BackupDatabaseSchema = z.object({
   compress: z.boolean().optional().describe("Enable compression"),
 });
 
-// MCP Server
-const server = new Server(
-  {
-    name: "database-operations-mcp",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
-
 // Helper functions
-function generateFakeData(type: string, options?: { min?: number; max?: number; options?: any[] }): any {
+function generateFakeData(type: string, options?: FakeDataOptions): string | number | boolean {
   const randomString = (length: number) => Math.random().toString(36).substring(2, 2 + length);
   const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
@@ -118,10 +164,11 @@ function generateFakeData(type: string, options?: { min?: number; max?: number; 
       return randomInt(options?.min || 0, options?.max || 1000);
     case "boolean":
       return Math.random() > 0.5;
-    case "date":
+    case "date": {
       const start = new Date(2020, 0, 1);
       const end = new Date();
       return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString();
+    }
     case "email":
       return `${randomString(8)}@${randomString(5)}.com`;
     case "uuid":
@@ -130,10 +177,11 @@ function generateFakeData(type: string, options?: { min?: number; max?: number; 
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
-    case "name":
+    case "name": {
       const firstNames = ["John", "Jane", "Bob", "Alice", "Charlie", "Diana", "Eve", "Frank"];
       const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis"];
       return `${firstNames[randomInt(0, firstNames.length - 1)]} ${lastNames[randomInt(0, lastNames.length - 1)]}`;
+    }
     case "address":
       return `${randomInt(100, 9999)} ${randomString(8)} Street`;
     default:
@@ -141,7 +189,7 @@ function generateFakeData(type: string, options?: { min?: number; max?: number; 
   }
 }
 
-function generateMigrationSQL(changes: any, direction: string = "up"): string {
+function generateMigrationSQL(changes: MigrationChanges, direction: string = "up"): string {
   const lines: string[] = [];
   const table = changes.table;
 
@@ -202,8 +250,8 @@ function generateMigrationSQL(changes: any, direction: string = "up"): string {
   return lines.join("\n");
 }
 
-function analyzeQueryForOptimization(query: string): any {
-  const suggestions: any[] = [];
+function analyzeQueryForOptimization(query: string): QueryAnalysis {
+  const suggestions: QuerySuggestion[] = [];
   const queryLower = query.toLowerCase();
 
   // Check for SELECT *
@@ -277,8 +325,8 @@ function analyzeQueryForOptimization(query: string): any {
   };
 }
 
-function validateMigrationSafety(sql: string): any {
-  const warnings: any[] = [];
+function validateMigrationSafety(sql: string): MigrationSafetyResult {
+  const warnings: MigrationWarning[] = [];
   const sqlLower = sql.toLowerCase();
 
   // Check for destructive operations
@@ -337,6 +385,9 @@ function validateMigrationSafety(sql: string): any {
       "Migration appears safe to apply"
   };
 }
+
+// MCP Server
+runServer({ name: "database-operations", version: "1.0.0" }, ({ server, logger }) => {
 
 // Tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -552,11 +603,21 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const requestId = generateRequestId();
+  const startTime = performance.now();
+
+  logger.info("Tool called", { requestId, tool: name, args });
 
   try {
+    let response;
+
     switch (name) {
       case "run_query": {
-        const { query, params, database, dry_run } = RunQuerySchema.parse(args);
+        const parsed = RunQuerySchema.parse(args);
+        const query = sanitizeString(parsed.query);
+        const params = parsed.params;
+        const database = sanitizePath(parsed.database, process.cwd());
+        const dry_run = parsed.dry_run;
 
         if (dry_run) {
           let previewQuery = query;
@@ -565,7 +626,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               previewQuery = previewQuery.replace(`$${i + 1}`, JSON.stringify(param));
             });
           }
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
@@ -577,10 +638,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               }, null, 2),
             }],
           };
+          break;
         }
 
         // In production, this would execute against actual database
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -596,13 +658,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "inspect_schema": {
-        const { database, table, include_indexes, include_constraints } = InspectSchemaSchema.parse(args);
+        const parsed = InspectSchemaSchema.parse(args);
+        const database = sanitizePath(parsed.database, process.cwd());
+        const table = parsed.table;
+        const include_indexes = parsed.include_indexes;
+        const include_constraints = parsed.include_constraints;
 
         // Return schema inspection result (mock for demo)
-        const schemaInfo: any = {
+        const schemaInfo: SchemaInfo = {
           database,
           inspected_at: new Date().toISOString(),
           tables: table ? [table] : ["Configure database connection to list tables"],
@@ -616,16 +683,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           schemaInfo.constraints_included = true;
         }
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify(schemaInfo, null, 2),
           }],
         };
+        break;
       }
 
       case "generate_migration": {
-        const { description, changes, migration_type } = GenerateMigrationSchema.parse(args);
+        const parsed = GenerateMigrationSchema.parse(args);
+        const description = sanitizeString(parsed.description);
+        const changes = parsed.changes;
 
         const timestamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0];
         const filename = `${timestamp}_${description.toLowerCase().replace(/\s+/g, "_")}`;
@@ -633,7 +703,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const upSQL = generateMigrationSQL(changes, "up");
         const downSQL = generateMigrationSQL(changes, "down");
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -652,16 +722,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "validate_migration": {
-        const { migration_file, database } = ValidateMigrationSchema.parse(args);
+        const parsed = ValidateMigrationSchema.parse(args);
+        const migration_file = sanitizePath(parsed.migration_file, process.cwd());
+        const database = sanitizePath(parsed.database, process.cwd());
 
         let migrationContent: string;
         try {
           migrationContent = await fs.readFile(migration_file, "utf-8");
         } catch {
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
@@ -672,11 +745,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }],
             isError: true,
           };
+          break;
         }
 
         const validation = validateMigrationSafety(migrationContent);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -686,14 +760,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "seed_data": {
-        const { table, count, schema } = SeedDataSchema.parse(args);
+        const parsed = SeedDataSchema.parse(args);
+        const table = sanitizeString(parsed.table);
+        const count = parsed.count;
+        const schema = parsed.schema;
 
-        const records: any[] = [];
+        const records: Record<string, string | number | boolean>[] = [];
         for (let i = 0; i < Math.min(count, 100); i++) {
-          const record: any = {};
+          const record: Record<string, string | number | boolean> = {};
           for (const [column, config] of Object.entries(schema)) {
             record[column] = generateFakeData(config.type, config);
           }
@@ -710,7 +788,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           return `INSERT INTO ${table} (${columns.join(", ")}) VALUES (${values.join(", ")});`;
         });
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -722,10 +800,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "explain_query": {
-        const { query, database, format } = ExplainQuerySchema.parse(args);
+        const parsed = ExplainQuerySchema.parse(args);
+        const query = sanitizeString(parsed.query);
+        const database = sanitizePath(parsed.database, process.cwd());
+        const format = parsed.format;
 
         const analysis = analyzeQueryForOptimization(query);
 
@@ -738,24 +820,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             note: "Actual execution plan requires database connection",
             estimated_cost: analysis.query_complexity === "high" ? "high" :
                            analysis.query_complexity === "medium" ? "moderate" : "low",
-            recommendations: analysis.suggestions.map((s: any) => s.message)
+            recommendations: analysis.suggestions.map((s: QuerySuggestion) => s.message)
           }
         };
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify(explanation, null, 2),
           }],
         };
+        break;
       }
 
       case "optimize_query": {
-        const { query, database } = OptimizeQuerySchema.parse(args);
+        const parsed = OptimizeQuerySchema.parse(args);
+        const query = sanitizeString(parsed.query);
+        const database = sanitizePath(parsed.database, process.cwd());
 
         const analysis = analyzeQueryForOptimization(query);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -767,10 +852,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "backup_database": {
-        const { database, output_path, compress } = BackupDatabaseSchema.parse(args);
+        const parsed = BackupDatabaseSchema.parse(args);
+        const database = sanitizePath(parsed.database, process.cwd());
+        const output_path = sanitizePath(parsed.output_path, process.cwd());
+        const compress = parsed.compress;
 
         const backupInfo = {
           database,
@@ -787,36 +876,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           message: "Execute appropriate command for your database engine"
         };
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify(backupInfo, null, 2),
           }],
         };
+        break;
       }
 
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
-  } catch (error: any) {
-    return {
-      content: [{
-        type: "text",
-        text: `Error: ${error.message}`,
-      }],
-      isError: true,
-    };
+
+    const durationMs = measureDuration(startTime);
+    logger.info("Tool completed", { requestId, tool: name, durationMs });
+    return response;
+  } catch (error: unknown) {
+    const durationMs = measureDuration(startTime);
+    logger.error("Tool failed", { requestId, tool: name, durationMs, error: error instanceof Error ? error.message : String(error) });
+    return errorResponse(error, name);
   }
 });
 
-// Start server
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Database Operations MCP Server running on stdio");
-}
-
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+}); // runServer

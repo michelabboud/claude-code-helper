@@ -11,13 +11,11 @@ import type {
   MCPExecutionContext,
   MCPExecutionResult,
   MCPExecutionOptions,
-  MCPExecutionStatus,
   MCPHook,
   MCPHookResult,
   MCPHookTiming,
   MCPToolInvoker,
   MCPTriggerMatchResult,
-  TriggerMatchCondition,
 } from './types.js';
 
 /** Default MCP tool timeout: 2 minutes */

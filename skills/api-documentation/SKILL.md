@@ -1,6 +1,8 @@
 ---
-name: api-documentation
+skill_name: API Documentation
 description: Generate comprehensive API documentation following OpenAPI 3.0 and REST standards when creating or documenting APIs, endpoints, or web services
+category: Documentation
+priority: P1
 ---
 
 # API Documentation Skill

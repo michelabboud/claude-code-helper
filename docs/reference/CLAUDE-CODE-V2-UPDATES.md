@@ -1,12 +1,14 @@
 # Claude Code Changelog Updates
 
-**Date**: January 16, 2026
-**Claude Code Version**: v2.1.9
+**Date**: February 20, 2026
+**Claude Code Version**: v2.1.47
 **Repository**: claude-code-helper
 
 ## Summary
 
 This document tracks updates made to claude-code-helper repository to align with the latest Claude Code features and capabilities from the official changelog at: https://code.claude.com/docs/en/changelog
+
+> **Note:** This document was originally created at v2.1.9 and has been updated through v2.1.47. See `docs/releases/RELEASE-v1.9.0.md` for the detailed v2.1.23-v2.1.47 changelog.
 
 ## Updates Applied
 
@@ -310,12 +312,42 @@ hooks:
 - Claude Code **v2.1.0+** for basic features (context fork, agent field)
 - Claude Code **v2.1.3+** for extended timeout, hot-reload
 - Claude Code **v2.1.7+** for keybindings, MCP tool search auto mode
-- Claude Code **v2.1.9** for all documented features
+- Claude Code **v2.1.9+** for plans directory, session ID in skills
+- Claude Code **v2.1.15+** for updated installation method
+- Claude Code **v2.1.27+** for PR-linked sessions, permission behavior change
+- Claude Code **v2.1.32+** for Opus 4.6, agent teams, automatic memory
+- Claude Code **v2.1.41+** for CLI auth subcommands, Windows ARM64
+- Claude Code **v2.1.47** for all documented features
 
 ### Feature Matrix
 
 | Feature | Minimum Version | Status in Docs |
 |---------|----------------|----------------|
+| Claude Opus 4.6 | v2.1.32 | ✅ Documented |
+| Claude Sonnet 4.6 | v2.1.45 | ✅ Documented |
+| Fast Mode for Opus 4.6 | v2.1.36 | ✅ Documented |
+| Agent Teams (Research Preview) | v2.1.32 | ✅ Documented |
+| Automatic Memory | v2.1.32 | ✅ Documented |
+| PDF Page Ranges | v2.1.30 | ✅ Documented |
+| PR-Linked Sessions (--from-pr) | v2.1.27 | ✅ Documented |
+| CLI Auth Subcommands | v2.1.41 | ✅ Documented |
+| Windows ARM64 Support | v2.1.41 | ✅ Documented |
+| MCP OAuth Client Credentials | v2.1.30 | ✅ Documented |
+| /debug Command | v2.1.30 | ✅ Documented |
+| Spinner Customization | v2.1.23 | ✅ Documented |
+| TeammateIdle/TaskCompleted Hooks | v2.1.33 | ✅ Documented |
+| Agent Memory Frontmatter | v2.1.33 | ✅ Documented |
+| Task(agent_type) Restriction | v2.1.33 | ✅ Documented |
+| chat:newline Keybinding | v2.1.47 | ✅ Documented |
+| Stop Hook last_assistant_message | v2.1.47 | ✅ Documented |
+| Structured Outputs Fix | v2.1.22 | ✅ Documented |
+| VSCode Python Environment | v2.1.21 | ✅ Documented |
+| Task Deletion | v2.1.20 | ✅ Documented |
+| Bracket Argument Syntax | v2.1.19 | ✅ Documented |
+| Task Management System | v2.1.16 | ✅ Documented |
+| npm Installation Deprecated | v2.1.15 | ✅ Documented |
+| Bash History Autocomplete | v2.1.14 | ✅ Documented |
+| Plugin Commit Pinning | v2.1.14 | ✅ Documented |
 | Customizable Keybindings | v2.1.7 | ✅ Documented |
 | Plans Directory Setting | v2.1.9 | ✅ Documented |
 | Session ID in Skills | v2.1.9 | ✅ Documented |
@@ -358,8 +390,8 @@ hooks:
 
 - **Claude Code Changelog**: https://code.claude.com/docs/en/changelog
 - **Claude Code Repository**: https://github.com/anthropics/claude-code
-- **Update Date**: January 16, 2026
-- **Updated By**: Claude (Opus 4.5) via claude-code-helper maintenance
+- **Update Date**: February 20, 2026
+- **Updated By**: Claude (Opus 4.6) via claude-code-helper maintenance
 
 ## Verification
 
@@ -385,7 +417,7 @@ Expected: All commands should return matches.
 
 **Status**: ✅ All updates successfully applied
 **Compatibility**: Backward compatible, additive changes only
-**Ready for**: Production use with Claude Code v2.1.9
+**Ready for**: Production use with Claude Code v2.1.47
 
 ---
 

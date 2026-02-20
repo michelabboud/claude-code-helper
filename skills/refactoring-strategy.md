@@ -1,8 +1,10 @@
 ---
 skill_name: Refactoring Strategy
-description: Safe refactoring patterns, technical debt reduction, and code modernization strategies
-category: Development Workflows
+description: Interactive refactoring workflow with safety checks, testing, and rollback support. Safe refactoring patterns, technical debt reduction, and code modernization strategies.
+category: Development
 priority: P1
+argument-hint: '[pattern] [target] [options]'
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 ---
 
 # Refactoring Strategy Skill
@@ -64,6 +66,46 @@ cp refactoring-strategy.md .claude/skills/refactoring-strategy/SKILL.md
 The skill will be automatically detected and hot-reloaded by Claude Code.
 
 **Usage**: Once installed, Claude Code will use this skill automatically when relevant to your requests.
+
+## Usage
+
+```
+/refactoring-strategy extract-method src/utils/parser.ts parseHeaders
+/refactoring-strategy rename getUserData fetchUserProfile
+/refactoring-strategy modernize src/legacy/
+/refactoring-strategy optimize src/utils/heavy-computation.ts
+```
+
+## Workflow
+
+1. **Analyze** - Parse target code and build dependency graph
+2. **Plan** - Show affected files and proposed changes
+3. **Confirm** - Request user approval before proceeding
+4. **Checkpoint** - Create git commit for safety
+5. **Execute** - Perform the refactoring
+6. **Test** - Run test suite to verify no regressions
+7. **Report** - Summarize changes and results
+
+## Supported Patterns
+
+| Pattern | Description |
+|---------|-------------|
+| `extract-method` | Extract code into a new function |
+| `extract-class` | Extract functionality into a new class |
+| `rename` | Rename variables, functions, classes across project |
+| `move` | Relocate code to different files/modules |
+| `inline` | Inline functions or variables |
+| `simplify` | Reduce complex logic |
+| `modernize` | Update to modern syntax (var->const, callbacks->async) |
+| `optimize` | Performance improvements |
+
+## Safety Requirements
+
+- Verify tests pass before starting
+- Create git checkpoint before changes
+- Run tests after refactoring
+- Provide rollback option if tests fail
+- Show impact analysis before proceeding
 
 ## Refactoring Principles
 

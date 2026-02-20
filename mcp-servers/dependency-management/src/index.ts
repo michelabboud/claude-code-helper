@@ -5,19 +5,14 @@
  * Provides dependency analysis, vulnerability scanning, and update recommendations
  */
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { exec } from "child_process";
-import { promisify } from "util";
 import * as fs from "fs/promises";
 import * as path from "path";
-
-const execAsync = promisify(exec);
+import { runServer, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
 // Tool input schemas
 const AnalyzeDependenciesSchema = z.object({
@@ -66,21 +61,16 @@ const GenerateSBOMSchema = z.object({
   package_manager: z.enum(["npm", "pip", "maven", "gradle", "cargo", "go"]).describe("Package manager"),
 });
 
-// MCP Server
-const server = new Server(
-  {
-    name: "dependency-management-mcp",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
+// Vulnerability record shape
+interface VulnerabilityRecord {
+  version: string;
+  cve: string;
+  severity: string;
+  description: string;
+}
 
 // Known vulnerabilities database (mock for demo)
-const knownVulnerabilities: Record<string, any[]> = {
+const knownVulnerabilities: Record<string, VulnerabilityRecord[]> = {
   "lodash": [
     { version: "<4.17.21", cve: "CVE-2021-23337", severity: "high", description: "Command Injection" },
     { version: "<4.17.19", cve: "CVE-2020-8203", severity: "high", description: "Prototype Pollution" }
@@ -99,8 +89,8 @@ const knownVulnerabilities: Record<string, any[]> = {
   ]
 };
 
-// License compatibility matrix
-const licenseCompatibility: Record<string, string[]> = {
+// License compatibility matrix (kept for future reference/use)
+const _licenseCompatibility: Record<string, string[]> = {
   "MIT": ["MIT", "ISC", "BSD-2-Clause", "BSD-3-Clause", "Apache-2.0", "Unlicense", "CC0-1.0"],
   "Apache-2.0": ["Apache-2.0", "MIT", "ISC", "BSD-2-Clause", "BSD-3-Clause"],
   "GPL-3.0": ["GPL-3.0", "LGPL-3.0", "AGPL-3.0"],
@@ -108,16 +98,22 @@ const licenseCompatibility: Record<string, string[]> = {
 };
 
 // Helper functions
-async function readPackageJson(projectPath: string): Promise<any> {
+interface PackageJson {
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  [key: string]: unknown;
+}
+
+async function readPackageJson(projectPath: string): Promise<PackageJson | null> {
   try {
     const content = await fs.readFile(path.join(projectPath, "package.json"), "utf-8");
-    return JSON.parse(content);
+    return JSON.parse(content) as PackageJson;
   } catch {
     return null;
   }
 }
 
-async function readRequirementsTxt(projectPath: string): Promise<string[]> {
+async function _readRequirementsTxt(projectPath: string): Promise<string[]> {
   try {
     const content = await fs.readFile(path.join(projectPath, "requirements.txt"), "utf-8");
     return content.split("\n").filter(line => line.trim() && !line.startsWith("#"));
@@ -146,11 +142,19 @@ function isVersionVulnerable(packageVersion: string, vulnVersion: string): boole
   return false;
 }
 
-function analyzeDependencyTree(deps: Record<string, string>, includeTransitive: boolean): any[] {
-  const result: any[] = [];
+interface DependencyInfo {
+  name: string;
+  version: string;
+  type: string;
+  size_estimate: string;
+  last_updated?: string;
+  required_by?: string;
+}
+
+function analyzeDependencyTree(deps: Record<string, string>, includeTransitive: boolean): DependencyInfo[] {
+  const result: DependencyInfo[] = [];
 
   for (const [name, version] of Object.entries(deps)) {
-    const parsed = parseVersion(version);
     result.push({
       name,
       version: version.replace(/^[\^~]/, ""),
@@ -174,8 +178,19 @@ function analyzeDependencyTree(deps: Record<string, string>, includeTransitive: 
   return result;
 }
 
-function checkVulnerabilities(deps: Record<string, string>, severityThreshold: string): any[] {
-  const vulnerabilities: any[] = [];
+interface VulnerabilityReport {
+  package: string;
+  installed_version: string;
+  vulnerable_range: string;
+  cve: string;
+  severity: string;
+  description: string;
+  fix: string;
+  advisory_url: string;
+}
+
+function checkVulnerabilities(deps: Record<string, string>, severityThreshold: string): VulnerabilityReport[] {
+  const vulnerabilities: VulnerabilityReport[] = [];
   const severityOrder = ["low", "medium", "high", "critical"];
   const thresholdIndex = severityOrder.indexOf(severityThreshold);
 
@@ -205,12 +220,21 @@ function checkVulnerabilities(deps: Record<string, string>, severityThreshold: s
   return vulnerabilities;
 }
 
-function suggestUpdates(deps: Record<string, string>, updateType: string): any[] {
-  const suggestions: any[] = [];
+interface UpdateSuggestion {
+  package: string;
+  current_version: string;
+  suggested_version: string;
+  update_type: string;
+  breaking_changes: boolean;
+  changelog_url: string;
+}
+
+function suggestUpdates(deps: Record<string, string>, updateType: string): UpdateSuggestion[] {
+  const suggestions: UpdateSuggestion[] = [];
 
   for (const [name, version] of Object.entries(deps)) {
     const current = parseVersion(version);
-    let suggested: any;
+    let suggested: { major: number; minor: number; patch: number } | undefined;
 
     switch (updateType) {
       case "patch":
@@ -240,8 +264,22 @@ function suggestUpdates(deps: Record<string, string>, updateType: string): any[]
   return suggestions;
 }
 
-function checkLicenseCompliance(deps: Record<string, string>, allowedLicenses: string[]): any {
-  const issues: any[] = [];
+interface LicenseIssue {
+  package: string;
+  license: string;
+  allowed: string[];
+  action_required: string;
+}
+
+interface LicenseComplianceResult {
+  compliant_count: number;
+  issues_count: number;
+  issues: LicenseIssue[];
+  recommendation: string;
+}
+
+function checkLicenseCompliance(deps: Record<string, string>, allowedLicenses: string[]): LicenseComplianceResult {
+  const issues: LicenseIssue[] = [];
   const compliant: string[] = [];
 
   // Mock license data for common packages
@@ -283,9 +321,16 @@ function checkLicenseCompliance(deps: Record<string, string>, allowedLicenses: s
   };
 }
 
-function findDuplicateDependencies(deps: Record<string, string>): any[] {
+interface DuplicateInfo {
+  package: string;
+  versions: string[];
+  locations: string[];
+  resolution: string;
+}
+
+function findDuplicateDependencies(deps: Record<string, string>): DuplicateInfo[] {
   // Mock duplicate detection
-  const duplicates: any[] = [];
+  const duplicates: DuplicateInfo[] = [];
 
   // Common packages that might have version conflicts
   const potentialDuplicates = ["lodash", "underscore", "moment", "dayjs", "axios", "node-fetch"];
@@ -307,9 +352,29 @@ function findDuplicateDependencies(deps: Record<string, string>): any[] {
   return duplicates;
 }
 
-function estimateBundleSize(packageName: string, version?: string): any {
+interface BundleSizeInfo {
+  minified: string;
+  gzipped: string;
+}
+
+interface BundleAlternative {
+  name: string;
+  size: string;
+  savings: string;
+}
+
+interface BundleSizeResult {
+  package: string;
+  version: string;
+  size: BundleSizeInfo;
+  alternatives?: BundleAlternative[];
+  tree_shakeable: boolean;
+  recommendation: string;
+}
+
+function estimateBundleSize(packageName: string, version?: string): BundleSizeResult {
   // Mock bundle size data
-  const bundleSizes: Record<string, any> = {
+  const bundleSizes: Record<string, BundleSizeInfo> = {
     "lodash": { minified: "71.5KB", gzipped: "25.2KB" },
     "moment": { minified: "288KB", gzipped: "72KB" },
     "dayjs": { minified: "6.5KB", gzipped: "2.9KB" },
@@ -325,7 +390,7 @@ function estimateBundleSize(packageName: string, version?: string): any {
     gzipped: `${Math.floor(Math.random() * 30 + 5)}KB`
   };
 
-  const alternatives: any[] = [];
+  const alternatives: BundleAlternative[] = [];
   if (packageName === "moment") {
     alternatives.push({ name: "dayjs", size: "6.5KB gzipped", savings: "96%" });
     alternatives.push({ name: "date-fns", size: "14KB gzipped", savings: "80%" });
@@ -345,10 +410,25 @@ function estimateBundleSize(packageName: string, version?: string): any {
   };
 }
 
-function findUnusedDependencies(deps: Record<string, string>, devDeps: Record<string, string>): any {
+interface UnusedDependencyInfo {
+  package: string;
+  version: string;
+  suggestion: string;
+  command: string;
+}
+
+interface UnusedDependenciesResult {
+  production_unused: UnusedDependencyInfo[];
+  dev_unused: UnusedDependencyInfo[];
+  total_unused: number;
+  potential_savings: string;
+  verification: string;
+}
+
+function findUnusedDependencies(deps: Record<string, string>, _devDeps: Record<string, string>): UnusedDependenciesResult {
   // Mock unused dependency detection
-  const unused: any[] = [];
-  const devUnused: any[] = [];
+  const unused: UnusedDependencyInfo[] = [];
+  const devUnused: UnusedDependencyInfo[] = [];
 
   // Simulate finding some unused packages
   const allDeps = Object.keys(deps);
@@ -372,7 +452,7 @@ function findUnusedDependencies(deps: Record<string, string>, devDeps: Record<st
   };
 }
 
-function generateSBOM(deps: Record<string, string>, devDeps: Record<string, string>, format: string): any {
+function generateSBOM(deps: Record<string, string>, devDeps: Record<string, string>, format: string): Record<string, unknown> {
   const components = Object.entries(deps).map(([name, version]) => ({
     type: "library",
     name,
@@ -419,6 +499,9 @@ function generateSBOM(deps: Record<string, string>, devDeps: Record<string, stri
     };
   }
 }
+
+// MCP Server
+runServer({ name: "dependency-management-mcp", version: "1.0.0" }, ({ server, logger }) => {
 
 // Tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -620,37 +703,45 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const requestId = generateRequestId();
+  const startTime = performance.now();
+
+  logger.info("Tool called", { requestId, tool: name, args });
 
   try {
+    let response;
+
     switch (name) {
       case "analyze_dependencies": {
         const { project_path, package_manager, include_transitive } = AnalyzeDependenciesSchema.parse(args);
+        const safePath = sanitizePath(project_path, process.cwd());
 
         if (package_manager === "npm") {
-          const packageJson = await readPackageJson(project_path);
+          const packageJson = await readPackageJson(safePath);
           if (!packageJson) {
-            return {
+            response = {
               content: [{
                 type: "text",
                 text: JSON.stringify({
                   error: "Could not read package.json",
-                  path: project_path,
+                  path: safePath,
                   suggestion: "Verify project path contains package.json"
                 }, null, 2),
               }],
               isError: true,
             };
+            break;
           }
 
           const deps = packageJson.dependencies || {};
           const devDeps = packageJson.devDependencies || {};
           const analysis = analyzeDependencyTree({ ...deps, ...devDeps }, include_transitive || false);
 
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
-                project: project_path,
+                project: safePath,
                 package_manager,
                 total_dependencies: Object.keys(deps).length,
                 total_dev_dependencies: Object.keys(devDeps).length,
@@ -659,14 +750,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               }, null, 2),
             }],
           };
+          break;
         }
 
         // For other package managers
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              project: project_path,
+              project: safePath,
               package_manager,
               message: `Analysis for ${package_manager} projects requires specific tooling`,
               command: package_manager === "pip" ? "pip list --format=json" :
@@ -676,31 +768,34 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "find_vulnerabilities": {
         const { project_path, package_manager, severity_threshold } = FindVulnerabilitiesSchema.parse(args);
+        const safePath = sanitizePath(project_path, process.cwd());
 
         if (package_manager === "npm") {
-          const packageJson = await readPackageJson(project_path);
+          const packageJson = await readPackageJson(safePath);
           if (!packageJson) {
-            return {
+            response = {
               content: [{
                 type: "text",
                 text: JSON.stringify({ error: "Could not read package.json" }, null, 2),
               }],
               isError: true,
             };
+            break;
           }
 
           const deps = { ...(packageJson.dependencies || {}), ...(packageJson.devDependencies || {}) };
           const vulns = checkVulnerabilities(deps, severity_threshold || "low");
 
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
-                project: project_path,
+                project: safePath,
                 package_manager,
                 severity_threshold: severity_threshold || "low",
                 total_vulnerabilities: vulns.length,
@@ -715,13 +810,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               }, null, 2),
             }],
           };
+          break;
         }
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              project: project_path,
+              project: safePath,
               package_manager,
               message: `Run ${package_manager} audit command for vulnerability scanning`,
               command: package_manager === "pip" ? "pip-audit" :
@@ -730,31 +826,34 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "suggest_updates": {
         const { project_path, package_manager, update_type } = SuggestUpdatesSchema.parse(args);
+        const safePath = sanitizePath(project_path, process.cwd());
 
         if (package_manager === "npm") {
-          const packageJson = await readPackageJson(project_path);
+          const packageJson = await readPackageJson(safePath);
           if (!packageJson) {
-            return {
+            response = {
               content: [{
                 type: "text",
                 text: JSON.stringify({ error: "Could not read package.json" }, null, 2),
               }],
               isError: true,
             };
+            break;
           }
 
           const deps = packageJson.dependencies || {};
           const suggestions = suggestUpdates(deps, update_type || "minor");
 
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
-                project: project_path,
+                project: safePath,
                 package_manager,
                 update_type: update_type || "minor",
                 updates_available: suggestions.length,
@@ -765,13 +864,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               }, null, 2),
             }],
           };
+          break;
         }
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              project: project_path,
+              project: safePath,
               package_manager,
               message: `Use ${package_manager} specific tools for update suggestions`,
               command: package_manager === "pip" ? "pip list --outdated" :
@@ -780,75 +880,82 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "check_licenses": {
         const { project_path, package_manager, allowed_licenses } = CheckLicensesSchema.parse(args);
+        const safePath = sanitizePath(project_path, process.cwd());
 
         if (package_manager === "npm") {
-          const packageJson = await readPackageJson(project_path);
+          const packageJson = await readPackageJson(safePath);
           if (!packageJson) {
-            return {
+            response = {
               content: [{
                 type: "text",
                 text: JSON.stringify({ error: "Could not read package.json" }, null, 2),
               }],
               isError: true,
             };
+            break;
           }
 
           const deps = packageJson.dependencies || {};
           const licenseCheck = checkLicenseCompliance(deps, allowed_licenses);
 
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
-                project: project_path,
+                project: safePath,
                 package_manager,
                 allowed_licenses,
                 ...licenseCheck
               }, null, 2),
             }],
           };
+          break;
         }
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              project: project_path,
+              project: safePath,
               package_manager,
               message: "License checking requires package-specific tooling",
               suggestion: "Use license-checker for npm or similar tools for other managers"
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "find_duplicates": {
         const { project_path, package_manager } = FindDuplicatesSchema.parse(args);
+        const safePath = sanitizePath(project_path, process.cwd());
 
         if (package_manager === "npm") {
-          const packageJson = await readPackageJson(project_path);
+          const packageJson = await readPackageJson(safePath);
           if (!packageJson) {
-            return {
+            response = {
               content: [{
                 type: "text",
                 text: JSON.stringify({ error: "Could not read package.json" }, null, 2),
               }],
               isError: true,
             };
+            break;
           }
 
           const deps = packageJson.dependencies || {};
           const duplicates = findDuplicateDependencies(deps);
 
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
-                project: project_path,
+                project: safePath,
                 package_manager,
                 duplicates_found: duplicates.length,
                 duplicates,
@@ -859,19 +966,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               }, null, 2),
             }],
           };
+          break;
         }
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              project: project_path,
+              project: safePath,
               package_manager,
               message: "Duplicate detection varies by package manager",
               command: package_manager === "pip" ? "pip check" : "npm ls --all"
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "bundle_size_impact": {
@@ -879,7 +988,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const sizeInfo = estimateBundleSize(package_name, version);
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
@@ -892,45 +1001,49 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "unused_dependencies": {
         const { project_path, package_manager } = UnusedDependenciesSchema.parse(args);
+        const safePath = sanitizePath(project_path, process.cwd());
 
         if (package_manager === "npm") {
-          const packageJson = await readPackageJson(project_path);
+          const packageJson = await readPackageJson(safePath);
           if (!packageJson) {
-            return {
+            response = {
               content: [{
                 type: "text",
                 text: JSON.stringify({ error: "Could not read package.json" }, null, 2),
               }],
               isError: true,
             };
+            break;
           }
 
           const deps = packageJson.dependencies || {};
           const devDeps = packageJson.devDependencies || {};
           const unused = findUnusedDependencies(deps, devDeps);
 
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
-                project: project_path,
+                project: safePath,
                 package_manager,
                 ...unused,
                 tool_suggestion: "Use depcheck for more accurate detection: npx depcheck"
               }, null, 2),
             }],
           };
+          break;
         }
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              project: project_path,
+              project: safePath,
               package_manager,
               message: "Use appropriate tool for unused dependency detection",
               tools: {
@@ -941,46 +1054,50 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       case "generate_sbom": {
         const { project_path, format, package_manager } = GenerateSBOMSchema.parse(args);
+        const safePath = sanitizePath(project_path, process.cwd());
 
         if (package_manager === "npm") {
-          const packageJson = await readPackageJson(project_path);
+          const packageJson = await readPackageJson(safePath);
           if (!packageJson) {
-            return {
+            response = {
               content: [{
                 type: "text",
                 text: JSON.stringify({ error: "Could not read package.json" }, null, 2),
               }],
               isError: true,
             };
+            break;
           }
 
           const deps = packageJson.dependencies || {};
           const devDeps = packageJson.devDependencies || {};
           const sbom = generateSBOM(deps, devDeps, format);
 
-          return {
+          response = {
             content: [{
               type: "text",
               text: JSON.stringify({
                 format,
-                project: project_path,
+                project: safePath,
                 generated_at: new Date().toISOString(),
                 sbom,
                 save_command: `Save to ${format === "cyclonedx" ? "bom.json" : "sbom.spdx.json"}`
               }, null, 2),
             }],
           };
+          break;
         }
 
-        return {
+        response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              project: project_path,
+              project: safePath,
               format,
               package_manager,
               message: "Use appropriate SBOM generation tool",
@@ -991,30 +1108,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }, null, 2),
           }],
         };
+        break;
       }
 
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
-  } catch (error: any) {
-    return {
-      content: [{
-        type: "text",
-        text: `Error: ${error.message}`,
-      }],
-      isError: true,
-    };
+
+    const durationMs = measureDuration(startTime);
+    logger.info("Tool completed", { requestId, tool: name, durationMs });
+    return response;
+  } catch (error: unknown) {
+    const durationMs = measureDuration(startTime);
+    logger.error("Tool failed", { requestId, tool: name, durationMs, error: error instanceof Error ? error.message : String(error) });
+    return errorResponse(error, name);
   }
 });
 
-// Start server
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("Dependency Management MCP Server running on stdio");
-}
-
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+}); // end runServer

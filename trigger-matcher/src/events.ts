@@ -5,7 +5,7 @@
  * events to matching agent triggers.
  */
 
-import type { AgentDefinition, TriggerMatch, FileEvent, EventType } from './types.js';
+import type { TriggerMatch, FileEvent, EventType } from './types.js';
 
 // Re-export EventType for convenience
 export type { EventType } from './types.js';
@@ -400,7 +400,7 @@ function sanitizeCondition(condition: string): string | null {
     /\byield\b/i,
     /\bthrow\b/i,
     /\breturn\b(?!\s*\()/i, // return without immediate expression
-    /[;\{\}]/, // statements
+    /[;{}]/, // statements
     /(?<![=!<>])=(?![=])/, // single = not preceded/followed by =, !, <, >
   ];
 
@@ -413,7 +413,7 @@ function sanitizeCondition(condition: string): string | null {
 
   // Only allow safe operations
   const allowedPattern =
-    /^[\w\s\.\[\]'"()\|\|&&!<>=\-\+\*\/\?\:,]+$/;
+    /^[\w\s.[\]'"()||&&!<>=\-+*/?:,]+$/;
   if (!allowedPattern.test(sanitized)) {
     console.warn(`Invalid characters in condition: ${condition}`);
     return null;

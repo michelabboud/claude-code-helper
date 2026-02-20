@@ -8,13 +8,13 @@
 export interface VectorDocument {
   id: string;
   content: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   embedding?: number[];
 }
 
 export interface SearchResult {
   content: string;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   distance?: number;
   score?: number;
 }
@@ -47,7 +47,7 @@ export interface VectorDatabase {
     query: string,
     options: {
       nResults?: number;
-      filter?: Record<string, any>;
+      filter?: Record<string, unknown>;
     }
   ): Promise<SearchResult[]>;
 
@@ -58,7 +58,7 @@ export interface VectorDatabase {
 /**
  * ChromaDB Implementation
  */
-import { ChromaClient } from "chromadb";
+import { ChromaClient, type Where } from "chromadb";
 
 export class ChromaDBAdapter implements VectorDatabase {
   private client: ChromaClient;
@@ -80,12 +80,10 @@ export class ChromaDBAdapter implements VectorDatabase {
 
   async listCollections(): Promise<CollectionInfo[]> {
     const collections = await this.client.listCollections();
-    return Promise.all(
-      collections.map(async (col: any) => ({
-        name: col.name,
-        count: await col.count(),
-      }))
-    );
+    return collections.map((col) => ({
+      name: col,
+      count: 0, // listCollections returns string[] in ChromaDB v1.9+
+    }));
   }
 
   async getCollectionStats(name: string): Promise<{ totalChunks: number }> {
@@ -105,14 +103,14 @@ export class ChromaDBAdapter implements VectorDatabase {
     await collection.add({
       ids: documents.map((d) => d.id),
       documents: documents.map((d) => d.content),
-      metadatas: documents.map((d) => d.metadata),
+      metadatas: documents.map((d) => d.metadata as Record<string, string | number | boolean>),
     });
   }
 
   async search(
     collectionName: string,
     query: string,
-    options: { nResults?: number; filter?: Record<string, any> }
+    options: { nResults?: number; filter?: Record<string, unknown> }
   ): Promise<SearchResult[]> {
     const collection = await this.client.getOrCreateCollection({
       name: collectionName,
@@ -121,7 +119,7 @@ export class ChromaDBAdapter implements VectorDatabase {
     const results = await collection.query({
       queryTexts: [query],
       nResults: options.nResults || 5,
-      where: options.filter,
+      where: options.filter as Where | undefined,
     });
 
     return (results.documents[0] || [])
@@ -176,8 +174,8 @@ export class QdrantAdapter implements VectorDatabase {
         vectors: { size: dimension, distance: "Cosine" },
       });
       console.error(`✅ Qdrant collection created: ${name} (${dimension} dimensions)`);
-    } catch (error: any) {
-      if (!error.message?.includes("already exists")) {
+    } catch (error: unknown) {
+      if (error instanceof Error && !error.message?.includes("already exists")) {
         throw error;
       }
     }
@@ -206,7 +204,7 @@ export class QdrantAdapter implements VectorDatabase {
   ): Promise<void> {
     // Generate embeddings for all documents
     const points = await Promise.all(
-      documents.map(async (doc, idx) => {
+      documents.map(async (doc, _idx) => {
         // Generate embedding if not provided
         const embedding = doc.embedding || (await this.embedder.generate(doc.content));
 
@@ -245,7 +243,7 @@ export class QdrantAdapter implements VectorDatabase {
   async search(
     collectionName: string,
     query: string,
-    options: { nResults?: number; filter?: Record<string, any> }
+    options: { nResults?: number; filter?: Record<string, unknown> }
   ): Promise<SearchResult[]> {
     // Generate query embedding
     const queryEmbedding = await this.embedder.generate(query);
@@ -257,9 +255,9 @@ export class QdrantAdapter implements VectorDatabase {
       with_payload: true,
     });
 
-    return results.map((result: any) => ({
-      content: result.payload.content || "",
-      metadata: result.payload,
+    return results.map((result) => ({
+      content: (result.payload?.content as string) || "",
+      metadata: (result.payload || {}) as Record<string, unknown>,
       score: result.score,
     }));
   }
@@ -280,8 +278,10 @@ export class QdrantAdapter implements VectorDatabase {
 import { createClient } from "redis";
 import { EmbeddingGenerator } from "./embeddings.js";
 
+type RedisClientType = ReturnType<typeof createClient>;
+
 export class RedisAdapter implements VectorDatabase {
-  private client: any;
+  private client: RedisClientType;
   private connected: boolean = false;
   private embedder: EmbeddingGenerator;
 
@@ -336,8 +336,8 @@ export class RedisAdapter implements VectorDatabase {
         }
       );
       console.error(`✅ Redis index created: idx:${name} (${dimension} dimensions)`);
-    } catch (error: any) {
-      if (!error.message?.includes("Index already exists")) {
+    } catch (error: unknown) {
+      if (error instanceof Error && !error.message?.includes("Index already exists")) {
         throw error;
       }
     }
@@ -390,7 +390,7 @@ export class RedisAdapter implements VectorDatabase {
   async search(
     collectionName: string,
     query: string,
-    options: { nResults?: number; filter?: Record<string, any> }
+    options: { nResults?: number; filter?: Record<string, unknown> }
   ): Promise<SearchResult[]> {
     await this.ensureConnected();
 
@@ -399,7 +399,7 @@ export class RedisAdapter implements VectorDatabase {
     const queryBuffer = Buffer.from(new Float32Array(queryEmbedding).buffer);
 
     // Perform KNN vector search — return all stored fields so metadata is preserved
-    const results = await this.client.ft.search(
+    const rawResults = await this.client.ft.search(
       `idx:${collectionName}`,
       `*=>[KNN ${options.nResults || 5} @embedding $vec AS score]`,
       {
@@ -411,16 +411,20 @@ export class RedisAdapter implements VectorDatabase {
       }
     );
 
+    // Cast the complex Redis return type to the expected shape
+    const results = rawResults as { documents?: Array<{ value: Record<string, unknown> }> };
+
     if (!results.documents || results.documents.length === 0) {
       return [];
     }
 
-    return results.documents.map((doc: any) => {
-      const { content, score, embedding, ...metadata } = doc.value;
+    return results.documents.map((doc) => {
+      const value = (doc.value || {}) as Record<string, unknown>;
+      const { content, score, embedding: _embedding, ...metadata } = value;
       return {
-        content: content || "",
+        content: (content as string) || "",
         metadata,
-        score: parseFloat(score) || 0,
+        score: parseFloat(String(score)) || 0,
       };
     });
   }
@@ -456,14 +460,18 @@ export async function createVectorDatabase(
     case "redis": {
       // Redis needs embedder
       const embedder = createEmbeddingGenerator(embeddingType, modelVariant);
-      await (embedder as any).initialize?.();
+      if ("initialize" in embedder && typeof (embedder as { initialize?: () => Promise<void> }).initialize === "function") {
+        await (embedder as { initialize: () => Promise<void> }).initialize();
+      }
       return new RedisAdapter(config, embedder);
     }
 
     case "qdrant": {
       // Qdrant needs embedder
       const embedder = createEmbeddingGenerator(embeddingType, modelVariant);
-      await (embedder as any).initialize?.();
+      if ("initialize" in embedder && typeof (embedder as { initialize?: () => Promise<void> }).initialize === "function") {
+        await (embedder as { initialize: () => Promise<void> }).initialize();
+      }
       return new QdrantAdapter(config, embedder);
     }
 

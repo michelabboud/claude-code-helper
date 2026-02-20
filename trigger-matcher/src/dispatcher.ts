@@ -13,7 +13,7 @@ import type {
   EventType,
 } from './events.js';
 import { EventBus, matchEventTrigger } from './events.js';
-import { buildTriggerIndex, matchFilePattern, matchKeywords } from './matcher.js';
+import { buildTriggerIndex, matchFilePattern } from './matcher.js';
 
 /**
  * Extended agent definition with event triggers

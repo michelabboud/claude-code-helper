@@ -1,0 +1,684 @@
+{
+  "projectName": "claude-code-helper",
+  "lastAssessment": "2026-02-20T12:00:00Z",
+  "assessmentCount": 10,
+  "overallScore": 7.7,
+  "experts": {
+    "qa": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "All 11 MCP packages + trigger-matcher have tests. 1,327 total tests (1,127 MCP + 200 trigger-matcher). Coverage reporting enabled in all packages. mcp-shared at 88.7% statement coverage with thresholds enforced. 7 test suites in mcp-shared alone (64 tests).",
+      "recommendation": "Add integration tests for cross-server scenarios, raise coverage thresholds as test coverage improves",
+      "riskIfIgnored": "Low remaining risk - all components have unit tests with coverage tracking"
+    },
+    "uiux": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "PM dashboard (TUI + web) has dark/light theme toggle (persisted in localStorage), keyboard navigation (J/K section nav, T theme toggle, R refresh, ? help), ARIA-friendly focusable cards. Multi-project view also themed. Primarily a CLI toolkit, so UI needs are limited.",
+      "recommendation": "Add collapsible sections and responsive mobile layout improvements",
+      "riskIfIgnored": "Low risk - UI is secondary to this project's purpose"
+    },
+    "security": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "All 45 sanitizePath() calls now include basePath=process.cwd() preventing path traversal. CI secrets scan fails build on findings. execFile() everywhere (no shell injection). npm audit fails on high-severity vulns.",
+      "recommendation": "Add SQL injection protection to database-operations, add Content-Security-Policy headers if web dashboard is exposed",
+      "riskIfIgnored": "Low remaining risk - major attack vectors are closed"
+    },
+    "devops": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "CI tests all 10 MCP servers + mcp-shared + trigger-matcher. ESLint zero-tolerance. Secrets scan fails build. npm audit enforced. Coverage reporting in all packages. Pre-commit hooks via husky + lint-staged. Only gap: no required status checks on GitHub (needs admin access).",
+      "recommendation": "Enable required status checks on main branch (requires repo admin), add coverage summary to CI output",
+      "riskIfIgnored": "CI failures can still be merged without branch protection (GitHub admin setting)"
+    },
+    "networking": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "Stdio transport (minimal exposure). runServer() provides health check framework for all servers. rag-mcp, code-review-mcp, and testing-mcp all use startup health checks via commandHealthCheck(). checkCommand utility verifies CLI tool availability at startup. URL sanitization blocks SSRF.",
+      "recommendation": "Add periodic health checks for long-running servers, consider health check endpoint for external monitoring",
+      "riskIfIgnored": "Low remaining risk - all exec-based servers now verify tool availability at startup"
+    },
+    "development": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "ESLint zero-tolerance (all errors, --max-warnings 0). All 12 components have tests (1,305 total). Proper TypeScript types everywhere (no 'any'). Pre-commit hooks via husky + lint-staged. Coverage reporting enabled. Root-level test-all.mjs script.",
+      "recommendation": "Add type checking (tsc --noEmit) to pre-commit hooks, add integration test suite",
+      "riskIfIgnored": "Low remaining risk - comprehensive development guardrails in place"
+    },
+    "architecture": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "All 10 servers use runServer() factory from mcp-shared - zero duplicated boilerplate. Clean separation: schemas/helpers at module level, handlers in callback. mcp-shared has 7 modules (server, logger, sanitize, response, health, metrics, check-command). No monorepo/workspaces yet.",
+      "recommendation": "Set up npm workspaces for dependency sharing, create tsconfig.base.json to eliminate 11 duplicate configs",
+      "riskIfIgnored": "11 separate npm installs is slow; duplicate tsconfig may drift"
+    },
+    "product": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "Comprehensive feature coverage: 47 agents (7 now with v2.1.49 features: background, memory, isolation), 19 skills (new /update-check), 10 MCP servers, install manifest tracking, version sync tooling. Clear purpose and value proposition.",
+      "recommendation": "Keep docs in sync with Claude Code CLI releases",
+      "riskIfIgnored": "Users follow outdated guides as CLI evolves"
+    },
+    "api": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "MCP tool interfaces are consistent. All use Zod validation, shared errorResponse() with actionable context. Standard response helpers from mcp-shared. runServer() provides unified lifecycle.",
+      "recommendation": "Add input examples to tool descriptions for better discoverability",
+      "riskIfIgnored": "Users may not understand expected input formats"
+    },
+    "monitoring": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "100% instrumentation. Log rotation via MCP_LOG_MAX_SIZE_MB (default 10MB) with lazy size checking (every 100 writes). MetricsCollector tracks per-tool p50/p95/p99 latencies with 1000-entry cap per tool. MCP_LOG_FILE for persistent output. All servers log requestId + durationMs. Startup time tracked via startupMs in server logs.",
+      "recommendation": "Wire MetricsCollector.recordCall() into server tool handlers for automated latency tracking, add metrics export endpoint",
+      "riskIfIgnored": "Low remaining risk - log rotation prevents unbounded growth, metrics infrastructure ready for integration"
+    },
+    "database": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "rag-mcp healthCheck() wired into runServer() startup with retry logic. Adapter pattern supports ChromaDB, Qdrant, Redis. Graceful degradation on failure.",
+      "recommendation": "Add periodic health checks and connection pool monitoring",
+      "riskIfIgnored": "Post-startup connection drops still need manual detection"
+    },
+    "performance": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "CI benchmark results persisted as JSON artifacts (90-day retention) with per-server build times, commit SHA, timestamps. 120s total build time SLA warning enforced. Startup time (startupMs) automatically logged by runServer(). MetricsCollector enables per-tool p50/p95/p99 latency tracking.",
+      "recommendation": "Add benchmark comparison step that downloads previous artifact for trend detection, wire MetricsCollector into tool handlers",
+      "riskIfIgnored": "Low remaining risk - benchmark data now persisted for trend analysis"
+    },
+    "documentation": {
+      "score": 8,
+      "status": "good",
+      "topFinding": "Excellent documentation: comprehensive README, QUICKSTART, complete guides, CLAUDE.md, CHANGELOG. mcp-shared lacks its own API documentation.",
+      "recommendation": "Add mcp-shared API docs and usage examples",
+      "riskIfIgnored": "New contributors won't know how to use shared library"
+    },
+    "specifications": {
+      "score": 5,
+      "status": "needs-work",
+      "topFinding": "Good informal specifications via CLAUDE.md (comprehensive project instructions), README.md, QUICKSTART.md, and per-server READMEs. TOOLS-INDEX.md catalogs all tools. No formal requirements documents, acceptance criteria, or requirements traceability matrix. MCP tool schemas serve as implicit API specs via Zod.",
+      "recommendation": "Add lightweight spec templates for new features. Consider a REQUIREMENTS.md or ADR-style format for significant changes. Add acceptance criteria to pm-dashboard task entries.",
+      "riskIfIgnored": "Feature scope creep without clear acceptance criteria; ambiguous 'done' definitions"
+    },
+    "projectDocs": {
+      "score": 5,
+      "status": "needs-work",
+      "topFinding": "CHANGELOG.md tracks all versions (v1.3.0-v2.1.0). Release notes in docs/releases/ document each release thoroughly. pm-dashboard.json serves as institutional memory. Auto-memory in ~/.claude/projects/ preserves cross-session context. No formal ADRs, retrospectives, or decision rationale documents.",
+      "recommendation": "Add docs/decisions/ directory for Architecture Decision Records (ADRs). Document key choices like mcp-shared extraction, runServer() pattern, and testing strategy decisions.",
+      "riskIfIgnored": "New contributors won't understand why architectural choices were made; repeated debates on settled decisions"
+    },
+    "progress": {
+      "score": 7,
+      "status": "good",
+      "topFinding": "pm-dashboard.json tracks 25 tasks. Installation manifest (~/.claude/claude-code-helper.json) now tracks installed version + components. /update-check skill lets users verify they're current. sync-version.sh helps maintainers create releases. Version synced to 2.2.0 across package.json and CHANGELOG.",
+      "recommendation": "Add WIP documentation for in-progress work (current branch, blockers, partial progress). Add estimated completion info to todo tasks.",
+      "riskIfIgnored": "Agents picking up mid-stream work may duplicate effort or miss context"
+    }
+  },
+  "tasks": [
+    {
+      "id": "t1",
+      "title": "Add unit tests to remaining 8 MCP servers",
+      "status": "done",
+      "priority": 1,
+      "impact": "high",
+      "effort": "high",
+      "expert": "qa",
+      "quadrant": "major-project"
+    },
+    {
+      "id": "t2",
+      "title": "Create root-level CI/CD pipeline (GitHub Actions)",
+      "status": "done",
+      "priority": 2,
+      "impact": "high",
+      "effort": "medium",
+      "expert": "devops",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t3",
+      "title": "Add structured logging to MCP servers",
+      "status": "done",
+      "priority": 3,
+      "impact": "high",
+      "effort": "medium",
+      "expert": "monitoring",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t4",
+      "title": "Add input path/URL sanitization to MCP tools",
+      "status": "done",
+      "priority": 4,
+      "impact": "high",
+      "effort": "low",
+      "expert": "security",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t5",
+      "title": "Extract shared MCP server base library",
+      "status": "done",
+      "priority": 5,
+      "impact": "medium",
+      "effort": "high",
+      "expert": "architecture",
+      "quadrant": "major-project"
+    },
+    {
+      "id": "t6",
+      "title": "Wire healthCheck() into MCP server startup lifecycle",
+      "status": "done",
+      "priority": 6,
+      "impact": "medium",
+      "effort": "low",
+      "expert": "database",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t7",
+      "title": "Add ESLint + config at repo root",
+      "status": "done",
+      "priority": 7,
+      "impact": "medium",
+      "effort": "low",
+      "expert": "development",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t8",
+      "title": "Add dependency vulnerability scanning (npm audit in CI)",
+      "status": "done",
+      "priority": 8,
+      "impact": "medium",
+      "effort": "low",
+      "expert": "security",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t9",
+      "title": "Add MCP build benchmarks to CI",
+      "status": "done",
+      "priority": 9,
+      "impact": "low",
+      "effort": "medium",
+      "expert": "performance",
+      "quadrant": "fill-in"
+    },
+    {
+      "id": "t10",
+      "title": "Migrate servers to use runServer() factory",
+      "status": "done",
+      "priority": 10,
+      "impact": "medium",
+      "effort": "medium",
+      "expert": "architecture",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t11",
+      "title": "Fail CI on high-severity npm audit + use execFile()",
+      "status": "done",
+      "priority": 11,
+      "impact": "high",
+      "effort": "low",
+      "expert": "security",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t12",
+      "title": "Add requestId and durationMs to tool handler logging",
+      "status": "done",
+      "priority": 12,
+      "impact": "medium",
+      "effort": "low",
+      "expert": "monitoring",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t13",
+      "title": "Add code coverage reporting to CI",
+      "status": "done",
+      "priority": 13,
+      "impact": "medium",
+      "effort": "medium",
+      "expert": "devops",
+      "quadrant": "fill-in"
+    },
+    {
+      "id": "t14",
+      "title": "Add basePath=process.cwd() to all sanitizePath calls",
+      "status": "done",
+      "priority": 14,
+      "impact": "high",
+      "effort": "low",
+      "expert": "security",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t15",
+      "title": "Make CI secrets scan fail build on findings",
+      "status": "done",
+      "priority": 15,
+      "impact": "medium",
+      "effort": "low",
+      "expert": "security",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t16",
+      "title": "Add all 10 servers to CI test matrix",
+      "status": "done",
+      "priority": 16,
+      "impact": "high",
+      "effort": "low",
+      "expert": "devops",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t17",
+      "title": "Add log file output option to structured logger",
+      "status": "done",
+      "priority": 17,
+      "impact": "medium",
+      "effort": "medium",
+      "expert": "monitoring",
+      "quadrant": "fill-in"
+    },
+    {
+      "id": "t18",
+      "title": "Set up npm workspaces for monorepo",
+      "status": "todo",
+      "priority": 18,
+      "impact": "medium",
+      "effort": "high",
+      "expert": "architecture",
+      "quadrant": "major-project"
+    },
+    {
+      "id": "t19",
+      "title": "Add pre-commit hooks (husky + lint-staged)",
+      "status": "done",
+      "priority": 19,
+      "impact": "medium",
+      "effort": "low",
+      "expert": "development",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t20",
+      "title": "Add log rotation and metrics collector to mcp-shared",
+      "status": "done",
+      "priority": 20,
+      "impact": "high",
+      "effort": "medium",
+      "expert": "monitoring",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t21",
+      "title": "Add commandHealthCheck to exec-based servers",
+      "status": "done",
+      "priority": 21,
+      "impact": "medium",
+      "effort": "low",
+      "expert": "networking",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t22",
+      "title": "Persist CI benchmark results as artifacts with SLA",
+      "status": "done",
+      "priority": 22,
+      "impact": "medium",
+      "effort": "low",
+      "expert": "performance",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t23",
+      "title": "Add startup time tracking to runServer",
+      "status": "done",
+      "priority": 23,
+      "impact": "low",
+      "effort": "low",
+      "expert": "performance",
+      "quadrant": "fill-in"
+    },
+    {
+      "id": "t24",
+      "title": "Add dark/light theme toggle and keyboard navigation to web dashboards",
+      "status": "done",
+      "priority": 24,
+      "impact": "medium",
+      "effort": "low",
+      "expert": "uiux",
+      "quadrant": "quick-win"
+    },
+    {
+      "id": "t25",
+      "title": "Add versioning, installation manifest, update-check skill, and v2.1.49 agent features",
+      "status": "done",
+      "priority": 25,
+      "impact": "high",
+      "effort": "medium",
+      "expert": "product",
+      "quadrant": "quick-win"
+    }
+  ],
+  "risks": [
+    {
+      "id": "r1",
+      "description": "RESOLVED - All 10 MCP servers have unit tests (1,098 tests). CI runs all tests.",
+      "severity": "low",
+      "likelihood": "low",
+      "expert": "qa",
+      "mitigation": "RESOLVED"
+    },
+    {
+      "id": "r2",
+      "description": "RESOLVED - CI/CD pipeline with 10 jobs now in place",
+      "severity": "low",
+      "likelihood": "low",
+      "expert": "devops",
+      "mitigation": "RESOLVED"
+    },
+    {
+      "id": "r3",
+      "description": "RESOLVED - CI now fails on high-severity npm audit findings",
+      "severity": "low",
+      "likelihood": "low",
+      "expert": "security",
+      "mitigation": "RESOLVED"
+    },
+    {
+      "id": "r4",
+      "description": "RESOLVED - All 10 servers log requestId + durationMs on every tool call",
+      "severity": "low",
+      "likelihood": "low",
+      "expert": "monitoring",
+      "mitigation": "RESOLVED"
+    },
+    {
+      "id": "r5",
+      "description": "RESOLVED - All servers now use execFile() with argument arrays; no shell invocation",
+      "severity": "low",
+      "likelihood": "low",
+      "expert": "security",
+      "mitigation": "RESOLVED"
+    },
+    {
+      "id": "r6",
+      "description": "RESOLVED - All sanitizePath() calls constrained to process.cwd() via basePath",
+      "severity": "low",
+      "likelihood": "low",
+      "expert": "security",
+      "mitigation": "RESOLVED"
+    }
+  ],
+  "technicalDebt": [
+    {
+      "id": "d1",
+      "item": "RESOLVED - All 10 servers use runServer() factory. Zero duplicated boilerplate. No direct Server/StdioServerTransport imports.",
+      "category": "architecture",
+      "impact": "low",
+      "effort": "done",
+      "interestRate": "declining"
+    },
+    {
+      "id": "d2",
+      "item": "RESOLVED - ESLint at 0 errors, 0 warnings. All rules enforced as errors. CI uses --max-warnings 0.",
+      "category": "code",
+      "impact": "low",
+      "effort": "done",
+      "interestRate": "declining"
+    },
+    {
+      "id": "d3",
+      "item": "RESOLVED - Structured JSON logging replaces console.error() in all 10 servers",
+      "category": "infrastructure",
+      "impact": "low",
+      "effort": "done",
+      "interestRate": "declining"
+    },
+    {
+      "id": "d4",
+      "item": "RESOLVED - healthCheck() wired into rag-mcp startup via runServer() with retry logic",
+      "category": "code",
+      "impact": "low",
+      "effort": "done",
+      "interestRate": "declining"
+    },
+    {
+      "id": "d5",
+      "item": "No monorepo setup - 11 separate npm projects with individual installs, no workspace sharing",
+      "category": "architecture",
+      "impact": "medium",
+      "effort": "days",
+      "interestRate": "accruing"
+    },
+    {
+      "id": "d6",
+      "item": "RESOLVED - Log rotation via MCP_LOG_MAX_SIZE_MB, MetricsCollector with p50/p95/p99 per tool, startup time tracking. Only remaining: wire MetricsCollector into tool handlers automatically.",
+      "category": "infrastructure",
+      "impact": "low",
+      "effort": "done",
+      "interestRate": "declining"
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-02-20T12:00:00Z",
+      "scores": {
+        "qa": 4,
+        "uiux": 6,
+        "security": 5,
+        "devops": 4,
+        "networking": 5,
+        "development": 7,
+        "architecture": 6,
+        "product": 8,
+        "api": 8,
+        "monitoring": 2,
+        "database": 5,
+        "performance": 5,
+        "documentation": 8,
+        "specifications": 0,
+        "projectDocs": 0,
+        "progress": 0
+      }
+    },
+    {
+      "date": "2026-02-20T14:00:00Z",
+      "scores": {
+        "qa": 5,
+        "uiux": 6,
+        "security": 6,
+        "devops": 7,
+        "networking": 5,
+        "development": 8,
+        "architecture": 6,
+        "product": 8,
+        "api": 8,
+        "monitoring": 2,
+        "database": 5,
+        "performance": 5,
+        "documentation": 8,
+        "specifications": 0,
+        "projectDocs": 0,
+        "progress": 0
+      }
+    },
+    {
+      "date": "2026-02-20T17:00:00Z",
+      "scores": {
+        "qa": 7,
+        "uiux": 7,
+        "security": 7,
+        "devops": 7,
+        "networking": 7,
+        "development": 8,
+        "architecture": 7,
+        "product": 8,
+        "api": 8,
+        "monitoring": 6,
+        "database": 8,
+        "performance": 7,
+        "documentation": 8,
+        "specifications": 0,
+        "projectDocs": 0,
+        "progress": 0
+      }
+    },
+    {
+      "date": "2026-02-20T19:00:00Z",
+      "scores": {
+        "qa": 7,
+        "uiux": 7,
+        "security": 8,
+        "devops": 8,
+        "networking": 7,
+        "development": 9,
+        "architecture": 7,
+        "product": 8,
+        "api": 8,
+        "monitoring": 8,
+        "database": 8,
+        "performance": 8,
+        "documentation": 8,
+        "specifications": 0,
+        "projectDocs": 0,
+        "progress": 0
+      }
+    },
+    {
+      "date": "2026-02-20T20:00:00Z",
+      "scores": {
+        "qa": 4,
+        "uiux": 7,
+        "security": 6,
+        "devops": 5,
+        "networking": 7,
+        "development": 5,
+        "architecture": 5,
+        "product": 8,
+        "api": 8,
+        "monitoring": 6,
+        "database": 8,
+        "performance": 7,
+        "documentation": 8,
+        "specifications": 0,
+        "projectDocs": 0,
+        "progress": 0
+      }
+    },
+    {
+      "date": "2026-02-21T06:30:00Z",
+      "scores": {
+        "qa": 7,
+        "uiux": 7,
+        "security": 8,
+        "devops": 7,
+        "networking": 7,
+        "development": 7,
+        "architecture": 8,
+        "product": 8,
+        "api": 8,
+        "monitoring": 6,
+        "database": 8,
+        "performance": 7,
+        "documentation": 8,
+        "specifications": 0,
+        "projectDocs": 0,
+        "progress": 0
+      }
+    },
+    {
+      "date": "2026-02-21T07:00:00Z",
+      "scores": {
+        "qa": 8,
+        "uiux": 7,
+        "security": 8,
+        "devops": 8,
+        "networking": 7,
+        "development": 8,
+        "architecture": 8,
+        "product": 8,
+        "api": 8,
+        "monitoring": 7,
+        "database": 8,
+        "performance": 7,
+        "documentation": 8,
+        "specifications": 0,
+        "projectDocs": 0,
+        "progress": 0
+      }
+    },
+    {
+      "date": "2026-02-21T08:00:00Z",
+      "scores": {
+        "qa": 8,
+        "uiux": 8,
+        "security": 8,
+        "devops": 8,
+        "networking": 8,
+        "development": 8,
+        "architecture": 8,
+        "product": 8,
+        "api": 8,
+        "monitoring": 8,
+        "database": 8,
+        "performance": 8,
+        "documentation": 8,
+        "specifications": 0,
+        "projectDocs": 0,
+        "progress": 0
+      }
+    },
+    {
+      "date": "2026-02-21T10:00:00Z",
+      "scores": {
+        "qa": 8,
+        "uiux": 8,
+        "security": 8,
+        "devops": 8,
+        "networking": 8,
+        "development": 8,
+        "architecture": 8,
+        "product": 8,
+        "api": 8,
+        "monitoring": 8,
+        "database": 8,
+        "performance": 8,
+        "documentation": 8,
+        "specifications": 5,
+        "projectDocs": 5,
+        "progress": 7
+      }
+    },
+    {
+      "date": "2026-02-20T12:00:00Z",
+      "scores": {
+        "qa": 8,
+        "uiux": 8,
+        "security": 8,
+        "devops": 8,
+        "networking": 8,
+        "development": 8,
+        "architecture": 8,
+        "product": 8,
+        "api": 8,
+        "monitoring": 8,
+        "database": 8,
+        "performance": 8,
+        "documentation": 8,
+        "specifications": 5,
+        "projectDocs": 5,
+        "progress": 8
+      }
+    }
+  ]
+}

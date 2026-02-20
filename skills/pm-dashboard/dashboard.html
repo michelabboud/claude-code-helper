@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Health Dashboard</title>
+<style>
+  :root, [data-theme="dark"] {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --cyan: #39d353;
+    --radius: 12px;
+    --radar-grid: rgba(48,54,61,0.6);
+    --radar-axis: rgba(48,54,61,0.4);
+    --radar-label: #8b949e;
+    --radar-fill: rgba(88,166,255,0.15);
+  }
+
+  [data-theme="light"] {
+    --bg: #f6f8fa;
+    --surface: #ffffff;
+    --border: #d0d7de;
+    --text: #1f2328;
+    --text-dim: #656d76;
+    --accent: #0969da;
+    --green: #1a7f37;
+    --yellow: #9a6700;
+    --red: #cf222e;
+    --purple: #8250df;
+    --cyan: #1a7f37;
+    --radar-grid: rgba(208,215,222,0.8);
+    --radar-axis: rgba(208,215,222,0.6);
+    --radar-label: #656d76;
+    --radar-fill: rgba(9,105,218,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header h1 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+
+  .header-meta {
+    text-align: right;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  .btn {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .btn:hover { opacity: 0.9; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .card h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+
+  .card-full { grid-column: 1 / -1; }
+
+  /* Overall Score */
+  .overall-score {
+    text-align: center;
+    padding: 32px 20px;
+  }
+
+  .score-ring {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 16px;
+  }
+
+  .score-ring svg {
+    transform: rotate(-90deg);
+    width: 160px;
+    height: 160px;
+  }
+
+  .score-ring .score-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 42px;
+    font-weight: 700;
+  }
+
+  .score-ring .score-label {
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  /* Expert Scores */
+  .expert-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .expert-row:last-child { border-bottom: none; }
+
+  .expert-name {
+    width: 160px;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .expert-bar-bg {
+    flex: 1;
+    height: 20px;
+    background: var(--bg);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0 12px;
+  }
+
+  .expert-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  .expert-score {
+    width: 50px;
+    text-align: right;
+    font-weight: 600;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .expert-finding {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* Radar Chart */
+  .radar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 360px;
+  }
+
+  /* Priority Matrix */
+  .matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px;
+    min-height: 280px;
+  }
+
+  .matrix-cell {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 12px;
+    position: relative;
+  }
+
+  .matrix-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .matrix-cell.quick-win { border-left: 3px solid var(--green); }
+  .matrix-cell.major-project { border-left: 3px solid var(--yellow); }
+  .matrix-cell.fill-in { border-left: 3px solid var(--text-dim); }
+  .matrix-cell.reconsider { border-left: 3px solid var(--border); }
+
+  .matrix-item {
+    font-size: 12px;
+    padding: 4px 8px;
+    margin: 4px 0;
+    background: var(--surface);
+    border-radius: 4px;
+  }
+
+  /* Tasks */
+  .kanban {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+
+  .kanban-col h3 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .kanban-col.todo h3 { border-color: var(--text-dim); }
+  .kanban-col.progress h3 { border-color: var(--accent); }
+  .kanban-col.done h3 { border-color: var(--green); }
+
+  .task-card {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--border);
+  }
+
+  .task-card.high { border-left-color: var(--red); }
+  .task-card.medium { border-left-color: var(--yellow); }
+  .task-card.low { border-left-color: var(--green); }
+
+  .task-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+
+  .task-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    gap: 8px;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+
+  /* Risks */
+  .risk-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .risk-row:last-child { border-bottom: none; }
+
+  .risk-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    min-width: 64px;
+    text-align: center;
+  }
+
+  .risk-badge.critical { background: var(--red); color: white; }
+  .risk-badge.high { background: #da3633; color: white; }
+  .risk-badge.medium { background: var(--yellow); color: var(--bg); }
+  .risk-badge.low { background: var(--border); color: var(--text); }
+
+  .risk-desc { font-size: 13px; flex: 1; }
+  .risk-expert { font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+
+  /* Score history sparklines */
+  .sparkline {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 30px;
+  }
+
+  .spark-bar {
+    width: 6px;
+    border-radius: 2px;
+    transition: height 0.3s;
+  }
+
+  /* Debt table */
+  .debt-row {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    gap: 12px;
+  }
+
+  .debt-row:last-child { border-bottom: none; }
+
+  .debt-rate {
+    font-size: 16px;
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
+  }
+
+  .debt-item { flex: 1; }
+
+  .debt-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  /* Theme toggle */
+  .theme-toggle {
+    background: var(--border);
+    color: var(--text);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 8px;
+  }
+  .theme-toggle:hover { opacity: 0.9; }
+
+  /* Keyboard navigation */
+  .card:focus, .card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .kbd-help {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--text-dim);
+    z-index: 100;
+    display: none;
+  }
+  .kbd-help.visible { display: block; }
+  .kbd-help kbd {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--text);
+  }
+
+  @media (max-width: 900px) {
+    .grid, .grid-3 { grid-template-columns: 1fr; }
+    .kanban { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1 id="projectTitle">Project Health Dashboard</h1>
+    <div class="header-meta" id="headerMeta">Loading...</div>
+  </div>
+  <div>
+    <button class="btn" onclick="loadData()">Refresh</button>
+    <input type="file" id="fileInput" accept=".json" style="display:none" onchange="handleFile(event)">
+    <button class="btn" onclick="document.getElementById('fileInput').click()" style="margin-left:8px;background:var(--border);color:var(--text)">Load JSON</button>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme (T)">&#9790;</button>
+  </div>
+</div>
+
+<div class="kbd-help" id="kbdHelp">
+  <div><kbd>T</kbd> Toggle theme &nbsp; <kbd>?</kbd> Toggle help</div>
+  <div><kbd>J</kbd>/<kbd>K</kbd> Navigate sections &nbsp; <kbd>R</kbd> Refresh</div>
+</div>
+
+<!-- Row 1: Overall Score + Radar Chart -->
+<div class="grid">
+  <div class="card overall-score" id="overallCard">
+    <h2>Overall Health</h2>
+    <div class="score-ring">
+      <svg viewBox="0 0 160 160">
+        <circle cx="80" cy="80" r="70" fill="none" stroke="var(--border)" stroke-width="10"/>
+        <circle id="scoreArc" cx="80" cy="80" r="70" fill="none" stroke="var(--accent)" stroke-width="10"
+          stroke-dasharray="440" stroke-dashoffset="440" stroke-linecap="round"/>
+      </svg>
+      <div class="score-value" id="overallScore">--</div>
+      <div class="score-label">out of 10</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Radar Chart</h2>
+    <div class="radar-container">
+      <canvas id="radarCanvas" width="340" height="340"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Row 2: Expert Scores + Priority Matrix -->
+<div class="grid">
+  <div class="card">
+    <h2>Expert Scores</h2>
+    <div id="expertScores"></div>
+  </div>
+
+  <div class="card">
+    <h2>Priority Matrix</h2>
+    <div class="matrix" id="priorityMatrix">
+      <div class="matrix-cell quick-win">
+        <div class="matrix-label">Quick Wins (Do First)</div>
+        <div id="qw-items"></div>
+      </div>
+      <div class="matrix-cell major-project">
+        <div class="matrix-label">Major Projects (Plan)</div>
+        <div id="mp-items"></div>
+      </div>
+      <div class="matrix-cell fill-in">
+        <div class="matrix-label">Fill-ins (When Free)</div>
+        <div id="fi-items"></div>
+      </div>
+      <div class="matrix-cell reconsider">
+        <div class="matrix-label">Reconsider (Defer)</div>
+        <div id="rc-items"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Row 3: Task Kanban -->
+<div class="card" style="margin-bottom:20px">
+  <h2>Task Board</h2>
+  <div class="kanban" id="kanban">
+    <div class="kanban-col todo"><h3>To Do</h3><div id="kanban-todo"></div></div>
+    <div class="kanban-col progress"><h3>In Progress</h3><div id="kanban-progress"></div></div>
+    <div class="kanban-col done"><h3>Done</h3><div id="kanban-done"></div></div>
+  </div>
+</div>
+
+<!-- Row 4: Risks + Tech Debt + History -->
+<div class="grid-3">
+  <div class="card">
+    <h2>Risk Alerts</h2>
+    <div id="risks"></div>
+  </div>
+
+  <div class="card">
+    <h2>Technical Debt</h2>
+    <div id="techDebt"></div>
+  </div>
+
+  <div class="card">
+    <h2>Score History</h2>
+    <div id="history"></div>
+  </div>
+</div>
+
+<script>
+const EXPERT_LABELS = {
+  qa: 'QA & Testing', uiux: 'UI/UX Design', security: 'Security',
+  devops: 'DevOps & IT', networking: 'Networking', development: 'Development',
+  architecture: 'Architecture', product: 'Product/Specs', api: 'API Quality',
+  monitoring: 'Monitoring', database: 'Database', performance: 'Performance',
+  documentation: 'Documentation', specifications: 'Specifications',
+  projectDocs: 'Project Docs', progress: 'Progress'
+};
+
+const EXPERT_KEYS = Object.keys(EXPERT_LABELS);
+
+function scoreColor(score) {
+  if (score === null || score === undefined) return 'var(--border)';
+  if (score >= 9) return 'var(--green)';
+  if (score >= 7) return '#3fb950';
+  if (score >= 5) return 'var(--yellow)';
+  if (score >= 3) return 'var(--red)';
+  return '#f85149';
+}
+
+function drawRadar(scores) {
+  const canvas = document.getElementById('radarCanvas');
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const cx = w/2, cy = h/2, r = 130;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const keys = EXPERT_KEYS;
+  const n = keys.length;
+  const angleStep = (2 * Math.PI) / n;
+
+  // Grid rings
+  for (let ring = 2; ring <= 10; ring += 2) {
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const angle = i * angleStep - Math.PI/2;
+      const x = cx + (r * ring/10) * Math.cos(angle);
+      const y = cy + (r * ring/10) * Math.sin(angle);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--radar-grid').trim();
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Axis lines + labels
+  keys.forEach((key, i) => {
+    const angle = i * angleStep - Math.PI/2;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--radar-axis').trim();
+    ctx.stroke();
+
+    const lx = cx + (r + 20) * Math.cos(angle);
+    const ly = cy + (r + 20) * Math.sin(angle);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--radar-label').trim();
+    ctx.font = '10px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const label = EXPERT_LABELS[key].split(' ')[0];
+    ctx.fillText(label, lx, ly);
+  });
+
+  // Data polygon
+  const vals = keys.map(k => (scores[k] && scores[k].score) || 0);
+  ctx.beginPath();
+  vals.forEach((v, i) => {
+    const angle = i * angleStep - Math.PI/2;
+    const x = cx + (r * v/10) * Math.cos(angle);
+    const y = cy + (r * v/10) * Math.sin(angle);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--radar-fill').trim();
+  ctx.fill();
+  ctx.strokeStyle = 'var(--accent)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Data points
+  vals.forEach((v, i) => {
+    const angle = i * angleStep - Math.PI/2;
+    const x = cx + (r * v/10) * Math.cos(angle);
+    const y = cy + (r * v/10) * Math.sin(angle);
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, 2*Math.PI);
+    ctx.fillStyle = scoreColor(v || null);
+    ctx.fill();
+  });
+}
+
+function renderExperts(experts) {
+  const container = document.getElementById('expertScores');
+  container.innerHTML = '';
+
+  EXPERT_KEYS.forEach(key => {
+    const exp = experts[key] || {};
+    const score = exp.score;
+    const color = scoreColor(score);
+    const pct = score !== null && score !== undefined ? (score * 10) : 0;
+
+    const row = document.createElement('div');
+    row.className = 'expert-row';
+    row.innerHTML = `
+      <div class="expert-name">${EXPERT_LABELS[key]}</div>
+      <div class="expert-bar-bg">
+        <div class="expert-bar" style="width:${pct}%;background:${color}"></div>
+      </div>
+      <div class="expert-score" style="color:${color}">
+        ${score !== null && score !== undefined ? score + '/10' : '--'}
+      </div>
+    `;
+    if (exp.topFinding) {
+      row.title = exp.topFinding;
+    }
+    container.appendChild(row);
+  });
+}
+
+function renderOverall(score) {
+  document.getElementById('overallScore').textContent = score !== null ? score : '--';
+  const arc = document.getElementById('scoreArc');
+  const pct = score !== null ? score / 10 : 0;
+  arc.setAttribute('stroke-dashoffset', 440 - (440 * pct));
+  arc.setAttribute('stroke', scoreColor(score));
+}
+
+function renderMatrix(tasks) {
+  const quadrants = { 'quick-win': 'qw-items', 'major-project': 'mp-items', 'fill-in': 'fi-items', 'reconsider': 'rc-items' };
+  Object.values(quadrants).forEach(id => document.getElementById(id).innerHTML = '');
+
+  (tasks || []).forEach(t => {
+    const targetId = quadrants[t.quadrant];
+    if (!targetId) return;
+    const div = document.createElement('div');
+    div.className = 'matrix-item';
+    div.textContent = t.title;
+    document.getElementById(targetId).appendChild(div);
+  });
+}
+
+function renderKanban(tasks) {
+  ['kanban-todo', 'kanban-progress', 'kanban-done'].forEach(id =>
+    document.getElementById(id).innerHTML = '');
+
+  const sorted = (tasks || []).sort((a, b) => (a.priority || 99) - (b.priority || 99));
+
+  sorted.forEach(t => {
+    let colId;
+    if (t.status === 'done' || t.status === 'completed') colId = 'kanban-done';
+    else if (t.status === 'in-progress' || t.status === 'in_progress') colId = 'kanban-progress';
+    else colId = 'kanban-todo';
+
+    const card = document.createElement('div');
+    card.className = `task-card ${t.impact || ''}`;
+    card.innerHTML = `
+      <div class="task-title">#${t.priority || '-'} ${t.title}</div>
+      <div class="task-meta">
+        <span class="tag">${t.expert || ''}</span>
+        <span>${t.impact || ''} impact</span>
+        <span>${t.effort || ''} effort</span>
+      </div>
+    `;
+    document.getElementById(colId).appendChild(card);
+  });
+}
+
+function renderRisks(risks) {
+  const container = document.getElementById('risks');
+  if (!risks || risks.length === 0) {
+    container.innerHTML = '<div class="empty-state">No risks identified</div>';
+    return;
+  }
+  container.innerHTML = '';
+  risks.forEach(r => {
+    const row = document.createElement('div');
+    row.className = 'risk-row';
+    row.innerHTML = `
+      <span class="risk-badge ${r.severity}">${r.severity}</span>
+      <span class="risk-desc">${r.description}</span>
+      <span class="risk-expert">${EXPERT_LABELS[r.expert] || r.expert}</span>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function renderDebt(debt) {
+  const container = document.getElementById('techDebt');
+  if (!debt || debt.length === 0) {
+    container.innerHTML = '<div class="empty-state">No tech debt tracked</div>';
+    return;
+  }
+  container.innerHTML = '';
+  debt.forEach(d => {
+    const rateIcon = d.interestRate === 'accruing' ? '&#x25B2;' : d.interestRate === 'stable' ? '&#x25CF;' : '&#x25BC;';
+    const rateColor = d.interestRate === 'accruing' ? 'var(--red)' : d.interestRate === 'stable' ? 'var(--yellow)' : 'var(--green)';
+    const row = document.createElement('div');
+    row.className = 'debt-row';
+    row.innerHTML = `
+      <span class="debt-rate" style="color:${rateColor}">${rateIcon}</span>
+      <span class="debt-item">${d.item}</span>
+      <span class="debt-meta">${d.category} / ${d.impact}</span>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function renderHistory(history) {
+  const container = document.getElementById('history');
+  if (!history || history.length === 0) {
+    container.innerHTML = '<div class="empty-state">No history yet. Run multiple assessments to see trends.</div>';
+    return;
+  }
+  container.innerHTML = '';
+
+  EXPERT_KEYS.forEach(key => {
+    const scores = history.map(h => (h.scores && h.scores[key]) || 0);
+    if (scores.every(s => s === 0)) return;
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:4px 0;';
+
+    const label = document.createElement('span');
+    label.style.cssText = 'font-size:11px;color:var(--text-dim);width:80px;flex-shrink:0;';
+    label.textContent = EXPERT_LABELS[key].split(' ')[0];
+    row.appendChild(label);
+
+    const spark = document.createElement('div');
+    spark.className = 'sparkline';
+    scores.forEach(s => {
+      const bar = document.createElement('div');
+      bar.className = 'spark-bar';
+      bar.style.height = (s * 3) + 'px';
+      bar.style.background = scoreColor(s || null);
+      spark.appendChild(bar);
+    });
+    row.appendChild(spark);
+
+    const current = document.createElement('span');
+    current.style.cssText = 'font-size:12px;font-weight:600;width:30px;text-align:right;';
+    current.style.color = scoreColor(scores[scores.length - 1] || null);
+    current.textContent = scores[scores.length - 1] || '--';
+    row.appendChild(current);
+
+    container.appendChild(row);
+  });
+}
+
+function renderDashboard(data) {
+  document.getElementById('projectTitle').textContent = (data.projectName || 'Project') + ' Health Dashboard';
+  document.getElementById('headerMeta').innerHTML =
+    `Last assessment: ${data.lastAssessment || 'Never'}<br>Assessments: ${data.assessmentCount || 0}`;
+
+  renderOverall(data.overallScore);
+  renderExperts(data.experts || {});
+  drawRadar(data.experts || {});
+  renderMatrix(data.tasks);
+  renderKanban(data.tasks);
+  renderRisks(data.risks);
+  renderDebt(data.technicalDebt);
+  renderHistory(data.history);
+}
+
+function handleFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      renderDashboard(data);
+    } catch (err) {
+      alert('Invalid JSON file: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function loadData() {
+  // Try to load from same directory
+  fetch('pm-dashboard.json')
+    .then(r => {
+      if (!r.ok) throw new Error('not found');
+      return r.json();
+    })
+    .then(data => renderDashboard(data))
+    .catch(() => {
+      // Show demo data
+      renderDashboard(DEMO_DATA);
+    });
+}
+
+// Demo data for preview
+const DEMO_DATA = {
+  projectName: "Demo Project",
+  lastAssessment: new Date().toISOString(),
+  assessmentCount: 3,
+  overallScore: 6.2,
+  experts: {
+    qa: { score: 7, topFinding: "Good unit test coverage but missing integration tests" },
+    uiux: { score: 5, topFinding: "Inconsistent spacing and no dark mode support" },
+    security: { score: 4, topFinding: "API keys found in config file" },
+    devops: { score: 8, topFinding: "CI/CD pipeline is solid" },
+    networking: { score: 6, topFinding: "No CDN configured for static assets" },
+    development: { score: 7, topFinding: "Clean code structure, some tech debt" },
+    architecture: { score: 6, topFinding: "Monolith will struggle at 10x scale" },
+    product: { score: 8, topFinding: "Most specs implemented" },
+    api: { score: 5, topFinding: "Inconsistent error responses" },
+    monitoring: { score: 3, topFinding: "Only console.log, no structured logging" },
+    database: { score: 7, topFinding: "Good schema, missing some indexes" },
+    performance: { score: 6, topFinding: "Bundle size could be reduced 40%" },
+    documentation: { score: 5, topFinding: "README outdated, no API docs" },
+    specifications: { score: 4, topFinding: "Acceptance criteria missing for most features" },
+    projectDocs: { score: 3, topFinding: "No ADRs, decisions not recorded" },
+    progress: { score: 5, topFinding: "Tasks lack context for cold-start pickup" }
+  },
+  tasks: [
+    { id: "t1", title: "Move API keys to env vars", status: "todo", priority: 1, impact: "high", effort: "low", expert: "security", quadrant: "quick-win" },
+    { id: "t2", title: "Add structured logging", status: "in-progress", priority: 2, impact: "high", effort: "medium", expert: "monitoring", quadrant: "quick-win" },
+    { id: "t3", title: "Standardize API error responses", status: "todo", priority: 3, impact: "medium", effort: "medium", expert: "api", quadrant: "major-project" },
+    { id: "t4", title: "Set up CDN for static assets", status: "todo", priority: 4, impact: "medium", effort: "low", expert: "networking", quadrant: "quick-win" },
+    { id: "t5", title: "Add integration test suite", status: "done", priority: 5, impact: "high", effort: "high", expert: "qa", quadrant: "major-project" },
+    { id: "t6", title: "Update README and add API docs", status: "todo", priority: 6, impact: "low", effort: "medium", expert: "documentation", quadrant: "fill-in" },
+    { id: "t7", title: "Evaluate microservices migration", status: "todo", priority: 7, impact: "high", effort: "high", expert: "architecture", quadrant: "reconsider" }
+  ],
+  risks: [
+    { id: "r1", description: "API keys exposed in config files", severity: "critical", likelihood: "high", expert: "security", mitigation: "Move to environment variables" },
+    { id: "r2", description: "No production monitoring - blind to outages", severity: "high", likelihood: "medium", expert: "monitoring", mitigation: "Implement structured logging + alerting" },
+    { id: "r3", description: "No database backup automation", severity: "medium", likelihood: "low", expert: "database", mitigation: "Set up automated daily backups" }
+  ],
+  technicalDebt: [
+    { id: "d1", item: "Legacy jQuery dependency in admin panel", category: "code", impact: "medium", effort: "days", interestRate: "accruing" },
+    { id: "d2", item: "Unused API endpoints (12 routes)", category: "api", impact: "low", effort: "hours", interestRate: "stable" },
+    { id: "d3", item: "Monolithic architecture", category: "architecture", impact: "high", effort: "weeks", interestRate: "accruing" },
+    { id: "d4", item: "Inline CSS in 8 components", category: "code", impact: "low", effort: "hours", interestRate: "stable" }
+  ],
+  history: [
+    { date: "2026-02-01", scores: { qa: 4, security: 2, devops: 6, monitoring: 1, development: 5, api: 3, specifications: 0, projectDocs: 0, progress: 0 } },
+    { date: "2026-02-10", scores: { qa: 6, security: 3, devops: 7, monitoring: 2, development: 6, api: 4, specifications: 0, projectDocs: 0, progress: 0 } },
+    { date: "2026-02-20", scores: { qa: 7, security: 4, devops: 8, monitoring: 3, development: 7, api: 5, specifications: 4, projectDocs: 3, progress: 5 } }
+  ]
+};
+
+// Theme management
+function getTheme() {
+  return localStorage.getItem('pm-dashboard-theme') || 'dark';
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeToggle');
+  btn.textContent = theme === 'dark' ? '\u263E' : '\u2600';
+  btn.title = `Switch to ${theme === 'dark' ? 'light' : 'dark'} theme (T)`;
+  localStorage.setItem('pm-dashboard-theme', theme);
+  // Redraw radar chart with updated theme colors
+  if (window._lastData) drawRadar(window._lastData.experts || {});
+}
+
+function toggleTheme() {
+  applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+}
+
+// Keyboard navigation
+const focusableSections = () => Array.from(document.querySelectorAll('.card'));
+let currentSection = -1;
+
+function focusSection(index) {
+  const sections = focusableSections();
+  if (sections.length === 0) return;
+  currentSection = Math.max(0, Math.min(index, sections.length - 1));
+  sections[currentSection].focus();
+  sections[currentSection].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+  switch (e.key.toLowerCase()) {
+    case 't':
+      toggleTheme();
+      e.preventDefault();
+      break;
+    case '?':
+      document.getElementById('kbdHelp').classList.toggle('visible');
+      e.preventDefault();
+      break;
+    case 'j':
+      focusSection(currentSection + 1);
+      e.preventDefault();
+      break;
+    case 'k':
+      focusSection(currentSection - 1);
+      e.preventDefault();
+      break;
+    case 'r':
+      loadData();
+      e.preventDefault();
+      break;
+  }
+});
+
+// Make cards focusable
+function setupFocusableCards() {
+  focusableSections().forEach((card, i) => {
+    card.setAttribute('tabindex', '0');
+    card.addEventListener('focus', () => { currentSection = i; });
+  });
+}
+
+// Store last loaded data for theme-aware radar redraws
+window._lastData = null;
+const _origRenderDashboard = renderDashboard;
+renderDashboard = function(data) {
+  window._lastData = data;
+  _origRenderDashboard(data);
+  setupFocusableCards();
+};
+
+// Load on startup
+window.addEventListener('DOMContentLoaded', () => {
+  applyTheme(getTheme());
+  loadData();
+});
+</script>
+</body>
+</html>

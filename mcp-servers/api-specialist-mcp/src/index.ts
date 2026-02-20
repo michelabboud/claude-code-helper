@@ -13,18 +13,74 @@
  * Created with assistance from Claude Code (Anthropic)
  */
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { exec } from "child_process";
-import { promisify } from "util";
 import * as fs from "fs/promises";
+import { runServer, generateRequestId, measureDuration, sanitizePath, sanitizeUrl, errorResponse } from "mcp-shared";
 
-const execAsync = promisify(exec);
+// Type definitions for OpenAPI spec parsing
+interface ValidationIssue {
+  severity: string;
+  message: string;
+  path?: string;
+  method?: string;
+  suggestion?: string;
+  check?: string;
+  recommendation?: string;
+}
+
+interface SecurityCheckResults {
+  apiUrl: string;
+  issues: ValidationIssue[];
+  warnings: ValidationIssue[];
+  recommendations: string[];
+}
+
+interface AuthConfig {
+  type: "bearer" | "basic" | "apikey";
+  token?: string;
+  username?: string;
+  password?: string;
+  apikey?: string;
+  header?: string;
+}
+
+interface OpenAPIOperation {
+  summary?: string;
+  description?: string;
+  responses?: Record<string, { description?: string }>;
+  parameters?: Array<{ name: string; in: string; description?: string }>;
+}
+
+interface PostmanItem {
+  name: string;
+  request: {
+    method: string;
+    header: string[];
+    url: {
+      raw: string;
+      host: string[];
+      path: string[];
+    };
+  };
+}
+
+interface ImprovementSuggestion {
+  category: string;
+  priority: string;
+  suggestion: string;
+  impact: string;
+  implementation: string;
+}
+
+interface JsonSchemaProperty {
+  type?: string;
+  properties?: Record<string, JsonSchemaProperty>;
+  required?: string[];
+}
 
 // Tool input schemas
 const ValidateOpenAPISchema = z.object({
@@ -111,28 +167,15 @@ const ValidateAPIResponseSchema = z.object({
   strict: z.boolean().optional().describe("Strict validation mode"),
 });
 
-// MCP Server
-const server = new Server(
-  {
-    name: "api-specialist-mcp",
-    version: "1.0.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
-
 // Helper functions
 async function validateOpenAPI(
   specPath: string,
-  version?: string,
+  _version?: string,
   strict: boolean = false
 ): Promise<string> {
   try {
     const spec = await fs.readFile(specPath, "utf-8");
-    let parsed: any;
+    let parsed: Record<string, unknown>;
 
     // Parse YAML or JSON
     if (specPath.endsWith(".yaml") || specPath.endsWith(".yml")) {
@@ -142,57 +185,60 @@ async function validateOpenAPI(
         error: "YAML parsing requires js-yaml package. Please use JSON format or install js-yaml.",
       }, null, 2);
     } else {
-      parsed = JSON.parse(spec);
+      parsed = JSON.parse(spec) as Record<string, unknown>;
     }
 
-    const issues: any[] = [];
-    const warnings: any[] = [];
+    const issues: ValidationIssue[] = [];
+    const warnings: ValidationIssue[] = [];
 
     // Validate OpenAPI structure
     if (!parsed.openapi && !parsed.swagger) {
-      issues.push({ 
-        severity: "error", 
-        message: "Missing 'openapi' or 'swagger' field" 
+      issues.push({
+        severity: "error",
+        message: "Missing 'openapi' or 'swagger' field"
       });
     }
 
     // Validate info section
-    if (!parsed.info) {
+    const info = parsed.info as Record<string, unknown> | undefined;
+    if (!info) {
       issues.push({ severity: "error", message: "Missing 'info' section" });
     } else {
-      if (!parsed.info.title) issues.push({ severity: "error", message: "Missing info.title" });
-      if (!parsed.info.version) issues.push({ severity: "error", message: "Missing info.version" });
+      if (!info.title) issues.push({ severity: "error", message: "Missing info.title" });
+      if (!info.version) issues.push({ severity: "error", message: "Missing info.version" });
     }
 
     // Validate paths
-    if (!parsed.paths || Object.keys(parsed.paths).length === 0) {
+    const paths = parsed.paths as Record<string, Record<string, unknown>> | undefined;
+    if (!paths || Object.keys(paths).length === 0) {
       issues.push({ severity: "error", message: "No paths defined" });
     } else {
       // Check each path
-      for (const [path, methods] of Object.entries(parsed.paths)) {
+      for (const [path, methods] of Object.entries(paths)) {
         if (!path.startsWith('/')) {
-          issues.push({ 
-            severity: "error", 
-            message: `Path '${path}' should start with '/'` 
+          issues.push({
+            severity: "error",
+            message: `Path '${path}' should start with '/'`
           });
         }
 
         // Validate methods
-        for (const [method, operation] of Object.entries(methods as any)) {
+        for (const [method, operation] of Object.entries(methods)) {
           const validMethods = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'];
           if (!validMethods.includes(method.toLowerCase())) continue;
 
-          if (!(operation as any).responses) {
-            warnings.push({ 
-              severity: "warning", 
-              message: `${method.toUpperCase()} ${path} missing responses` 
+          const op = operation as Record<string, unknown>;
+          if (!op.responses) {
+            warnings.push({
+              severity: "warning",
+              message: `${method.toUpperCase()} ${path} missing responses`
             });
           }
 
-          if (strict && !(operation as any).description) {
-            warnings.push({ 
-              severity: "warning", 
-              message: `${method.toUpperCase()} ${path} missing description` 
+          if (strict && !op.description) {
+            warnings.push({
+              severity: "warning",
+              message: `${method.toUpperCase()} ${path} missing description`
             });
           }
         }
@@ -200,11 +246,14 @@ async function validateOpenAPI(
     }
 
     // Validate components/definitions
-    if (parsed.openapi && parsed.openapi.startsWith('3')) {
+    const openapi = parsed.openapi as string | undefined;
+    if (openapi && openapi.startsWith('3')) {
       if (!parsed.components) {
         warnings.push({ severity: "warning", message: "No components/schemas defined" });
       }
     }
+
+    const components = parsed.components as Record<string, Record<string, unknown>> | undefined;
 
     return JSON.stringify({
       valid: issues.length === 0,
@@ -212,15 +261,15 @@ async function validateOpenAPI(
       errors: issues,
       warnings: warnings,
       stats: {
-        paths: Object.keys(parsed.paths || {}).length,
-        operations: countOperations(parsed.paths || {}),
-        schemas: parsed.components?.schemas ? Object.keys(parsed.components.schemas).length : 0,
+        paths: Object.keys(paths || {}).length,
+        operations: countOperations(paths || {}),
+        schemas: components?.schemas ? Object.keys(components.schemas).length : 0,
       },
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
       valid: false,
-      error: `Failed to validate spec: ${error.message}`,
+      error: `Failed to validate spec: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -230,7 +279,7 @@ async function testEndpoint(
   method: string,
   headers?: Record<string, string>,
   body?: string,
-  auth?: any,
+  auth?: AuthConfig,
   timeout: number = 5000
 ): Promise<string> {
   try {
@@ -251,7 +300,7 @@ async function testEndpoint(
 
     // Make request using fetch (available in Node 18+)
     const startTime = Date.now();
-    
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -268,7 +317,7 @@ async function testEndpoint(
       const responseTime = Date.now() - startTime;
       const responseBody = await response.text();
 
-      let parsedBody;
+      let parsedBody: unknown;
       try {
         parsedBody = JSON.parse(responseBody);
       } catch {
@@ -284,17 +333,17 @@ async function testEndpoint(
         responseTime: `${responseTime}ms`,
         size: responseBody.length,
       }, null, 2);
-    } catch (fetchError: any) {
+    } catch (fetchError: unknown) {
       clearTimeout(timeoutId);
-      if (fetchError.name === 'AbortError') {
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
         throw new Error(`Request timeout after ${timeout}ms`);
       }
       throw fetchError;
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
     }, null, 2);
   }
 }
@@ -305,7 +354,7 @@ async function checkAPISecurity(
   checks: string[] = ["authentication", "cors", "https", "headers"]
 ): Promise<string> {
   try {
-    const results: any = {
+    const results: SecurityCheckResults = {
       apiUrl,
       issues: [],
       warnings: [],
@@ -329,7 +378,7 @@ async function checkAPISecurity(
       try {
         const response = await fetch(apiUrl, { method: "OPTIONS" });
         const corsHeader = response.headers.get("access-control-allow-origin");
-        
+
         if (!corsHeader) {
           results.warnings.push({
             severity: "medium",
@@ -345,10 +394,11 @@ async function checkAPISecurity(
             recommendation: "Restrict CORS to specific trusted domains",
           });
         }
-      } catch (error) {
+      } catch {
         results.warnings.push({
           check: "cors",
           message: "Could not check CORS configuration",
+          severity: "low",
         });
       }
     }
@@ -357,9 +407,9 @@ async function checkAPISecurity(
     if (checks.includes("headers")) {
       try {
         const response = await fetch(apiUrl);
-        const headers = Object.fromEntries(response.headers.entries());
+        const responseHeaders = Object.fromEntries(response.headers.entries());
 
-        const securityHeaders = {
+        const securityHeaders: Record<string, string> = {
           "strict-transport-security": "HSTS not set - forces HTTPS usage",
           "x-content-type-options": "Missing - prevents MIME type sniffing",
           "x-frame-options": "Missing - prevents clickjacking attacks",
@@ -367,7 +417,7 @@ async function checkAPISecurity(
         };
 
         for (const [header, message] of Object.entries(securityHeaders)) {
-          if (!headers[header]) {
+          if (!responseHeaders[header]) {
             results.warnings.push({
               severity: "medium",
               check: "security_headers",
@@ -376,7 +426,7 @@ async function checkAPISecurity(
             });
           }
         }
-      } catch (error) {
+      } catch {
         // Silently skip if endpoint doesn't respond
       }
     }
@@ -385,7 +435,7 @@ async function checkAPISecurity(
     if (checks.includes("authentication")) {
       try {
         const response = await fetch(apiUrl);
-        
+
         if (response.status !== 401 && response.status !== 403) {
           results.warnings.push({
             severity: "high",
@@ -394,7 +444,7 @@ async function checkAPISecurity(
             recommendation: "Implement authentication (OAuth 2.0, JWT, API Keys)",
           });
         }
-      } catch (error) {
+      } catch {
         // Silently skip
       }
     }
@@ -405,8 +455,8 @@ async function checkAPISecurity(
         // Make multiple rapid requests
         const requests = Array(10).fill(null).map(() => fetch(apiUrl));
         const responses = await Promise.all(requests);
-        
-        const hasRateLimit = responses.some(r => 
+
+        const hasRateLimit = responses.some(r =>
           r.status === 429 || r.headers.has("x-ratelimit-limit")
         );
 
@@ -418,7 +468,7 @@ async function checkAPISecurity(
             recommendation: "Implement rate limiting to prevent abuse",
           });
         }
-      } catch (error) {
+      } catch {
         // Silently skip
       }
     }
@@ -430,7 +480,7 @@ async function checkAPISecurity(
         try {
           const response = await fetch(testUrl);
           const body = await response.text();
-          
+
           if (body.toLowerCase().includes("sql") || body.toLowerCase().includes("syntax")) {
             results.issues.push({
               severity: "critical",
@@ -439,7 +489,7 @@ async function checkAPISecurity(
               recommendation: "Use parameterized queries, never concatenate user input",
             });
           }
-        } catch (error) {
+        } catch {
           // Silently skip
         }
       }
@@ -447,15 +497,15 @@ async function checkAPISecurity(
 
     return JSON.stringify({
       summary: {
-        critical: results.issues.filter((i: any) => i.severity === "critical").length,
-        high: results.issues.filter((i: any) => i.severity === "high").length,
-        medium: results.warnings.filter((w: any) => w.severity === "medium").length,
+        critical: results.issues.filter((i: ValidationIssue) => i.severity === "critical").length,
+        high: results.issues.filter((i: ValidationIssue) => i.severity === "high").length,
+        medium: results.warnings.filter((w: ValidationIssue) => w.severity === "medium").length,
       },
       ...results,
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Security check failed: ${error.message}`,
+      error: `Security check failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -466,17 +516,19 @@ async function analyzeAPIStructure(
   standards: string[] = ["rest_naming", "http_methods", "status_codes"]
 ): Promise<string> {
   try {
-    const spec = JSON.parse(await fs.readFile(specPath, "utf-8"));
-    const issues: any[] = [];
-    const suggestions: any[] = [];
+    const spec = JSON.parse(await fs.readFile(specPath, "utf-8")) as Record<string, unknown>;
+    const issues: ValidationIssue[] = [];
+    const suggestions: ValidationIssue[] = [];
+
+    const specPaths = (spec.paths || {}) as Record<string, Record<string, unknown>>;
 
     // REST naming conventions
     if (standards.includes("rest_naming")) {
-      for (const path of Object.keys(spec.paths || {})) {
+      for (const path of Object.keys(specPaths)) {
         // Check for verbs in path (anti-pattern)
         const verbs = ['get', 'post', 'create', 'update', 'delete', 'fetch'];
         const pathLower = path.toLowerCase();
-        
+
         for (const verb of verbs) {
           if (pathLower.includes(verb)) {
             issues.push({
@@ -493,6 +545,7 @@ async function analyzeAPIStructure(
         for (const segment of segments) {
           if (!segment.endsWith('s') && !segment.includes('-')) {
             suggestions.push({
+              severity: "info",
               path,
               message: `Resource '${segment}' should be plural: '${segment}s'`,
               suggestion: `Use plural nouns for collections: /users not /user`,
@@ -504,9 +557,9 @@ async function analyzeAPIStructure(
 
     // HTTP methods usage
     if (standards.includes("http_methods")) {
-      for (const [path, methods] of Object.entries(spec.paths || {})) {
-        const methodsList = Object.keys(methods as any);
-        
+      for (const [path, methods] of Object.entries(specPaths)) {
+        const methodsList = Object.keys(methods);
+
         // Check for proper method usage
         if (path.includes('{id}')) {
           if (methodsList.includes('post')) {
@@ -532,14 +585,16 @@ async function analyzeAPIStructure(
 
     // Status codes
     if (standards.includes("status_codes")) {
-      for (const [path, methods] of Object.entries(spec.paths || {})) {
-        for (const [method, operation] of Object.entries(methods as any)) {
-          const responses = (operation as any).responses || {};
+      for (const [path, methods] of Object.entries(specPaths)) {
+        for (const [method, operation] of Object.entries(methods)) {
+          const op = operation as OpenAPIOperation;
+          const responses = op.responses || {};
           const statusCodes = Object.keys(responses);
 
           // Check for success codes
           if (method === 'post' && !statusCodes.includes('201')) {
             suggestions.push({
+              severity: "info",
               path,
               method: method.toUpperCase(),
               message: "POST should return 201 Created on success",
@@ -548,6 +603,7 @@ async function analyzeAPIStructure(
 
           if (method === 'delete' && !statusCodes.includes('204')) {
             suggestions.push({
+              severity: "info",
               path,
               method: method.toUpperCase(),
               message: "DELETE should return 204 No Content on success",
@@ -557,6 +613,7 @@ async function analyzeAPIStructure(
           // Check for error codes
           if (!statusCodes.includes('400') && (method === 'post' || method === 'put')) {
             suggestions.push({
+              severity: "info",
               path,
               method: method.toUpperCase(),
               message: "Missing 400 Bad Request for validation errors",
@@ -565,6 +622,7 @@ async function analyzeAPIStructure(
 
           if (!statusCodes.includes('401')) {
             suggestions.push({
+              severity: "info",
               path,
               method: method.toUpperCase(),
               message: "Missing 401 Unauthorized for auth failures",
@@ -576,12 +634,13 @@ async function analyzeAPIStructure(
 
     // Versioning
     if (standards.includes("versioning")) {
-      const hasVersioning = Object.keys(spec.paths || {}).some(
+      const hasVersioning = Object.keys(specPaths).some(
         path => /\/v\d+\//.test(path)
       );
 
       if (!hasVersioning) {
         suggestions.push({
+          severity: "info",
           message: "No API versioning detected",
           suggestion: "Use versioning like /v1/, /v2/ to manage breaking changes",
         });
@@ -590,14 +649,14 @@ async function analyzeAPIStructure(
 
     return JSON.stringify({
       framework,
-      totalPaths: Object.keys(spec.paths || {}).length,
+      totalPaths: Object.keys(specPaths).length,
       issues: issues,
       suggestions: suggestions,
-      score: calculateAPIScore(issues, suggestions),
+      score: calculateAPIScore(issues),
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Structure analysis failed: ${error.message}`,
+      error: `Structure analysis failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -624,7 +683,7 @@ async function loadTest(
 
     // Run load test
     const workers: Promise<void>[] = [];
-    
+
     for (let i = 0; i < concurrency; i++) {
       workers.push(
         (async () => {
@@ -644,11 +703,11 @@ async function loadTest(
                 results.failed++;
               }
               results.responseTimes.push(Date.now() - reqStart);
-            } catch (error: any) {
+            } catch (error: unknown) {
               results.failed++;
               results.totalRequests++;
               if (results.errors.length < 10) {
-                results.errors.push(error.message);
+                results.errors.push(error instanceof Error ? error.message : String(error));
               }
             }
           }
@@ -682,9 +741,9 @@ async function loadTest(
       },
       errors: results.errors.length > 0 ? results.errors : undefined,
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Load test failed: ${error.message}`,
+      error: `Load test failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -692,44 +751,48 @@ async function loadTest(
 async function generateAPIDocs(
   specPath: string,
   format: string,
-  includeExamples: boolean = true
+  _includeExamples: boolean = true
 ): Promise<string> {
   try {
-    const spec = JSON.parse(await fs.readFile(specPath, "utf-8"));
+    const spec = JSON.parse(await fs.readFile(specPath, "utf-8")) as Record<string, unknown>;
+    const specInfo = spec.info as Record<string, unknown>;
+    const specPaths = (spec.paths || {}) as Record<string, Record<string, unknown>>;
 
     if (format === "markdown") {
-      let md = `# ${spec.info.title}\n\n`;
-      md += `Version: ${spec.info.version}\n\n`;
-      if (spec.info.description) {
-        md += `${spec.info.description}\n\n`;
+      let md = `# ${specInfo.title}\n\n`;
+      md += `Version: ${specInfo.version}\n\n`;
+      if (specInfo.description) {
+        md += `${specInfo.description}\n\n`;
       }
 
       md += `## Base URL\n\n`;
-      if (spec.servers && spec.servers[0]) {
-        md += `\`${spec.servers[0].url}\`\n\n`;
+      const servers = spec.servers as Array<{ url: string }> | undefined;
+      if (servers && servers[0]) {
+        md += `\`${servers[0].url}\`\n\n`;
       }
 
       md += `## Endpoints\n\n`;
 
-      for (const [path, methods] of Object.entries(spec.paths || {})) {
-        for (const [method, operation] of Object.entries(methods as any)) {
+      for (const [path, methods] of Object.entries(specPaths)) {
+        for (const [method, operation] of Object.entries(methods)) {
           if (method === 'parameters') continue;
 
+          const op = operation as OpenAPIOperation;
           md += `### ${method.toUpperCase()} ${path}\n\n`;
-          md += `${(operation as any).summary || (operation as any).description || 'No description'}\n\n`;
+          md += `${op.summary || op.description || 'No description'}\n\n`;
 
-          if ((operation as any).parameters) {
+          if (op.parameters) {
             md += `**Parameters:**\n\n`;
-            for (const param of (operation as any).parameters) {
+            for (const param of op.parameters) {
               md += `- \`${param.name}\` (${param.in}) - ${param.description || ''}\n`;
             }
             md += `\n`;
           }
 
-          if ((operation as any).responses) {
+          if (op.responses) {
             md += `**Responses:**\n\n`;
-            for (const [code, response] of Object.entries((operation as any).responses)) {
-              md += `- \`${code}\` - ${(response as any).description || ''}\n`;
+            for (const [code, response] of Object.entries(op.responses)) {
+              md += `- \`${code}\` - ${response.description || ''}\n`;
             }
             md += `\n`;
           }
@@ -743,7 +806,7 @@ async function generateAPIDocs(
       return `<!DOCTYPE html>
 <html>
 <head>
-  <title>${spec.info.title}</title>
+  <title>${specInfo.title}</title>
   <style>
     body { font-family: sans-serif; max-width: 900px; margin: 40px auto; }
     .endpoint { border-left: 3px solid #007bff; padding-left: 20px; margin: 20px 0; }
@@ -755,17 +818,20 @@ async function generateAPIDocs(
   </style>
 </head>
 <body>
-  <h1>${spec.info.title}</h1>
-  <p>Version: ${spec.info.version}</p>
+  <h1>${specInfo.title}</h1>
+  <p>Version: ${specInfo.version}</p>
   <h2>Endpoints</h2>
-  ${Object.entries(spec.paths || {}).map(([path, methods]: [string, any]) =>
-    Object.entries(methods).filter(([m]) => m !== 'parameters').map(([method, op]: [string, any]) => `
+  ${Object.entries(specPaths).map(([path, methods]: [string, Record<string, unknown>]) =>
+    Object.entries(methods).filter(([m]) => m !== 'parameters').map(([method, op]: [string, unknown]) => {
+      const operation = op as OpenAPIOperation;
+      return `
       <div class="endpoint">
         <span class="method ${method}">${method.toUpperCase()}</span>
         <code>${path}</code>
-        <p>${op.summary || op.description || ''}</p>
+        <p>${operation.summary || operation.description || ''}</p>
       </div>
-    `).join('')
+    `;
+    }).join('')
   ).join('')}
 </body>
 </html>`;
@@ -773,14 +839,14 @@ async function generateAPIDocs(
       // Generate Postman collection
       const collection = {
         info: {
-          name: spec.info.title,
+          name: specInfo.title,
           schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         },
-        item: [] as any[],
+        item: [] as PostmanItem[],
       };
 
-      for (const [path, methods] of Object.entries(spec.paths || {})) {
-        for (const [method, operation] of Object.entries(methods as any)) {
+      for (const [path, methods] of Object.entries(specPaths)) {
+        for (const [method] of Object.entries(methods)) {
           if (method === 'parameters') continue;
 
           collection.item.push({
@@ -802,9 +868,9 @@ async function generateAPIDocs(
     }
 
     return JSON.stringify({ error: "Unsupported format" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Documentation generation failed: ${error.message}`,
+      error: `Documentation generation failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -814,8 +880,8 @@ async function suggestImprovements(
   focusAreas: string[] = ["performance", "security", "design", "documentation"]
 ): Promise<string> {
   try {
-    const spec = JSON.parse(await fs.readFile(specPath, "utf-8"));
-    const improvements: any[] = [];
+    const spec = JSON.parse(await fs.readFile(specPath, "utf-8")) as Record<string, unknown>;
+    const improvements: ImprovementSuggestion[] = [];
 
     // Performance improvements
     if (focusAreas.includes("performance")) {
@@ -873,8 +939,9 @@ async function suggestImprovements(
 
     // Design improvements
     if (focusAreas.includes("design")) {
-      const hasVersioning = Object.keys(spec.paths || {}).some(p => /\/v\d+\//.test(p));
-      
+      const specPaths = (spec.paths || {}) as Record<string, unknown>;
+      const hasVersioning = Object.keys(specPaths).some(p => /\/v\d+\//.test(p));
+
       if (!hasVersioning) {
         improvements.push({
           category: "design",
@@ -947,9 +1014,9 @@ async function suggestImprovements(
       medium: improvements.filter(i => i.priority === "medium").length,
       improvements: improvements,
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
-      error: `Improvement analysis failed: ${error.message}`,
+      error: `Improvement analysis failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
@@ -960,32 +1027,32 @@ async function validateAPIResponse(
   strict: boolean = false
 ): Promise<string> {
   try {
-    const responseData = JSON.parse(response);
-    const schemaData = JSON.parse(schema);
+    const responseData = JSON.parse(response) as Record<string, unknown>;
+    const schemaData = JSON.parse(schema) as JsonSchemaProperty;
 
     const errors: string[] = [];
 
     // Basic schema validation
-    function validateObject(data: any, schema: any, path: string = ""): void {
-      if (schema.type === "object" && schema.properties) {
-        for (const [key, propSchema] of Object.entries(schema.properties)) {
+    function validateObject(data: Record<string, unknown>, schemaObj: JsonSchemaProperty, path: string = ""): void {
+      if (schemaObj.type === "object" && schemaObj.properties) {
+        for (const [key, propSchema] of Object.entries(schemaObj.properties)) {
           const value = data[key];
           const fullPath = path ? `${path}.${key}` : key;
 
-          if (schema.required?.includes(key) && value === undefined) {
+          if (schemaObj.required?.includes(key) && value === undefined) {
             errors.push(`Missing required field: ${fullPath}`);
           }
 
           if (value !== undefined) {
-            const propType = (propSchema as any).type;
+            const propType = propSchema.type;
             const actualType = Array.isArray(value) ? "array" : typeof value;
 
             if (propType && propType !== actualType) {
               errors.push(`Type mismatch at ${fullPath}: expected ${propType}, got ${actualType}`);
             }
 
-            if (propType === "object" && (propSchema as any).properties) {
-              validateObject(value, propSchema, fullPath);
+            if (propType === "object" && propSchema.properties) {
+              validateObject(value as Record<string, unknown>, propSchema, fullPath);
             }
           }
         }
@@ -993,7 +1060,7 @@ async function validateAPIResponse(
         // Check for extra fields in strict mode
         if (strict) {
           for (const key of Object.keys(data)) {
-            if (!schema.properties[key]) {
+            if (!schemaObj.properties[key]) {
               errors.push(`Unexpected field in strict mode: ${path ? `${path}.${key}` : key}`);
             }
           }
@@ -1007,31 +1074,34 @@ async function validateAPIResponse(
       valid: errors.length === 0,
       errors: errors.length > 0 ? errors : undefined,
     }, null, 2);
-  } catch (error: any) {
+  } catch (error: unknown) {
     return JSON.stringify({
       valid: false,
-      error: `Validation failed: ${error.message}`,
+      error: `Validation failed: ${error instanceof Error ? error.message : String(error)}`,
     }, null, 2);
   }
 }
 
 // Utility functions
-function countOperations(paths: any): number {
+function countOperations(paths: Record<string, Record<string, unknown>>): number {
   let count = 0;
   for (const methods of Object.values(paths)) {
-    count += Object.keys(methods as any).filter(k => k !== 'parameters').length;
+    count += Object.keys(methods).filter(k => k !== 'parameters').length;
   }
   return count;
 }
 
-function calculateAPIScore(issues: any[], suggestions: any[]): number {
+function calculateAPIScore(issues: ValidationIssue[]): number {
   const criticalPenalty = issues.filter(i => i.severity === "critical").length * 20;
   const highPenalty = issues.filter(i => i.severity === "high").length * 10;
   const mediumPenalty = issues.filter(i => i.severity === "medium").length * 5;
-  
+
   const score = Math.max(0, 100 - criticalPenalty - highPenalty - mediumPenalty);
   return Math.round(score);
 }
+
+// Start server
+runServer({ name: "api-specialist-mcp", version: "1.0.0" }, ({ server, logger }) => {
 
 // Tool handlers
 server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -1043,18 +1113,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            specPath: { 
-              type: "string", 
-              description: "Path to OpenAPI/Swagger spec file (JSON or YAML)" 
+            specPath: {
+              type: "string",
+              description: "Path to OpenAPI/Swagger spec file (JSON or YAML)"
             },
-            version: { 
-              type: "string", 
+            version: {
+              type: "string",
               enum: ["2.0", "3.0", "3.1"],
-              description: "OpenAPI version to validate against" 
+              description: "OpenAPI version to validate against"
             },
-            strict: { 
-              type: "boolean", 
-              description: "Enable strict validation mode" 
+            strict: {
+              type: "boolean",
+              description: "Enable strict validation mode"
             },
           },
           required: ["specPath"],
@@ -1071,22 +1141,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            url: { 
-              type: "string", 
-              description: "Full endpoint URL (e.g., https://api.example.com/users)" 
+            url: {
+              type: "string",
+              description: "Full endpoint URL (e.g., https://api.example.com/users)"
             },
-            method: { 
-              type: "string", 
+            method: {
+              type: "string",
               enum: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
-              description: "HTTP method" 
+              description: "HTTP method"
             },
-            headers: { 
+            headers: {
               type: "object",
-              description: "Request headers as key-value pairs" 
+              description: "Request headers as key-value pairs"
             },
-            body: { 
-              type: "string", 
-              description: "Request body (JSON string)" 
+            body: {
+              type: "string",
+              description: "Request body (JSON string)"
             },
             auth: {
               type: "object",
@@ -1100,9 +1170,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               },
               description: "Authentication configuration"
             },
-            timeout: { 
-              type: "number", 
-              description: "Request timeout in milliseconds (default: 5000)" 
+            timeout: {
+              type: "number",
+              description: "Request timeout in milliseconds (default: 5000)"
             },
           },
           required: ["url", "method"],
@@ -1119,14 +1189,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            apiUrl: { 
-              type: "string", 
-              description: "Base API URL to check" 
+            apiUrl: {
+              type: "string",
+              description: "Base API URL to check"
             },
-            endpoints: { 
+            endpoints: {
               type: "array",
               items: { type: "string" },
-              description: "Specific endpoints to test (relative paths)" 
+              description: "Specific endpoints to test (relative paths)"
             },
             checks: {
               type: "array",
@@ -1151,14 +1221,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            specPath: { 
-              type: "string", 
-              description: "Path to API specification file" 
+            specPath: {
+              type: "string",
+              description: "Path to API specification file"
             },
-            framework: { 
-              type: "string", 
+            framework: {
+              type: "string",
               enum: ["rest", "graphql", "grpc"],
-              description: "API framework type" 
+              description: "API framework type"
             },
             standards: {
               type: "array",
@@ -1183,30 +1253,30 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            url: { 
-              type: "string", 
-              description: "Endpoint URL to load test" 
+            url: {
+              type: "string",
+              description: "Endpoint URL to load test"
             },
-            method: { 
-              type: "string", 
+            method: {
+              type: "string",
               enum: ["GET", "POST", "PUT", "DELETE"],
-              description: "HTTP method" 
+              description: "HTTP method"
             },
-            duration: { 
-              type: "number", 
-              description: "Test duration in seconds" 
+            duration: {
+              type: "number",
+              description: "Test duration in seconds"
             },
-            concurrency: { 
-              type: "number", 
-              description: "Number of concurrent requests" 
+            concurrency: {
+              type: "number",
+              description: "Number of concurrent requests"
             },
-            headers: { 
+            headers: {
               type: "object",
-              description: "Request headers" 
+              description: "Request headers"
             },
-            body: { 
-              type: "string", 
-              description: "Request body for POST/PUT" 
+            body: {
+              type: "string",
+              description: "Request body for POST/PUT"
             },
           },
           required: ["url", "method", "duration", "concurrency"],
@@ -1223,18 +1293,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            specPath: { 
-              type: "string", 
-              description: "Path to OpenAPI spec" 
+            specPath: {
+              type: "string",
+              description: "Path to OpenAPI spec"
             },
-            format: { 
-              type: "string", 
+            format: {
+              type: "string",
               enum: ["markdown", "html", "postman"],
-              description: "Output format" 
+              description: "Output format"
             },
-            includeExamples: { 
-              type: "boolean", 
-              description: "Include request/response examples" 
+            includeExamples: {
+              type: "boolean",
+              description: "Include request/response examples"
             },
           },
           required: ["specPath", "format"],
@@ -1251,9 +1321,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            specPath: { 
-              type: "string", 
-              description: "Path to API specification" 
+            specPath: {
+              type: "string",
+              description: "Path to API specification"
             },
             focusAreas: {
               type: "array",
@@ -1278,17 +1348,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            response: { 
-              type: "string", 
-              description: "API response JSON to validate" 
+            response: {
+              type: "string",
+              description: "API response JSON to validate"
             },
-            schema: { 
-              type: "string", 
-              description: "Expected JSON schema" 
+            schema: {
+              type: "string",
+              description: "Expected JSON schema"
             },
-            strict: { 
-              type: "boolean", 
-              description: "Strict validation mode" 
+            strict: {
+              type: "boolean",
+              description: "Strict validation mode"
             },
           },
           required: ["response", "schema"],
@@ -1305,13 +1375,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const requestId = generateRequestId();
+  const startTime = performance.now();
+
+  logger.info("Tool called", { requestId, tool: name, args });
 
   try {
+    let response;
+
     switch (name) {
       case "validate_openapi": {
         const { specPath, version, strict } = ValidateOpenAPISchema.parse(args);
-        const result = await validateOpenAPI(specPath, version, strict);
-        return {
+        const safePath = sanitizePath(specPath, process.cwd());
+        const result = await validateOpenAPI(safePath, version, strict);
+        response = {
           content: [
             {
               type: "text",
@@ -1319,12 +1396,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+        break;
       }
 
       case "test_endpoint": {
         const { url, method, headers, body, auth, timeout } = TestEndpointSchema.parse(args);
-        const result = await testEndpoint(url, method, headers, body, auth, timeout);
-        return {
+        const safeUrl = sanitizeUrl(url);
+        const result = await testEndpoint(safeUrl, method, headers, body, auth, timeout);
+        response = {
           content: [
             {
               type: "text",
@@ -1332,12 +1411,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+        break;
       }
 
       case "check_api_security": {
         const { apiUrl, endpoints, checks } = CheckAPISecuritySchema.parse(args);
-        const result = await checkAPISecurity(apiUrl, endpoints, checks);
-        return {
+        const safeUrl = sanitizeUrl(apiUrl);
+        const result = await checkAPISecurity(safeUrl, endpoints, checks);
+        response = {
           content: [
             {
               type: "text",
@@ -1345,12 +1426,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+        break;
       }
 
       case "analyze_api_structure": {
         const { specPath, framework, standards } = AnalyzeAPIStructureSchema.parse(args);
-        const result = await analyzeAPIStructure(specPath, framework, standards);
-        return {
+        const safePath = sanitizePath(specPath, process.cwd());
+        const result = await analyzeAPIStructure(safePath, framework, standards);
+        response = {
           content: [
             {
               type: "text",
@@ -1358,12 +1441,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+        break;
       }
 
       case "load_test": {
         const { url, method, duration, concurrency, headers, body } = LoadTestSchema.parse(args);
-        const result = await loadTest(url, method, duration, concurrency, headers, body);
-        return {
+        const safeUrl = sanitizeUrl(url);
+        const result = await loadTest(safeUrl, method, duration, concurrency, headers, body);
+        response = {
           content: [
             {
               type: "text",
@@ -1371,12 +1456,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+        break;
       }
 
       case "generate_api_docs": {
         const { specPath, format, includeExamples } = GenerateAPIDocsSchema.parse(args);
-        const result = await generateAPIDocs(specPath, format, includeExamples);
-        return {
+        const safePath = sanitizePath(specPath, process.cwd());
+        const result = await generateAPIDocs(safePath, format, includeExamples);
+        response = {
           content: [
             {
               type: "text",
@@ -1384,12 +1471,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+        break;
       }
 
       case "suggest_improvements": {
         const { specPath, focusAreas } = SuggestImprovementsSchema.parse(args);
-        const result = await suggestImprovements(specPath, focusAreas);
-        return {
+        const safePath = sanitizePath(specPath, process.cwd());
+        const result = await suggestImprovements(safePath, focusAreas);
+        response = {
           content: [
             {
               type: "text",
@@ -1397,12 +1486,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+        break;
       }
 
       case "validate_api_response": {
-        const { response, schema, strict } = ValidateAPIResponseSchema.parse(args);
-        const result = await validateAPIResponse(response, schema, strict);
-        return {
+        const { response: apiResponse, schema, strict } = ValidateAPIResponseSchema.parse(args);
+        const result = await validateAPIResponse(apiResponse, schema, strict);
+        response = {
           content: [
             {
               type: "text",
@@ -1410,32 +1500,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             },
           ],
         };
+        break;
       }
 
       default:
         throw new Error(`Unknown tool: ${name}`);
     }
-  } catch (error: any) {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: ${error.message}`,
-        },
-      ],
-      isError: true,
-    };
+
+    const durationMs = measureDuration(startTime);
+    logger.info("Tool completed", { requestId, tool: name, durationMs });
+    return response;
+  } catch (error: unknown) {
+    const durationMs = measureDuration(startTime);
+    logger.error("Tool failed", { requestId, tool: name, durationMs, error: error instanceof Error ? error.message : String(error) });
+    return errorResponse(error, name);
   }
 });
 
-// Start server
-async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error("API Specialist MCP Server running on stdio");
-}
-
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+}); // runServer
