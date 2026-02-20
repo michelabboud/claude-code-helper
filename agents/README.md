@@ -126,7 +126,7 @@ agents/
 ### Installing MCP Agents
 
 **Prerequisites:**
-1. Install MCP servers first (see [../mcp-servers/](../../mcp-servers/))
+1. Install MCP servers first (see [../mcp-servers/](../mcp-servers/))
 2. Configure MCP servers in Claude Desktop/Code config
 
 **Installation:**
@@ -301,18 +301,18 @@ hooks:
 ## 📚 Learn More
 
 ### MCP Agents
-- [MCP Servers Documentation](../../mcp-servers/README.md)
-- [MCP Agents README](./mcp-agents/README.md)
+- [MCP Servers Documentation](../mcp-servers/README.md)
+- [MCP Agents README](./mcp-integrated/README.md)
 - [MCP Protocol Docs](https://modelcontextprotocol.io)
 
 ### Sub-Agents
-- [Sub-Agents Guide](../../guides/subagents-guide/README.md)
-- [Sub-Agents README](./subagents/README.md)
-- [Coordination Patterns](../../guides/subagents-guide/patterns/)
+- [Sub-Agents Guide](../guides/subagents-guide/README.md)
+- [Sub-Agents README](../guides/subagents-guide/README.md)
+- [Coordination Patterns](../guides/subagents-guide/patterns/)
 
 ### Both
-- [Complete Guide](../../guides/complete-guide/README.md)
-- [Tools Comparison](../../guides/complete-guide/01-TOOLS-COMPARISON.md)
+- [Complete Guide](../guides/complete-guide/README.md)
+- [Tools Comparison](../guides/complete-guide/01-TOOLS-COMPARISON.md)
 
 ---
 

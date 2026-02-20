@@ -339,9 +339,9 @@ exit 0
 
 ## Related Resources
 
-- [Complete Guide](../../guides/complete-guide/) - Full Claude Code guide
-- [Settings Reference](../../config-bundle/) - Configuration options
-- [Security Best Practices](../../guides/complete-guide/) - Security patterns
+- [Complete Guide](../guides/complete-guide/) - Full Claude Code guide
+- [Settings Reference](../config-bundle/) - Configuration options
+- [Security Best Practices](../guides/complete-guide/) - Security patterns
 
 ---
 

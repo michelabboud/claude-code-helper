@@ -188,9 +188,9 @@ jq '.summary' results/test-results-*.json
 
 ## 📚 Related Documentation
 
-- **[TESTING-GUIDE.md](TESTING-GUIDE.md)** - Manual test procedures
-- **[test-automation/README.md](test-automation/README.md)** - Framework documentation
-- **[INSTALLATION-STATISTICS.md](INSTALLATION-STATISTICS.md)** - Resource metrics
+- **[TESTING-GUIDE.md](../../TESTING-GUIDE.md)** - Manual test procedures
+- **[test-automation/README.md](../../test-automation/README.md)** - Framework documentation
+- **[INSTALLATION-STATISTICS.md](../reports/INSTALLATION-STATISTICS.md)** - Resource metrics
 
 ---
 

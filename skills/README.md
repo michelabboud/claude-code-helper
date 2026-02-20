@@ -360,7 +360,7 @@ Skills can access the current session ID using `${CLAUDE_SESSION_ID}` string sub
 
 - [Agents Examples](../agents/) - Specialized agents
 - [Hooks Examples](../hooks/) - Event automation
-- [Complete Guide](../../guides/complete-guide/) - Full Claude Code guide
+- [Complete Guide](../guides/complete-guide/) - Full Claude Code guide
 
 ---
 

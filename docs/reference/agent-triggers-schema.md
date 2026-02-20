@@ -411,7 +411,7 @@ triggers:
 
 - [Agent Triggers Feature Proposal](../plans/agent-triggers-feature-proposal.md)
 - [Agents README](../../agents/README.md)
-- [Status Lines Guide](../../config-bundle/statuslines/README.md)
+- [Status Lines Guide](../../config-bundle/README.md)
 
 ---
 

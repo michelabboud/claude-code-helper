@@ -117,11 +117,11 @@ This release implements a **three-tier information system**:
 
 ## 🔗 Quick Links
 
-- **[📋 TOOLS-CHEATSHEET.md](TOOLS-CHEATSHEET.md)** - Quick reference
-- **[🧪 TESTING-GUIDE.md](TESTING-GUIDE.md)** - Validation suite
-- **[📊 INSTALLATION-STATISTICS.md](INSTALLATION-STATISTICS.md)** - Impact analysis
-- **[🏗️ ECOSYSTEM-DIAGRAM.md](ECOSYSTEM-DIAGRAM.md)** - Architecture diagrams
-- **[📖 README.md](README.md)** - Documentation hub
+- **[📋 TOOLS-CHEATSHEET.md](../../TOOLS-CHEATSHEET.md)** - Quick reference
+- **[🧪 TESTING-GUIDE.md](../../TESTING-GUIDE.md)** - Validation suite
+- **[📊 INSTALLATION-STATISTICS.md](../reports/INSTALLATION-STATISTICS.md)** - Impact analysis
+- **[🏗️ ECOSYSTEM-DIAGRAM.md](../reference/ECOSYSTEM-DIAGRAM.md)** - Architecture diagrams
+- **[📖 README.md](../../README.md)** - Documentation hub
 
 ---
 

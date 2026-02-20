@@ -190,10 +190,10 @@ See `mcp-servers/QUICKGUIDE.md` Option 2 for detailed JSON configuration steps.
 
 ## 📚 Related Documentation
 
-- **[mcp-servers/INSTALL.md](mcp-servers/INSTALL.md)** - Complete installation guide
-- **[mcp-servers/QUICKGUIDE.md](mcp-servers/QUICKGUIDE.md)** - Fast 2-minute setup
-- **[mcp-servers/README.md](mcp-servers/README.md)** - Full MCP server documentation
-- **[CHANGELOG.md](CHANGELOG.md)** - Complete change history
+- **[mcp-servers/INSTALL.md](../../mcp-servers/INSTALL.md)** - Complete installation guide
+- **[mcp-servers/QUICKGUIDE.md](../../mcp-servers/QUICKGUIDE.md)** - Fast 2-minute setup
+- **[mcp-servers/README.md](../../mcp-servers/README.md)** - Full MCP server documentation
+- **[CHANGELOG.md](../../CHANGELOG.md)** - Complete change history
 
 ---
 

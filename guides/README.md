@@ -178,7 +178,7 @@ claude
 
 - [Agents Directory](../agents/) - 46 production-ready agents
 - [Skills Directory](../skills/) - 16 workflow skills
-- [Commands Directory](../commands/) - 6 slash commands
+- [Skills Directory](../skills/) - Skills and commands (unified)
 - [Templates Directory](../templates/) - Starter templates
 - [MCP Servers](../mcp-servers/) - 10 specialized MCP servers
 - [Config Bundle](../config-bundle/) - Production configuration

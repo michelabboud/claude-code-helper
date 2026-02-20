@@ -76,7 +76,7 @@ If installing from both locations, the more recent (comprehensive) versions will
 ## Complete Agent List
 
 For the complete list of all 33+ sub-agents across both directories, see:
-- [../agents/subagents/README.md](../agents/subagents/README.md) - Original agents
+- [Subagents Guide](../../guides/subagents-guide/README.md) - Agent orchestration patterns
 - This directory - Additional comprehensive agents
 
 ---

@@ -617,10 +617,10 @@ agents/
 
 ### Related Guides
 
-- **[Solving AI Coding Problems](./guides/advanced-patterns/solving-ai-coding-problems.md)** - Problem 4: RAG solution
-- **[RAG MCP README](./mcp-servers/rag-mcp/README.md)** - Complete API docs
-- **[RAG MCP QUICKSTART](./mcp-servers/rag-mcp/QUICKSTART.md)** - 5-minute setup
-- **[rag-coder Agent](./agents/rag-coder.md)** - Complete agent guide
+- **[Solving AI Coding Problems](../../guides/advanced-patterns/solving-ai-coding-problems.md)** - Problem 4: RAG solution
+- **[RAG MCP README](../../mcp-servers/rag-mcp/README.md)** - Complete API docs
+- **[RAG MCP QUICKSTART](../../mcp-servers/rag-mcp/QUICKSTART.md)** - 5-minute setup
+- **[rag-coder Agent](../../agents/rag-coder.md)** - Complete agent guide
 
 ---
 

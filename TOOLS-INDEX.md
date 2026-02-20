@@ -299,17 +299,17 @@ Specialized agents for specific technology domains.
 
 ## Commands (5 Slash Commands)
 
-**Location:** [`commands/`](commands/)
+**Location:** [`skills/`](skills/)
 
 Slash commands for common development workflows.
 
 | Command | File | Usage | Description |
 |---------|------|-------|-------------|
-| Document | [`document.md`](commands/document.md) | `/document` | Generate comprehensive documentation |
-| Refactor | [`refactor.md`](commands/refactor.md) | `/refactor` | Code refactoring workflow |
-| Review | [`review.md`](commands/review.md) | `/review` | Code review with suggestions |
-| Scaffold | [`scaffold.md`](commands/scaffold.md) | `/scaffold` | Project scaffolding |
-| Test Generate | [`test-generate.md`](commands/test-generate.md) | `/test-generate` | Generate tests for code |
+| Document | [`documentation/SKILL.md`](skills/documentation/SKILL.md) | `/document` | Generate comprehensive documentation |
+| Refactor | [`refactoring-strategy.md`](skills/refactoring-strategy.md) | `/refactor` | Code refactoring workflow |
+| Review | [`code-review-workflow.md`](skills/code-review-workflow.md) | `/review` | Code review with suggestions |
+| Scaffold | [`project-scaffolding/SKILL.md`](skills/project-scaffolding/SKILL.md) | `/scaffold` | Project scaffolding |
+| Test Generate | [`testing-standards/SKILL.md`](skills/testing-standards/SKILL.md) | `/test-generate` | Generate tests for code |
 
 ---
 
@@ -511,13 +511,13 @@ Ready-to-deploy Claude Code configuration.
 
 ### Main Scripts
 
-**Location:** [`scripts/`](scripts/)
+**Location:** [`config-bundle/scripts/`](config-bundle/scripts/)
 
 | Script | File | Description |
 |--------|------|-------------|
-| Install All | [`install-all.sh`](scripts/install-all.sh) | Main installation script for all components |
-| Setup API Key | [`setup-api-key.sh`](scripts/setup-api-key.sh) | API key configuration helper |
-| Test Setup | [`test-setup.sh`](scripts/test-setup.sh) | Verify installation success |
+| Install All | [`install-all.sh`](config-bundle/scripts/install-all.sh) | Main installation script for all components |
+| Setup API Key | [`setup-api-key.sh`](config-bundle/scripts/setup-api-key.sh) | API key configuration helper |
+| Test Setup | [`test-setup.sh`](config-bundle/scripts/test-setup.sh) | Verify installation success |
 
 ### MCP Server Installation
 
@@ -547,8 +547,7 @@ Additional MCP server concepts and documentation (not yet implemented as servers
 
 | Concept | Location | Description |
 |---------|----------|-------------|
-| CI/CD Pipeline | [`mcp-servers/ci-cd-pipeline/`](mcp-servers/ci-cd-pipeline/) | Pipeline generation and optimization concepts |
-| CICD Pipeline (Expanded) | [`mcp-servers/cicd-pipeline/`](mcp-servers/cicd-pipeline/) | Detailed pipeline examples |
+| CI/CD Pipeline | [`mcp-servers/cicd-pipeline/`](mcp-servers/cicd-pipeline/) | Pipeline generation and optimization concepts |
 | Dependency Management | [`mcp-servers/dependency-management/`](mcp-servers/dependency-management/) | Dependency analysis concepts |
 | N8n Automation | [`mcp-servers/n8n-automation/`](mcp-servers/n8n-automation/) | N8n workflow integration |
 
@@ -581,7 +580,7 @@ cd mcp-servers/api-specialist-mcp
 npm install && npm run build
 
 # Test installation
-./scripts/test-setup.sh
+config-bundle/scripts/test-setup.sh
 
 # Read main documentation
 cat guides/complete-guide/00-ZERO-TO-HERO-GUIDE.md

@@ -325,7 +325,7 @@ node scripts/run-migration.js --dry-run path/to/migration.sql
 
 ## API Reference
 
-See [API.md](./API.md) for complete API documentation.
+See [mcp-shared API Reference](../mcp-shared/API.md) for shared library documentation.
 
 ## Contributing
 

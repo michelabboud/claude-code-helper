@@ -427,10 +427,10 @@ claude --agent playwright-test-agent "Debug tests/checkout.spec.ts - it's loopin
 
 ## 📚 Related Documentation
 
-- **Main README:** [README.md](README.md) - Now includes loop prevention references
-- **Multi-Agent Orchestration:** [multi-agent-orchestration.md](guides/advanced-patterns/multi-agent-orchestration.md)
-- **Testing Strategy:** [testing-strategy.md](guides/advanced-patterns/testing-strategy.md)
-- **Sub-Agents Guide:** [guides/subagents-guide/README.md](guides/subagents-guide/README.md)
+- **Main README:** [README.md](../../README.md) - Now includes loop prevention references
+- **Multi-Agent Orchestration:** [multi-agent-orchestration.md](../../guides/advanced-patterns/multi-agent-orchestration.md)
+- **Testing Strategy:** [testing-strategy.md](../../guides/advanced-patterns/testing-strategy.md)
+- **Sub-Agents Guide:** [guides/subagents-guide/README.md](../../guides/subagents-guide/README.md)
 
 ---
 

@@ -2371,7 +2371,7 @@ claude --agent smart-router "Add user profile feature"
 
 **Complete installation with all agents, skills, and MCP servers.**
 
-See [INSTALLATION.md](../../INSTALLATION.md) for full setup guide.
+See [INSTALLATION.md](../../docs/reference/INSTALLATION.md) for full setup guide.
 
 ---
 

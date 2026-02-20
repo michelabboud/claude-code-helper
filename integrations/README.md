@@ -189,7 +189,7 @@ Description and example...
 - [Agents Examples](../agents/) - Specialized agents
 - [Skills Examples](../skills/) - Knowledge modules
 - [Plugins Examples](../plugins/) - Bundled solutions
-- [Sub-Agents Guide](../../guides/subagents-guide/) - Agent orchestration patterns
+- [Sub-Agents Guide](../guides/subagents-guide/) - Agent orchestration patterns
 
 ---
 

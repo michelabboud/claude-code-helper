@@ -276,7 +276,7 @@ List the bundled components:
 
 - [Skills Examples](../skills/) - Individual skills
 - [Agents Examples](../agents/) - Individual agents
-- [Commands Examples](../commands/) - Individual commands
+- [Skills Examples](../skills/) - Skills and commands
 - [Hooks Examples](../hooks/) - Individual hooks
 
 ---

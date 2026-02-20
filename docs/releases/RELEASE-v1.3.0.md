@@ -83,7 +83,7 @@ cp *.json ~/.claude/agents/
 # 5. Restart Claude Desktop and test!
 ```
 
-**Full guide:** See [INSTALLATION.md](INSTALLATION.md)
+**Full guide:** See [INSTALLATION.md](../reference/INSTALLATION.md)
 
 ---
 
@@ -116,11 +116,11 @@ cp *.json ~/.claude/agents/
 
 ## 🔗 Links
 
-- **Installation Guide:** [INSTALLATION.md](INSTALLATION.md)
-- **MCP Servers Docs:** [mcp-servers/README.md](mcp-servers/README.md)
-- **Agent Configs:** [agents/mcp-agents/](agents/mcp-agents/)
-- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
-- **Main README:** [README.md](README.md)
+- **Installation Guide:** [INSTALLATION.md](../reference/INSTALLATION.md)
+- **MCP Servers Docs:** [mcp-servers/README.md](../../mcp-servers/README.md)
+- **Agent Configs:** [agents/mcp-integrated/](../../agents/mcp-integrated/)
+- **Changelog:** [CHANGELOG.md](../../CHANGELOG.md)
+- **Main README:** [README.md](../../README.md)
 
 ---
 

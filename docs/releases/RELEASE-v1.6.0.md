@@ -700,7 +700,7 @@ claude --agent smart-router "Add user profile feature"
 - Cost optimization
 - Quality verification pipeline
 
-**See:** [INSTALLATION.md](../../INSTALLATION.md) for full setup guide
+**See:** [INSTALLATION.md](../reference/INSTALLATION.md) for full setup guide
 
 ---
 
@@ -752,9 +752,9 @@ Next 9 queries: Cache hits (90% discount)
 
 ### Related Guides
 
-- **[Agent Loop Prevention](./agent-loop-prevention.md)** - Prevent infinite loops and stuck agents
-- **[Multi-Agent Orchestration](./multi-agent-orchestration.md)** - Coordinate multiple agents
-- **[Testing Strategy](./testing-strategy.md)** - Comprehensive testing approaches
+- **[Agent Loop Prevention](../../guides/advanced-patterns/agent-loop-prevention.md)** - Prevent infinite loops and stuck agents
+- **[Multi-Agent Orchestration](../../guides/advanced-patterns/multi-agent-orchestration.md)** - Coordinate multiple agents
+- **[Testing Strategy](../../guides/advanced-patterns/testing-strategy.md)** - Comprehensive testing approaches
 
 ### External Resources
 
