@@ -27,7 +27,7 @@
 
 - **49 Agents** (12 MCP agents + 37 domain experts)
 - **68 MCP Tools** across 10 servers (38 production + 30 experimental)
-- **20 Skills** (workflows, testing, scaffolding, documentation, update-check, model-mode, and more)
+- **21 Skills** (workflows, testing, scaffolding, documentation, update-check, model-mode, greeting, and more)
 - **Comprehensive guides, templates, and integration examples**
 
 ---
@@ -257,7 +257,7 @@ cp agents/mcp-integrated/*.json ~/.claude/agents/
 
 **[📁 Navigate to Skills →](./skills/)**
 
-18 reusable skills for development workflows, testing, and project scaffolding.
+21 reusable skills for development workflows, testing, and project scaffolding.
 
 ### Available Skills
 - **Workflows:** Code review, refactoring, TDD, release management, CI best practices
@@ -265,7 +265,7 @@ cp agents/mcp-integrated/*.json ~/.claude/agents/
 - **Development:** Project scaffolding, API design, database design, caching patterns
 - **Documentation:** Code documentation, API documentation
 - **Project Management:** PM dashboard
-- **Maintenance:** Update check (`/update-check` - checks for new releases, never auto-updates)
+- **Tooling:** Update check (`/update-check`), Model mode (`/model-mode`), Greeting (`/greeting` — surveys all installed MCP servers, agents, and skills and generates a health report)
 
 ### Installation
 ```bash
