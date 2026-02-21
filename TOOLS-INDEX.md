@@ -20,7 +20,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 - [Example Agents (27 Agents)](#example-agents-27-agents)
   - [MCP Agents](#mcp-agents-9-agents)
   - [Sub-Agents - Domain Specialists](#sub-agents---domain-specialists-18-agents)
-- [Skills (21 Workflow Skills)](#skills-21-workflow-skills)
+- [Skills (22 Workflow Skills)](#skills-21-workflow-skills)
   - [Core Workflow Skills](#core-workflow-skills)
   - [Advanced Testing Skills](#advanced-testing-skills)
 - [Commands (5 Slash Commands)](#commands-5-slash-commands)
@@ -291,7 +291,7 @@ Specialized agents for specific technology domains.
 
 ---
 
-## Skills (21 Workflow Skills)
+## Skills (22 Workflow Skills)
 
 **Location:** [`skills/`](skills/)
 
@@ -304,6 +304,7 @@ Specialized agents for specific technology domains.
 | PM Dashboard | [`pm-dashboard/SKILL.md`](skills/pm-dashboard/SKILL.md) | Update project health dashboard with expert scores and tasks |
 | Update Check | [`update-check/SKILL.md`](skills/update-check/SKILL.md) | Check claude-code-helper installation for available updates |
 | Auto Plan | [`auto-plan/SKILL.md`](skills/auto-plan/SKILL.md) | Plan with Opus, build with Sonnet |
+| RAG | [`rag/SKILL.md`](skills/rag/SKILL.md) | Index codebases, semantic search, configure backends (ChromaDB/Redis/Qdrant), persistent storage |
 | API Design Patterns | [`api-design-patterns.md`](skills/api-design-patterns.md) | REST API design best practices, versioning, error handling |
 | API Documentation | [`api-documentation/SKILL.md`](skills/api-documentation/SKILL.md) | Automated API documentation generation |
 | Caching Expert | [`caching-expert.md`](skills/caching-expert.md) | Caching strategies (Static, Object, HTTP, CDN) |
