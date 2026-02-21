@@ -327,7 +327,7 @@ async function scanMcpServers() {
       type: 'mcp-server',
       version: pkg.version || null,
       file: `mcp-servers/${name}/package.json`,
-      installPath: null,
+      installPath: `mcp-servers/${name}/`,
       changelog: `mcp-servers/${name}/CHANGELOG.md`,
       buildRequired: true,
     };

@@ -1,6 +1,7 @@
 #!/bin/bash
 # Multi-Agent MCP System - Installation Script
-# Installs all three MCP servers
+# Builds MCP servers in the repo, then copies them to ~/.claude/mcp-servers/
+# for stable paths that survive repo deletion.
 #
 # ─────────────────────────────────────────────────────────────────────────────
 # Credits:
@@ -41,6 +42,9 @@ echo ""
 # Install root dependencies first (needed for workspaces and shared packages)
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+CLAUDE_HOME="${CLAUDE_HOME:-$HOME/.claude}"
+MCP_INSTALL_DIR="$CLAUDE_HOME/mcp-servers"
+
 if [ -f "$REPO_ROOT/package.json" ]; then
     echo "📦 Installing root dependencies..."
     cd "$REPO_ROOT"
@@ -53,20 +57,20 @@ if [ -f "$REPO_ROOT/package.json" ]; then
     echo ""
 fi
 
-# Function to install and build a server
+# Function to install and build a server (in the repo workspace)
 install_server() {
     local server_name=$1
     local server_dir=$2
-    
-    echo "📦 Installing ${server_name}..."
-    
+
+    echo "📦 Building ${server_name}..."
+
     if [ ! -d "$server_dir" ]; then
         echo -e "${RED}❌ Directory $server_dir not found${NC}"
         return 1
     fi
-    
+
     cd "$server_dir"
-    
+
     # Install dependencies
     echo "  └─ Installing dependencies..."
     if npm install --silent; then
@@ -76,7 +80,7 @@ install_server() {
         cd ..
         return 1
     fi
-    
+
     # Build
     echo "  └─ Building..."
     if npm run build --silent; then
@@ -86,21 +90,75 @@ install_server() {
         cd ..
         return 1
     fi
-    
+
     # Verify build
     if [ -f "build/index.js" ]; then
-        echo -e "  └─ ${GREEN}✓ ${server_name} ready!${NC}"
+        echo -e "  └─ ${GREEN}✓ ${server_name} built!${NC}"
     else
         echo -e "  └─ ${RED}✗ Build output not found${NC}"
         cd ..
         return 1
     fi
-    
+
     cd ..
     echo ""
 }
 
-# Install each server
+# Function to copy a built server to ~/.claude/mcp-servers/<name>/
+# This creates a standalone installation with its own node_modules.
+install_to_claude() {
+    local server_dir=$1
+    local dest="$MCP_INSTALL_DIR/$server_dir"
+
+    echo "  └─ Installing to $dest ..."
+
+    # Create destination
+    mkdir -p "$dest"
+
+    # Copy build output and package.json
+    cp -r "$server_dir/build" "$dest/"
+    cp "$server_dir/package.json" "$dest/"
+
+    # Copy mcp-shared as a local package alongside the server
+    if [ -d "mcp-shared/build" ]; then
+        mkdir -p "$dest/mcp-shared"
+        cp -r "mcp-shared/build" "$dest/mcp-shared/"
+        cp "mcp-shared/package.json" "$dest/mcp-shared/"
+    fi
+
+    # Rewrite package.json: mcp-shared → local path, strip devDependencies
+    node -e "
+const fs = require('fs');
+const path = '${dest}/package.json';
+const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+
+// Point mcp-shared to the local copy
+if (pkg.dependencies && pkg.dependencies['mcp-shared']) {
+    pkg.dependencies['mcp-shared'] = 'file:./mcp-shared';
+}
+
+// Remove devDependencies (not needed at runtime)
+delete pkg.devDependencies;
+
+// Remove workspace-only scripts
+delete pkg.scripts;
+
+fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + '\n');
+"
+
+    # Run standalone npm install (production only)
+    cd "$dest"
+    if npm install --production --silent 2>/dev/null; then
+        echo -e "     ${GREEN}✓ Dependencies installed at $dest${NC}"
+    else
+        # Retry without --silent to see errors
+        echo -e "     ${YELLOW}⚠️  Retrying npm install...${NC}"
+        npm install --production 2>&1 || true
+    fi
+    cd "$SCRIPT_DIR"
+}
+
+# Build each server in the repo workspace
 install_server "RAG MCP" "rag-mcp"
 install_server "API Specialist MCP" "api-specialist-mcp"
 install_server "Code Review MCP" "code-review-mcp"
@@ -109,15 +167,62 @@ install_server "Testing MCP" "testing-mcp"
 install_server "UI/UX Review MCP" "uiux-review-mcp"
 install_server "Project Oversight MCP" "project-oversight-mcp"
 
-# Get absolute paths
-echo "📍 Installation paths:"
-RAG_PATH="$(cd rag-mcp && pwd)/build/index.js"
-API_SPECIALIST_PATH="$(cd api-specialist-mcp && pwd)/build/index.js"
-CODE_REVIEW_PATH="$(cd code-review-mcp && pwd)/build/index.js"
-DESIGN_SYSTEM_PATH="$(cd design-system-mcp && pwd)/build/index.js"
-TESTING_PATH="$(cd testing-mcp && pwd)/build/index.js"
-UIUX_REVIEW_PATH="$(cd uiux-review-mcp && pwd)/build/index.js"
-OVERSIGHT_PATH="$(cd project-oversight-mcp && pwd)/build/index.js"
+# Build mcp-shared (needed for install_to_claude)
+if [ -d "mcp-shared" ] && [ ! -d "mcp-shared/build" ]; then
+    echo "📦 Building mcp-shared..."
+    cd mcp-shared && npm run build --silent && cd ..
+fi
+
+# Copy each server to ~/.claude/mcp-servers/
+echo ""
+echo "📂 Copying MCP servers to $MCP_INSTALL_DIR ..."
+echo ""
+
+# List of server directories (same order as build)
+SERVERS=(
+    "rag-mcp"
+    "api-specialist-mcp"
+    "code-review-mcp"
+    "design-system-mcp"
+    "testing-mcp"
+    "uiux-review-mcp"
+    "project-oversight-mcp"
+)
+
+for server_dir in "${SERVERS[@]}"; do
+    if [ -f "$server_dir/build/index.js" ]; then
+        install_to_claude "$server_dir"
+    fi
+done
+
+# Also install experimental servers if they were built
+for dir in */build/index.js; do
+    server=$(echo "$dir" | sed 's|/build/index.js||')
+    [ "$server" = "mcp-shared" ] && continue
+    # Skip servers already installed above
+    already_installed=false
+    for s in "${SERVERS[@]}"; do
+        if [ "$server" = "$s" ]; then
+            already_installed=true
+            break
+        fi
+    done
+    if [ "$already_installed" = "false" ]; then
+        install_to_claude "$server"
+    fi
+done
+
+echo ""
+
+# All paths now point to ~/.claude/mcp-servers/
+echo "📍 Installation paths (stable — safe to delete repo clone):"
+RAG_PATH="$MCP_INSTALL_DIR/rag-mcp/build/index.js"
+API_SPECIALIST_PATH="$MCP_INSTALL_DIR/api-specialist-mcp/build/index.js"
+CODE_REVIEW_PATH="$MCP_INSTALL_DIR/code-review-mcp/build/index.js"
+DESIGN_SYSTEM_PATH="$MCP_INSTALL_DIR/design-system-mcp/build/index.js"
+TESTING_PATH="$MCP_INSTALL_DIR/testing-mcp/build/index.js"
+UIUX_REVIEW_PATH="$MCP_INSTALL_DIR/uiux-review-mcp/build/index.js"
+OVERSIGHT_PATH="$MCP_INSTALL_DIR/project-oversight-mcp/build/index.js"
 
 echo "  • RAG MCP:            $RAG_PATH"
 echo "  • API Specialist MCP: $API_SPECIALIST_PATH"
@@ -252,6 +357,8 @@ echo "3. Test it! Ask Claude:"
 echo "   \"What MCP tools do you have available?\""
 echo ""
 echo -e "${GREEN}✅ Installation complete!${NC}"
+echo -e "   MCP servers are installed to ${YELLOW}$MCP_INSTALL_DIR${NC}"
+echo -e "   You can safely delete this repo clone — servers will keep working."
 echo ""
 # Write installation manifest (v2: per-component registration)
 SCRIPT_DIR_MCP="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -266,7 +373,7 @@ if [ -f "$REPO_ROOT_MCP/scripts/manifest-helper.sh" ]; then
         [ "$server" = "mcp-shared" ] && continue
         if [ -f "${server}/package.json" ]; then
             ver=$(extract_json_version "$(pwd)/${server}/package.json")
-            register_component "mcp-servers/${server}" "$ver" ""
+            register_component "mcp-servers/${server}" "$ver" "mcp-servers/${server}/"
             echo "  ✓ ${server} (v${ver})"
         fi
     done

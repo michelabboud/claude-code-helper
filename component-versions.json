@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "repoVersion": "2.8.0",
-  "generatedAt": "2026-02-21T15:02:06.803Z",
+  "repoVersion": "2.9.0",
+  "generatedAt": "2026-02-21T19:49:04.167Z",
   "components": {
     "agents/domain-experts/android-dev": {
       "type": "agent",
@@ -1198,7 +1198,7 @@
       "type": "mcp-server",
       "version": "1.0.0",
       "file": "mcp-servers/api-specialist-mcp/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/api-specialist-mcp/",
       "changelog": "mcp-servers/api-specialist-mcp/CHANGELOG.md",
       "buildRequired": true
     },
@@ -1206,7 +1206,7 @@
       "type": "mcp-server",
       "version": "1.0.0",
       "file": "mcp-servers/cicd-pipeline/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/cicd-pipeline/",
       "changelog": "mcp-servers/cicd-pipeline/CHANGELOG.md",
       "buildRequired": true
     },
@@ -1214,7 +1214,7 @@
       "type": "mcp-server",
       "version": "1.0.0",
       "file": "mcp-servers/code-review-mcp/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/code-review-mcp/",
       "changelog": "mcp-servers/code-review-mcp/CHANGELOG.md",
       "buildRequired": true
     },
@@ -1222,7 +1222,7 @@
       "type": "mcp-server",
       "version": "1.0.0",
       "file": "mcp-servers/database-operations/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/database-operations/",
       "changelog": "mcp-servers/database-operations/CHANGELOG.md",
       "buildRequired": true
     },
@@ -1230,7 +1230,7 @@
       "type": "mcp-server",
       "version": "1.0.0",
       "file": "mcp-servers/dependency-management/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/dependency-management/",
       "changelog": "mcp-servers/dependency-management/CHANGELOG.md",
       "buildRequired": true
     },
@@ -1238,7 +1238,7 @@
       "type": "mcp-server",
       "version": "1.0.0",
       "file": "mcp-servers/design-system-mcp/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/design-system-mcp/",
       "changelog": "mcp-servers/design-system-mcp/CHANGELOG.md",
       "buildRequired": true
     },
@@ -1246,7 +1246,7 @@
       "type": "mcp-server",
       "version": "1.0.0",
       "file": "mcp-servers/n8n-automation/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/n8n-automation/",
       "changelog": "mcp-servers/n8n-automation/CHANGELOG.md",
       "buildRequired": true
     },
@@ -1254,7 +1254,7 @@
       "type": "mcp-server",
       "version": "1.2.0",
       "file": "mcp-servers/project-oversight-mcp/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/project-oversight-mcp/",
       "changelog": "mcp-servers/project-oversight-mcp/CHANGELOG.md",
       "buildRequired": true
     },
@@ -1262,7 +1262,7 @@
       "type": "mcp-server",
       "version": "1.0.0",
       "file": "mcp-servers/rag-mcp/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/rag-mcp/",
       "changelog": "mcp-servers/rag-mcp/CHANGELOG.md",
       "buildRequired": true
     },
@@ -1270,7 +1270,7 @@
       "type": "mcp-server",
       "version": "1.0.0",
       "file": "mcp-servers/testing-mcp/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/testing-mcp/",
       "changelog": "mcp-servers/testing-mcp/CHANGELOG.md",
       "buildRequired": true
     },
@@ -1278,7 +1278,7 @@
       "type": "mcp-server",
       "version": "1.0.0",
       "file": "mcp-servers/uiux-review-mcp/package.json",
-      "installPath": null,
+      "installPath": "mcp-servers/uiux-review-mcp/",
       "changelog": "mcp-servers/uiux-review-mcp/CHANGELOG.md",
       "buildRequired": true
     },

@@ -15,6 +15,18 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.9.0] - 2026-02-21
+
+### Changed
+
+- **MCP servers now install to `~/.claude/mcp-servers/`** — MCP servers were the only components that remained in the repo clone after installation; if the clone was deleted, all servers broke. Now `install-all.sh` and `update-component.sh` build servers in the workspace, then copy the built output to `~/.claude/mcp-servers/<name>/` with a standalone `npm install --production`. All generated paths (CLI commands, Claude Desktop config) use the stable `~/.claude/` location.
+- **`mcp-shared` bundled as local dependency** — Each installed server gets a copy of `mcp-shared/build/` alongside it, with `package.json` rewritten to use `file:./mcp-shared` instead of the workspace `"*"` reference.
+- **`component-versions.json`** — MCP server `installPath` changed from `null` to `"mcp-servers/<name>/"` so update scripts know where to install them.
+- **`scripts/download-component.sh`** — Improved MCP server instructions to reference both `update-component.sh` and `install-all.sh`.
+- **Updated all documentation** — README.md, QUICKGUIDE.md, INSTALL.md, CLAUDE.md, and mcp-servers/README.md updated to reflect `~/.claude/mcp-servers/` paths.
+
+---
+
 ## [2.8.0] - 2026-02-21
 
 ### Added

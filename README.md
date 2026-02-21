@@ -195,33 +195,24 @@ Ten specialized Model Context Protocol servers for automated code quality, testi
 
 ### Quick Install
 
-**Option 1: Claude Code CLI (Recommended - 2 minutes)**
 ```bash
 cd mcp-servers
 ./install-all.sh
 
-# Add servers with CLI (commands provided by install script)
-claude mcp add rag -- node "$(pwd)/rag-mcp/build/index.js"
-claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
-claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
-claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
-claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
-claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+# Servers are built and copied to ~/.claude/mcp-servers/
+# Add to Claude Code CLI (commands provided by install script):
+claude mcp add rag -- node "$HOME/.claude/mcp-servers/rag-mcp/build/index.js"
+claude mcp add api-specialist -- node "$HOME/.claude/mcp-servers/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$HOME/.claude/mcp-servers/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$HOME/.claude/mcp-servers/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$HOME/.claude/mcp-servers/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$HOME/.claude/mcp-servers/uiux-review-mcp/build/index.js"
 
 # Verify
 claude mcp list
 ```
 
-**Option 2: Claude Desktop (5 minutes)**
-```bash
-cd mcp-servers
-./install-all.sh
-
-# Configure Claude Desktop
-# macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
-# Linux: ~/.config/Claude/claude_desktop_config.json
-# (Paths provided by install script)
-```
+> After `install-all.sh`, servers live in `~/.claude/mcp-servers/` — you can safely delete the repo clone.
 
 ### Use Cases
 - **RAG-Enhanced Coding**: Eliminate hallucinations, ground code in reality, semantic search
@@ -594,15 +585,15 @@ cp agents/mcp-integrated/*.json ~/.claude/agents/
 # Install skills
 cp -r skills/* ~/.claude/skills/
 
-# Install MCP servers (builds all servers)
+# Install MCP servers (builds and copies to ~/.claude/mcp-servers/)
 cd mcp-servers && ./install-all.sh
 
-# Add MCP servers with CLI (recommended)
-claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
-claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
-claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
-claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
-claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+# Add MCP servers with CLI (paths printed by install script)
+claude mcp add api-specialist -- node "$HOME/.claude/mcp-servers/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$HOME/.claude/mcp-servers/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$HOME/.claude/mcp-servers/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$HOME/.claude/mcp-servers/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$HOME/.claude/mcp-servers/uiux-review-mcp/build/index.js"
 
 cd ..
 

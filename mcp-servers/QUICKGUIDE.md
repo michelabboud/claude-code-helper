@@ -9,16 +9,15 @@ Get up and running with the Multi-Agent MCP System in 15 minutes!
 ### Option 1: Claude Code CLI (Recommended - 2 minutes)
 
 ```bash
-# 1. Install all servers
+# 1. Build and install all servers to ~/.claude/mcp-servers/
 ./install-all.sh
 
-# 2. Add servers using Claude Code CLI
-cd /path/to/mcp-servers
-claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
-claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
-claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
-claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
-claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+# 2. Add servers using Claude Code CLI (paths printed by install script)
+claude mcp add api-specialist -- node "$HOME/.claude/mcp-servers/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$HOME/.claude/mcp-servers/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$HOME/.claude/mcp-servers/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$HOME/.claude/mcp-servers/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$HOME/.claude/mcp-servers/uiux-review-mcp/build/index.js"
 
 # 3. Verify installation
 claude mcp list
@@ -28,49 +27,49 @@ claude mcp list
 # Ask: "What MCP tools do you have?"
 ```
 
+> After `install-all.sh`, servers live in `~/.claude/mcp-servers/` — you can safely delete the repo clone.
+
 ### Option 2: Claude Desktop (5 minutes)
 
 ```bash
-# 1. Install all servers
+# 1. Build and install all servers
 ./install-all.sh
 
-# 2. Get absolute paths
-pwd
-# Example output: /Users/you/projects/mcp-system
-
-# 3. Configure Claude Desktop (use YOUR path from step 2)
+# 2. Configure Claude Desktop (paths use ~/.claude/mcp-servers/)
 # Edit: ~/Library/Application Support/Claude/claude_desktop_config.json (macOS)
 # Or: ~/.config/Claude/claude_desktop_config.json (Linux)
 {
   "mcpServers": {
     "api-specialist": {
       "command": "node",
-      "args": ["/Users/you/projects/mcp-system/api-specialist-mcp/build/index.js"]
+      "args": ["/home/YOU/.claude/mcp-servers/api-specialist-mcp/build/index.js"]
     },
     "code-review": {
       "command": "node",
-      "args": ["/Users/you/projects/mcp-system/code-review-mcp/build/index.js"]
+      "args": ["/home/YOU/.claude/mcp-servers/code-review-mcp/build/index.js"]
     },
     "design-system": {
       "command": "node",
-      "args": ["/Users/you/projects/mcp-system/design-system-mcp/build/index.js"]
+      "args": ["/home/YOU/.claude/mcp-servers/design-system-mcp/build/index.js"]
     },
     "testing": {
       "command": "node",
-      "args": ["/Users/you/projects/mcp-system/testing-mcp/build/index.js"]
+      "args": ["/home/YOU/.claude/mcp-servers/testing-mcp/build/index.js"]
     },
     "uiux-review": {
       "command": "node",
-      "args": ["/Users/you/projects/mcp-system/uiux-review-mcp/build/index.js"]
+      "args": ["/home/YOU/.claude/mcp-servers/uiux-review-mcp/build/index.js"]
     }
   }
 }
 
-# 4. Restart Claude Desktop
+# 3. Restart Claude Desktop
 
-# 5. Test it!
+# 4. Test it!
 # In Claude: "What MCP tools do you have?"
 ```
+
+> Replace `/home/YOU` with your actual home directory. The `install-all.sh` script prints the exact paths.
 
 ---
 

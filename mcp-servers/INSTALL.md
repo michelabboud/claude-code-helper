@@ -145,12 +145,14 @@ ls design-system-mcp/build/index.js
 
 ### Step 5: Quick Install Script (Alternative)
 
-Use the provided install script for all three servers:
+Use the provided install script for all servers. It builds each server in the repo workspace, then copies the built output to `~/.claude/mcp-servers/` for stable paths that survive repo deletion:
 
 ```bash
 chmod +x install-all.sh
 ./install-all.sh
 ```
+
+> After running `install-all.sh`, all servers are installed to `~/.claude/mcp-servers/<name>/`. You can safely delete the repo clone — the servers will keep working.
 
 ---
 
@@ -169,44 +171,33 @@ chmod +x install-all.sh
   "mcpServers": {
     "code-review": {
       "command": "node",
-      "args": ["/absolute/path/to/code-review-mcp/build/index.js"]
+      "args": ["/home/YOU/.claude/mcp-servers/code-review-mcp/build/index.js"]
     },
     "testing": {
       "command": "node",
-      "args": ["/absolute/path/to/testing-mcp/build/index.js"]
+      "args": ["/home/YOU/.claude/mcp-servers/testing-mcp/build/index.js"]
     },
     "design-system": {
       "command": "node",
-      "args": ["/absolute/path/to/design-system-mcp/build/index.js"]
+      "args": ["/home/YOU/.claude/mcp-servers/design-system-mcp/build/index.js"]
     }
   }
 }
 ```
 
-**⚠️ Important:** Use **absolute paths**, not relative ones!
-
-```bash
-# Get absolute paths
-pwd  # Shows current directory
-realpath code-review-mcp/build/index.js
-realpath testing-mcp/build/index.js
-realpath design-system-mcp/build/index.js
-```
+**⚠️ Important:** Replace `/home/YOU` with your actual home directory. After running `install-all.sh`, servers are installed to `~/.claude/mcp-servers/` — use those stable paths.
 
 ### For Claude Code CLI
 
-Claude Code (v2.1+) uses the `claude mcp add` command to configure MCP servers:
+Claude Code (v2.1+) uses the `claude mcp add` command to configure MCP servers. After running `install-all.sh`, servers are in `~/.claude/mcp-servers/`:
 
 ```bash
-# Navigate to the mcp-servers directory
-cd /path/to/mcp-servers
-
-# Add each server using the CLI
-claude mcp add api-specialist -- node "$(pwd)/api-specialist-mcp/build/index.js"
-claude mcp add code-review -- node "$(pwd)/code-review-mcp/build/index.js"
-claude mcp add design-system -- node "$(pwd)/design-system-mcp/build/index.js"
-claude mcp add testing -- node "$(pwd)/testing-mcp/build/index.js"
-claude mcp add uiux-review -- node "$(pwd)/uiux-review-mcp/build/index.js"
+# Add each server using the CLI (paths from install-all.sh output)
+claude mcp add api-specialist -- node "$HOME/.claude/mcp-servers/api-specialist-mcp/build/index.js"
+claude mcp add code-review -- node "$HOME/.claude/mcp-servers/code-review-mcp/build/index.js"
+claude mcp add design-system -- node "$HOME/.claude/mcp-servers/design-system-mcp/build/index.js"
+claude mcp add testing -- node "$HOME/.claude/mcp-servers/testing-mcp/build/index.js"
+claude mcp add uiux-review -- node "$HOME/.claude/mcp-servers/uiux-review-mcp/build/index.js"
 
 # Verify servers are registered
 claude mcp list

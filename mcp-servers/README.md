@@ -44,17 +44,21 @@ Each configuration includes installation instructions, usage examples, workflow 
 ## ⚡ Quick Start
 
 ```bash
-# 1. Install all servers
+# 1. Build and install all servers to ~/.claude/mcp-servers/
 ./install-all.sh
 
-# 2. Configure Claude (paths from install output)
-# Edit: ~/Library/Application Support/Claude/claude_desktop_config.json
+# 2. Add to Claude Code CLI (commands printed by install script)
+claude mcp add api-specialist -- node "$HOME/.claude/mcp-servers/api-specialist-mcp/build/index.js"
+# ... (full list printed by install script)
 
-# 3. Restart Claude Desktop
+# 3. Verify
+claude mcp list
 
 # 4. Test it!
 # Ask Claude: "What MCP tools do you have?"
 ```
+
+> Servers are copied to `~/.claude/mcp-servers/` — you can safely delete the repo clone after installation.
 
 **👉 Full guide:** [INSTALL.md](INSTALL.md) | **👉 Quick examples:** [QUICKGUIDE.md](QUICKGUIDE.md)
 

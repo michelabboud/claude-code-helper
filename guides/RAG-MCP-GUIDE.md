@@ -148,10 +148,11 @@ The fastest path from zero to working RAG search.
 ### Three Steps
 
 ```bash
-# Step 1: Build the MCP server
-cd mcp-servers/rag-mcp
-npm install
-npm run build
+# Step 1: Build and install all MCP servers (including rag-mcp)
+cd mcp-servers
+./install-all.sh
+# Or install just rag-mcp:
+#   ./scripts/update-component.sh mcp-servers/rag-mcp
 
 # Step 2: Install the /rag skill
 cp -r skills/rag ~/.claude/skills/
@@ -161,7 +162,7 @@ cp -r skills/rag ~/.claude/skills/
 /rag init
 ```
 
-The `/rag init` wizard handles everything else: backend selection, Docker setup, MCP registration, and initial indexing.
+The `/rag init` wizard handles everything else: backend selection, Docker setup, MCP registration, and initial indexing. After `install-all.sh`, the RAG server is at `~/.claude/mcp-servers/rag-mcp/build/index.js`.
 
 ### Verify It Works
 

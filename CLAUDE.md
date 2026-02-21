@@ -145,18 +145,15 @@ cd guides/subagents-guide && ./install-all-agents.sh
 
 ### Working with MCP Servers
 ```bash
-# Build individual server
-cd mcp-servers/[server-name]
-npm install
-npm run build
-
-# Build all servers
+# Build and install all servers to ~/.claude/mcp-servers/
 cd mcp-servers
 ./install-all.sh
 
-# Test server standalone
-cd mcp-servers/[server-name]
-node build/index.js
+# Update a single server (builds in repo, copies to ~/.claude/)
+./scripts/update-component.sh mcp-servers/[server-name]
+
+# Test server standalone (from installed location)
+node ~/.claude/mcp-servers/[server-name]/build/index.js
 ```
 
 ### Documentation Navigation

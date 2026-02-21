@@ -106,11 +106,13 @@ OLD_VERSION=$(json_get "$HOME/.claude/claude-code-helper.json" "data.installed &
 # ── Perform the update ──
 
 if [ "$BUILD_REQUIRED" = "true" ]; then
-    # ── MCP server: install deps and build ──
+    # ── MCP server: build in repo, then copy to ~/.claude/mcp-servers/ ──
 
     # Extract server directory name from the component key (e.g. "mcp-servers/rag-mcp" -> "rag-mcp")
     SERVER_NAME=$(basename "$COMPONENT_KEY")
     SERVER_DIR="$REPO_ROOT/mcp-servers/$SERVER_NAME"
+    CLAUDE_HOME="${CLAUDE_HOME:-$HOME/.claude}"
+    MCP_DEST="$CLAUDE_HOME/mcp-servers/$SERVER_NAME"
 
     if [ ! -d "$SERVER_DIR" ]; then
         echo -e "${RED}Error: MCP server directory not found: ${SERVER_DIR}${NC}"
@@ -118,6 +120,15 @@ if [ "$BUILD_REQUIRED" = "true" ]; then
     fi
 
     echo -e "${YELLOW}Building MCP server: ${SERVER_NAME}${NC}"
+
+    # Build mcp-shared first (dependency for all servers)
+    SHARED_DIR="$REPO_ROOT/mcp-servers/mcp-shared"
+    if [ -d "$SHARED_DIR" ] && [ ! -d "$SHARED_DIR/build" ]; then
+        echo "  Building mcp-shared..."
+        cd "$SHARED_DIR"
+        npm run build --silent 2>&1 || true
+        cd "$REPO_ROOT"
+    fi
 
     cd "$SERVER_DIR"
 
@@ -141,7 +152,46 @@ if [ "$BUILD_REQUIRED" = "true" ]; then
     fi
     echo -e "  ${GREEN}Build successful${NC}"
 
+    # Copy to ~/.claude/mcp-servers/<name>/
+    echo -e "  ${YELLOW}Installing to ${MCP_DEST}${NC}"
+    mkdir -p "$MCP_DEST"
+
+    # Copy build output and package.json
+    cp -r build "$MCP_DEST/"
+    cp package.json "$MCP_DEST/"
+
+    # Copy mcp-shared as a local package
+    if [ -d "$SHARED_DIR/build" ]; then
+        mkdir -p "$MCP_DEST/mcp-shared"
+        cp -r "$SHARED_DIR/build" "$MCP_DEST/mcp-shared/"
+        cp "$SHARED_DIR/package.json" "$MCP_DEST/mcp-shared/"
+    fi
+
+    # Rewrite package.json: mcp-shared → local path, strip devDependencies
+    node -e "
+const fs = require('fs');
+const path = '${MCP_DEST}/package.json';
+const pkg = JSON.parse(fs.readFileSync(path, 'utf8'));
+if (pkg.dependencies && pkg.dependencies['mcp-shared']) {
+    pkg.dependencies['mcp-shared'] = 'file:./mcp-shared';
+}
+delete pkg.devDependencies;
+delete pkg.scripts;
+fs.writeFileSync(path, JSON.stringify(pkg, null, 2) + '\n');
+"
+
+    # Standalone npm install at destination
+    cd "$MCP_DEST"
+    echo "  Installing production dependencies..."
+    if npm install --production --silent 2>/dev/null; then
+        echo -e "  ${GREEN}Production dependencies installed${NC}"
+    else
+        npm install --production 2>&1 || true
+    fi
+
     cd "$REPO_ROOT"
+
+    echo -e "  ${GREEN}Installed to ${MCP_DEST}${NC}"
 
 else
     # ── File-based component: copy to ~/.claude/ ──
