@@ -918,7 +918,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             idempotentHint: true,
           },
         },
-    ],
+    ].map(t => ({ ...t, description: `${SERVER_COLOR_EMOJI} ${t.description}` })),
   };
 });
 

@@ -733,7 +733,7 @@ runServer({ name: "design-system-mcp", version: "1.0.0" }, (instance) => {
             idempotentHint: true,
           },
         },
-      ],
+      ].map(t => ({ ...t, description: `${SERVER_COLOR_EMOJI} ${t.description}` })),
     };
   });
 
