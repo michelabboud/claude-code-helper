@@ -41,6 +41,7 @@ references:
   - url: "https://developer.android.com/jetpack/androidx/releases"
     label: "AndroidX Releases"
     type: release-notes
+webSearchEnabled: true
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

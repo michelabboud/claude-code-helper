@@ -52,6 +52,7 @@ references:
   - url: "https://docs.cypress.io/"
     label: "Cypress Documentation"
     type: docs
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

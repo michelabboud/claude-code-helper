@@ -57,6 +57,7 @@ references:
   - url: "https://nvd.nist.gov/"
     label: "National Vulnerability Database"
     type: docs
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

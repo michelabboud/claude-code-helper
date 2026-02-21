@@ -60,6 +60,15 @@ function extractReferences(frontmatter) {
 }
 
 /**
+ * Extract the `webSearchEnabled` boolean from YAML frontmatter.
+ * Returns true/false or null if not present.
+ */
+function extractWebSearchEnabled(frontmatter) {
+  const match = frontmatter.match(/^webSearchEnabled:\s*(true|false)\s*$/m);
+  return match ? match[1] === 'true' : null;
+}
+
+/**
  * List files in a directory matching an extension, excluding README.md.
  * Returns absolute paths.
  */
@@ -118,6 +127,7 @@ async function scanDomainExperts() {
     const fm = extractFrontmatter(content);
     const version = fm ? extractYamlValue(fm, 'version') : null;
     const references = fm ? extractReferences(fm) : null;
+    const webSearchEnabled = fm ? extractWebSearchEnabled(fm) : null;
     const rel = relative(REPO_ROOT, filePath);
     const key = componentKey(rel);
 
@@ -129,6 +139,7 @@ async function scanDomainExperts() {
       changelog: `${rel}#changelog`,
     };
     if (references) entry.references = references;
+    if (webSearchEnabled) entry.webSearchEnabled = true;
     components[key] = entry;
   }
   return components;

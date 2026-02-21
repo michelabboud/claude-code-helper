@@ -45,6 +45,7 @@ references:
   - url: "https://docs.getdbt.com/"
     label: "dbt Documentation"
     type: docs
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

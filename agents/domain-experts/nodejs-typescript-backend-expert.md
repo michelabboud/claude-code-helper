@@ -50,6 +50,7 @@ references:
   - url: "https://docs.nestjs.com/"
     label: "NestJS Documentation"
     type: docs
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

@@ -46,6 +46,7 @@ references:
   - url: "https://learn.microsoft.com/en-us/azure/architecture/"
     label: "Azure Architecture Center"
     type: docs
+webSearchEnabled: true
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

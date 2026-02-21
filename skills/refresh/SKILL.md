@@ -1,7 +1,7 @@
 ---
 skill_name: refresh
 description: Refresh agent knowledge from official reference URLs. Fetches latest documentation, release notes, and changelogs to keep agents current. Supports refreshing a single agent, all agents, or checking refresh status.
-version: 1.0.0
+version: 1.1.0
 argument-hint: 'status | <agent-name> | all | hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
@@ -79,6 +79,39 @@ For each reference URL, use WebFetch to retrieve the content. Extract key inform
 - **release-notes**: Extract latest version, release date, major changes, migration notes
 - **changelog**: Extract recent entries, breaking changes, new features
 - **api-ref**: Look for new endpoints/methods, deprecated APIs, changed signatures
+
+#### Step 3b: Web Search Augmentation (if `webSearchEnabled: true`)
+
+If the agent's frontmatter includes `webSearchEnabled: true`, supplement reference URL findings with open web search. This is critical for agents covering rapidly evolving ecosystems where reference URLs alone may be insufficient.
+
+**Web search process:**
+
+1. Based on the agent's domain, construct 2-3 targeted search queries:
+   - `"<technology> latest release <current year>"` (e.g., "Unity latest release 2026")
+   - `"<technology> breaking changes <version>"` (e.g., "Unreal Engine 5.6 breaking changes")
+   - `"<technology> new features deprecations"` (e.g., "Kubernetes 1.32 new features deprecations")
+
+2. Use WebSearch for each query to find recent information.
+
+3. **Multi-source validation (MANDATORY)**: Every finding from web search MUST be corroborated by at least **2 independent reputable sources** before being included. Reputable sources include:
+   - Official documentation sites (e.g., kubernetes.io, reactjs.org)
+   - Official blogs and release announcements
+   - Official GitHub repositories and release pages
+   - Established tech publications (e.g., InfoQ, The New Stack, Dev.to official accounts)
+   - Conference talks and keynotes from the technology's maintainers
+
+   **Do NOT trust** a finding based on a single blog post, forum comment, or unverified source. If a claim cannot be verified by a second source, mark it as **"Unverified"** in the findings and do not include it in proposed changes.
+
+4. Present web search findings separately from reference URL findings, clearly labeled:
+
+```
+### Web Search Findings (validated)
+- Unity 6.2 released (2026-02-10) — confirmed by Unity blog + GitHub releases
+- New ECS workflow for physics — confirmed by Unity docs + Unite 2026 keynote
+
+### Web Search Findings (unverified — excluded from proposed changes)
+- Rumored deprecation of legacy input system — single source only
+```
 
 Present findings as a structured summary:
 
@@ -193,18 +226,20 @@ If Option B, walk through each agent's changes one by one with individual confir
 5. **Only update relevant sections**: Don't rewrite the entire agent. Only add/modify content related to the findings.
 6. **Include timestamps**: All updates should include the date they were fetched.
 7. **Conservative by default**: When in doubt about whether a finding is relevant, include it in the summary but don't auto-include it in proposed changes.
+8. **Multi-source validation for web search**: When `webSearchEnabled: true`, ALL web search findings MUST be confirmed by at least 2 independent reputable sources before being proposed as changes. Single-source findings are reported as "Unverified" and excluded from proposed changes.
+9. **Separate web search from reference findings**: Always clearly distinguish between findings from reference URLs (trusted) and findings from web search (require validation).
 
 ---
 
 ### `hello`
 
 Respond with:
-> 👋 Hello! I'm **refresh** v1.0.0. Refresh agent knowledge from official reference URLs. Use `/refresh hello ID` for the full guide.
+> 👋 Hello! I'm **refresh** v1.1.0. Refresh agent knowledge from official reference URLs. Use `/refresh hello ID` for the full guide.
 
 ### `hello ID`
 
 Respond with complete skill information:
-- **Name**: refresh v1.0.0
+- **Name**: refresh v1.1.0
 - **Description**: Refresh agent knowledge from official reference URLs. Fetches latest documentation, release notes, and changelogs to keep agents current. Supports refreshing a single agent, all agents, or checking refresh status.
 - **How to invoke**: `/refresh [status | <agent-name> | all]`
 - **Available arguments**: `status | <agent-name> | all | hello | hello ID`
@@ -216,6 +251,12 @@ Respond with complete skill information:
 - **License**: Apache-2.0
 
 ## Changelog
+
+### 1.1.0 (2026-02-21)
+- Add `webSearchEnabled` support: agents with this flag get supplementary web search
+- Mandatory multi-source validation: web search findings require 2+ reputable sources
+- Separate display of reference URL vs web search findings
+- Unverified findings clearly labeled and excluded from proposed changes
 
 ### 1.0.0 (2026-02-21)
 - Initial release

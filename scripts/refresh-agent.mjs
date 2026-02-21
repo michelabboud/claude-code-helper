@@ -226,13 +226,14 @@ async function main() {
 
   // Extract agent metadata and references
   const ext = extname(filePath);
-  let agentName, version, references;
+  let agentName, version, references, webSearchEnabled;
 
   if (ext === '.json') {
     const json = JSON.parse(content);
     agentName = json.name || basename(filePath, '.json');
     version = json.version || null;
     references = json.references || [];
+    webSearchEnabled = json.webSearchEnabled === true;
   } else {
     const fm = extractFrontmatter(content);
     if (!fm) {
@@ -242,6 +243,7 @@ async function main() {
     agentName = extractYamlValue(fm, 'name') || basename(filePath, '.md');
     version = extractYamlValue(fm, 'version') || null;
     references = parseReferences(fm);
+    webSearchEnabled = /^webSearchEnabled:\s*true\s*$/m.test(fm);
   }
 
   if (references.length === 0) {
@@ -309,6 +311,7 @@ async function main() {
     agent: agentName,
     file: relPath,
     version,
+    webSearchEnabled,
     references,
     findings,
     fetchedAt: new Date().toISOString(),
@@ -319,6 +322,9 @@ async function main() {
   } else {
     console.log(`\n${'='.repeat(60)}`);
     console.log(`Refresh findings for ${agentName} (v${version || 'unknown'})`);
+    if (webSearchEnabled) {
+      console.log(`Web search: ENABLED — use /refresh skill for multi-source validated web search`);
+    }
     console.log(`${'='.repeat(60)}\n`);
 
     for (const f of findings) {

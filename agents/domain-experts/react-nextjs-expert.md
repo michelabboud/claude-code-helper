@@ -57,6 +57,7 @@ references:
   - url: "https://github.com/vercel/next.js/releases"
     label: "Next.js Releases"
     type: release-notes
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

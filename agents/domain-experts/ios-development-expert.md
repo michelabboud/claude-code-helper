@@ -47,6 +47,7 @@ references:
   - url: "https://developer.apple.com/news/releases/"
     label: "Apple Developer Releases"
     type: release-notes
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

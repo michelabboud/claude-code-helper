@@ -45,6 +45,7 @@ references:
   - url: "https://github.com/vuejs/core/releases"
     label: "Vue.js Releases"
     type: release-notes
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

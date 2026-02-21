@@ -46,6 +46,7 @@ references:
   - url: "https://developer.android.com/reference"
     label: "Android API Reference"
     type: api-ref
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

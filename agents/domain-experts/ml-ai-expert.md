@@ -48,9 +48,10 @@ references:
   - url: "https://scikit-learn.org/stable/documentation.html"
     label: "scikit-learn Documentation"
     type: docs
-  - url: "https://platform.openai.com/docs"
+  - url: "https://developers.openai.com/api/docs"
     label: "OpenAI API Documentation"
     type: api-ref
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

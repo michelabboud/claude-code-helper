@@ -201,6 +201,11 @@ function validateAgent(filePath, fm) {
 
   // References validation
   validateReferences(filePath, fm);
+
+  // webSearchEnabled validation
+  if (fm.webSearchEnabled !== undefined && typeof fm.webSearchEnabled !== 'boolean') {
+    ERRORS.push(`${rel}: 'webSearchEnabled' must be a boolean (true/false)`);
+  }
 }
 
 function validateReferences(filePath, fm) {

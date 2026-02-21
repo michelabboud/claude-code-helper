@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "repoVersion": "2.8.0",
-  "generatedAt": "2026-02-21T14:05:55.840Z",
+  "generatedAt": "2026-02-21T15:02:06.803Z",
   "components": {
     "agents/domain-experts/android-dev": {
       "type": "agent",
@@ -25,7 +25,8 @@
           "label": "Android API Reference",
           "type": "api-ref"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/android-expert": {
       "type": "agent",
@@ -49,7 +50,8 @@
           "label": "AndroidX Releases",
           "type": "release-notes"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/angular-expert": {
       "type": "agent",
@@ -73,7 +75,8 @@
           "label": "Angular API Reference",
           "type": "api-ref"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/api-expert": {
       "type": "agent",
@@ -121,7 +124,8 @@
           "label": "AWS CDK Documentation",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/azure-architect-expert": {
       "type": "agent",
@@ -145,7 +149,8 @@
           "label": "Azure Architecture Center",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/css-tailwind-expert": {
       "type": "agent",
@@ -169,7 +174,8 @@
           "label": "MDN CSS Reference",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/data-engineering-expert": {
       "type": "agent",
@@ -193,7 +199,8 @@
           "label": "dbt Documentation",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/database-expert": {
       "type": "agent",
@@ -241,7 +248,8 @@
           "label": "Terraform Documentation",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/documentation-expert": {
       "type": "agent",
@@ -275,16 +283,17 @@
           "type": "docs"
         },
         {
-          "url": "https://docs.unrealengine.com/",
+          "url": "https://dev.epicgames.com/documentation/en-us/unreal-engine/",
           "label": "Unreal Engine Documentation",
           "type": "docs"
         },
         {
-          "url": "https://godotengine.org/docs/",
+          "url": "https://docs.godotengine.org/en/stable/",
           "label": "Godot Engine Documentation",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/gcp-architect-expert": {
       "type": "agent",
@@ -308,7 +317,8 @@
           "label": "Google Cloud Architecture Center",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/git-expert": {
       "type": "agent",
@@ -356,7 +366,8 @@
           "label": "Go Standard Library Reference",
           "type": "api-ref"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/huggingface-expert": {
       "type": "agent",
@@ -380,7 +391,8 @@
           "label": "Transformers Releases",
           "type": "release-notes"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/ios-development-expert": {
       "type": "agent",
@@ -404,7 +416,8 @@
           "label": "Apple Developer Releases",
           "type": "release-notes"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/iot-embedded-expert": {
       "type": "agent",
@@ -428,7 +441,8 @@
           "label": "MQTT Specification",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/laravel-expert": {
       "type": "agent",
@@ -477,11 +491,12 @@
           "type": "docs"
         },
         {
-          "url": "https://platform.openai.com/docs",
+          "url": "https://developers.openai.com/api/docs",
           "label": "OpenAI API Documentation",
           "type": "api-ref"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/mongodb-expert": {
       "type": "agent",
@@ -539,7 +554,8 @@
           "label": "NestJS Documentation",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/observability-expert": {
       "type": "agent",
@@ -563,7 +579,8 @@
           "label": "Grafana Documentation",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/performance-optimizer": {
       "type": "agent",
@@ -578,7 +595,7 @@
           "type": "docs"
         },
         {
-          "url": "https://developer.chrome.com/docs/lighthouse/",
+          "url": "https://developer.chrome.com/docs/lighthouse/overview",
           "label": "Lighthouse Documentation",
           "type": "docs"
         },
@@ -587,7 +604,8 @@
           "label": "Chrome DevTools Documentation",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/php-expert": {
       "type": "agent",
@@ -683,7 +701,8 @@
           "label": "Python Release Notes",
           "type": "release-notes"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/qa-testing-expert": {
       "type": "agent",
@@ -707,7 +726,8 @@
           "label": "Cypress Documentation",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/react-nextjs-expert": {
       "type": "agent",
@@ -731,7 +751,8 @@
           "label": "Next.js Releases",
           "type": "release-notes"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/redis-expert": {
       "type": "agent",
@@ -803,7 +824,8 @@
           "label": "Rust Blog (Releases)",
           "type": "release-notes"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/security-expert": {
       "type": "agent",
@@ -827,7 +849,8 @@
           "label": "National Vulnerability Database",
           "type": "docs"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/supabase-expert": {
       "type": "agent",
@@ -851,7 +874,8 @@
           "label": "Supabase JS SDK Reference",
           "type": "api-ref"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/vue-nuxt-expert": {
       "type": "agent",
@@ -875,7 +899,8 @@
           "label": "Vue.js Releases",
           "type": "release-notes"
         }
-      ]
+      ],
+      "webSearchEnabled": true
     },
     "agents/domain-experts/wordpress-expert": {
       "type": "agent",
@@ -1420,7 +1445,7 @@
     },
     "skills/refresh": {
       "type": "skill",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "file": "skills/refresh/SKILL.md",
       "installPath": "skills/refresh/",
       "changelog": "skills/refresh/SKILL.md#changelog"

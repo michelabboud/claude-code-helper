@@ -48,6 +48,7 @@ references:
   - url: "https://supabase.com/docs/reference/javascript/introduction"
     label: "Supabase JS SDK Reference"
     type: api-ref
+webSearchEnabled: true
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

@@ -52,6 +52,7 @@ references:
   - url: "https://developer.hashicorp.com/terraform/docs"
     label: "Terraform Documentation"
     type: docs
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

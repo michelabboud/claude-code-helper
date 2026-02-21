@@ -44,6 +44,7 @@ references:
   - url: "https://cloud.google.com/architecture"
     label: "Google Cloud Architecture Center"
     type: docs
+webSearchEnabled: true
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

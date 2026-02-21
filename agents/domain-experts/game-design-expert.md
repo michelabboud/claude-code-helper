@@ -39,12 +39,13 @@ references:
   - url: "https://docs.unity3d.com/Manual/"
     label: "Unity Manual"
     type: docs
-  - url: "https://docs.unrealengine.com/"
+  - url: "https://dev.epicgames.com/documentation/en-us/unreal-engine/"
     label: "Unreal Engine Documentation"
     type: docs
-  - url: "https://godotengine.org/docs/"
+  - url: "https://docs.godotengine.org/en/stable/"
     label: "Godot Engine Documentation"
     type: docs
+webSearchEnabled: true
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

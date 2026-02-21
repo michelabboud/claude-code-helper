@@ -51,6 +51,7 @@ references:
   - url: "https://docs.python.org/3/whatsnew/"
     label: "Python Release Notes"
     type: release-notes
+webSearchEnabled: true
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0
