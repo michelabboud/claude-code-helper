@@ -30,7 +30,7 @@
     "test:scripts": "node --test scripts/__tests__/generate-version-index.test.mjs && bash scripts/__tests__/manifest-helper.test.sh && bash scripts/__tests__/update-component.test.sh",
     "dashboard": "npm run build -w project-oversight-mcp && npm run dashboard -w project-oversight-mcp",
     "benchmark": "node scripts/benchmark-startup.mjs",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

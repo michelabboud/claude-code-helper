@@ -38,6 +38,21 @@ fi
 echo -e "${GREEN}✓ Node.js $(node -v) detected${NC}"
 echo ""
 
+# Install root dependencies first (needed for workspaces and shared packages)
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
+if [ -f "$REPO_ROOT/package.json" ]; then
+    echo "📦 Installing root dependencies..."
+    cd "$REPO_ROOT"
+    if npm install --silent 2>/dev/null; then
+        echo -e "   ${GREEN}✓ Root dependencies installed${NC}"
+    else
+        echo -e "   ${YELLOW}⚠️  Root dependency install had warnings (continuing anyway)${NC}"
+    fi
+    cd "$SCRIPT_DIR"
+    echo ""
+fi
+
 # Function to install and build a server
 install_server() {
     local server_name=$1
