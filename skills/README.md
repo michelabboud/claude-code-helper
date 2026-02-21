@@ -15,7 +15,7 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 - Auto-discovered from nested `.claude/skills` directories (v2.1.6+)
 - Visible in slash command menu by default (opt-out with `user-invocable: false`)
 
-## Available Skills (20)
+## Available Skills (22)
 
 | Skill | Description | Category |
 |-------|-------------|----------|
@@ -39,6 +39,8 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 | **pm-dashboard** | Project Manager health dashboard management | Project Management |
 | **model-mode** | Switch model mode (default/opus-only/sonnet-only/haiku-only/custom) | Configuration |
 | **update-check** | Check for new releases (never auto-updates) | Maintenance |
+| **greeting** | Survey all installed tools and generate health report | Tooling |
+| **rag** | Index codebases, semantic search, configure backends (ChromaDB/Redis/Qdrant) | RAG / Search |
 
 ## Installation
 
@@ -54,6 +56,8 @@ cp -r project-scaffolding ~/.claude/skills/
 cp -r pm-dashboard ~/.claude/skills/
 cp -r model-mode ~/.claude/skills/
 cp -r update-check ~/.claude/skills/
+cp -r greeting ~/.claude/skills/
+cp -r rag ~/.claude/skills/
 ```
 
 ### Install All Skills (Project-Specific)
@@ -267,6 +271,39 @@ Switch the `MODEL_MODE` setting in `~/.claude/CLAUDE.md` without manual file edi
 /model-mode opus-only     # Always use Opus (MAX plan)
 /model-mode default       # Restore auto-switching
 /model-mode custom        # Use per-task model settings
+```
+
+---
+
+### Tooling Skills
+
+#### greeting
+Survey all installed MCP servers, agents, and skills — generate a health report.
+
+**Covers**: MCP server hello protocol, agent inventory, skill inventory, online/offline status
+
+**Usage:**
+```bash
+/greeting          # Quick hello to all servers + list agents & skills
+/greeting ID       # Verbose: full profiles from all servers + complete report
+```
+
+---
+
+### RAG / Search Skills
+
+#### rag
+Unified interface for the RAG MCP server — index, search, and configure vector database backends.
+
+**Covers**: Codebase indexing, semantic search, similar code search, context retrieval, collection management, backend configuration (ChromaDB/Redis/Qdrant), persistent storage
+
+**Usage:**
+```bash
+/rag                      # Interactive menu
+/rag index                # Index current project
+/rag search "auth flow"   # Semantic search
+/rag config redis         # Switch to Redis backend
+/rag collections          # List indexed collections
 ```
 
 ## Creating Custom Skills

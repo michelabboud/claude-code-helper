@@ -15,6 +15,29 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.7.0] - 2026-02-21
+
+### Added
+
+- **`/rag` skill** — Unified interface for the RAG MCP server with persistent configuration:
+  - `/rag index [path]` → Index the current project or a specific directory for semantic search
+  - `/rag search <query>` → Semantic natural language search across indexed code
+  - `/rag similar <snippet>` → Find code similar to a given snippet
+  - `/rag context <task>` → Get relevant code context within a token budget
+  - `/rag collections` → List all indexed collections with stats
+  - `/rag stats <name>` → Show detailed collection statistics
+  - `/rag delete <name>` → Delete an indexed collection
+  - `/rag config` → Show current RAG configuration
+  - `/rag config <backend>` → Switch between ChromaDB, Redis (with RediSearch), or Qdrant backends
+  - Interactive menu when invoked with no arguments
+  - **Persistent configuration** in `~/.claude/rag-config.json` — survives across sessions
+  - **Persistent vector data** in `~/.claude/rag-data/` with Docker volume mount instructions
+  - Backend-specific persistence: Redis AOF/RDB, Qdrant disk, ChromaDB disk
+  - Implements Hello Protocol (`hello` / `hello ID` arguments)
+  - Installed to `~/.claude/skills/rag/`
+
+---
+
 ## [2.6.1] - 2026-02-21
 
 ### Added

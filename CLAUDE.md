@@ -46,8 +46,8 @@ claude-code-helper/
 │   ├── mcp-integrated/       # 13 .json agents using MCP tools
 │   └── README.md
 │
-├── skills/                   # PRIMARY: Skills distribution (18 skills)
-│   └── [18 skill files/dirs]
+├── skills/                   # PRIMARY: Skills distribution (19 skills)
+│   └── [19 skill files/dirs]
 │
 ├── hooks/                    # PRIMARY: Hooks distribution
 │   └── [5 hook files]

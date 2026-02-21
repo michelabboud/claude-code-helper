@@ -2,9 +2,9 @@
 
 **Quick reference for all claude-code-helper tools**
 
-Version: v1.3.0
-Last Updated: 2026-01-11
-Total: 60 MCP tools • 48 agents • 16 skills • 7 commands
+Version: v2.7.0
+Last Updated: 2026-02-21
+Total: 68 MCP tools • 52 agents • 22 skills • 7 commands
 
 ---
 
@@ -20,8 +20,9 @@ Total: 60 MCP tools • 48 agents • 16 skills • 7 commands
    - [Database Operations MCP (8)](#7-database-operations-mcp-8-tools)
    - [Dependency Management MCP (8)](#8-dependency-management-mcp-8-tools)
    - [n8n Automation MCP (6)](#9-n8n-automation-mcp-6-tools)
-2. [Agents (48)](#agents)
-3. [Skills (16)](#skills)
+   - [RAG MCP (8)](#10-rag-mcp-8-tools)
+2. [Agents (52)](#agents)
+3. [Skills (22)](#skills)
 4. [Commands (7)](#commands)
 5. [Quick Start Examples](#quick-start-examples)
 
@@ -365,6 +366,50 @@ Total: 60 MCP tools • 48 agents • 16 skills • 7 commands
 
 ---
 
+### 10. RAG MCP (8 tools)
+
+#### `index_codebase`
+**Purpose:** Index entire codebase for semantic search
+**Usage:** Recursive file processing, vector embeddings, collection management
+**Example:** "Index /path/to/project for semantic search"
+
+#### `index_file`
+**Purpose:** Index a single file
+**Usage:** Add individual files to a vector collection
+**Example:** "Index src/auth.ts into the codebase collection"
+
+#### `semantic_search`
+**Purpose:** Natural language code search
+**Usage:** Search indexed code with plain English queries
+**Example:** "Search for how authentication works"
+
+#### `find_similar_code`
+**Purpose:** Find similar code snippets
+**Usage:** Vector similarity matching against indexed codebase
+**Example:** "Find code similar to this login function"
+
+#### `get_relevant_context`
+**Purpose:** Get task-relevant code context
+**Usage:** Retrieve code context within a token budget for a task
+**Example:** "Get context for implementing user logout"
+
+#### `list_collections`
+**Purpose:** List all vector collections
+**Usage:** See all indexed codebases
+**Example:** "Show all RAG collections"
+
+#### `get_collection_stats`
+**Purpose:** Collection statistics
+**Usage:** Chunk counts, document counts
+**Example:** "Stats for the codebase collection"
+
+#### `delete_collection`
+**Purpose:** Delete a vector collection
+**Usage:** Remove indexed data
+**Example:** "Delete the old-project collection"
+
+---
+
 ## Agents
 
 ### MCP Agents (14 configs)
@@ -508,6 +553,26 @@ Total: 60 MCP tools • 48 agents • 16 skills • 7 commands
 | `database-design-patterns` | Schema design | "Design user schema" |
 | `release-management` | Release planning | "Plan v2.0 release" |
 
+### RAG / Search (1)
+
+| Skill | Purpose | Usage |
+|-------|---------|-------|
+| `rag` | RAG MCP interface | `/rag index`, `/rag search`, `/rag config redis` |
+
+### Tooling (3)
+
+| Skill | Purpose | Usage |
+|-------|---------|-------|
+| `greeting` | Health survey of all tools | `/greeting` or `/greeting ID` |
+| `update-check` | Check for updates | `/update-check` |
+| `model-mode` | Switch model mode | `/model-mode opus-only` |
+
+### Project Management (1)
+
+| Skill | Purpose | Usage |
+|-------|---------|-------|
+| `pm-dashboard` | Project health dashboard | `/pm-dashboard update` |
+
 ---
 
 ## Commands
@@ -647,11 +712,11 @@ Total: 60 MCP tools • 48 agents • 16 skills • 7 commands
 
 | Category | Count | Status |
 |----------|-------|--------|
-| **MCP Tools** | 60 | 30 production + 30 experimental |
-| **Agents** | 48 | 14 MCP + 34 sub-agents |
-| **Skills** | 16 | All production-ready |
+| **MCP Tools** | 68 | 38 production + 30 experimental |
+| **Agents** | 52 | 14 MCP + 38 domain experts |
+| **Skills** | 22 | All production-ready |
 | **Commands** | 7 | All production-ready |
-| **Total Components** | 131 | Ready to use |
+| **Total Components** | 149 | Ready to use |
 
 **Resource Impact:**
 - **Disk:** 759 MB (MCP servers + agents + skills)
@@ -671,8 +736,8 @@ Total: 60 MCP tools • 48 agents • 16 skills • 7 commands
 
 ---
 
-**Version:** claude-code-helper v1.3.0
+**Version:** claude-code-helper v2.7.0
 **Author:** [Michel Abboud](https://github.com/michelabboud)
-**AI Assistance:** Claude Sonnet 4.5
+**AI Assistance:** Claude Opus 4.6
 **License:** Apache-2.0
-**Last Updated:** 2026-01-11
+**Last Updated:** 2026-02-21
