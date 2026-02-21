@@ -22,6 +22,7 @@ import { runServer, registerTrackedToolHandler, generateRequestId, measureDurati
 
 const SERVER_NAME = "api-specialist-mcp";
 const SERVER_VERSION = "1.0.0";
+const SERVER_COLOR_EMOJI = "🟢";
 
 // Type definitions for OpenAPI spec parsing
 interface ValidationIssue {
@@ -1104,7 +1105,7 @@ function calculateAPIScore(issues: ValidationIssue[]): number {
 
 function buildHelloVerbose(): string {
   return [
-    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    `${SERVER_COLOR_EMOJI} # ${SERVER_NAME} v${SERVER_VERSION}`,
     ``,
     `**API specialist** — validation, endpoint testing, security auditing, load testing, and documentation generation for Claude Code.`,
     ``,
@@ -1569,7 +1570,7 @@ registerTrackedToolHandler(instance, async (request) => {
             response = {
               content: [{
                 type: "text",
-                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+                text: `${SERVER_COLOR_EMOJI} Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
               }],
             };
           } else {

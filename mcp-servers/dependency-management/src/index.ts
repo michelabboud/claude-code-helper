@@ -15,6 +15,7 @@ import { runServer, registerTrackedToolHandler, generateRequestId, measureDurati
 
 const SERVER_NAME = "dependency-management-mcp";
 const SERVER_VERSION = "1.0.0";
+const SERVER_COLOR_EMOJI = "🟠";
 
 // Tool input schemas
 const AnalyzeDependenciesSchema = z.object({
@@ -504,7 +505,7 @@ function generateSBOM(deps: Record<string, string>, devDeps: Record<string, stri
 
 function buildHelloVerbose(): string {
   return [
-    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    `${SERVER_COLOR_EMOJI} # ${SERVER_NAME} v${SERVER_VERSION}`,
     ``,
     `**Dependency management** — vulnerability scanning, license checking, duplicate detection, bundle size, SBOM generation for Claude Code.`,
     ``,
@@ -1177,7 +1178,7 @@ registerTrackedToolHandler(instance, async (request) => {
             response = {
               content: [{
                 type: "text",
-                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+                text: `${SERVER_COLOR_EMOJI} Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
               }],
             };
           } else {

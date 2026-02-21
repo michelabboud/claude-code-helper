@@ -15,6 +15,7 @@ import { runServer, registerTrackedToolHandler, generateRequestId, measureDurati
 
 const SERVER_NAME = "cicd-pipeline-mcp";
 const SERVER_VERSION = "1.0.0";
+const SERVER_COLOR_EMOJI = "🟠";
 
 // Type definitions for pipeline structures
 interface PipelineStep {
@@ -631,7 +632,7 @@ function diagnosePipelineFailure(logs: string): Diagnosis {
 // MCP Server
 function buildHelloVerbose(): string {
   return [
-    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    `${SERVER_COLOR_EMOJI} # ${SERVER_NAME} v${SERVER_VERSION}`,
     ``,
     `**CI/CD pipeline automation** — generate, optimize, validate, and deploy pipelines for GitHub Actions, GitLab CI, Jenkins, CircleCI.`,
     ``,
@@ -1299,7 +1300,7 @@ registerTrackedToolHandler(instance, async (request) => {
             response = {
               content: [{
                 type: "text",
-                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+                text: `${SERVER_COLOR_EMOJI} Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
               }],
             };
           } else {

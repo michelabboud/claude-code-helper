@@ -13,6 +13,7 @@ import { runServer, registerTrackedToolHandler, generateRequestId, measureDurati
 
 const SERVER_NAME = "n8n-automation-mcp";
 const SERVER_VERSION = "1.0.0";
+const SERVER_COLOR_EMOJI = "🟠";
 
 // Interfaces for n8n workflow types
 interface N8nNodeParameters {
@@ -783,7 +784,7 @@ function generateDataTransformation(inputFormat: Record<string, unknown>, output
 
 function buildHelloVerbose(): string {
   return [
-    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    `${SERVER_COLOR_EMOJI} # ${SERVER_NAME} v${SERVER_VERSION}`,
     ``,
     `**n8n workflow automation** — generate workflows, optimize them, troubleshoot failures, suggest integrations, transform data.`,
     ``,
@@ -1164,7 +1165,7 @@ registerTrackedToolHandler(instance, async (request) => {
             response = {
               content: [{
                 type: "text",
-                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+                text: `${SERVER_COLOR_EMOJI} Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
               }],
             };
           } else {

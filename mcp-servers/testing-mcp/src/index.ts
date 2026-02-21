@@ -68,6 +68,7 @@ const execFileAsync = promisify(execFile);
 
 const SERVER_NAME = "testing-mcp";
 const SERVER_VERSION = "1.0.0";
+const SERVER_COLOR_EMOJI = "🔴";
 
 // Tool input schemas
 const RunTestsSchema = z.object({
@@ -418,7 +419,7 @@ function generateHTMLReport(results: TestResults, _includeFlaky: boolean): strin
 
 function buildHelloVerbose(): string {
   return [
-    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    `${SERVER_COLOR_EMOJI} # ${SERVER_NAME} v${SERVER_VERSION}`,
     ``,
     `**Test automation** — execute tests, measure coverage, analyze test quality, and generate reports for Claude Code.`,
     ``,
@@ -627,7 +628,7 @@ runServer({
             response = {
               content: [{
                 type: "text",
-                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+                text: `${SERVER_COLOR_EMOJI} Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
               }],
             };
           } else {

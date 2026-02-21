@@ -25,6 +25,7 @@ const execFileAsync = promisify(execFile);
 
 const SERVER_NAME = "code-review-mcp";
 const SERVER_VERSION = "1.0.0";
+const SERVER_COLOR_EMOJI = "🔴";
 
 // Tool input schemas
 const LintFileSchema = z.object({
@@ -155,7 +156,7 @@ async function findDuplicates(directory: string, minLines: number = 5): Promise<
 
 function buildHelloVerbose(): string {
   return [
-    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    `${SERVER_COLOR_EMOJI} # ${SERVER_NAME} v${SERVER_VERSION}`,
     ``,
     `**Code quality analysis** — linting, security scanning, complexity analysis, and duplicate detection for Claude Code.`,
     ``,
@@ -388,7 +389,7 @@ runServer({
             response = {
               content: [{
                 type: "text",
-                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+                text: `${SERVER_COLOR_EMOJI} Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
               }],
             };
           } else {

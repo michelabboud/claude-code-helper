@@ -22,6 +22,7 @@ import { runServer, registerTrackedToolHandler, generateRequestId, measureDurati
 
 const SERVER_NAME = "uiux-review-mcp";
 const SERVER_VERSION = "1.0.0";
+const SERVER_COLOR_EMOJI = "🟣";
 
 // Shared interfaces for design analysis data structures
 interface DesignFinding {
@@ -1453,7 +1454,7 @@ function generateMermaidWireframe(_description: string, _designType: string): st
 
 function buildHelloVerbose(): string {
   return [
-    `# ${SERVER_NAME} v${SERVER_VERSION}`,
+    `${SERVER_COLOR_EMOJI} # ${SERVER_NAME} v${SERVER_VERSION}`,
     ``,
     `**UI/UX review** — design analysis, WCAG accessibility audits, typography, spacing, color, wireframes for Claude Code.`,
     ``,
@@ -1900,7 +1901,7 @@ registerTrackedToolHandler(instance, async (request) => {
             response = {
               content: [{
                 type: "text",
-                text: `👋 Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
+                text: `${SERVER_COLOR_EMOJI} Hello! I'm **${SERVER_NAME}** v${SERVER_VERSION}.\n\nI'm online and ready to help!\n\nCall \`hello\` with \`{"verbose": true}\` for my full tool catalog and usage guide.`,
               }],
             };
           } else {
