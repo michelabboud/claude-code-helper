@@ -303,7 +303,7 @@ export class RedisAdapter implements VectorDatabase {
   }
 
   private async ensureConnected(): Promise<void> {
-    if (!this.connected) {
+    if (!this.connected && !this.client.isOpen) {
       await this.client.connect();
       this.connected = true;
     }

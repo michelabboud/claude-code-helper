@@ -1,6 +1,6 @@
 ---
 name: RAG
-version: 1.0.0
+version: 1.1.0
 description: Manage the RAG MCP server — index codebases, search semantically, configure backends (ChromaDB/Redis/Qdrant)
 author: Michel Abboud
 repository: https://github.com/michelabboud/claude-code-helper
@@ -126,6 +126,32 @@ This directory stores persistent vector data. When using Docker, mount it as a v
 3. **After code changes**: Run `/rag index` again to re-index (overwrites existing collection)
 4. **If Docker restarts**: Data survives if you used the `-v` volume mount above
 
+## Auto-Discovery via CLAUDE.md
+
+After a successful `/rag index`, the skill **automatically injects a hint** into the project's `.claude/CLAUDE.md` so that future Claude Code sessions know RAG data exists and can use it without the user asking.
+
+### What gets written
+
+A `## RAG Index` section is appended to (or updated in) `<project-root>/.claude/CLAUDE.md`:
+
+```markdown
+## RAG Index
+This project is indexed in the RAG vector database (collection: "<name>").
+When exploring unfamiliar code, answering architecture questions, or making changes,
+use mcp__rag__semantic_search with collection "<name>" to find relevant code context first.
+Last indexed: <date>
+```
+
+### Rules
+- **Create `.claude/` directory** if it doesn't exist
+- **Create `.claude/CLAUDE.md`** if it doesn't exist (with just the RAG section)
+- **Update existing section** if `## RAG Index` already exists (replace the block)
+- **Append** if CLAUDE.md exists but has no RAG section
+- On `/rag delete <collection>`, **remove the `## RAG Index` section** from that project's CLAUDE.md if the deleted collection matches
+- Never touch `~/.claude/CLAUDE.md` (global) — only the project-local `.claude/CLAUDE.md`
+
+---
+
 ## Instructions
 
 ---
@@ -169,10 +195,25 @@ Index a codebase for semantic search.
    - `collectionName`: derived name
    - `excludePatterns`: `["node_modules/**", "build/**", "dist/**", ".git/**", "*.lock", "coverage/**", ".next/**", "__pycache__/**", "venv/**", ".venv/**"]`
 4. After indexing, call `mcp__rag__get_collection_stats` to show the collection size
-5. Output:
+5. **Inject RAG hint into the project's CLAUDE.md** (see "Auto-Discovery via CLAUDE.md" above):
+   - Determine the project root (same as `rootPath`, or its parent if `rootPath` is a subdirectory)
+   - Read `<project-root>/.claude/CLAUDE.md` (create `.claude/` dir and file if needed)
+   - If a `## RAG Index` section exists, replace it; otherwise append it
+   - Write the updated file
+   - The section content:
+     ```
+     ## RAG Index
+     This project is indexed in the RAG vector database (collection: "<name>").
+     When exploring unfamiliar code, answering architecture questions, or making changes,
+     use mcp__rag__semantic_search with collection "<name>" to find relevant code context first.
+     Last indexed: <YYYY-MM-DD>
+     ```
+6. Update `~/.claude/rag-config.json` — set `defaultCollection` to the new collection name, add to `collections` array
+7. Output:
    ```
    Indexed [X] files into collection "[name]"
    Collection stats: [X] chunks
+   RAG hint added to .claude/CLAUDE.md
 
    You can now search with: /rag search "your query"
    ```
@@ -253,7 +294,9 @@ Delete an indexed collection.
 
 1. Confirm with the user before deleting
 2. Call `mcp__rag__delete_collection` with the collection name
-3. Confirm deletion
+3. Update `~/.claude/rag-config.json` — remove from `collections` array
+4. If the current working directory has `.claude/CLAUDE.md` with a `## RAG Index` section referencing this collection, **remove that section**
+5. Confirm deletion
 
 ---
 
@@ -367,7 +410,7 @@ Switch the RAG MCP server to a different vector database backend.
 ### `hello`
 
 Respond with:
-> Hello! I'm **RAG** v1.0.0. I manage semantic codebase search — index, search, configure backends. Use `/rag hello ID` for the full guide.
+> Hello! I'm **RAG** v1.1.0. I manage semantic codebase search — index, search, configure backends. Use `/rag hello ID` for the full guide.
 
 ### `hello ID`
 
