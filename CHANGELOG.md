@@ -15,6 +15,53 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.6.0] - 2026-02-21
+
+### Universal Hello Protocol — Handshake for All Tools
+
+Every tool in the repository now responds to a `hello` message, enabling availability checks and self-describing discovery without reading documentation.
+
+**MCP Servers (11)** — new `hello` tool on every server:
+- `hello {}` → colored greeting with server name and version
+- `hello {"verbose": true}` → full tool catalog, usage examples, author info
+- Added `SERVER_NAME`, `SERVER_VERSION`, `SERVER_COLOR_EMOJI` constants and `buildHelloVerbose()` to all 11 servers
+- All servers pass TypeScript compilation and rebuild with zero errors
+
+**Skills (20)** — `hello` and `hello ID` argument support:
+- `/skill-name hello` → brief greeting with version and description
+- `/skill-name hello ID` → full profile: all arguments, usage, author
+- Updated `argument-hint` frontmatter on all 20 skills
+- Added `### hello` / `### hello ID` cases to 7 SKILL.md instruction sections
+- Added `## Handshake Protocol` sections to 13 flat `.md` skill files
+
+**Agents (49)** — natural-language hello protocol:
+- `hello agent-name` → greeting with one-line specialty
+- `hello agent-name ID` → full profile: specialty, tools, model, when to use, author
+- Added `## Hello Protocol` section to 37 markdown agents
+- Appended hello protocol to `instructions` field in 12 JSON agents
+
+### Color Indicators in Hello Responses
+
+All hello greetings are prefixed with a colored square emoji matching the tool's category:
+
+| Emoji | Category | Tools |
+|-------|----------|-------|
+| 🔴 | Quality / Defense | code-review, testing, qa-testing-expert, security-expert, redis... |
+| 🔵 | Data / Infrastructure | database-operations, project-oversight, python-backend, ios-dev... |
+| 🟣 | Creative / AI / Design | design-system, rag, uiux-review, ml-ai-expert, game-design... |
+| 🟢 | Runtime / API | api-specialist, android-dev, nodejs-backend, vue-nuxt... |
+| 🟠 | Build / Automation | cicd-pipeline, n8n-automation, dependency-management, devops... |
+| 🟡 | Analysis / Performance | performance-optimizer |
+| 🩵 | Interfaces / Observability | api-expert, react-nextjs, css-tailwind, observability, cicd-engineer... |
+
+### Documentation
+
+- Added `docs/reference/hello-protocol.md` — full protocol spec with copy-paste code patterns for MCP servers, skills, and agents
+- Added `## Hello Protocol` section to `CLAUDE.md` — mandatory requirement for all new tools
+- Checklist included for contributors adding new tools
+
+---
+
 ## [2.5.0] - 2026-02-21
 
 ### Configurable Model Switching

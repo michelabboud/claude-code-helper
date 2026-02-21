@@ -1,8 +1,8 @@
 {
   "projectName": "claude-code-helper",
-  "lastAssessment": "2026-02-21T14:00:00Z",
-  "assessmentCount": 18,
-  "overallScore": 8.9,
+  "lastAssessment": "2026-02-21T18:00:00Z",
+  "assessmentCount": 19,
+  "overallScore": 9.0,
   "experts": {
     "qa": {
       "score": 9,
@@ -61,11 +61,11 @@
       "riskIfIgnored": "Users can't discover intermediate releases via GitHub Releases page"
     },
     "api": {
-      "score": 8,
-      "status": "good",
-      "topFinding": "47+ MCP tools across 11 servers. Consistent interfaces: Zod validation, shared errorResponse()/jsonResponse()/successResponse(). registerTrackedToolHandler() provides unified lifecycle. 7 HTTP API routes in project-oversight-mcp.",
-      "recommendation": "Add input examples to tool descriptions. Expose MetricsCollector data via a tool or API endpoint.",
-      "riskIfIgnored": "Users may not understand expected input formats"
+      "score": 9,
+      "status": "excellent",
+      "topFinding": "60+ MCP tools across 11 servers (added 11 `hello` handshake tools). Hello Protocol provides universal self-describing discovery: hello {} → greeting, hello {verbose:true} → full catalog. Consistent interfaces: Zod validation, shared errorResponse()/jsonResponse()/successResponse(). registerTrackedToolHandler() provides unified lifecycle. 7 HTTP API routes in project-oversight-mcp.",
+      "recommendation": "Expose MetricsCollector data via a tool or API endpoint. Add input examples to remaining tool descriptions.",
+      "riskIfIgnored": "Low remaining risk - all tools are now self-describing via hello protocol"
     },
     "monitoring": {
       "score": 10,
@@ -91,7 +91,7 @@
     "documentation": {
       "score": 10,
       "status": "excellent",
-      "topFinding": "TOOLS-INDEX.md Quick Stats updated to accurate counts (11 servers, 47 agents, 19 skills). Broken TOC link fixed (30+ → 47+). Comprehensive docs: README, QUICKSTART, CONTRIBUTING, CLAUDE.md, CHANGELOG. mcp-shared/API.md. component-browser.html. All 11 MCP servers have CHANGELOG.md.",
+      "topFinding": "Added docs/reference/hello-protocol.md: full protocol spec with copy-paste patterns for MCP servers, skills, and agents. CLAUDE.md updated with mandatory Hello Protocol requirement for new tools. TOOLS-INDEX.md counts accurate. Comprehensive docs: README, QUICKSTART, CONTRIBUTING, CLAUDE.md, CHANGELOG. mcp-shared/API.md. component-browser.html. All 11 MCP servers have CHANGELOG.md.",
       "recommendation": "Add JSDoc to mcp-shared source. Create missing GitHub releases for v1.1.0-v2.2.0.",
       "riskIfIgnored": "Low remaining risk - documentation is comprehensive and accurate"
     },
@@ -112,7 +112,7 @@
     "progress": {
       "score": 10,
       "status": "excellent",
-      "topFinding": "All 6 assessment tasks (t37-t42) completed: CI matrices updated, CORS fixed, MetricsCollector wired, dashboard redesigned, npm audit enforced, TOOLS-INDEX stats updated. 42/42 lifetime tasks completed. 1,480+ tests all passing. 13 workspace packages build clean.",
+      "topFinding": "Hello Protocol deployed across 80 tools (11 MCP servers + 20 skills + 49 agents). Color indicators on all greetings. Protocol documentation added. All prior tasks remain complete. 1,480+ tests all passing. 13 workspace packages build clean. v2.5.0 and v2.6.0 released.",
       "recommendation": "Continue with remaining recommendations: JSDoc for mcp-shared, missing GitHub releases, benchmark SLA enforcement.",
       "riskIfIgnored": "No critical gaps remaining"
     }
@@ -262,6 +262,10 @@
     {
       "date": "2026-02-21T14:00:00Z",
       "scores": { "qa": 9, "uiux": 9, "security": 9, "devops": 10, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 8, "monitoring": 10, "database": 8, "performance": 9, "documentation": 10, "specifications": 7, "projectDocs": 7, "progress": 10 }
+    },
+    {
+      "date": "2026-02-21T18:00:00Z",
+      "scores": { "qa": 9, "uiux": 9, "security": 9, "devops": 10, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 9, "monitoring": 10, "database": 8, "performance": 9, "documentation": 10, "specifications": 7, "projectDocs": 7, "progress": 10 }
     }
   ]
 }
