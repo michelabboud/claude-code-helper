@@ -20,7 +20,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 - [Example Agents (27 Agents)](#example-agents-27-agents)
   - [MCP Agents](#mcp-agents-9-agents)
   - [Sub-Agents - Domain Specialists](#sub-agents---domain-specialists-18-agents)
-- [Skills (15+ Workflow Skills)](#skills-15-workflow-skills)
+- [Skills (21 Workflow Skills)](#skills-21-workflow-skills)
   - [Core Workflow Skills](#core-workflow-skills)
   - [Advanced Testing Skills](#advanced-testing-skills)
 - [Commands (5 Slash Commands)](#commands-5-slash-commands)
@@ -44,9 +44,9 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 | Category | Count | Description |
 |----------|-------|-------------|
 | **MCP Servers** | 11 | Production-ready TypeScript servers with 47+ tools |
-| **MCP Tools** | 47+ | Individual automation tools across all servers |
-| **Agents** | 47 | MCP agents, sub-agents, and technology specialists |
-| **Skills** | 19 | Workflow and testing skills |
+| **MCP Tools** | 80+ | Individual automation tools across all servers (incl. 11 hello tools) |
+| **Agents** | 51 | MCP agents, sub-agents, and technology specialists |
+| **Skills** | 21 | Workflow, testing, tooling, and documentation skills |
 | **Commands** | 5 | Slash commands for common workflows |
 | **Hooks** | 4 | Event-driven automation hooks |
 | **Plugins** | 6 | Complete feature packages |
@@ -291,7 +291,7 @@ Specialized agents for specific technology domains.
 
 ---
 
-## Skills (15+ Workflow Skills)
+## Skills (21 Workflow Skills)
 
 **Location:** [`skills/`](skills/)
 
@@ -299,6 +299,11 @@ Specialized agents for specific technology domains.
 
 | Skill | File | Description |
 |-------|------|-------------|
+| Greeting | [`greeting/SKILL.md`](skills/greeting/SKILL.md) | Survey all installed MCP servers, agents, and skills — generate health report |
+| Model Mode | [`model-mode/SKILL.md`](skills/model-mode/SKILL.md) | Switch MODEL_MODE in CLAUDE.md without manual editing |
+| PM Dashboard | [`pm-dashboard/SKILL.md`](skills/pm-dashboard/SKILL.md) | Update project health dashboard with expert scores and tasks |
+| Update Check | [`update-check/SKILL.md`](skills/update-check/SKILL.md) | Check claude-code-helper installation for available updates |
+| Auto Plan | [`auto-plan/SKILL.md`](skills/auto-plan/SKILL.md) | Plan with Opus, build with Sonnet |
 | API Design Patterns | [`api-design-patterns.md`](skills/api-design-patterns.md) | REST API design best practices, versioning, error handling |
 | API Documentation | [`api-documentation/SKILL.md`](skills/api-documentation/SKILL.md) | Automated API documentation generation |
 | Caching Expert | [`caching-expert.md`](skills/caching-expert.md) | Caching strategies (Static, Object, HTTP, CDN) |
