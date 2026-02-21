@@ -52,6 +52,10 @@
       "eslint --no-warn-ignored --max-warnings 0"
     ]
   },
+  "overrides": {
+    "glob": "^10.4.5",
+    "inflight": "npm:lru-cache@^10.4.3"
+  },
   "license": "Apache-2.0",
   "author": "Michel Abboud"
 }
