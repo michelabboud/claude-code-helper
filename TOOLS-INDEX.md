@@ -45,7 +45,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 |----------|-------|-------------|
 | **MCP Servers** | 11 | Production-ready TypeScript servers with 47+ tools |
 | **MCP Tools** | 80+ | Individual automation tools across all servers (incl. 11 hello tools) |
-| **Agents** | 51 | MCP agents, sub-agents, and technology specialists |
+| **Agents** | 54 | MCP agents, sub-agents, and technology specialists |
 | **Skills** | 21 | Workflow, testing, tooling, and documentation skills |
 | **Commands** | 5 | Slash commands for common workflows |
 | **Hooks** | 4 | Event-driven automation hooks |
@@ -267,6 +267,7 @@ Specialized agents for specific technology domains.
 | API Expert | [`api-expert.md`](agents/domain-experts/api-expert.md) | REST API design, OpenAPI, GraphQL |
 | CSS/Tailwind Expert | [`css-tailwind-expert.md`](agents/domain-experts/css-tailwind-expert.md) | Tailwind CSS, responsive design, CSS architecture |
 | Database Expert | [`database-expert.md`](agents/domain-experts/database-expert.md) | Schema design, query optimization, migrations |
+| MongoDB Expert | [`mongodb-expert.md`](agents/domain-experts/mongodb-expert.md) | Document design, aggregation, Atlas CLI, sharding, cloud deployment |
 | DevOps/Infrastructure | [`devops-infrastructure-expert.md`](agents/domain-experts/devops-infrastructure-expert.md) | CI/CD, Docker, Kubernetes, cloud infrastructure |
 | Documentation Expert | [`documentation-expert.md`](agents/domain-experts/documentation-expert.md) | Technical writing, API docs, README standards |
 | Git Expert | [`git-expert.md`](agents/domain-experts/git-expert.md) | Git workflows, branching strategies, rebasing |
@@ -275,6 +276,7 @@ Specialized agents for specific technology domains.
 | Node.js/TypeScript | [`nodejs-typescript-backend-expert.md`](agents/domain-experts/nodejs-typescript-backend-expert.md) | Node.js, TypeScript, Express, NestJS |
 | Observability Expert | [`observability-expert.md`](agents/domain-experts/observability-expert.md) | Monitoring, logging, tracing, alerting |
 | Performance Optimizer | [`performance-optimizer.md`](agents/domain-experts/performance-optimizer.md) | Performance tuning, profiling, optimization |
+| PostgreSQL Expert | [`postgresql-expert.md`](agents/domain-experts/postgresql-expert.md) | Advanced SQL, JSONB, PL/pgSQL, partitioning, pgvector, cloud deployment |
 | Python Backend | [`python-backend-expert.md`](agents/domain-experts/python-backend-expert.md) | Python, Django, FastAPI, Flask |
 | QA/Testing Expert | [`qa-testing-expert.md`](agents/domain-experts/qa-testing-expert.md) | Test strategies, automation, quality assurance |
 | React/Next.js Expert | [`react-nextjs-expert.md`](agents/domain-experts/react-nextjs-expert.md) | React, Next.js, frontend architecture |
@@ -401,6 +403,7 @@ Extended collection of technology-specific expert agents.
 | PHP Expert | [`php-expert.md`](agents/domain-experts/php-expert.md) | PHP programming |
 | QA Testing Expert | [`qa-testing-expert.md`](agents/domain-experts/qa-testing-expert.md) | Quality assurance |
 | Redis Expert | [`redis-expert.md`](agents/domain-experts/redis-expert.md) | Redis and caching |
+| Supabase Expert | [`supabase-expert.md`](agents/domain-experts/supabase-expert.md) | Supabase BaaS, Auth, RLS, Storage, Edge Functions, Realtime |
 | Ruby on Rails Expert | [`ruby-rails-expert.md`](agents/domain-experts/ruby-rails-expert.md) | Ruby on Rails |
 | Rust Expert | [`rust-expert.md`](agents/domain-experts/rust-expert.md) | Rust programming |
 | Vue/Nuxt Expert | [`vue-nuxt-expert.md`](agents/domain-experts/vue-nuxt-expert.md) | Vue.js/Nuxt framework |

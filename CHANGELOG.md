@@ -15,6 +15,17 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.7.3] - 2026-02-21
+
+### Added
+
+- **`supabase-expert` agent** (807 lines) — Supabase BaaS: PostgreSQL, Auth, Row Level Security, Storage, Edge Functions, Realtime subscriptions, server-side auth (Next.js), database functions (RPC)
+- **`mongodb-expert` agent** (1,129 lines) — MongoDB: document design, aggregation pipelines, Mongoose ODM, indexing strategies, transactions, change streams, replication, sharding, Atlas CLI (clusters, search indexes, monitoring, backups), AWS/GCP/Azure/on-prem deployment, production configs, OS tuning
+- **`postgresql-expert` agent** (1,145 lines) — PostgreSQL: CTEs, window functions, LATERAL joins, JSONB, PL/pgSQL, partitioning, extensions (pgvector, PostGIS, pg_trgm, pg_cron), advanced index tuning (covering, expression, BRIN, partial), query optimization patterns, backup/PITR, AWS RDS/Aurora, GCP Cloud SQL/AlloyDB, Azure Flexible Server, on-prem production configs, streaming replication, Citus horizontal scaling
+- Agent count increased: 50 → 52 (37 domain-experts + 13 MCP-integrated + 2 config-bundle)
+
+---
+
 ## [2.7.1] - 2026-02-21
 
 ### Added

@@ -25,7 +25,7 @@
 
 ### What's Available
 
-- **49 Agents** (12 MCP agents + 37 domain experts)
+- **52 Agents** (12 MCP agents + 40 domain experts)
 - **68 MCP Tools** across 10 servers (38 production + 30 experimental)
 - **22 Skills** (workflows, testing, scaffolding, documentation, RAG, update-check, model-mode, greeting, and more)
 - **Comprehensive guides, templates, and integration examples**
@@ -38,7 +38,7 @@ This repository contains everything you need to become productive with Claude Co
 
 | Component | Description | Best For |
 |-----------|-------------|----------|
-| **[Agents](#-agents)** | 49 agents (domain experts + MCP-integrated) | Specialized AI assistance |
+| **[Agents](#-agents)** | 52 agents (domain experts + MCP-integrated) | Specialized AI assistance |
 | **[Skills](#-skills)** | 18 reusable workflow skills | Workflows, patterns & actions |
 | **[Guides](#-guides)** | Complete learning paths from zero to hero | Learning & Reference |
 | **[MCP Servers](#-mcp-servers)** | 10 specialized servers for code quality & automation | Automation & CI/CD |
@@ -63,7 +63,7 @@ claude
 ```
 
 The install script installs:
-- 48 agents (domain experts + MCP-integrated)
+- 52 agents (domain experts + MCP-integrated)
 - 6 hook configurations (file, event, MCP triggers)
 - Triggers configuration (triggers.json + schema)
 - Skills and status lines
@@ -240,7 +240,7 @@ JSON agents that leverage MCP server tools:
 - UI/UX Reviewer, Test Quality Enforcer, Security Reviewer
 - Database Engineer, CI/CD Engineer, and more
 
-**Note:** All 49 agents include a semantic `color` field in their frontmatter for visual identification in Claude Code (e.g., `color: blue`, `color: purple`). This allows the UI to display agents with distinct color coding when browsing or selecting them.
+**Note:** All 52 agents include a semantic `color` field in their frontmatter for visual identification in Claude Code (e.g., `color: blue`, `color: purple`). This allows the UI to display agents with distinct color coding when browsing or selecting them.
 
 ### Installation
 ```bash

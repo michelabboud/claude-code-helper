@@ -2,9 +2,9 @@
 
 **Quick reference for all claude-code-helper tools**
 
-Version: v2.7.1
+Version: v2.7.3
 Last Updated: 2026-02-21
-Total: 68 MCP tools • 52 agents • 22 skills • 7 commands
+Total: 68 MCP tools • 55 agents • 22 skills • 7 commands
 
 ---
 
@@ -21,7 +21,7 @@ Total: 68 MCP tools • 52 agents • 22 skills • 7 commands
    - [Dependency Management MCP (8)](#8-dependency-management-mcp-8-tools)
    - [n8n Automation MCP (6)](#9-n8n-automation-mcp-6-tools)
    - [RAG MCP (8)](#10-rag-mcp-8-tools)
-2. [Agents (52)](#agents)
+2. [Agents (55)](#agents)
 3. [Skills (22)](#skills)
 4. [Commands (7)](#commands)
 5. [Quick Start Examples](#quick-start-examples)
@@ -445,7 +445,7 @@ Total: 68 MCP tools • 52 agents • 22 skills • 7 commands
 
 ---
 
-### Sub-Agents (34 configs)
+### Sub-Agents (37 configs)
 
 #### Frontend Specialists
 
@@ -500,6 +500,14 @@ Total: 68 MCP tools • 52 agents • 22 skills • 7 commands
 | `azure-devops-expert` | Azure | DevOps, Pipelines, ARM |
 | `docker-kubernetes-expert` | Containers | Docker, K8s, Helm |
 | `terraform-expert` | Terraform | IaC, modules, providers |
+
+#### Database Specialists
+
+| Agent | Technology | Expertise |
+|-------|-----------|-----------|
+| `mongodb-expert` | MongoDB | Document design, aggregation, Atlas CLI, sharding |
+| `postgresql-expert` | PostgreSQL | Advanced SQL, JSONB, PL/pgSQL, pgvector, partitioning |
+| `supabase-expert` | Supabase | Auth, RLS, Storage, Edge Functions, Realtime |
 
 #### Data & AI
 
