@@ -1,6 +1,6 @@
 ---
 name: RAG
-version: 1.1.0
+version: 2.0.0
 description: Manage the RAG MCP server — index codebases, search semantically, configure backends (ChromaDB/Redis/Qdrant)
 author: Michel Abboud
 repository: https://github.com/michelabboud/claude-code-helper
@@ -16,6 +16,7 @@ Unified interface for the RAG MCP server. Index codebases, search semantically, 
 ## Usage
 
 ```
+/rag init                  → First-time setup wizard (backend, install, configure, teach Claude Code)
 /rag index [path]          → Index the current directory (or a specific path)
 /rag search <query>        → Semantic search across indexed code
 /rag similar <snippet>     → Find code similar to a snippet
@@ -126,13 +127,26 @@ This directory stores persistent vector data. When using Docker, mount it as a v
 3. **After code changes**: Run `/rag index` again to re-index (overwrites existing collection)
 4. **If Docker restarts**: Data survives if you used the `-v` volume mount above
 
-## Auto-Discovery via CLAUDE.md
+## Auto-Discovery via CLAUDE.md (Two Layers)
 
-After a successful `/rag index`, the skill **automatically injects a hint** into the project's `.claude/CLAUDE.md` so that future Claude Code sessions know RAG data exists and can use it without the user asking.
+RAG uses **two layers** of CLAUDE.md hints so Claude Code knows RAG is available:
 
-### What gets written
+### Layer 1: Global awareness (`~/.claude/CLAUDE.md`)
 
-A `## RAG Index` section is appended to (or updated in) `<project-root>/.claude/CLAUDE.md`:
+Written by `/rag init`. Tells **every** Claude Code session that RAG exists:
+
+```markdown
+## RAG MCP
+The RAG MCP server is installed and provides semantic codebase search.
+When a project's CLAUDE.md contains a `## RAG Index` section, use
+mcp__rag__semantic_search with the specified collection name to find
+relevant code before answering architecture questions or making changes.
+Each project has its own collection. Use /rag to manage indexing and configuration.
+```
+
+### Layer 2: Per-project index (`<project>/.claude/CLAUDE.md`)
+
+Written by `/rag index`. Tells sessions **in that specific project** which collection to use:
 
 ```markdown
 ## RAG Index
@@ -143,12 +157,14 @@ Last indexed: <date>
 ```
 
 ### Rules
+- **`/rag init`** writes the global `## RAG MCP` section to `~/.claude/CLAUDE.md`
+- **`/rag index`** writes the per-project `## RAG Index` section to `<project>/.claude/CLAUDE.md`
 - **Create `.claude/` directory** if it doesn't exist
 - **Create `.claude/CLAUDE.md`** if it doesn't exist (with just the RAG section)
-- **Update existing section** if `## RAG Index` already exists (replace the block)
-- **Append** if CLAUDE.md exists but has no RAG section
+- **Update existing section** if the heading already exists (replace the block up to the next `##` or end of file)
+- **Append** if CLAUDE.md exists but has no matching section
 - On `/rag delete <collection>`, **remove the `## RAG Index` section** from that project's CLAUDE.md if the deleted collection matches
-- Never touch `~/.claude/CLAUDE.md` (global) — only the project-local `.claude/CLAUDE.md`
+- On `/rag init` (reconfigure), **update** the global section — never duplicate it
 
 ---
 
@@ -159,6 +175,10 @@ Last indexed: <date>
 ### No argument (empty)
 
 When the user types just `/rag` with no command, present an **interactive menu** using `AskUserQuestion` so they can choose what to do:
+
+First, check if `~/.claude/rag-config.json` exists. If it does NOT exist (first time), **automatically redirect to `init`** instead of showing the menu.
+
+If config exists, show the menu:
 
 ```
 question: "What would you like to do with RAG?"
@@ -179,6 +199,349 @@ After the user selects an option:
 - **Search code** → Ask "What do you want to search for?" then follow `search` instructions
 - **View collections** → Follow `collections` instructions
 - **Configure backend** → Follow `config` instructions
+
+---
+
+### `init`
+
+First-time setup wizard. Guides the user through choosing a backend, installing it, configuring the MCP server, and teaching Claude Code that RAG is available.
+
+**If `~/.claude/rag-config.json` already exists**, show the current config and ask if they want to reconfigure.
+
+#### Step 1: Welcome
+
+Display:
+
+```
+## RAG Setup Wizard
+
+RAG (Retrieval-Augmented Generation) gives Claude Code semantic search
+over your codebases. Instead of grepping files, Claude can find relevant
+code by meaning — "how does authentication work?" returns the actual auth
+code, not just files containing the word "auth".
+
+How it works:
+1. You index a project → code is chunked and embedded into vectors
+2. Vectors are stored in a database that persists across sessions
+3. Claude Code searches by meaning when you ask questions or make changes
+4. Multiple projects can be indexed simultaneously — each gets its own collection
+
+Let's set it up.
+```
+
+#### Step 2: Choose backend
+
+Use `AskUserQuestion`:
+
+```
+question: "Which vector database backend would you like to use?"
+header: "Backend"
+options:
+  - label: "Redis (Recommended)"
+    description: "Fast, mature, great persistence. Best all-around choice."
+    markdown: |
+      ## Redis with RediSearch
+
+      **Pros:**
+      - Extremely fast — sub-millisecond vector search
+      - Mature and battle-tested (millions of production deployments)
+      - Excellent persistence options (AOF, RDB, or both)
+      - Multi-repo: single Redis instance serves all your projects
+      - Rich data structures beyond vectors (caching, queues, etc.)
+      - Low memory overhead per vector
+
+      **Cons:**
+      - Requires the RediSearch module (comes with redis-stack)
+      - Needs local embedding generation (included, ~90 MB model)
+
+      **Best for:** Most users. Especially if you work on multiple projects.
+  - label: "Qdrant"
+    description: "Purpose-built vector DB. Best filtering and scalability."
+    markdown: |
+      ## Qdrant
+
+      **Pros:**
+      - Purpose-built for vector search — optimized from the ground up
+      - Advanced filtering (combine vector search with metadata filters)
+      - Excellent for very large codebases (100K+ files)
+      - Built-in persistence to disk by default
+      - Multi-repo: single instance serves all projects
+      - REST API and gRPC support
+
+      **Cons:**
+      - Higher memory usage than Redis for small codebases
+      - Needs local embedding generation (included, ~90 MB model)
+      - Less ecosystem tooling compared to Redis
+
+      **Best for:** Large codebases, advanced filtering needs, or dedicated vector search.
+  - label: "ChromaDB"
+    description: "Simplest setup. Built-in embeddings, no extras needed."
+    markdown: |
+      ## ChromaDB
+
+      **Pros:**
+      - Simplest to set up — just run the container
+      - Built-in embedding generation (no separate model needed)
+      - Good documentation and Python ecosystem
+      - Multi-repo: single instance serves all projects
+
+      **Cons:**
+      - Slower than Redis/Qdrant for large codebases
+      - Less mature persistence story
+      - Limited filtering capabilities
+      - Higher memory usage per embedding
+
+      **Best for:** Quick experiments, small projects, or if you want zero config.
+```
+
+#### Step 3: Installation method
+
+After backend choice, use `AskUserQuestion`:
+
+```
+question: "How would you like to install <backend>?"
+header: "Install"
+options:
+  - label: "Docker (Recommended)"
+    description: "Isolated container with persistent storage. One command."
+  - label: "Local install"
+    description: "Install natively on your system."
+  - label: "Already running"
+    description: "I already have <backend> running."
+```
+
+**If Docker:**
+
+Run the appropriate Docker command via Bash. **Always use persistent volumes** and name the container for easy management:
+
+- **Redis:**
+  ```bash
+  mkdir -p ~/.claude/rag-data
+  docker run -d \
+    --name claude-rag-redis \
+    --restart unless-stopped \
+    -p 6379:6379 \
+    -v ~/.claude/rag-data:/data \
+    redis/redis-stack-server \
+    --appendonly yes
+  ```
+
+- **Qdrant:**
+  ```bash
+  mkdir -p ~/.claude/rag-data/qdrant
+  docker run -d \
+    --name claude-rag-qdrant \
+    --restart unless-stopped \
+    -p 6333:6333 \
+    -v ~/.claude/rag-data/qdrant:/qdrant/storage \
+    qdrant/qdrant
+  ```
+
+- **ChromaDB:**
+  ```bash
+  mkdir -p ~/.claude/rag-data/chroma
+  docker run -d \
+    --name claude-rag-chroma \
+    --restart unless-stopped \
+    -p 8000:8000 \
+    -v ~/.claude/rag-data/chroma:/chroma/chroma \
+    chromadb/chroma
+  ```
+
+Note: `--restart unless-stopped` ensures the container auto-starts on system boot.
+
+**If Local install:**
+
+Show install instructions and run them:
+
+- **Redis:**
+  ```
+  ## Linux (Ubuntu/Debian)
+  curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+  echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+  sudo apt-get update
+  sudo apt-get install redis-stack-server
+
+  ## macOS
+  brew tap redis-stack/redis-stack
+  brew install redis-stack-server
+  ```
+  After install, show how to enable the service:
+  ```bash
+  # Linux: enable and start
+  sudo systemctl enable redis-stack-server
+  sudo systemctl start redis-stack-server
+
+  # macOS: start with brew
+  brew services start redis-stack-server
+  ```
+
+- **Qdrant:**
+  ```
+  ## Using pre-built binary
+  curl -LO https://github.com/qdrant/qdrant/releases/latest/download/qdrant-x86_64-unknown-linux-gnu.tar.gz
+  tar -xzf qdrant-x86_64-unknown-linux-gnu.tar.gz
+  ./qdrant --storage-path ~/.claude/rag-data/qdrant
+
+  ## macOS
+  brew install qdrant/tap/qdrant
+  qdrant --storage-path ~/.claude/rag-data/qdrant
+  ```
+
+- **ChromaDB:**
+  ```bash
+  pip install chromadb
+  chroma run --path ~/.claude/rag-data/chroma
+  ```
+
+**If Already running:**
+
+Skip installation, proceed to verification.
+
+#### Step 4: Verify backend is reachable
+
+Run a connectivity check via Bash:
+
+- **Redis:** `redis-cli -h localhost -p 6379 ping` → expect `PONG`
+- **Qdrant:** `curl -s http://localhost:6333/healthz` → expect `ok` or JSON
+- **ChromaDB:** `curl -s http://localhost:8000/api/v1/heartbeat` → expect JSON
+
+If the check fails:
+- Show the error
+- Suggest common fixes (wrong port, service not started, Docker not running)
+- Ask if they want to retry or go back to installation step
+
+If the check succeeds, show: `<backend> is running and reachable.`
+
+#### Step 5: Choose embeddings
+
+Use `AskUserQuestion`:
+
+```
+question: "Which embedding provider would you like to use?"
+header: "Embeddings"
+options:
+  - label: "Local (Recommended)"
+    description: "Free, private, no API key. Uses all-MiniLM-L6-v2 (~90 MB download on first use)."
+  - label: "OpenAI"
+    description: "Higher quality embeddings. Requires OPENAI_API_KEY and costs per request."
+```
+
+If **OpenAI**: check if `OPENAI_API_KEY` is set. If not, warn and ask the user to set it before proceeding.
+
+#### Step 6: Register MCP server
+
+Find the rag-mcp build path. Check in order:
+1. `claude mcp list` — if rag already registered, extract the existing node path
+2. Common install locations:
+   - `~/.claude/mcp-servers/rag-mcp/build/index.js`
+   - The repo's `mcp-servers/rag-mcp/build/index.js` (if cloned from claude-code-helper)
+3. If not found, ask the user for the path
+
+Then register:
+
+```bash
+# Remove old registration if it exists
+claude mcp remove rag 2>/dev/null
+
+# Add with new config
+claude mcp add rag \
+  -e VECTOR_DB_TYPE=<backend> \
+  -e VECTOR_DB_HOST=<host> \
+  -e VECTOR_DB_PORT=<port> \
+  -e EMBEDDING_TYPE=<embedding_type> \
+  -e MODEL_VARIANT=default \
+  -- node <path-to-build/index.js>
+```
+
+#### Step 7: Write persistent config
+
+Write `~/.claude/rag-config.json`:
+
+```json
+{
+  "backend": "<backend>",
+  "host": "localhost",
+  "port": <port>,
+  "embeddingType": "<local|openai>",
+  "modelVariant": "default",
+  "defaultCollection": "codebase",
+  "collections": [],
+  "persistence": {
+    "enabled": true,
+    "mode": "<aof for redis | disk for qdrant | disk for chromadb>",
+    "dataDir": "~/.claude/rag-data"
+  },
+  "installedAt": "<ISO timestamp>",
+  "installMethod": "<docker|local|existing>",
+  "updatedAt": "<ISO timestamp>"
+}
+```
+
+#### Step 8: Teach Claude Code that RAG exists
+
+Append a `## RAG MCP` section to `~/.claude/CLAUDE.md` (global) — so **every** Claude Code session is aware RAG is available:
+
+```markdown
+## RAG MCP
+
+The RAG MCP server is installed and provides semantic codebase search.
+
+**How to use:**
+- When a project's CLAUDE.md contains a `## RAG Index` section, use `mcp__rag__semantic_search` with the specified collection name to find relevant code before answering architecture questions or making changes.
+- Each project has its own collection (named after the project directory).
+- Use `/rag` to manage indexing, search, and configuration.
+- The vector database runs as a persistent background service — indexed data survives across sessions.
+```
+
+Rules:
+- If `## RAG MCP` already exists in `~/.claude/CLAUDE.md`, replace it
+- Otherwise append it
+- Be careful not to corrupt other content in the file — read it first, find the right insertion point
+
+#### Step 9: Offer to index current project
+
+Use `AskUserQuestion`:
+
+```
+question: "Would you like to index the current project now?"
+header: "Index"
+options:
+  - label: "Yes, index now"
+    description: "Index <current-directory-name> for semantic search"
+  - label: "No, I'll do it later"
+    description: "You can run /rag index anytime"
+```
+
+If **Yes**: follow the `index` instructions below (which will also write the per-project CLAUDE.md hint).
+
+If **No**: show a summary and remind them they can run `/rag index` later.
+
+#### Step 10: Summary
+
+Display a completion summary:
+
+```
+## RAG Setup Complete
+
+Backend:     <backend> (<docker|local|existing>)
+Host:        localhost:<port>
+Embeddings:  <local|openai>
+Persistence: ~/.claude/rag-data/
+Config:      ~/.claude/rag-config.json
+
+Claude Code awareness:
+  Global:  ~/.claude/CLAUDE.md → ## RAG MCP section added
+  <if indexed: "Project: .claude/CLAUDE.md → ## RAG Index section added">
+
+Next steps:
+  /rag index          → Index a project for semantic search
+  /rag search "query" → Search indexed code
+  /rag collections    → View all indexed projects
+  /rag config         → View or change configuration
+
+Restart Claude Code for the MCP server registration to take effect.
+```
 
 ---
 
@@ -410,15 +773,16 @@ Switch the RAG MCP server to a different vector database backend.
 ### `hello`
 
 Respond with:
-> Hello! I'm **RAG** v1.1.0. I manage semantic codebase search — index, search, configure backends. Use `/rag hello ID` for the full guide.
+> Hello! I'm **RAG** v2.0.0. I manage semantic codebase search — init, index, search, configure backends. Use `/rag hello ID` for the full guide.
 
 ### `hello ID`
 
 Respond with complete skill information:
-- **Name**: RAG v1.0.0
+- **Name**: RAG v2.0.0
 - **Description**: Manage the RAG MCP server — index codebases, search semantically, configure backends
 - **How to invoke**: `/rag <command>`
 - **Available commands**:
+  - `init` — First-time setup wizard (choose backend, install, configure, teach Claude Code)
   - `index [path]` — Index the current directory or a specific path
   - `search <query>` — Semantic natural language search
   - `similar <snippet>` — Find similar code
@@ -432,6 +796,9 @@ Respond with complete skill information:
   - `hello ID` — This full profile
 - **Backends**: ChromaDB (default), Redis (with RediSearch), Qdrant
 - **Embeddings**: Local (Transformers.js, all-MiniLM-L6-v2) or OpenAI (text-embedding-3-small)
-- **Requires**: RAG MCP server (`rag-mcp`) must be configured via `claude mcp add`
+- **Multi-repo**: Single database instance serves all projects — each gets its own named collection
+- **Persistence**: Data survives across sessions and restarts via Docker volumes or native disk
+- **Auto-discovery**: After indexing, writes hints to project CLAUDE.md so Claude Code uses RAG automatically
+- **Requires**: RAG MCP server (`rag-mcp`) must be configured via `claude mcp add` or `/rag init`
 - **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
 - **License**: Apache-2.0
