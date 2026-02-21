@@ -2,7 +2,7 @@
 
 **Quick reference for all claude-code-helper tools**
 
-Version: v2.7.3
+Version: v2.8.0
 Last Updated: 2026-02-21
 Total: 68 MCP tools • 55 agents • 23 skills • 7 commands
 
