@@ -67,8 +67,8 @@ describe('Script execution', () => {
 // ---------------------------------------------------------------------------
 
 describe('Output schema', () => {
-  test('has schemaVersion field equal to 1', () => {
-    assert.equal(outputData.schemaVersion, 1);
+  test('has schemaVersion field equal to 2', () => {
+    assert.equal(outputData.schemaVersion, 2);
   });
 
   test('has repoVersion string', () => {
