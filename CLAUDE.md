@@ -26,7 +26,7 @@ This is **claude-code-helper** - a comprehensive toolkit and learning resource f
 6. **Offline reference** - Users can study agent patterns without running Claude Code
 
 **Current agent inventory:**
-- **47 agent files** in `agents/` directory (34 domain-experts + 13 MCP-integrated)
+- **50 agent files** in `agents/` directory (37 domain-experts + 13 MCP-integrated)
 - **2 agent files** in `config-bundle/agents/` (planner, implementer)
 - **33 agents** overlap with Claude Code built-in agents (this is intentional)
 - **All agents are valuable** - duplicates included

@@ -8,7 +8,7 @@ Note: The repository has two sub-agent locations:
 1. **`agents/domain-experts/`** - Original P0, P1, P2 agents (18 files)
 2. **`agents/domain-experts/`** - Additional P3 agents (17 files, this directory)
 
-**Total: 33 unique sub-agents** (2 files exist in both locations with different versions)
+**Total: 37 unique sub-agents** (2 files exist in both locations with different versions)
 
 ## Sub-Agents in This Directory (P3)
 
@@ -31,19 +31,22 @@ Note: The repository has two sub-agent locations:
 
 ### Data & Infrastructure
 10. **redis-expert.md** - All Data Structures, Caching, Pub/Sub, Clustering
+11. **mongodb-expert.md** - Document design, aggregation pipelines, indexing, Atlas CLI, sharding, cloud deployment
+12. **postgresql-expert.md** - Advanced SQL, JSONB, PL/pgSQL, partitioning, extensions (pgvector, PostGIS), cloud deployment
+13. **supabase-expert.md** - PostgreSQL BaaS, Auth, RLS, Storage, Edge Functions, Realtime
 
 ### Cloud Platforms
-11. **aws-architect-expert.md** - EC2, Lambda, ECS, RDS, DynamoDB, CloudFormation, CDK
-12. **azure-architect-expert.md** - Azure Functions, AKS, Cosmos DB, ARM, Bicep
-13. **gcp-architect-expert.md** - Cloud Functions, GKE, BigQuery, Dataflow, Terraform
+14. **aws-architect-expert.md** - EC2, Lambda, ECS, RDS, DynamoDB, CloudFormation, CDK
+15. **azure-architect-expert.md** - Azure Functions, AKS, Cosmos DB, ARM, Bicep
+16. **gcp-architect-expert.md** - Cloud Functions, GKE, BigQuery, Dataflow, Terraform
 
 ### Specialized Domains
-14. **iot-embedded-expert.md** - Arduino, ESP32/ESP8266, MQTT, Sensors, Power Management
-15. **game-design-expert.md** - Unity, Unreal Engine, Game Mechanics, AI Patterns
-16. **huggingface-expert.md** - Transformers, Fine-tuning, Inference, Deployment
+17. **iot-embedded-expert.md** - Arduino, ESP32/ESP8266, MQTT, Sensors, Power Management
+18. **game-design-expert.md** - Unity, Unreal Engine, Game Mechanics, AI Patterns
+19. **huggingface-expert.md** - Transformers, Fine-tuning, Inference, Deployment
 
 ### Testing (Comprehensive Version)
-17. **qa-testing-expert.md** - E2E testing, load testing, test automation (comprehensive version)
+20. **qa-testing-expert.md** - E2E testing, load testing, test automation (comprehensive version)
 
 ## Installation
 
