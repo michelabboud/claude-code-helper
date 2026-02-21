@@ -15,6 +15,18 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.6.1] - 2026-02-21
+
+### Added
+
+- **`/greeting` skill** — Surveys all installed tools and generates a health report:
+  - `/greeting` → sends `hello {}` to all 11 MCP servers, lists installed agents and skills, outputs a summary report showing online/offline counts
+  - `/greeting ID` → sends `hello {"verbose": true}` for full profiles from every server + complete catalog
+  - Implements Hello Protocol (`hello` / `hello ID` arguments)
+  - Installed to `~/.claude/skills/greeting/`
+
+---
+
 ## [2.6.0] - 2026-02-21
 
 ### Universal Hello Protocol — Handshake for All Tools

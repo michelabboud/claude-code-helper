@@ -1,7 +1,7 @@
 {
   "projectName": "claude-code-helper",
-  "lastAssessment": "2026-02-21T18:00:00Z",
-  "assessmentCount": 19,
+  "lastAssessment": "2026-02-21T19:00:00Z",
+  "assessmentCount": 20,
   "overallScore": 9.0,
   "experts": {
     "qa": {
@@ -112,7 +112,7 @@
     "progress": {
       "score": 10,
       "status": "excellent",
-      "topFinding": "Hello Protocol deployed across 80 tools (11 MCP servers + 20 skills + 49 agents). Color indicators on all greetings. Protocol documentation added. All prior tasks remain complete. 1,480+ tests all passing. 13 workspace packages build clean. v2.5.0 and v2.6.0 released.",
+      "topFinding": "Hello Protocol deployed across 80 tools (11 MCP servers + 20 skills + 49 agents). Color indicators on all greetings. Protocol documentation added. /greeting skill added: surveys all installed MCP servers, agents, and skills — generates health report. v2.5.0, v2.6.0, and v2.6.1 released.",
       "recommendation": "Continue with remaining recommendations: JSDoc for mcp-shared, missing GitHub releases, benchmark SLA enforcement.",
       "riskIfIgnored": "No critical gaps remaining"
     }
@@ -177,6 +177,16 @@
       "effort": "low",
       "expert": "documentation",
       "quadrant": "fill-in"
+    },
+    {
+      "id": "t43",
+      "title": "Add /greeting skill — health survey for all installed tools",
+      "status": "done",
+      "priority": 7,
+      "impact": "medium",
+      "effort": "low",
+      "expert": "product",
+      "quadrant": "quick-win"
     }
   ],
   "risks": [],
@@ -265,6 +275,10 @@
     },
     {
       "date": "2026-02-21T18:00:00Z",
+      "scores": { "qa": 9, "uiux": 9, "security": 9, "devops": 10, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 9, "monitoring": 10, "database": 8, "performance": 9, "documentation": 10, "specifications": 7, "projectDocs": 7, "progress": 10 }
+    },
+    {
+      "date": "2026-02-21T19:00:00Z",
       "scores": { "qa": 9, "uiux": 9, "security": 9, "devops": 10, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 9, "monitoring": 10, "database": 8, "performance": 9, "documentation": 10, "specifications": 7, "projectDocs": 7, "progress": 10 }
     }
   ]
