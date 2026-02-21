@@ -266,7 +266,7 @@ cp agents/mcp-integrated/*.json ~/.claude/agents/
 - **Documentation:** Code documentation, API documentation
 - **Project Management:** PM dashboard
 - **Tooling:** Update check (`/update-check`), Model mode (`/model-mode`), Greeting (`/greeting` — surveys all installed MCP servers, agents, and skills and generates a health report)
-- **RAG:** `/rag` — Index codebases, semantic search, configure backends (ChromaDB/Redis/Qdrant), persistent storage
+- **RAG:** `/rag` — Setup wizard (`/rag init`), index codebases, semantic search, configure backends (ChromaDB/Redis/Qdrant), persistent storage, two-layer auto-discovery via CLAUDE.md. See [RAG MCP Guide](./guides/RAG-MCP-GUIDE.md)
 
 ### Installation
 ```bash

@@ -85,9 +85,13 @@ Retrieval-Augmented Generation for semantic codebase search and context retrieva
 - ✅ Semantic search using vector embeddings
 - ✅ Multiple collection support for different projects
 - ✅ Configurable chunk sizes and file patterns
-- ✅ ChromaDB backend for fast retrieval
+- ✅ ChromaDB, Redis, and Qdrant backends
+- ✅ `/rag init` setup wizard with Docker/local install assistance
+- ✅ Two-layer auto-discovery via CLAUDE.md (global + per-project)
+- ✅ Multi-repo: single DB instance, one collection per project
 
 **Use with:** `rag-coder` sub-agent for automatic context-aware coding
+**Guide:** [RAG MCP Guide](guides/RAG-MCP-GUIDE.md)
 
 ---
 
@@ -304,7 +308,7 @@ Specialized agents for specific technology domains.
 | PM Dashboard | [`pm-dashboard/SKILL.md`](skills/pm-dashboard/SKILL.md) | Update project health dashboard with expert scores and tasks |
 | Update Check | [`update-check/SKILL.md`](skills/update-check/SKILL.md) | Check claude-code-helper installation for available updates |
 | Auto Plan | [`auto-plan/SKILL.md`](skills/auto-plan/SKILL.md) | Plan with Opus, build with Sonnet |
-| RAG | [`rag/SKILL.md`](skills/rag/SKILL.md) | Index codebases, semantic search, configure backends (ChromaDB/Redis/Qdrant), persistent storage |
+| RAG | [`rag/SKILL.md`](skills/rag/SKILL.md) | Setup wizard (`/rag init`), index codebases, semantic search, configure backends, two-layer auto-discovery, multi-repo |
 | API Design Patterns | [`api-design-patterns.md`](skills/api-design-patterns.md) | REST API design best practices, versioning, error handling |
 | API Documentation | [`api-documentation/SKILL.md`](skills/api-documentation/SKILL.md) | Automated API documentation generation |
 | Caching Expert | [`caching-expert.md`](skills/caching-expert.md) | Caching strategies (Static, Object, HTTP, CDN) |

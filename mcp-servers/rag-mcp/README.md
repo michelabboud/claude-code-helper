@@ -341,15 +341,25 @@ npm run build
 npm test
 ```
 
-### 4. Add to Claude Code
+### 4. Install the `/rag` skill
+
+```bash
+cp -r ../../skills/rag ~/.claude/skills/
+```
+
+### 5. Run the setup wizard
+
+```bash
+# In Claude Code:
+/rag init
+```
+
+This walks you through backend selection (Redis/Qdrant/ChromaDB), installation, MCP registration, and teaches Claude Code that RAG is available.
+
+### Alternative: Manual MCP registration
 
 ```bash
 claude mcp add rag -- node "$(pwd)/build/index.js"
-```
-
-### 5. Verify
-
-```bash
 claude mcp list
 ```
 
@@ -553,7 +563,9 @@ Tests cover:
 
 ## 🔗 Related Resources
 
-- **[Solving AI Coding Problems Guide](../../guides/advanced-patterns/solving-ai-coding-problems.md)** - Complete RAG implementation guide
+- **[RAG MCP Guide](../../guides/RAG-MCP-GUIDE.md)** - Comprehensive guide covering setup, backends, multi-repo, persistence, troubleshooting
+- **[`/rag` Skill](../../skills/rag/SKILL.md)** - Slash command wrapper (`/rag init`, `/rag index`, `/rag search`, etc.)
+- **[Solving AI Coding Problems Guide](../../guides/advanced-patterns/solving-ai-coding-problems.md)** - RAG for hallucination elimination
 - **[RAG Coder Agent](../../agents/rag-coder.md)** - Ready-to-use sub-agent
 - **[ChromaDB Documentation](https://docs.trychroma.com/)** - Vector database docs
 

@@ -15,6 +15,32 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.7.1] - 2026-02-21
+
+### Added
+
+- **`/rag init` setup wizard** — 10-step interactive onboarding for first-time RAG setup:
+  - Backend selection with detailed pros/cons comparison (Redis recommended, Qdrant, ChromaDB)
+  - Installation assistance: Docker (with persistent volumes, auto-restart), local native, or existing
+  - Backend connectivity verification with retry and troubleshooting
+  - Embedding provider choice (local free vs OpenAI)
+  - Automatic MCP server registration (`claude mcp add rag`)
+  - Persistent config written to `~/.claude/rag-config.json`
+  - **Global CLAUDE.md awareness** — writes `## RAG MCP` section to `~/.claude/CLAUDE.md` so every Claude Code session knows RAG is available
+  - Optional immediate project indexing
+  - Auto-redirects from `/rag` when no config exists (first run)
+- **Two-layer auto-discovery via CLAUDE.md**:
+  - Layer 1 (global): `/rag init` writes `## RAG MCP` to `~/.claude/CLAUDE.md`
+  - Layer 2 (per-project): `/rag index` writes `## RAG Index` to `<project>/.claude/CLAUDE.md`
+  - Claude Code automatically uses RAG when these hints are present
+- **Comprehensive RAG guide** — `guides/RAG-MCP-GUIDE.md` covering architecture, setup, backends, multi-repo, persistence, troubleshooting
+
+### Fixed
+
+- **Redis socket race condition** — `RedisAdapter.ensureConnected()` now checks `client.isOpen` to prevent "Socket already opened" error from concurrent calls
+
+---
+
 ## [2.7.0] - 2026-02-21
 
 ### Added

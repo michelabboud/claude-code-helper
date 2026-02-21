@@ -293,18 +293,21 @@ Survey all installed MCP servers, agents, and skills — generate a health repor
 ### RAG / Search Skills
 
 #### rag
-Unified interface for the RAG MCP server — index, search, and configure vector database backends.
+Unified interface for the RAG MCP server — init, index, search, and configure vector database backends.
 
-**Covers**: Codebase indexing, semantic search, similar code search, context retrieval, collection management, backend configuration (ChromaDB/Redis/Qdrant), persistent storage
+**Covers**: First-time setup wizard, codebase indexing, semantic search, similar code search, context retrieval, collection management, backend configuration (ChromaDB/Redis/Qdrant), persistent storage, two-layer CLAUDE.md auto-discovery, multi-repo support
 
 **Usage:**
 ```bash
-/rag                      # Interactive menu
+/rag                      # Interactive menu (auto-redirects to init on first run)
+/rag init                 # Setup wizard: choose backend, install, configure, teach Claude Code
 /rag index                # Index current project
 /rag search "auth flow"   # Semantic search
 /rag config redis         # Switch to Redis backend
 /rag collections          # List indexed collections
 ```
+
+**Guide:** See [RAG MCP Guide](../guides/RAG-MCP-GUIDE.md) for comprehensive documentation.
 
 ## Creating Custom Skills
 
