@@ -38,6 +38,19 @@ triggers:
       on: [read]
   priority: 11
   tags: [ml, ai, deeplearning, pytorch, tensorflow]
+references:
+  - url: "https://pytorch.org/docs/stable/"
+    label: "PyTorch Documentation"
+    type: docs
+  - url: "https://www.tensorflow.org/api_docs"
+    label: "TensorFlow API Documentation"
+    type: api-ref
+  - url: "https://scikit-learn.org/stable/documentation.html"
+    label: "scikit-learn Documentation"
+    type: docs
+  - url: "https://platform.openai.com/docs"
+    label: "OpenAI API Documentation"
+    type: api-ref
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

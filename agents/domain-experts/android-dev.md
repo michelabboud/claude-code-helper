@@ -36,6 +36,16 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [mobile, android, kotlin, jetpack]
+references:
+  - url: "https://developer.android.com/docs"
+    label: "Android Developer Documentation"
+    type: docs
+  - url: "https://developer.android.com/jetpack/androidx/releases"
+    label: "AndroidX Releases"
+    type: release-notes
+  - url: "https://developer.android.com/reference"
+    label: "Android API Reference"
+    type: api-ref
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

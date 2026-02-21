@@ -49,6 +49,16 @@ triggers:
 
   # Tags for categorization
   tags: [backend, api, rest, web-services]
+references:
+  - url: "https://swagger.io/specification/"
+    label: "OpenAPI Specification"
+    type: docs
+  - url: "https://restfulapi.net/"
+    label: "RESTful API Design Guide"
+    type: docs
+  - url: "https://graphql.org/learn/"
+    label: "GraphQL Documentation"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

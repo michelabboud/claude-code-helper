@@ -42,6 +42,16 @@ triggers:
       on: [edit, write]
   priority: 11
   tags: [devops, docker, kubernetes, cicd, terraform]
+references:
+  - url: "https://docs.docker.com/"
+    label: "Docker Documentation"
+    type: docs
+  - url: "https://kubernetes.io/docs/"
+    label: "Kubernetes Documentation"
+    type: docs
+  - url: "https://developer.hashicorp.com/terraform/docs"
+    label: "Terraform Documentation"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

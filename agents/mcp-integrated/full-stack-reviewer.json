@@ -43,5 +43,9 @@
   "version": "1.0.0",
   "author": "Michel Abboud",
   "license": "Apache-2.0",
-  "repository": "https://github.com/michelabboud/claude-code-helper"
+  "repository": "https://github.com/michelabboud/claude-code-helper",
+  "references": [
+    {"url": "https://owasp.org/www-project-top-ten/", "label": "OWASP Top 10", "type": "docs"},
+    {"url": "https://google.github.io/eng-practices/review/", "label": "Google Code Review Guide", "type": "docs"}
+  ]
 }

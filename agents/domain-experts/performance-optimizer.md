@@ -36,6 +36,16 @@ triggers:
       on: [read]
   priority: 12
   tags: [performance, optimization, profiling, speed]
+references:
+  - url: "https://web.dev/performance/"
+    label: "web.dev Performance Guide"
+    type: docs
+  - url: "https://developer.chrome.com/docs/lighthouse/"
+    label: "Lighthouse Documentation"
+    type: docs
+  - url: "https://developer.chrome.com/docs/devtools/"
+    label: "Chrome DevTools Documentation"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

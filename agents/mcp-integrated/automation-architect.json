@@ -49,5 +49,9 @@
   "version": "1.0.0",
   "author": "Michel Abboud",
   "license": "Apache-2.0",
-  "repository": "https://github.com/michelabboud/claude-code-helper"
+  "repository": "https://github.com/michelabboud/claude-code-helper",
+  "references": [
+    {"url": "https://docs.n8n.io/", "label": "n8n Documentation", "type": "docs"},
+    {"url": "https://zapier.com/developer/documentation/v2/", "label": "Zapier Developer Documentation", "type": "docs"}
+  ]
 }

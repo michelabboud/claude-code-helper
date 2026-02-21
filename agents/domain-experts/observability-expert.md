@@ -37,6 +37,16 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [observability, monitoring, logging, metrics]
+references:
+  - url: "https://opentelemetry.io/docs/"
+    label: "OpenTelemetry Documentation"
+    type: docs
+  - url: "https://prometheus.io/docs/"
+    label: "Prometheus Documentation"
+    type: docs
+  - url: "https://grafana.com/docs/"
+    label: "Grafana Documentation"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

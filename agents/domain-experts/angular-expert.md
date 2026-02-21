@@ -34,6 +34,16 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [frontend, angular, rxjs, typescript]
+references:
+  - url: "https://angular.dev/overview"
+    label: "Angular Documentation"
+    type: docs
+  - url: "https://github.com/angular/angular/releases"
+    label: "Angular Releases"
+    type: release-notes
+  - url: "https://angular.dev/api"
+    label: "Angular API Reference"
+    type: api-ref
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

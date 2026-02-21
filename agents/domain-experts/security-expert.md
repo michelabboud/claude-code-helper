@@ -47,6 +47,16 @@ triggers:
 
   priority: 15
   tags: [security, audit, owasp, compliance]
+references:
+  - url: "https://owasp.org/www-project-top-ten/"
+    label: "OWASP Top 10"
+    type: docs
+  - url: "https://cheatsheetseries.owasp.org/"
+    label: "OWASP Cheat Sheet Series"
+    type: docs
+  - url: "https://nvd.nist.gov/"
+    label: "National Vulnerability Database"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

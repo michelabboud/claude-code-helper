@@ -36,6 +36,16 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [frontend, css, tailwind, styling]
+references:
+  - url: "https://tailwindcss.com/docs"
+    label: "Tailwind CSS Documentation"
+    type: docs
+  - url: "https://github.com/tailwindlabs/tailwindcss/releases"
+    label: "Tailwind CSS Releases"
+    type: release-notes
+  - url: "https://developer.mozilla.org/en-US/docs/Web/CSS"
+    label: "MDN CSS Reference"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

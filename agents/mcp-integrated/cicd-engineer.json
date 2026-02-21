@@ -57,5 +57,9 @@
   "version": "1.0.0",
   "author": "Michel Abboud",
   "license": "Apache-2.0",
-  "repository": "https://github.com/michelabboud/claude-code-helper"
+  "repository": "https://github.com/michelabboud/claude-code-helper",
+  "references": [
+    {"url": "https://docs.github.com/en/actions", "label": "GitHub Actions Documentation", "type": "docs"},
+    {"url": "https://docs.gitlab.com/ci/", "label": "GitLab CI Documentation", "type": "docs"}
+  ]
 }

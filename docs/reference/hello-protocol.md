@@ -184,6 +184,20 @@ Every skill handles `hello` and `hello ID` as arguments.
 **License**: Apache-2.0
 ```
 
+### `/refresh` skill example
+
+**Quick hello:**
+```
+/refresh hello
+```
+Response: `👋 Hello! I'm **refresh** v1.0.0. Refresh agent knowledge from official reference URLs. Use `/refresh hello ID` for the full guide.`
+
+**Verbose hello:**
+```
+/refresh hello ID
+```
+Response includes: name, description, available commands (status, <agent-name>, all), author info.
+
 ### How to add to a new SKILL.md
 
 **1. Update frontmatter** — append to `argument-hint`:

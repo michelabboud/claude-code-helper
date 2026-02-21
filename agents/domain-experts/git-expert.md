@@ -32,6 +32,16 @@ triggers:
       on: [edit, write]
   priority: 8
   tags: [git, vcs, workflow]
+references:
+  - url: "https://git-scm.com/doc"
+    label: "Git Documentation"
+    type: docs
+  - url: "https://github.blog/changelog/"
+    label: "GitHub Changelog"
+    type: changelog
+  - url: "https://git-scm.com/docs"
+    label: "Git Reference Manual"
+    type: api-ref
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

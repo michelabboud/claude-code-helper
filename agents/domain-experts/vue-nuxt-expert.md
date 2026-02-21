@@ -35,6 +35,16 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [frontend, vue, nuxt, typescript]
+references:
+  - url: "https://vuejs.org/guide/introduction.html"
+    label: "Vue.js Documentation"
+    type: docs
+  - url: "https://nuxt.com/docs"
+    label: "Nuxt Documentation"
+    type: docs
+  - url: "https://github.com/vuejs/core/releases"
+    label: "Vue.js Releases"
+    type: release-notes
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

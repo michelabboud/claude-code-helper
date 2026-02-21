@@ -35,6 +35,16 @@ triggers:
       on: [read, edit]
   priority: 10
   tags: [backend, go, golang, microservices]
+references:
+  - url: "https://go.dev/doc/"
+    label: "Go Documentation"
+    type: docs
+  - url: "https://go.dev/doc/devel/release"
+    label: "Go Release History"
+    type: release-notes
+  - url: "https://pkg.go.dev/std"
+    label: "Go Standard Library Reference"
+    type: api-ref
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

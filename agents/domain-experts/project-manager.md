@@ -43,6 +43,13 @@ triggers:
       on: [read, edit]
   priority: 20
   tags: [management, orchestration, planning, strategy, prioritization]
+references:
+  - url: "https://www.atlassian.com/agile"
+    label: "Atlassian Agile Guide"
+    type: docs
+  - url: "https://docs.github.com/en/issues"
+    label: "GitHub Issues Documentation"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

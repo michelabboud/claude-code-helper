@@ -35,6 +35,13 @@ triggers:
       on: [edit, write]
   priority: 8
   tags: [documentation, technical-writing, api-docs]
+references:
+  - url: "https://www.writethedocs.org/guide/"
+    label: "Write the Docs Guide"
+    type: docs
+  - url: "https://developers.google.com/style"
+    label: "Google Developer Documentation Style Guide"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

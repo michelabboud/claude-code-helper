@@ -47,6 +47,16 @@ triggers:
 
   priority: 10
   tags: [frontend, react, nextjs, typescript]
+references:
+  - url: "https://react.dev/reference/react"
+    label: "React Documentation"
+    type: docs
+  - url: "https://nextjs.org/docs"
+    label: "Next.js Documentation"
+    type: docs
+  - url: "https://github.com/vercel/next.js/releases"
+    label: "Next.js Releases"
+    type: release-notes
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

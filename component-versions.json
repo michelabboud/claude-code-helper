@@ -1,329 +1,1138 @@
 {
-  "schemaVersion": 1,
-  "repoVersion": "2.4.1",
-  "generatedAt": "2026-02-20T15:59:32.330Z",
+  "schemaVersion": 2,
+  "repoVersion": "2.8.0",
+  "generatedAt": "2026-02-21T14:05:55.840Z",
   "components": {
     "agents/domain-experts/android-dev": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/android-dev.md",
       "installPath": "agents/android-dev.md",
-      "changelog": "agents/domain-experts/android-dev.md#changelog"
+      "changelog": "agents/domain-experts/android-dev.md#changelog",
+      "references": [
+        {
+          "url": "https://developer.android.com/docs",
+          "label": "Android Developer Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://developer.android.com/jetpack/androidx/releases",
+          "label": "AndroidX Releases",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://developer.android.com/reference",
+          "label": "Android API Reference",
+          "type": "api-ref"
+        }
+      ]
     },
     "agents/domain-experts/android-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/android-expert.md",
       "installPath": "agents/android-expert.md",
-      "changelog": "agents/domain-experts/android-expert.md#changelog"
+      "changelog": "agents/domain-experts/android-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://developer.android.com/develop/ui/compose/documentation",
+          "label": "Jetpack Compose Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://kotlinlang.org/docs/home.html",
+          "label": "Kotlin Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://developer.android.com/jetpack/androidx/releases",
+          "label": "AndroidX Releases",
+          "type": "release-notes"
+        }
+      ]
     },
     "agents/domain-experts/angular-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/angular-expert.md",
       "installPath": "agents/angular-expert.md",
-      "changelog": "agents/domain-experts/angular-expert.md#changelog"
+      "changelog": "agents/domain-experts/angular-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://angular.dev/overview",
+          "label": "Angular Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://github.com/angular/angular/releases",
+          "label": "Angular Releases",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://angular.dev/api",
+          "label": "Angular API Reference",
+          "type": "api-ref"
+        }
+      ]
     },
     "agents/domain-experts/api-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/api-expert.md",
       "installPath": "agents/api-expert.md",
-      "changelog": "agents/domain-experts/api-expert.md#changelog"
+      "changelog": "agents/domain-experts/api-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://swagger.io/specification/",
+          "label": "OpenAPI Specification",
+          "type": "docs"
+        },
+        {
+          "url": "https://restfulapi.net/",
+          "label": "RESTful API Design Guide",
+          "type": "docs"
+        },
+        {
+          "url": "https://graphql.org/learn/",
+          "label": "GraphQL Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/aws-architect-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/aws-architect-expert.md",
       "installPath": "agents/aws-architect-expert.md",
-      "changelog": "agents/domain-experts/aws-architect-expert.md#changelog"
+      "changelog": "agents/domain-experts/aws-architect-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://docs.aws.amazon.com/",
+          "label": "AWS Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://aws.amazon.com/new/",
+          "label": "AWS What's New",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://docs.aws.amazon.com/cdk/v2/guide/",
+          "label": "AWS CDK Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/azure-architect-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/azure-architect-expert.md",
       "installPath": "agents/azure-architect-expert.md",
-      "changelog": "agents/domain-experts/azure-architect-expert.md#changelog"
+      "changelog": "agents/domain-experts/azure-architect-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://learn.microsoft.com/en-us/azure/",
+          "label": "Azure Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://azure.microsoft.com/en-us/updates/",
+          "label": "Azure Updates",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://learn.microsoft.com/en-us/azure/architecture/",
+          "label": "Azure Architecture Center",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/css-tailwind-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/css-tailwind-expert.md",
       "installPath": "agents/css-tailwind-expert.md",
-      "changelog": "agents/domain-experts/css-tailwind-expert.md#changelog"
+      "changelog": "agents/domain-experts/css-tailwind-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://tailwindcss.com/docs",
+          "label": "Tailwind CSS Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://github.com/tailwindlabs/tailwindcss/releases",
+          "label": "Tailwind CSS Releases",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS",
+          "label": "MDN CSS Reference",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/data-engineering-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/data-engineering-expert.md",
       "installPath": "agents/data-engineering-expert.md",
-      "changelog": "agents/domain-experts/data-engineering-expert.md#changelog"
+      "changelog": "agents/domain-experts/data-engineering-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://airflow.apache.org/docs/",
+          "label": "Apache Airflow Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://spark.apache.org/docs/latest/",
+          "label": "Apache Spark Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://docs.getdbt.com/",
+          "label": "dbt Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/database-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/database-expert.md",
       "installPath": "agents/database-expert.md",
-      "changelog": "agents/domain-experts/database-expert.md#changelog"
+      "changelog": "agents/domain-experts/database-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://www.postgresql.org/docs/current/",
+          "label": "PostgreSQL Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://dev.mysql.com/doc/",
+          "label": "MySQL Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.sqlite.org/docs.html",
+          "label": "SQLite Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/devops-infrastructure-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/devops-infrastructure-expert.md",
       "installPath": "agents/devops-infrastructure-expert.md",
-      "changelog": "agents/domain-experts/devops-infrastructure-expert.md#changelog"
+      "changelog": "agents/domain-experts/devops-infrastructure-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://docs.docker.com/",
+          "label": "Docker Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://kubernetes.io/docs/",
+          "label": "Kubernetes Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://developer.hashicorp.com/terraform/docs",
+          "label": "Terraform Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/documentation-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/documentation-expert.md",
       "installPath": "agents/documentation-expert.md",
-      "changelog": "agents/domain-experts/documentation-expert.md#changelog"
+      "changelog": "agents/domain-experts/documentation-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://www.writethedocs.org/guide/",
+          "label": "Write the Docs Guide",
+          "type": "docs"
+        },
+        {
+          "url": "https://developers.google.com/style",
+          "label": "Google Developer Documentation Style Guide",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/game-design-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/game-design-expert.md",
       "installPath": "agents/game-design-expert.md",
-      "changelog": "agents/domain-experts/game-design-expert.md#changelog"
+      "changelog": "agents/domain-experts/game-design-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://docs.unity3d.com/Manual/",
+          "label": "Unity Manual",
+          "type": "docs"
+        },
+        {
+          "url": "https://docs.unrealengine.com/",
+          "label": "Unreal Engine Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://godotengine.org/docs/",
+          "label": "Godot Engine Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/gcp-architect-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/gcp-architect-expert.md",
       "installPath": "agents/gcp-architect-expert.md",
-      "changelog": "agents/domain-experts/gcp-architect-expert.md#changelog"
+      "changelog": "agents/domain-experts/gcp-architect-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://cloud.google.com/docs",
+          "label": "Google Cloud Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://cloud.google.com/release-notes",
+          "label": "Google Cloud Release Notes",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://cloud.google.com/architecture",
+          "label": "Google Cloud Architecture Center",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/git-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/git-expert.md",
       "installPath": "agents/git-expert.md",
-      "changelog": "agents/domain-experts/git-expert.md#changelog"
+      "changelog": "agents/domain-experts/git-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://git-scm.com/doc",
+          "label": "Git Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://github.blog/changelog/",
+          "label": "GitHub Changelog",
+          "type": "changelog"
+        },
+        {
+          "url": "https://git-scm.com/docs",
+          "label": "Git Reference Manual",
+          "type": "api-ref"
+        }
+      ]
     },
     "agents/domain-experts/go-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/go-expert.md",
       "installPath": "agents/go-expert.md",
-      "changelog": "agents/domain-experts/go-expert.md#changelog"
+      "changelog": "agents/domain-experts/go-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://go.dev/doc/",
+          "label": "Go Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://go.dev/doc/devel/release",
+          "label": "Go Release History",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://pkg.go.dev/std",
+          "label": "Go Standard Library Reference",
+          "type": "api-ref"
+        }
+      ]
     },
     "agents/domain-experts/huggingface-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/huggingface-expert.md",
       "installPath": "agents/huggingface-expert.md",
-      "changelog": "agents/domain-experts/huggingface-expert.md#changelog"
+      "changelog": "agents/domain-experts/huggingface-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://huggingface.co/docs/transformers",
+          "label": "Transformers Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://huggingface.co/docs/hub",
+          "label": "Hugging Face Hub Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://github.com/huggingface/transformers/releases",
+          "label": "Transformers Releases",
+          "type": "release-notes"
+        }
+      ]
     },
     "agents/domain-experts/ios-development-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/ios-development-expert.md",
       "installPath": "agents/ios-development-expert.md",
-      "changelog": "agents/domain-experts/ios-development-expert.md#changelog"
+      "changelog": "agents/domain-experts/ios-development-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://developer.apple.com/documentation/",
+          "label": "Apple Developer Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://developer.apple.com/tutorials/swiftui",
+          "label": "SwiftUI Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://developer.apple.com/news/releases/",
+          "label": "Apple Developer Releases",
+          "type": "release-notes"
+        }
+      ]
     },
     "agents/domain-experts/iot-embedded-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/iot-embedded-expert.md",
       "installPath": "agents/iot-embedded-expert.md",
-      "changelog": "agents/domain-experts/iot-embedded-expert.md#changelog"
+      "changelog": "agents/domain-experts/iot-embedded-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://docs.arduino.cc/",
+          "label": "Arduino Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://docs.espressif.com/projects/esp-idf/en/latest/",
+          "label": "ESP-IDF Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://mqtt.org/mqtt-specification/",
+          "label": "MQTT Specification",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/laravel-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/laravel-expert.md",
       "installPath": "agents/laravel-expert.md",
-      "changelog": "agents/domain-experts/laravel-expert.md#changelog"
+      "changelog": "agents/domain-experts/laravel-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://laravel.com/docs",
+          "label": "Laravel Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://github.com/laravel/framework/releases",
+          "label": "Laravel Releases",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://laravel.com/api/",
+          "label": "Laravel API Reference",
+          "type": "api-ref"
+        }
+      ]
     },
     "agents/domain-experts/ml-ai-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/ml-ai-expert.md",
       "installPath": "agents/ml-ai-expert.md",
-      "changelog": "agents/domain-experts/ml-ai-expert.md#changelog"
+      "changelog": "agents/domain-experts/ml-ai-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://pytorch.org/docs/stable/",
+          "label": "PyTorch Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.tensorflow.org/api_docs",
+          "label": "TensorFlow API Documentation",
+          "type": "api-ref"
+        },
+        {
+          "url": "https://scikit-learn.org/stable/documentation.html",
+          "label": "scikit-learn Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://platform.openai.com/docs",
+          "label": "OpenAI API Documentation",
+          "type": "api-ref"
+        }
+      ]
+    },
+    "agents/domain-experts/mongodb-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/mongodb-expert.md",
+      "installPath": "agents/mongodb-expert.md",
+      "changelog": "agents/domain-experts/mongodb-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://www.mongodb.com/docs/manual/",
+          "label": "MongoDB Manual",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.mongodb.com/docs/manual/release-notes/",
+          "label": "MongoDB Release Notes",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://mongoosejs.com/docs/guide.html",
+          "label": "Mongoose Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.mongodb.com/docs/atlas/",
+          "label": "MongoDB Atlas Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/nodejs-typescript-backend-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/nodejs-typescript-backend-expert.md",
       "installPath": "agents/nodejs-typescript-backend-expert.md",
-      "changelog": "agents/domain-experts/nodejs-typescript-backend-expert.md#changelog"
+      "changelog": "agents/domain-experts/nodejs-typescript-backend-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://nodejs.org/docs/latest/api/",
+          "label": "Node.js API Documentation",
+          "type": "api-ref"
+        },
+        {
+          "url": "https://www.typescriptlang.org/docs/",
+          "label": "TypeScript Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://nodejs.org/en/blog/release",
+          "label": "Node.js Releases",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://docs.nestjs.com/",
+          "label": "NestJS Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/observability-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/observability-expert.md",
       "installPath": "agents/observability-expert.md",
-      "changelog": "agents/domain-experts/observability-expert.md#changelog"
+      "changelog": "agents/domain-experts/observability-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://opentelemetry.io/docs/",
+          "label": "OpenTelemetry Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://prometheus.io/docs/",
+          "label": "Prometheus Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://grafana.com/docs/",
+          "label": "Grafana Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/performance-optimizer": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/performance-optimizer.md",
       "installPath": "agents/performance-optimizer.md",
-      "changelog": "agents/domain-experts/performance-optimizer.md#changelog"
+      "changelog": "agents/domain-experts/performance-optimizer.md#changelog",
+      "references": [
+        {
+          "url": "https://web.dev/performance/",
+          "label": "web.dev Performance Guide",
+          "type": "docs"
+        },
+        {
+          "url": "https://developer.chrome.com/docs/lighthouse/",
+          "label": "Lighthouse Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://developer.chrome.com/docs/devtools/",
+          "label": "Chrome DevTools Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/php-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/php-expert.md",
       "installPath": "agents/php-expert.md",
-      "changelog": "agents/domain-experts/php-expert.md#changelog"
+      "changelog": "agents/domain-experts/php-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://www.php.net/manual/en/",
+          "label": "PHP Manual",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.php.net/releases/",
+          "label": "PHP Releases",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://getcomposer.org/doc/",
+          "label": "Composer Documentation",
+          "type": "docs"
+        }
+      ]
+    },
+    "agents/domain-experts/postgresql-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/postgresql-expert.md",
+      "installPath": "agents/postgresql-expert.md",
+      "changelog": "agents/domain-experts/postgresql-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://www.postgresql.org/docs/current/",
+          "label": "PostgreSQL Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.postgresql.org/docs/release/",
+          "label": "PostgreSQL Release Notes",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://github.com/pgvector/pgvector",
+          "label": "pgvector Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/project-manager": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/project-manager.md",
       "installPath": "agents/project-manager.md",
-      "changelog": "agents/domain-experts/project-manager.md#changelog"
+      "changelog": "agents/domain-experts/project-manager.md#changelog",
+      "references": [
+        {
+          "url": "https://www.atlassian.com/agile",
+          "label": "Atlassian Agile Guide",
+          "type": "docs"
+        },
+        {
+          "url": "https://docs.github.com/en/issues",
+          "label": "GitHub Issues Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/python-backend-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/python-backend-expert.md",
       "installPath": "agents/python-backend-expert.md",
-      "changelog": "agents/domain-experts/python-backend-expert.md#changelog"
+      "changelog": "agents/domain-experts/python-backend-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://docs.python.org/3/",
+          "label": "Python Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://fastapi.tiangolo.com/",
+          "label": "FastAPI Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://docs.djangoproject.com/en/stable/",
+          "label": "Django Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://docs.python.org/3/whatsnew/",
+          "label": "Python Release Notes",
+          "type": "release-notes"
+        }
+      ]
     },
     "agents/domain-experts/qa-testing-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/qa-testing-expert.md",
       "installPath": "agents/qa-testing-expert.md",
-      "changelog": "agents/domain-experts/qa-testing-expert.md#changelog"
+      "changelog": "agents/domain-experts/qa-testing-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://playwright.dev/docs/intro",
+          "label": "Playwright Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://jestjs.io/docs/getting-started",
+          "label": "Jest Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://docs.cypress.io/",
+          "label": "Cypress Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/domain-experts/react-nextjs-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/react-nextjs-expert.md",
       "installPath": "agents/react-nextjs-expert.md",
-      "changelog": "agents/domain-experts/react-nextjs-expert.md#changelog"
+      "changelog": "agents/domain-experts/react-nextjs-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://react.dev/reference/react",
+          "label": "React Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://nextjs.org/docs",
+          "label": "Next.js Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://github.com/vercel/next.js/releases",
+          "label": "Next.js Releases",
+          "type": "release-notes"
+        }
+      ]
     },
     "agents/domain-experts/redis-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/redis-expert.md",
       "installPath": "agents/redis-expert.md",
-      "changelog": "agents/domain-experts/redis-expert.md#changelog"
+      "changelog": "agents/domain-experts/redis-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://redis.io/docs/latest/",
+          "label": "Redis Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://github.com/redis/redis/releases",
+          "label": "Redis Releases",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://redis.io/docs/latest/commands/",
+          "label": "Redis Commands Reference",
+          "type": "api-ref"
+        }
+      ]
     },
     "agents/domain-experts/ruby-rails-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/ruby-rails-expert.md",
       "installPath": "agents/ruby-rails-expert.md",
-      "changelog": "agents/domain-experts/ruby-rails-expert.md#changelog"
+      "changelog": "agents/domain-experts/ruby-rails-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://guides.rubyonrails.org/",
+          "label": "Ruby on Rails Guides",
+          "type": "docs"
+        },
+        {
+          "url": "https://rubyonrails.org/category/releases",
+          "label": "Rails Releases",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://api.rubyonrails.org/",
+          "label": "Rails API Reference",
+          "type": "api-ref"
+        }
+      ]
     },
     "agents/domain-experts/rust-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/rust-expert.md",
       "installPath": "agents/rust-expert.md",
-      "changelog": "agents/domain-experts/rust-expert.md#changelog"
+      "changelog": "agents/domain-experts/rust-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://doc.rust-lang.org/book/",
+          "label": "The Rust Programming Language",
+          "type": "docs"
+        },
+        {
+          "url": "https://doc.rust-lang.org/std/",
+          "label": "Rust Standard Library Reference",
+          "type": "api-ref"
+        },
+        {
+          "url": "https://blog.rust-lang.org/",
+          "label": "Rust Blog (Releases)",
+          "type": "release-notes"
+        }
+      ]
     },
     "agents/domain-experts/security-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/security-expert.md",
       "installPath": "agents/security-expert.md",
-      "changelog": "agents/domain-experts/security-expert.md#changelog"
+      "changelog": "agents/domain-experts/security-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://owasp.org/www-project-top-ten/",
+          "label": "OWASP Top 10",
+          "type": "docs"
+        },
+        {
+          "url": "https://cheatsheetseries.owasp.org/",
+          "label": "OWASP Cheat Sheet Series",
+          "type": "docs"
+        },
+        {
+          "url": "https://nvd.nist.gov/",
+          "label": "National Vulnerability Database",
+          "type": "docs"
+        }
+      ]
+    },
+    "agents/domain-experts/supabase-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/supabase-expert.md",
+      "installPath": "agents/supabase-expert.md",
+      "changelog": "agents/domain-experts/supabase-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://supabase.com/docs",
+          "label": "Supabase Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://github.com/supabase/supabase/releases",
+          "label": "Supabase Releases",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://supabase.com/docs/reference/javascript/introduction",
+          "label": "Supabase JS SDK Reference",
+          "type": "api-ref"
+        }
+      ]
     },
     "agents/domain-experts/vue-nuxt-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/vue-nuxt-expert.md",
       "installPath": "agents/vue-nuxt-expert.md",
-      "changelog": "agents/domain-experts/vue-nuxt-expert.md#changelog"
+      "changelog": "agents/domain-experts/vue-nuxt-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://vuejs.org/guide/introduction.html",
+          "label": "Vue.js Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://nuxt.com/docs",
+          "label": "Nuxt Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://github.com/vuejs/core/releases",
+          "label": "Vue.js Releases",
+          "type": "release-notes"
+        }
+      ]
     },
     "agents/domain-experts/wordpress-expert": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/domain-experts/wordpress-expert.md",
       "installPath": "agents/wordpress-expert.md",
-      "changelog": "agents/domain-experts/wordpress-expert.md#changelog"
+      "changelog": "agents/domain-experts/wordpress-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://developer.wordpress.org/",
+          "label": "WordPress Developer Resources",
+          "type": "docs"
+        },
+        {
+          "url": "https://wordpress.org/news/category/releases/",
+          "label": "WordPress Releases",
+          "type": "release-notes"
+        },
+        {
+          "url": "https://developer.wordpress.org/rest-api/",
+          "label": "WordPress REST API Reference",
+          "type": "api-ref"
+        }
+      ]
     },
     "agents/mcp-integrated/api-specialist": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/api-specialist.json",
       "installPath": "agents/api-specialist.json",
-      "changelog": "agents/mcp-integrated/api-specialist.json#changelog"
+      "changelog": "agents/mcp-integrated/api-specialist.json#changelog",
+      "references": [
+        {
+          "url": "https://swagger.io/specification/",
+          "label": "OpenAPI Specification",
+          "type": "docs"
+        },
+        {
+          "url": "https://restfulapi.net/",
+          "label": "RESTful API Design Guide",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/automation-architect": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/automation-architect.json",
       "installPath": "agents/automation-architect.json",
-      "changelog": "agents/mcp-integrated/automation-architect.json#changelog"
+      "changelog": "agents/mcp-integrated/automation-architect.json#changelog",
+      "references": [
+        {
+          "url": "https://docs.n8n.io/",
+          "label": "n8n Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://zapier.com/developer/documentation/v2/",
+          "label": "Zapier Developer Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/cicd-engineer": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/cicd-engineer.json",
       "installPath": "agents/cicd-engineer.json",
-      "changelog": "agents/mcp-integrated/cicd-engineer.json#changelog"
+      "changelog": "agents/mcp-integrated/cicd-engineer.json#changelog",
+      "references": [
+        {
+          "url": "https://docs.github.com/en/actions",
+          "label": "GitHub Actions Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://docs.gitlab.com/ci/",
+          "label": "GitLab CI Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/database-engineer": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/database-engineer.json",
       "installPath": "agents/database-engineer.json",
-      "changelog": "agents/mcp-integrated/database-engineer.json#changelog"
+      "changelog": "agents/mcp-integrated/database-engineer.json#changelog",
+      "references": [
+        {
+          "url": "https://www.postgresql.org/docs/current/",
+          "label": "PostgreSQL Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://dev.mysql.com/doc/",
+          "label": "MySQL Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/dependency-manager": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/dependency-manager.json",
       "installPath": "agents/dependency-manager.json",
-      "changelog": "agents/mcp-integrated/dependency-manager.json#changelog"
+      "changelog": "agents/mcp-integrated/dependency-manager.json#changelog",
+      "references": [
+        {
+          "url": "https://docs.npmjs.com/",
+          "label": "npm Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://snyk.io/advisor/",
+          "label": "Snyk Advisor",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/design-system-guardian": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/design-system-guardian.json",
       "installPath": "agents/design-system-guardian.json",
-      "changelog": "agents/mcp-integrated/design-system-guardian.json#changelog"
+      "changelog": "agents/mcp-integrated/design-system-guardian.json#changelog",
+      "references": [
+        {
+          "url": "https://www.w3.org/WAI/WCAG21/quickref/",
+          "label": "WCAG 2.1 Quick Reference",
+          "type": "docs"
+        },
+        {
+          "url": "https://designtokens.org/",
+          "label": "Design Tokens Specification",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/full-stack-reviewer": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/full-stack-reviewer.json",
       "installPath": "agents/full-stack-reviewer.json",
-      "changelog": "agents/mcp-integrated/full-stack-reviewer.json#changelog"
+      "changelog": "agents/mcp-integrated/full-stack-reviewer.json#changelog",
+      "references": [
+        {
+          "url": "https://owasp.org/www-project-top-ten/",
+          "label": "OWASP Top 10",
+          "type": "docs"
+        },
+        {
+          "url": "https://google.github.io/eng-practices/review/",
+          "label": "Google Code Review Guide",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/performance-optimizer": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/performance-optimizer.json",
       "installPath": "agents/performance-optimizer.json",
-      "changelog": "agents/mcp-integrated/performance-optimizer.json#changelog"
+      "changelog": "agents/mcp-integrated/performance-optimizer.json#changelog",
+      "references": [
+        {
+          "url": "https://web.dev/performance/",
+          "label": "web.dev Performance Guide",
+          "type": "docs"
+        },
+        {
+          "url": "https://developer.chrome.com/docs/lighthouse/",
+          "label": "Lighthouse Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/security-reviewer": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/security-reviewer.json",
       "installPath": "agents/security-reviewer.json",
-      "changelog": "agents/mcp-integrated/security-reviewer.json#changelog"
+      "changelog": "agents/mcp-integrated/security-reviewer.json#changelog",
+      "references": [
+        {
+          "url": "https://owasp.org/www-project-top-ten/",
+          "label": "OWASP Top 10",
+          "type": "docs"
+        },
+        {
+          "url": "https://cheatsheetseries.owasp.org/",
+          "label": "OWASP Cheat Sheet Series",
+          "type": "docs"
+        },
+        {
+          "url": "https://cwe.mitre.org/top25/",
+          "label": "CWE Top 25",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/test-quality-enforcer": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/test-quality-enforcer.json",
       "installPath": "agents/test-quality-enforcer.json",
-      "changelog": "agents/mcp-integrated/test-quality-enforcer.json#changelog"
+      "changelog": "agents/mcp-integrated/test-quality-enforcer.json#changelog",
+      "references": [
+        {
+          "url": "https://jestjs.io/docs/getting-started",
+          "label": "Jest Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://playwright.dev/docs/intro",
+          "label": "Playwright Documentation",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/uiux-design-critic": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/uiux-design-critic.json",
       "installPath": "agents/uiux-design-critic.json",
-      "changelog": "agents/mcp-integrated/uiux-design-critic.json#changelog"
+      "changelog": "agents/mcp-integrated/uiux-design-critic.json#changelog",
+      "references": [
+        {
+          "url": "https://lawsofux.com/",
+          "label": "Laws of UX",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.nngroup.com/articles/",
+          "label": "Nielsen Norman Group Articles",
+          "type": "docs"
+        }
+      ]
     },
     "agents/mcp-integrated/uiux-reviewer": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/uiux-reviewer.json",
       "installPath": "agents/uiux-reviewer.json",
-      "changelog": "agents/mcp-integrated/uiux-reviewer.json#changelog"
+      "changelog": "agents/mcp-integrated/uiux-reviewer.json#changelog",
+      "references": [
+        {
+          "url": "https://www.w3.org/WAI/WCAG21/quickref/",
+          "label": "WCAG 2.1 Quick Reference",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.nngroup.com/articles/",
+          "label": "Nielsen Norman Group Articles",
+          "type": "docs"
+        }
+      ]
     },
     "hooks/build-validation": {
       "type": "hook",
@@ -560,6 +1369,20 @@
       "installPath": "skills/documentation/",
       "changelog": "skills/documentation/SKILL.md#changelog"
     },
+    "skills/greeting": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/greeting/SKILL.md",
+      "installPath": "skills/greeting/",
+      "changelog": "skills/greeting/SKILL.md#changelog"
+    },
+    "skills/model-mode": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/model-mode/SKILL.md",
+      "installPath": "skills/model-mode/",
+      "changelog": "skills/model-mode/SKILL.md#changelog"
+    },
     "skills/mutation-testing": {
       "type": "skill",
       "version": "1.0.0",
@@ -581,12 +1404,26 @@
       "installPath": "skills/project-scaffolding/",
       "changelog": "skills/project-scaffolding/SKILL.md#changelog"
     },
+    "skills/rag": {
+      "type": "skill",
+      "version": "2.0.0",
+      "file": "skills/rag/SKILL.md",
+      "installPath": "skills/rag/",
+      "changelog": "skills/rag/SKILL.md#changelog"
+    },
     "skills/refactoring-strategy": {
       "type": "skill",
       "version": "1.0.0",
       "file": "skills/refactoring-strategy.md",
       "installPath": "skills/refactoring-strategy.md",
       "changelog": "skills/refactoring-strategy.md#changelog"
+    },
+    "skills/refresh": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/refresh/SKILL.md",
+      "installPath": "skills/refresh/",
+      "changelog": "skills/refresh/SKILL.md#changelog"
     },
     "skills/release-management": {
       "type": "skill",
@@ -611,7 +1448,7 @@
     },
     "skills/update-check": {
       "type": "skill",
-      "version": "2.0.0",
+      "version": "3.0.0",
       "file": "skills/update-check/SKILL.md",
       "installPath": "skills/update-check/",
       "changelog": "skills/update-check/SKILL.md#changelog"

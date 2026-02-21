@@ -29,6 +29,16 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [database, redis, caching, pubsub]
+references:
+  - url: "https://redis.io/docs/latest/"
+    label: "Redis Documentation"
+    type: docs
+  - url: "https://github.com/redis/redis/releases"
+    label: "Redis Releases"
+    type: release-notes
+  - url: "https://redis.io/docs/latest/commands/"
+    label: "Redis Commands Reference"
+    type: api-ref
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

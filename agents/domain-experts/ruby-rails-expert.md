@@ -35,6 +35,16 @@ triggers:
       on: [read, edit]
   priority: 10
   tags: [backend, ruby, rails, hotwire]
+references:
+  - url: "https://guides.rubyonrails.org/"
+    label: "Ruby on Rails Guides"
+    type: docs
+  - url: "https://rubyonrails.org/category/releases"
+    label: "Rails Releases"
+    type: release-notes
+  - url: "https://api.rubyonrails.org/"
+    label: "Rails API Reference"
+    type: api-ref
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

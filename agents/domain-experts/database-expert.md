@@ -48,6 +48,16 @@ triggers:
 
   priority: 10
   tags: [database, sql, orm, migrations]
+references:
+  - url: "https://www.postgresql.org/docs/current/"
+    label: "PostgreSQL Documentation"
+    type: docs
+  - url: "https://dev.mysql.com/doc/"
+    label: "MySQL Documentation"
+    type: docs
+  - url: "https://www.sqlite.org/docs.html"
+    label: "SQLite Documentation"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

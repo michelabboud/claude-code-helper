@@ -4,7 +4,7 @@
 
 Version: v2.7.3
 Last Updated: 2026-02-21
-Total: 68 MCP tools • 55 agents • 22 skills • 7 commands
+Total: 68 MCP tools • 55 agents • 23 skills • 7 commands
 
 ---
 
@@ -567,13 +567,14 @@ Total: 68 MCP tools • 55 agents • 22 skills • 7 commands
 |-------|---------|-------|
 | `rag` | RAG MCP interface | `/rag index`, `/rag search`, `/rag config redis` |
 
-### Tooling (3)
+### Tooling (4)
 
 | Skill | Purpose | Usage |
 |-------|---------|-------|
 | `greeting` | Health survey of all tools | `/greeting` or `/greeting ID` |
-| `update-check` | Check for updates | `/update-check` |
+| `update-check` | Check and apply updates | `/update-check`, `/update-check update` |
 | `model-mode` | Switch model mode | `/model-mode opus-only` |
+| `refresh` | Refresh agent knowledge | `/refresh status`, `/refresh <agent>` |
 
 ### Project Management (1)
 
@@ -722,7 +723,7 @@ Total: 68 MCP tools • 55 agents • 22 skills • 7 commands
 |----------|-------|--------|
 | **MCP Tools** | 68 | 38 production + 30 experimental |
 | **Agents** | 52 | 14 MCP + 38 domain experts |
-| **Skills** | 22 | All production-ready |
+| **Skills** | 23 | All production-ready |
 | **Commands** | 7 | All production-ready |
 | **Total Components** | 149 | Ready to use |
 
@@ -744,7 +745,7 @@ Total: 68 MCP tools • 55 agents • 22 skills • 7 commands
 
 ---
 
-**Version:** claude-code-helper v2.7.0
+**Version:** claude-code-helper v2.8.0
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Claude Opus 4.6
 **License:** Apache-2.0

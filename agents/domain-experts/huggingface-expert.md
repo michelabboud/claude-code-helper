@@ -31,6 +31,16 @@ triggers:
       on: [edit, write]
   priority: 11
   tags: [ml, huggingface, transformers, nlp]
+references:
+  - url: "https://huggingface.co/docs/transformers"
+    label: "Transformers Documentation"
+    type: docs
+  - url: "https://huggingface.co/docs/hub"
+    label: "Hugging Face Hub Documentation"
+    type: docs
+  - url: "https://github.com/huggingface/transformers/releases"
+    label: "Transformers Releases"
+    type: release-notes
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

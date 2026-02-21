@@ -62,5 +62,9 @@
   "version": "1.0.0",
   "author": "Michel Abboud",
   "license": "Apache-2.0",
-  "repository": "https://github.com/michelabboud/claude-code-helper"
+  "repository": "https://github.com/michelabboud/claude-code-helper",
+  "references": [
+    {"url": "https://jestjs.io/docs/getting-started", "label": "Jest Documentation", "type": "docs"},
+    {"url": "https://playwright.dev/docs/intro", "label": "Playwright Documentation", "type": "docs"}
+  ]
 }

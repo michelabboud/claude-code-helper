@@ -15,7 +15,7 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 - Auto-discovered from nested `.claude/skills` directories (v2.1.6+)
 - Visible in slash command menu by default (opt-out with `user-invocable: false`)
 
-## Available Skills (22)
+## Available Skills (23)
 
 | Skill | Description | Category |
 |-------|-------------|----------|
@@ -41,6 +41,7 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 | **update-check** | Check for new releases (never auto-updates) | Maintenance |
 | **greeting** | Survey all installed tools and generate health report | Tooling |
 | **rag** | Index codebases, semantic search, configure backends (ChromaDB/Redis/Qdrant) | RAG / Search |
+| **refresh** | Refresh agent knowledge from official reference URLs | Maintenance |
 
 ## Installation
 
@@ -58,6 +59,7 @@ cp -r model-mode ~/.claude/skills/
 cp -r update-check ~/.claude/skills/
 cp -r greeting ~/.claude/skills/
 cp -r rag ~/.claude/skills/
+cp -r refresh ~/.claude/skills/
 ```
 
 ### Install All Skills (Project-Specific)

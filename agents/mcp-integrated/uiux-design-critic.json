@@ -47,5 +47,9 @@
   "version": "1.0.0",
   "author": "Michel Abboud",
   "license": "Apache-2.0",
-  "repository": "https://github.com/michelabboud/claude-code-helper"
+  "repository": "https://github.com/michelabboud/claude-code-helper",
+  "references": [
+    {"url": "https://lawsofux.com/", "label": "Laws of UX", "type": "docs"},
+    {"url": "https://www.nngroup.com/articles/", "label": "Nielsen Norman Group Articles", "type": "docs"}
+  ]
 }

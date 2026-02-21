@@ -62,5 +62,9 @@
   "version": "1.0.0",
   "author": "Michel Abboud",
   "license": "Apache-2.0",
-  "repository": "https://github.com/michelabboud/claude-code-helper"
+  "repository": "https://github.com/michelabboud/claude-code-helper",
+  "references": [
+    {"url": "https://docs.npmjs.com/", "label": "npm Documentation", "type": "docs"},
+    {"url": "https://snyk.io/advisor/", "label": "Snyk Advisor", "type": "docs"}
+  ]
 }

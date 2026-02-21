@@ -177,6 +177,7 @@ cat config-bundle/README.md            # Config bundle guide
 ### Agent Files (.md or .json)
 - **Domain experts**: Markdown files with YAML frontmatter in `agents/domain-experts/`
 - **MCP agents**: JSON files referencing MCP server tools in `agents/mcp-integrated/`
+- **`references` field**: All agents should include 2-4 official doc URLs for auto-refresh via `/refresh`
 - Install to: `~/.claude/agents/`
 
 ### Skill Files (SKILL.md)
@@ -323,9 +324,10 @@ When adding new content:
 2. Place skills in `skills/` (commands are now unified into skills since v2.1.3)
 3. Add template version to `templates/` if creating new pattern
 4. **Implement the Hello Protocol** — see `docs/reference/hello-protocol.md` for the required pattern
-5. Update relevant README.md files
-6. Include installation instructions
-7. Test installation process
+5. **Add `references` field** to agent frontmatter with 2-4 official doc URLs (enables `/refresh` auto-updates)
+6. Update relevant README.md files
+7. Include installation instructions
+8. Test installation process
 
 ## Latest Claude Code Features (v2.1.49)
 

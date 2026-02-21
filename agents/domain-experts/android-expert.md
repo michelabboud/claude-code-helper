@@ -31,6 +31,16 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [mobile, android, kotlin, compose]
+references:
+  - url: "https://developer.android.com/develop/ui/compose/documentation"
+    label: "Jetpack Compose Documentation"
+    type: docs
+  - url: "https://kotlinlang.org/docs/home.html"
+    label: "Kotlin Documentation"
+    type: docs
+  - url: "https://developer.android.com/jetpack/androidx/releases"
+    label: "AndroidX Releases"
+    type: release-notes
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

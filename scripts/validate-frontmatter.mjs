@@ -13,6 +13,7 @@ import YAML from 'yaml';
 
 const ROOT = process.cwd();
 const VALID_MODELS = ['sonnet', 'opus', 'haiku', 'opusplan'];
+const VALID_REF_TYPES = ['docs', 'release-notes', 'changelog', 'api-ref'];
 const ERRORS = [];
 const WARNINGS = [];
 let filesChecked = 0;
@@ -33,6 +34,58 @@ function collectMdFiles(dir) {
     }
   } catch { /* skip unreadable dirs */ }
   return files;
+}
+
+function collectJsonFiles(dir) {
+  const files = [];
+  try {
+    for (const entry of readdirSync(dir)) {
+      const full = join(dir, entry);
+      try {
+        const stat = statSync(full);
+        if (stat.isFile() && entry.endsWith('.json') && entry !== 'README.md') {
+          files.push(full);
+        }
+      } catch { /* skip unreadable */ }
+    }
+  } catch { /* skip unreadable dirs */ }
+  return files;
+}
+
+function validateJsonAgent(filePath, json) {
+  const rel = relative(ROOT, filePath);
+
+  if (!json.name) {
+    ERRORS.push(`${rel}: Missing required field 'name'`);
+  }
+  if (!json.description) {
+    ERRORS.push(`${rel}: Missing required field 'description'`);
+  }
+
+  // Validate references in JSON agents
+  if (!json.references) {
+    WARNINGS.push(`${rel}: No 'references' field (recommended for auto-refresh)`);
+  } else if (!Array.isArray(json.references)) {
+    ERRORS.push(`${rel}: 'references' must be an array`);
+  } else {
+    json.references.forEach((ref, i) => {
+      if (!ref.url) {
+        ERRORS.push(`${rel}: references[${i}] missing required 'url' field`);
+      } else if (typeof ref.url !== 'string' || !/^https?:\/\/.+/.test(ref.url)) {
+        ERRORS.push(`${rel}: references[${i}].url must be a valid http/https URL, got '${ref.url}'`);
+      }
+      if (!ref.label) {
+        ERRORS.push(`${rel}: references[${i}] missing required 'label' field`);
+      } else if (typeof ref.label !== 'string') {
+        ERRORS.push(`${rel}: references[${i}].label must be a string`);
+      }
+      if (ref.type !== undefined) {
+        if (!VALID_REF_TYPES.includes(ref.type)) {
+          ERRORS.push(`${rel}: references[${i}].type '${ref.type}' is invalid. Must be one of: ${VALID_REF_TYPES.join(', ')}`);
+        }
+      }
+    });
+  }
 }
 
 function extractFrontmatter(content) {
@@ -145,6 +198,43 @@ function validateAgent(filePath, fm) {
       WARNINGS.push(`${rel}: visual.color '${fm.visual.color}' is not a valid hex color`);
     }
   }
+
+  // References validation
+  validateReferences(filePath, fm);
+}
+
+function validateReferences(filePath, fm) {
+  const rel = relative(ROOT, filePath);
+
+  if (!fm.references) {
+    WARNINGS.push(`${rel}: No 'references' field (recommended for auto-refresh)`);
+    return;
+  }
+
+  if (!Array.isArray(fm.references)) {
+    ERRORS.push(`${rel}: 'references' must be an array`);
+    return;
+  }
+
+  fm.references.forEach((ref, i) => {
+    if (!ref.url) {
+      ERRORS.push(`${rel}: references[${i}] missing required 'url' field`);
+    } else if (typeof ref.url !== 'string' || !/^https?:\/\/.+/.test(ref.url)) {
+      ERRORS.push(`${rel}: references[${i}].url must be a valid http/https URL, got '${ref.url}'`);
+    }
+
+    if (!ref.label) {
+      ERRORS.push(`${rel}: references[${i}] missing required 'label' field`);
+    } else if (typeof ref.label !== 'string') {
+      ERRORS.push(`${rel}: references[${i}].label must be a string`);
+    }
+
+    if (ref.type !== undefined) {
+      if (!VALID_REF_TYPES.includes(ref.type)) {
+        ERRORS.push(`${rel}: references[${i}].type '${ref.type}' is invalid. Must be one of: ${VALID_REF_TYPES.join(', ')}`);
+      }
+    }
+  });
 }
 
 function validateSkill(filePath, fm) {
@@ -198,6 +288,21 @@ for (const dir of agentDirs) {
       }
     }
   } catch { /* dir doesn't exist */ }
+}
+
+// JSON Agents (agents/mcp-integrated/*.json)
+const jsonAgentDirs = [join(ROOT, 'agents', 'mcp-integrated')];
+for (const dir of jsonAgentDirs) {
+  for (const file of collectJsonFiles(dir)) {
+    try {
+      const content = readFileSync(file, 'utf-8');
+      const json = JSON.parse(content);
+      validateJsonAgent(file, json);
+      filesChecked++;
+    } catch (e) {
+      ERRORS.push(`${relative(ROOT, file)}: JSON parse error: ${e.message}`);
+    }
+  }
 }
 
 // Skills

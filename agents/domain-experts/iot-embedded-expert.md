@@ -36,6 +36,16 @@ triggers:
       on: [read, edit]
   priority: 10
   tags: [iot, embedded, arduino, esp32, mqtt]
+references:
+  - url: "https://docs.arduino.cc/"
+    label: "Arduino Documentation"
+    type: docs
+  - url: "https://docs.espressif.com/projects/esp-idf/en/latest/"
+    label: "ESP-IDF Documentation"
+    type: docs
+  - url: "https://mqtt.org/mqtt-specification/"
+    label: "MQTT Specification"
+    type: docs
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

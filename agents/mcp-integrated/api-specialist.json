@@ -57,5 +57,9 @@
   "version": "1.0.0",
   "author": "Michel Abboud",
   "license": "Apache-2.0",
-  "repository": "https://github.com/michelabboud/claude-code-helper"
+  "repository": "https://github.com/michelabboud/claude-code-helper",
+  "references": [
+    {"url": "https://swagger.io/specification/", "label": "OpenAPI Specification", "type": "docs"},
+    {"url": "https://restfulapi.net/", "label": "RESTful API Design Guide", "type": "docs"}
+  ]
 }

@@ -36,6 +36,16 @@ triggers:
       on: [edit, write]
   priority: 12
   tags: [cloud, azure, infrastructure, enterprise]
+references:
+  - url: "https://learn.microsoft.com/en-us/azure/"
+    label: "Azure Documentation"
+    type: docs
+  - url: "https://azure.microsoft.com/en-us/updates/"
+    label: "Azure Updates"
+    type: release-notes
+  - url: "https://learn.microsoft.com/en-us/azure/architecture/"
+    label: "Azure Architecture Center"
+    type: docs
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

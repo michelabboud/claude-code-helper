@@ -34,6 +34,16 @@ triggers:
       on: [read]
   priority: 10
   tags: [systems, rust, performance, wasm]
+references:
+  - url: "https://doc.rust-lang.org/book/"
+    label: "The Rust Programming Language"
+    type: docs
+  - url: "https://doc.rust-lang.org/std/"
+    label: "Rust Standard Library Reference"
+    type: api-ref
+  - url: "https://blog.rust-lang.org/"
+    label: "Rust Blog (Releases)"
+    type: release-notes
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

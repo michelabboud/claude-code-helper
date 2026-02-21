@@ -43,6 +43,16 @@ triggers:
       on: [edit, write]
   priority: 12
   tags: [database, postgresql, sql, plpgsql, extensions]
+references:
+  - url: "https://www.postgresql.org/docs/current/"
+    label: "PostgreSQL Documentation"
+    type: docs
+  - url: "https://www.postgresql.org/docs/release/"
+    label: "PostgreSQL Release Notes"
+    type: release-notes
+  - url: "https://github.com/pgvector/pgvector"
+    label: "pgvector Documentation"
+    type: docs
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

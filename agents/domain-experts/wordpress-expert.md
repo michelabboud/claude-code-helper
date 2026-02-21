@@ -35,6 +35,16 @@ triggers:
       on: [read, edit]
   priority: 10
   tags: [cms, wordpress, php, woocommerce]
+references:
+  - url: "https://developer.wordpress.org/"
+    label: "WordPress Developer Resources"
+    type: docs
+  - url: "https://wordpress.org/news/category/releases/"
+    label: "WordPress Releases"
+    type: release-notes
+  - url: "https://developer.wordpress.org/rest-api/"
+    label: "WordPress REST API Reference"
+    type: api-ref
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

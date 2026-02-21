@@ -28,6 +28,16 @@ triggers:
       on: [read]
   priority: 10
   tags: [backend, php, composer]
+references:
+  - url: "https://www.php.net/manual/en/"
+    label: "PHP Manual"
+    type: docs
+  - url: "https://www.php.net/releases/"
+    label: "PHP Releases"
+    type: release-notes
+  - url: "https://getcomposer.org/doc/"
+    label: "Composer Documentation"
+    type: docs
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

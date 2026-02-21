@@ -27,7 +27,7 @@
 
 - **52 Agents** (12 MCP agents + 40 domain experts)
 - **68 MCP Tools** across 10 servers (38 production + 30 experimental)
-- **22 Skills** (workflows, testing, scaffolding, documentation, RAG, update-check, model-mode, greeting, and more)
+- **23 Skills** (workflows, testing, scaffolding, documentation, RAG, update-check, refresh, model-mode, greeting, and more)
 - **Comprehensive guides, templates, and integration examples**
 
 ---
@@ -67,6 +67,23 @@ The install script installs:
 - 6 hook configurations (file, event, MCP triggers)
 - Triggers configuration (triggers.json + schema)
 - Skills and status lines
+
+### Keeping Updated
+
+```bash
+# Check what's outdated
+/update-check
+
+# Update all outdated components
+/update-check update
+
+# Update a specific component
+/update-check update redis-expert
+
+# Refresh agent knowledge from official docs
+/refresh status
+/refresh redis-expert
+```
 
 ### For Intermediate Users
 ```bash

@@ -42,6 +42,16 @@ triggers:
       on: [read, edit]
   priority: 11
   tags: [testing, qa, tdd, e2e, automation]
+references:
+  - url: "https://playwright.dev/docs/intro"
+    label: "Playwright Documentation"
+    type: docs
+  - url: "https://jestjs.io/docs/getting-started"
+    label: "Jest Documentation"
+    type: docs
+  - url: "https://docs.cypress.io/"
+    label: "Cypress Documentation"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

@@ -15,6 +15,38 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.8.0] - 2026-02-21
+
+### Added
+
+- **Agent & Skill Auto-Update System** — comprehensive self-refresh and update infrastructure:
+  - **`references` frontmatter field** — All 37 domain-expert agents and 12 MCP-integrated agents now include official documentation URLs (2-4 per agent) enabling automated knowledge refresh
+  - **`/refresh` skill** (v1.0.0) — Refresh agent knowledge from reference URLs:
+    - `/refresh status` — Show refresh status for all agents
+    - `/refresh <agent-name>` — Fetch latest docs and propose updates for a single agent
+    - `/refresh all` — Refresh all agents with references
+    - Always asks for user confirmation before modifying files
+  - **`/update-check update` command** (v3.0.0) — Apply component updates directly:
+    - `/update-check update` — Update all outdated components
+    - `/update-check update <name>` — Update a specific component
+    - Automatic backup to `~/.claude/backups/components/` (keeps last 3)
+    - Downloads from GitHub without requiring a local clone
+    - MCP servers show manual build instructions (never auto-built)
+  - **Weekly auto-refresh GitHub Action** — `.github/workflows/refresh-agents.yml`:
+    - Runs every Monday at 6 AM UTC (+ manual trigger)
+    - Fetches reference URLs, updates `## Latest Updates` sections
+    - Auto-creates PR via `peter-evans/create-pull-request`
+    - Conservative: only adds timestamped entries, no major rewrites
+  - **`scripts/refresh-agent.mjs`** — Helper script for fetching and structuring reference URL findings
+  - **`scripts/refresh-agents-ci.mjs`** — Conservative CI-mode refresh for automated PRs
+  - **`scripts/validate-references.mjs`** — URL reachability validator for CI
+  - **`scripts/download-component.sh`** — Download components from GitHub without a local clone
+  - **`component-versions.json` schema v2** — Now includes `references` array per component
+  - **Frontmatter validation** — `validate-frontmatter.mjs` now validates `references` arrays (url, label, type) for both .md and .json agents
+- Skill count increased: 22 → 23 (added `/refresh`)
+
+---
+
 ## [2.7.3] - 2026-02-21
 
 ### Added

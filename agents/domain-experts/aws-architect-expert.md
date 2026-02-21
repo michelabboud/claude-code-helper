@@ -37,6 +37,16 @@ triggers:
       on: [read, edit]
   priority: 12
   tags: [cloud, aws, infrastructure, serverless]
+references:
+  - url: "https://docs.aws.amazon.com/"
+    label: "AWS Documentation"
+    type: docs
+  - url: "https://aws.amazon.com/new/"
+    label: "AWS What's New"
+    type: release-notes
+  - url: "https://docs.aws.amazon.com/cdk/v2/guide/"
+    label: "AWS CDK Documentation"
+    type: docs
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

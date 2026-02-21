@@ -35,6 +35,16 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [gamedev, unity, unreal, csharp]
+references:
+  - url: "https://docs.unity3d.com/Manual/"
+    label: "Unity Manual"
+    type: docs
+  - url: "https://docs.unrealengine.com/"
+    label: "Unreal Engine Documentation"
+    type: docs
+  - url: "https://godotengine.org/docs/"
+    label: "Godot Engine Documentation"
+    type: docs
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

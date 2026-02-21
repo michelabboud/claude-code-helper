@@ -35,6 +35,16 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [data, etl, airflow, spark, dbt]
+references:
+  - url: "https://airflow.apache.org/docs/"
+    label: "Apache Airflow Documentation"
+    type: docs
+  - url: "https://spark.apache.org/docs/latest/"
+    label: "Apache Spark Documentation"
+    type: docs
+  - url: "https://docs.getdbt.com/"
+    label: "dbt Documentation"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

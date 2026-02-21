@@ -11,6 +11,7 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join, basename, dirname, extname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import YAML from 'yaml';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -39,6 +40,23 @@ function extractYamlValue(frontmatter, key) {
   const re = new RegExp(`^${key}:\\s*['"]?([^'"\n]+?)['"]?\\s*$`, 'm');
   const match = frontmatter.match(re);
   return match ? match[1].trim() : null;
+}
+
+/**
+ * Extract the `references` array from a YAML frontmatter string.
+ * Uses full YAML parsing since references is a nested array of objects.
+ * Returns the array or null if not present.
+ */
+function extractReferences(frontmatter) {
+  try {
+    const parsed = YAML.parse(frontmatter);
+    if (parsed && Array.isArray(parsed.references)) {
+      return parsed.references;
+    }
+  } catch {
+    // Fall through — YAML parse failed
+  }
+  return null;
 }
 
 /**
@@ -99,16 +117,19 @@ async function scanDomainExperts() {
     const content = await readFile(filePath, 'utf-8');
     const fm = extractFrontmatter(content);
     const version = fm ? extractYamlValue(fm, 'version') : null;
+    const references = fm ? extractReferences(fm) : null;
     const rel = relative(REPO_ROOT, filePath);
     const key = componentKey(rel);
 
-    components[key] = {
+    const entry = {
       type: 'agent',
       version: version || null,
       file: rel,
       installPath: `agents/${basename(filePath)}`,
       changelog: `${rel}#changelog`,
     };
+    if (references) entry.references = references;
+    components[key] = entry;
   }
   return components;
 }
@@ -130,13 +151,15 @@ async function scanMcpAgents() {
     const rel = relative(REPO_ROOT, filePath);
     const key = componentKey(rel);
 
-    components[key] = {
+    const entry = {
       type: 'agent',
       version: json.version || null,
       file: rel,
       installPath: `agents/${basename(filePath)}`,
       changelog: `${rel}#changelog`,
     };
+    if (Array.isArray(json.references)) entry.references = json.references;
+    components[key] = entry;
   }
   return components;
 }
@@ -349,7 +372,7 @@ async function main() {
   }
 
   const output = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     repoVersion,
     generatedAt: new Date().toISOString(),
     components: sorted,

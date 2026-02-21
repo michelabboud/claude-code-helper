@@ -48,5 +48,9 @@
   "version": "1.0.0",
   "author": "Michel Abboud",
   "license": "Apache-2.0",
-  "repository": "https://github.com/michelabboud/claude-code-helper"
+  "repository": "https://github.com/michelabboud/claude-code-helper",
+  "references": [
+    {"url": "https://www.postgresql.org/docs/current/", "label": "PostgreSQL Documentation", "type": "docs"},
+    {"url": "https://dev.mysql.com/doc/", "label": "MySQL Documentation", "type": "docs"}
+  ]
 }

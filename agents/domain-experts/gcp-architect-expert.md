@@ -34,6 +34,16 @@ triggers:
       on: [read, edit]
   priority: 12
   tags: [cloud, gcp, infrastructure, bigquery]
+references:
+  - url: "https://cloud.google.com/docs"
+    label: "Google Cloud Documentation"
+    type: docs
+  - url: "https://cloud.google.com/release-notes"
+    label: "Google Cloud Release Notes"
+    type: release-notes
+  - url: "https://cloud.google.com/architecture"
+    label: "Google Cloud Architecture Center"
+    type: docs
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

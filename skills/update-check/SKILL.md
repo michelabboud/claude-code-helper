@@ -1,8 +1,8 @@
 ---
 skill_name: update-check
-description: Check if your claude-code-helper installation is up to date. Reads the local manifest and compares against the latest component-versions index on GitHub. Supports checking all components at once or a single component by name. Never auto-updates - always shows what's available and lets you decide.
-version: 2.0.0
-argument-hint: '[component] | hello | hello ID'
+description: Check if your claude-code-helper installation is up to date and apply updates. Reads the local manifest and compares against the latest component-versions index on GitHub. Supports checking all components, a single component by name, and applying updates with automatic backup.
+version: 3.0.0
+argument-hint: '[component] | update [component] | hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -11,11 +11,11 @@ issues: https://github.com/michelabboud/claude-code-helper/issues
 
 # Update Check
 
-Check whether your claude-code-helper components are current, per-component.
+Check whether your claude-code-helper components are current, per-component. Optionally apply updates.
 
 ## Instructions
 
-You are an update checker for the claude-code-helper toolkit. You support two modes depending on whether the user passes an argument.
+You are an update checker and updater for the claude-code-helper toolkit. You support four modes depending on arguments.
 
 ---
 
@@ -100,14 +100,19 @@ For each component with status **UPDATE AVAILABLE**, show the update command:
 
 **api-expert** (agent): 1.0.0 → 1.1.0
 
-Option A — local clone:
+Option A — auto-update:
+  /update-check update api-expert
+
+Option B — local clone:
   cd /path/to/claude-code-helper && git pull
   ./scripts/update-component.sh agents/domain-experts/api-expert
 
-Option B — direct download:
+Option C — direct download:
   curl -fsSL https://raw.githubusercontent.com/michelabboud/claude-code-helper/main/agents/domain-experts/api-expert.md \
     -o ~/.claude/agents/api-expert.md
 ```
+
+If updates are available, also mention: `Run /update-check update to update all outdated components.`
 
 ---
 
@@ -155,11 +160,14 @@ For a successful single match, display detailed information:
 
 ### How to update
 
-Option A — local clone:
+Option A — auto-update:
+  /update-check update api-expert
+
+Option B — local clone:
   cd /path/to/claude-code-helper && git pull
   ./scripts/update-component.sh agents/domain-experts/api-expert
 
-Option B — direct download:
+Option C — direct download:
   curl -fsSL https://raw.githubusercontent.com/michelabboud/claude-code-helper/main/agents/domain-experts/api-expert.md \
     -o ~/.claude/agents/api-expert.md
 
@@ -175,27 +183,158 @@ If the component is **REMOVED UPSTREAM**, note that it is no longer maintained i
 
 ---
 
+### Mode 3: `/update-check update` — Update All Outdated Components
+
+#### Step 1: Identify Updates
+
+Same as Mode 1 steps 1-3. Identify all components with status **UPDATE AVAILABLE**.
+
+If no updates are available:
+> All components are up to date! Nothing to update.
+
+#### Step 2: Show What Will Be Updated
+
+Display a preview of all changes:
+
+```
+## Updates to Apply
+
+| Component | Type | Current | New | Action |
+|-----------|------|---------|-----|--------|
+| redis-expert | agent | 1.0.0 | 1.0.1 | Download from GitHub |
+| pm-dashboard | skill | 1.5.0 | 2.0.0 | Download from GitHub |
+| rag-mcp | mcp-server | 1.0.0 | 1.1.0 | Manual build required |
+
+Note: MCP servers require manual building and will not be auto-updated.
+```
+
+#### Step 3: Ask for Confirmation
+
+**ALWAYS ask the user before applying updates:**
+
+> Ready to update X components? This will:
+> - Create backups in `~/.claude/backups/components/`
+> - Download updated files from GitHub
+> - Update the local manifest
+>
+> MCP servers (Y) will be skipped — they require manual building.
+>
+> Proceed? (yes/no)
+
+#### Step 4: Apply Updates (Only After Confirmation)
+
+For each non-MCP-server component with an update:
+
+1. Run the download script:
+   ```bash
+   bash /path/to/claude-code-helper/scripts/download-component.sh <component-key>
+   ```
+   Or if the repo is not available locally, use curl directly:
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/michelabboud/claude-code-helper/main/<file> -o ~/.claude/<installPath>
+   ```
+
+2. Before downloading, create a backup:
+   - Backup directory: `~/.claude/backups/components/<component-key>/<timestamp>/`
+   - Keep last 3 backups per component
+
+3. After downloading, update the manifest entry.
+
+#### Step 5: Show Results
+
+```
+## Update Results
+
+| Component | Status | Old → New |
+|-----------|--------|-----------|
+| redis-expert | Updated | 1.0.0 → 1.0.1 |
+| pm-dashboard | Updated | 1.5.0 → 2.0.0 |
+| rag-mcp | Skipped (MCP) | 1.0.0 → 1.1.0 |
+
+Backups saved to: ~/.claude/backups/components/
+```
+
+For MCP servers that were skipped, show manual update instructions:
+
+```
+### MCP Servers (Manual Update Required)
+
+**rag-mcp**: 1.0.0 → 1.1.0
+  cd /path/to/claude-code-helper
+  git pull
+  ./scripts/update-component.sh mcp-servers/rag-mcp
+```
+
+---
+
+### Mode 4: `/update-check update <name>` — Update a Specific Component
+
+#### Step 1: Fuzzy-Match
+
+Same matching logic as Mode 2 to find the specific component.
+
+#### Step 2: Check Status
+
+If the component is already up to date:
+> **`<name>`** is already up to date (v1.0.0).
+
+If the component is an MCP server:
+> **`<name>`** is an MCP server and requires manual building.
+> Run: `cd /path/to/claude-code-helper && ./scripts/update-component.sh <key>`
+
+#### Step 3: Show and Confirm
+
+Show what will be updated and ask for confirmation:
+
+> Update **`<name>`** from v1.0.0 to v1.0.1?
+> - A backup will be saved to `~/.claude/backups/components/<key>/`
+> - The updated file will be downloaded from GitHub
+>
+> Proceed? (yes/no)
+
+#### Step 4: Apply and Report
+
+Same as Mode 3 Step 4, but for a single component.
+
+---
+
 ### Important Rules
 
-1. **NEVER auto-update.** This skill is informational only. Always show the user what is available and let them decide.
-2. **NEVER run git pull, install scripts, or any destructive commands.** Only read data and report.
-3. If the user asks to update after seeing the report, remind them to review the changelog first, then provide the exact commands they can copy-paste and run themselves.
-4. The GitHub API has a 60 req/hour rate limit for unauthenticated requests. The `raw.githubusercontent.com` endpoint used here is less restrictive, but if rate-limited, say so and show the local manifest data.
+1. **ALWAYS ask for confirmation** before applying any updates. Never auto-apply.
+2. **ALWAYS create backups** before overwriting files.
+3. **NEVER auto-update MCP servers.** They require `npm install && npm run build`. Show manual instructions instead.
+4. If the download script is available locally, prefer using it. If not, use curl directly.
+5. Keep last 3 backups per component. Prune older ones.
+6. The GitHub API has a 60 req/hour rate limit for unauthenticated requests. The `raw.githubusercontent.com` endpoint is less restrictive, but if rate-limited, say so.
+7. After applying updates, remind the user to review the changelog for breaking changes.
 
 ### `hello`
 Respond with:
-> 👋 Hello! I'm **update-check** v2.0.0. Check if your claude-code-helper installation is up to date. Use `/update-check hello ID` for the full guide.
+> 👋 Hello! I'm **update-check** v3.0.0. Check and update your claude-code-helper installation. Use `/update-check hello ID` for the full guide.
 
 ### `hello ID`
 Respond with complete skill information:
-- **Name**: update-check v2.0.0
-- **Description**: Check if your claude-code-helper installation is up to date. Reads the local manifest and compares against the latest component-versions index on GitHub. Supports checking all components at once or a single component by name. Never auto-updates - always shows what's available and lets you decide.
-- **How to invoke**: `/update-check [component]`
-- **Available arguments**: `[component] | hello | hello ID`
+- **Name**: update-check v3.0.0
+- **Description**: Check if your claude-code-helper installation is up to date and apply updates. Reads the local manifest and compares against the latest component-versions index on GitHub. Supports checking all components, a single component by name, and applying updates with automatic backup.
+- **How to invoke**: `/update-check [component | update [component]]`
+- **Available arguments**: `[component] | update [component] | hello | hello ID`
+- **Commands**:
+  - `/update-check` — Show status of all installed components
+  - `/update-check <name>` — Check a specific component
+  - `/update-check update` — Update all outdated components
+  - `/update-check update <name>` — Update a specific component
 - **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
 - **License**: Apache-2.0
 
 ## Changelog
+
+### 3.0.0 (2026-02-21)
+- Add `/update-check update` command to apply updates directly
+- Add `/update-check update <name>` for single-component updates
+- Automatic backup before updates in `~/.claude/backups/components/`
+- Download from GitHub without requiring a local clone
+- MCP servers show manual build instructions instead of auto-updating
+- Keep last 3 backups per component
 
 ### 2.0.0 (2026-02-20)
 - Rewritten for per-component version checking

@@ -40,6 +40,19 @@ triggers:
       on: [read, edit]
   priority: 10
   tags: [database, mongodb, nosql, mongoose, atlas]
+references:
+  - url: "https://www.mongodb.com/docs/manual/"
+    label: "MongoDB Manual"
+    type: docs
+  - url: "https://www.mongodb.com/docs/manual/release-notes/"
+    label: "MongoDB Release Notes"
+    type: release-notes
+  - url: "https://mongoosejs.com/docs/guide.html"
+    label: "Mongoose Documentation"
+    type: docs
+  - url: "https://www.mongodb.com/docs/atlas/"
+    label: "MongoDB Atlas Documentation"
+    type: docs
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

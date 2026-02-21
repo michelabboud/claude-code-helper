@@ -37,6 +37,16 @@ triggers:
       on: [read, edit]
   priority: 10
   tags: [mobile, ios, swift, swiftui]
+references:
+  - url: "https://developer.apple.com/documentation/"
+    label: "Apple Developer Documentation"
+    type: docs
+  - url: "https://developer.apple.com/tutorials/swiftui"
+    label: "SwiftUI Documentation"
+    type: docs
+  - url: "https://developer.apple.com/news/releases/"
+    label: "Apple Developer Releases"
+    type: release-notes
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

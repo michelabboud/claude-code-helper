@@ -56,5 +56,9 @@
   "version": "1.0.0",
   "author": "Michel Abboud",
   "license": "Apache-2.0",
-  "repository": "https://github.com/michelabboud/claude-code-helper"
+  "repository": "https://github.com/michelabboud/claude-code-helper",
+  "references": [
+    {"url": "https://www.w3.org/WAI/WCAG21/quickref/", "label": "WCAG 2.1 Quick Reference", "type": "docs"},
+    {"url": "https://designtokens.org/", "label": "Design Tokens Specification", "type": "docs"}
+  ]
 }

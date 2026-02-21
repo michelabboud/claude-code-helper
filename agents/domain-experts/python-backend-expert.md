@@ -38,6 +38,19 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [backend, python, fastapi, django]
+references:
+  - url: "https://docs.python.org/3/"
+    label: "Python Documentation"
+    type: docs
+  - url: "https://fastapi.tiangolo.com/"
+    label: "FastAPI Documentation"
+    type: docs
+  - url: "https://docs.djangoproject.com/en/stable/"
+    label: "Django Documentation"
+    type: docs
+  - url: "https://docs.python.org/3/whatsnew/"
+    label: "Python Release Notes"
+    type: release-notes
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

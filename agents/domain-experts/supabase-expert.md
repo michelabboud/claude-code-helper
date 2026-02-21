@@ -38,6 +38,16 @@ triggers:
       on: [edit, write]
   priority: 10
   tags: [database, supabase, baas, postgresql, auth, realtime]
+references:
+  - url: "https://supabase.com/docs"
+    label: "Supabase Documentation"
+    type: docs
+  - url: "https://github.com/supabase/supabase/releases"
+    label: "Supabase Releases"
+    type: release-notes
+  - url: "https://supabase.com/docs/reference/javascript/introduction"
+    label: "Supabase JS SDK Reference"
+    type: api-ref
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

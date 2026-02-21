@@ -34,6 +34,16 @@ triggers:
       on: [read]
   priority: 11
   tags: [backend, php, laravel, eloquent]
+references:
+  - url: "https://laravel.com/docs"
+    label: "Laravel Documentation"
+    type: docs
+  - url: "https://github.com/laravel/framework/releases"
+    label: "Laravel Releases"
+    type: release-notes
+  - url: "https://laravel.com/api/"
+    label: "Laravel API Reference"
+    type: api-ref
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

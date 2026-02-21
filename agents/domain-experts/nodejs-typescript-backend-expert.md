@@ -37,6 +37,19 @@ triggers:
       on: [read, edit]
   priority: 10
   tags: [backend, nodejs, typescript, nestjs]
+references:
+  - url: "https://nodejs.org/docs/latest/api/"
+    label: "Node.js API Documentation"
+    type: api-ref
+  - url: "https://www.typescriptlang.org/docs/"
+    label: "TypeScript Documentation"
+    type: docs
+  - url: "https://nodejs.org/en/blog/release"
+    label: "Node.js Releases"
+    type: release-notes
+  - url: "https://docs.nestjs.com/"
+    label: "NestJS Documentation"
+    type: docs
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0

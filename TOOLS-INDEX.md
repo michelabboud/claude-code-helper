@@ -46,7 +46,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 | **MCP Servers** | 11 | Production-ready TypeScript servers with 47+ tools |
 | **MCP Tools** | 80+ | Individual automation tools across all servers (incl. 11 hello tools) |
 | **Agents** | 54 | MCP agents, sub-agents, and technology specialists |
-| **Skills** | 21 | Workflow, testing, tooling, and documentation skills |
+| **Skills** | 23 | Workflow, testing, tooling, and documentation skills |
 | **Commands** | 5 | Slash commands for common workflows |
 | **Hooks** | 4 | Event-driven automation hooks |
 | **Plugins** | 6 | Complete feature packages |
@@ -309,6 +309,7 @@ Specialized agents for specific technology domains.
 | Model Mode | [`model-mode/SKILL.md`](skills/model-mode/SKILL.md) | Switch MODEL_MODE in CLAUDE.md without manual editing |
 | PM Dashboard | [`pm-dashboard/SKILL.md`](skills/pm-dashboard/SKILL.md) | Update project health dashboard with expert scores and tasks |
 | Update Check | [`update-check/SKILL.md`](skills/update-check/SKILL.md) | Check claude-code-helper installation for available updates |
+| Refresh | [`refresh/SKILL.md`](skills/refresh/SKILL.md) | Refresh agent knowledge from official reference URLs |
 | Auto Plan | [`auto-plan/SKILL.md`](skills/auto-plan/SKILL.md) | Plan with Opus, build with Sonnet |
 | RAG | [`rag/SKILL.md`](skills/rag/SKILL.md) | Setup wizard (`/rag init`), index codebases, semantic search, configure backends, two-layer auto-discovery, multi-repo |
 | API Design Patterns | [`api-design-patterns.md`](skills/api-design-patterns.md) | REST API design best practices, versioning, error handling |
@@ -685,10 +686,11 @@ When adding new tools:
 5. Update relevant README.md files
 6. Include installation instructions
 7. Test installation process
+8. Add `references` field to agent frontmatter (official docs, release notes, changelogs)
 
 ---
 
-*Last updated: January 2026*
+*Last updated: February 2026*
 *Total documented components: 100+*
 
 ---
