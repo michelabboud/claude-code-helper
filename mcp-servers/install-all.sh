@@ -124,6 +124,16 @@ install_to_claude() {
         mkdir -p "$dest/mcp-shared"
         cp -r "mcp-shared/build" "$dest/mcp-shared/"
         cp "mcp-shared/package.json" "$dest/mcp-shared/"
+
+        # Strip scripts/devDeps from mcp-shared (already built; prevents tsc not found errors)
+        node -e "
+const fs = require('fs');
+const p = '${dest}/mcp-shared/package.json';
+const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
+delete pkg.scripts;
+delete pkg.devDependencies;
+fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + '\n');
+"
     fi
 
     # Rewrite package.json: mcp-shared → local path, strip devDependencies

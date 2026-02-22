@@ -165,6 +165,16 @@ if [ "$BUILD_REQUIRED" = "true" ]; then
         mkdir -p "$MCP_DEST/mcp-shared"
         cp -r "$SHARED_DIR/build" "$MCP_DEST/mcp-shared/"
         cp "$SHARED_DIR/package.json" "$MCP_DEST/mcp-shared/"
+
+        # Strip scripts/devDeps from mcp-shared (already built; prevents tsc not found errors)
+        node -e "
+const fs = require('fs');
+const p = '${MCP_DEST}/mcp-shared/package.json';
+const pkg = JSON.parse(fs.readFileSync(p, 'utf8'));
+delete pkg.scripts;
+delete pkg.devDependencies;
+fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + '\n');
+"
     fi
 
     # Rewrite package.json: mcp-shared → local path, strip devDependencies

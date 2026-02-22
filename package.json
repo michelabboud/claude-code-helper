@@ -1,6 +1,6 @@
 {
   "name": "claude-code-helper",
-  "version": "2.9.1",
+  "version": "2.9.2",
   "private": true,
   "description": "Comprehensive toolkit and learning resource for mastering Claude Code",
   "workspaces": [
