@@ -104,6 +104,11 @@ install_server() {
     echo ""
 }
 
+# Derive clean MCP name from directory name (strip -mcp suffix)
+derive_mcp_name() {
+    echo "$1" | sed 's/-mcp$//'
+}
+
 # Function to copy a built server to ~/.claude/mcp-servers/<name>/
 # This creates a standalone installation with its own node_modules.
 install_to_claude() {
@@ -224,6 +229,35 @@ done
 
 echo ""
 
+# Register MCP servers with Claude Code CLI (user scope)
+CLI_REGISTERED=false
+if command -v claude &> /dev/null; then
+    CLI_REGISTERED=true
+    echo "🔗 Registering MCP servers with Claude Code CLI (user scope)..."
+    echo ""
+
+    for server_entry in "$MCP_INSTALL_DIR"/*/build/index.js; do
+        dir_name=$(basename "$(dirname "$(dirname "$server_entry")")")
+        [ "$dir_name" = "mcp-shared" ] && continue
+        mcp_name=$(derive_mcp_name "$dir_name")
+        server_path="$server_entry"
+
+        # Remove existing registration (silently)
+        claude mcp remove -s user "$mcp_name" 2>/dev/null || true
+
+        # Register at user scope
+        if claude mcp add -s user "$mcp_name" -- node "$server_path" 2>/dev/null; then
+            echo -e "  ${GREEN}✓ $mcp_name${NC} → $server_path"
+        else
+            echo -e "  ${RED}✗ $mcp_name failed to register${NC}"
+        fi
+    done
+
+    echo ""
+    echo "Verify with: claude mcp list"
+    echo ""
+fi
+
 # All paths now point to ~/.claude/mcp-servers/
 echo "📍 Installation paths (stable — safe to delete repo clone):"
 RAG_PATH="$MCP_INSTALL_DIR/rag-mcp/build/index.js"
@@ -323,24 +357,27 @@ echo -e "${GREEN}✓ Configuration saved to $CONFIG_FILE${NC}"
 echo ""
 
 # Instructions
-echo "📝 Next steps:"
-echo ""
-echo "=== Option 1: Claude Code CLI (Recommended) ==="
-echo ""
-echo "Run these commands to add MCP servers:"
-echo ""
-echo "  claude mcp add rag -- node \"$RAG_PATH\""
-echo "  claude mcp add api-specialist -- node \"$API_SPECIALIST_PATH\""
-echo "  claude mcp add code-review -- node \"$CODE_REVIEW_PATH\""
-echo "  claude mcp add design-system -- node \"$DESIGN_SYSTEM_PATH\""
-echo "  claude mcp add testing -- node \"$TESTING_PATH\""
-echo "  claude mcp add uiux-review -- node \"$UIUX_REVIEW_PATH\""
-echo "  claude mcp add project-oversight -- node \"$OVERSIGHT_PATH\""
-echo ""
-echo "Then verify with:"
-echo "  claude mcp list"
-echo ""
-echo "=== Option 2: Claude Desktop ==="
+if [ "$CLI_REGISTERED" = "false" ]; then
+    echo "📝 Next steps:"
+    echo ""
+    echo "=== Option 1: Claude Code CLI (Recommended) ==="
+    echo ""
+    echo "Run these commands to add MCP servers:"
+    echo ""
+    echo "  claude mcp add -s user rag -- node \"$RAG_PATH\""
+    echo "  claude mcp add -s user api-specialist -- node \"$API_SPECIALIST_PATH\""
+    echo "  claude mcp add -s user code-review -- node \"$CODE_REVIEW_PATH\""
+    echo "  claude mcp add -s user design-system -- node \"$DESIGN_SYSTEM_PATH\""
+    echo "  claude mcp add -s user testing -- node \"$TESTING_PATH\""
+    echo "  claude mcp add -s user uiux-review -- node \"$UIUX_REVIEW_PATH\""
+    echo "  claude mcp add -s user project-oversight -- node \"$OVERSIGHT_PATH\""
+    echo ""
+    echo "Then verify with:"
+    echo "  claude mcp list"
+    echo ""
+fi
+
+echo "=== Claude Desktop ==="
 echo ""
 echo "1. Copy the configuration to Claude Desktop:"
 echo ""
