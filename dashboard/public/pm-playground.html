@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Health Explorer</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #c9d1d9; display: flex; height: 100vh; overflow: hidden; }
+
+  .controls { width: 340px; min-width: 340px; background: #161b22; border-right: 1px solid #30363d; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 20px; }
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .preview { flex: 1; overflow-y: auto; padding: 24px; }
+  .prompt-bar { background: #161b22; border-top: 1px solid #30363d; padding: 16px 24px; display: flex; gap: 12px; align-items: flex-start; min-height: 80px; }
+  .prompt-text { flex: 1; font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; font-size: 13px; line-height: 1.5; color: #8b949e; white-space: pre-wrap; max-height: 120px; overflow-y: auto; }
+  .copy-btn { background: #238636; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; white-space: nowrap; transition: background 0.15s; }
+  .copy-btn:hover { background: #2ea043; }
+  .copy-btn.copied { background: #1f6feb; }
+
+  .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #8b949e; margin-bottom: 8px; font-weight: 600; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { padding: 4px 10px; border-radius: 12px; font-size: 12px; cursor: pointer; border: 1px solid #30363d; background: #0d1117; color: #8b949e; transition: all 0.15s; user-select: none; }
+  .chip.active { border-color: #58a6ff; color: #58a6ff; background: rgba(88,166,255,0.1); }
+  .chip.excellent { border-color: #3fb950; color: #3fb950; background: rgba(63,185,80,0.1); }
+  .chip.good { border-color: #58a6ff; color: #58a6ff; background: rgba(88,166,255,0.1); }
+  .chip.fair { border-color: #d29922; color: #d29922; background: rgba(210,153,34,0.1); }
+  .chip.poor { border-color: #f85149; color: #f85149; background: rgba(248,81,73,0.1); }
+  .chip.critical { border-color: #da3633; color: #da3633; background: rgba(218,54,51,0.15); }
+
+  .slider-row { display: flex; align-items: center; gap: 10px; }
+  .slider-row input[type=range] { flex: 1; accent-color: #58a6ff; }
+  .slider-val { font-family: monospace; font-size: 14px; color: #58a6ff; min-width: 20px; text-align: right; }
+
+  .preset-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer; border: 1px solid #30363d; background: #21262d; color: #c9d1d9; transition: all 0.15s; }
+  .preset-btn:hover { background: #30363d; border-color: #58a6ff; }
+  .preset-btn.active { background: #1f6feb; border-color: #1f6feb; color: #fff; }
+
+  .toggle-row { display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+  .toggle-row input[type=checkbox] { accent-color: #58a6ff; width: 16px; height: 16px; }
+
+  .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .expert-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 14px; transition: all 0.2s; cursor: pointer; position: relative; }
+  .expert-card:hover { border-color: #58a6ff; }
+  .expert-card.expanded { grid-column: 1 / -1; }
+  .expert-card.dimmed { opacity: 0.3; }
+  .expert-name { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .expert-score { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .expert-status { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .score-bar { height: 4px; border-radius: 2px; background: #21262d; margin-top: 8px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+  .expert-detail { margin-top: 12px; font-size: 12px; line-height: 1.5; color: #8b949e; display: none; }
+  .expert-card.expanded .expert-detail { display: block; }
+  .detail-label { font-weight: 600; color: #c9d1d9; display: block; margin-top: 8px; }
+
+  .matrix { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 2px; background: #30363d; border-radius: 8px; overflow: hidden; margin-bottom: 24px; }
+  .matrix-quadrant { background: #161b22; padding: 14px; min-height: 100px; }
+  .matrix-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #8b949e; margin-bottom: 8px; font-weight: 600; }
+  .matrix-task { font-size: 12px; padding: 4px 8px; margin: 4px 0; border-radius: 4px; border-left: 3px solid; }
+  .matrix-task.done { opacity: 0.4; text-decoration: line-through; }
+  .q-quickwin { border-left-color: #3fb950; }
+  .q-majorproject { border-left-color: #58a6ff; }
+  .q-fillin { border-left-color: #d29922; }
+  .q-thankless { border-left-color: #f85149; }
+
+  .history-section { margin-bottom: 24px; }
+  .history-chart { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; position: relative; height: 200px; }
+  .history-svg { width: 100%; height: 100%; }
+  .history-line { fill: none; stroke-width: 2; }
+  .history-label { font-size: 10px; fill: #8b949e; }
+  .history-grid { stroke: #21262d; stroke-width: 1; }
+
+  .overall-banner { text-align: center; padding: 20px; margin-bottom: 24px; }
+  .overall-score { font-size: 64px; font-weight: 800; }
+  .overall-label { font-size: 13px; color: #8b949e; margin-top: 4px; }
+  .overall-sub { font-size: 12px; color: #8b949e; margin-top: 2px; }
+
+  .c-excellent { color: #3fb950; }
+  .c-good { color: #58a6ff; }
+  .c-fair { color: #d29922; }
+  .c-poor { color: #f85149; }
+  .c-critical { color: #da3633; }
+  .bg-excellent { background: #3fb950; }
+  .bg-good { background: #58a6ff; }
+  .bg-fair { background: #d29922; }
+  .bg-poor { background: #f85149; }
+  .bg-critical { background: #da3633; }
+
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #8b949e; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #484f58; }
+
+  .section-divider { border: none; border-top: 1px solid #21262d; margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<div class="controls">
+  <div>
+    <div style="font-size: 18px; font-weight: 700; margin-bottom: 2px;">Project Health Explorer</div>
+    <div style="font-size: 12px; color: #8b949e;">Interactive dashboard playground</div>
+  </div>
+
+  <div>
+    <div class="section-title">Presets</div>
+    <div class="chips" id="presets"></div>
+  </div>
+
+  <hr class="section-divider">
+
+  <div>
+    <div class="section-title">Expert Domains</div>
+    <div class="chips" id="expertChips"></div>
+  </div>
+
+  <div>
+    <div class="section-title">Minimum Score Filter</div>
+    <div class="slider-row">
+      <span style="font-size:12px;color:#8b949e;">1</span>
+      <input type="range" id="scoreFilter" min="1" max="10" value="1">
+      <span class="slider-val" id="scoreFilterVal">1</span>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <div>
+    <div class="section-title">Task Quadrants</div>
+    <div class="chips" id="quadrantChips"></div>
+  </div>
+
+  <div>
+    <div class="section-title">Task Status</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <label class="toggle-row"><input type="checkbox" id="showDone" checked> Show completed tasks</label>
+      <label class="toggle-row"><input type="checkbox" id="showTodo" checked> Show pending tasks</label>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <div>
+    <div class="section-title">History View</div>
+    <div class="slider-row">
+      <span style="font-size:12px;color:#8b949e;">All</span>
+      <input type="range" id="historyRange" min="0" max="20" value="20">
+      <span class="slider-val" id="historyRangeVal">All</span>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-title">Display Options</div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <label class="toggle-row"><input type="checkbox" id="showHistory" checked> Show history chart</label>
+      <label class="toggle-row"><input type="checkbox" id="showMatrix" checked> Show priority matrix</label>
+      <label class="toggle-row"><input type="checkbox" id="showFindings" checked> Show top findings</label>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="preview" id="preview"></div>
+  <div class="prompt-bar">
+    <div class="prompt-text" id="promptOutput">Loading...</div>
+    <button class="copy-btn" id="copyBtn">Copy Prompt</button>
+  </div>
+</div>
+
+<script>
+// NOTE: All rendered content comes from this embedded static data object.
+// No external or user-supplied input is used in DOM rendering.
+var DATA = {"projectName":"claude-code-helper","lastAssessment":"2026-03-14T12:00:00Z","assessmentCount":21,"overallScore":9.1,"experts":{"qa":{"score":9,"status":"excellent","topFinding":"1,480 total tests across all workspaces: 12 Jest suites (1,224 tests), trigger-matcher (200 tests via node:test), generate-version-index (31 tests), manifest-helper.sh (19 tests), update-component.sh (6 tests). All passing.","recommendation":"Add project-oversight-mcp to CI test matrix. Add integration tests for cross-server activity tracking.","riskIfIgnored":"Low remaining risk - comprehensive test coverage"},"uiux":{"score":9,"status":"excellent","topFinding":"Full dashboard redesign: SVG sparkline trend charts with gradient fill, score delta badges, clickable domain bars with inline expert details, Trend History tab.","recommendation":"Add ARIA labels and keyboard navigation to expert detail expand panels.","riskIfIgnored":"Low remaining risk - dashboard is highly functional"},"security":{"score":9,"status":"excellent","topFinding":"CORS wildcard fixed - restricted to localhost. npm audit enforced in CI. 62 sanitizePath() calls. Zero unsafe calls. serve.ts binds 127.0.0.1.","recommendation":"Add Content-Security-Policy headers to dashboard HTML response.","riskIfIgnored":"Low remaining risk - all known security gaps addressed"},"devops":{"score":10,"status":"excellent","topFinding":"CI pipeline with 12 jobs: matrix build/test for all 11 servers, lint, typecheck, frontmatter validation, version index check, script tests, ShellCheck, security scan, benchmark.","recommendation":"Make ShellCheck and benchmark SLA non-advisory (fail on violation).","riskIfIgnored":"Low remaining risk - full CI coverage"},"networking":{"score":8,"status":"good","topFinding":"Stdio transport for MCP servers (minimal exposure). serve.ts binds to 127.0.0.1 only with auto-shutdown after inactivity.","recommendation":"Add periodic health checks for long-running servers.","riskIfIgnored":"Low remaining risk"},"development":{"score":9,"status":"excellent","topFinding":"npm workspaces monorepo with 13 packages. Shared tsconfig.base.json. ESLint zero-tolerance. Pre-commit hooks via husky + lint-staged. mcp-shared exports 8 modules.","recommendation":"Add tsc --noEmit for MCP servers to CI typecheck matrix.","riskIfIgnored":"Type errors in MCP servers only caught at build time"},"architecture":{"score":9,"status":"excellent","topFinding":"npm workspaces monorepo with 13 packages. Per-component versioning with 86-component index. All servers use runServer() + registerTrackedToolHandler(). 5 ADRs.","recommendation":"Add ADR for project-oversight-mcp architecture.","riskIfIgnored":"Low remaining risk"},"product":{"score":9,"status":"excellent","topFinding":"68 distributable components: 46 agents, 13 skills, 11 MCP servers, 3 hooks, 6 plugins, 2 integrations. Skills consolidated from 23 to 13.","recommendation":"Create GitHub releases for versions v1.1.0-v2.2.0 (19 missing releases).","riskIfIgnored":"Users cannot discover intermediate releases"},"api":{"score":9,"status":"excellent","topFinding":"60+ MCP tools across 11 servers. Hello Protocol provides universal self-describing discovery. Consistent Zod validation.","recommendation":"Expose MetricsCollector data via a tool or API endpoint.","riskIfIgnored":"Low remaining risk"},"monitoring":{"score":10,"status":"excellent","topFinding":"100% instrumentation across all 11 MCP servers. MetricsCollector with p50/p95/p99 latency tracking. ActivityTracker writes structured JSONL. project-oversight-mcp provides 9 tools + 7 HTTP routes + SSE.","recommendation":"Expose MetricsCollector data via a dashboard endpoint. Add alerting thresholds.","riskIfIgnored":"Low remaining risk"},"database":{"score":8,"status":"good","topFinding":"rag-mcp healthCheck() wired into runServer() startup with retry logic. Adapter pattern supports ChromaDB, Qdrant, Redis.","recommendation":"Add periodic health checks and connection pool monitoring.","riskIfIgnored":"Post-startup connection drops need manual detection"},"performance":{"score":9,"status":"excellent","topFinding":"CI benchmark with trend detection: compares per-server build times vs previous artifact, warns on >5s per-server or >20% total regression. 120s total SLA.","recommendation":"Make benchmark SLA enforcement blocking.","riskIfIgnored":"Runtime performance data is invisible"},"documentation":{"score":10,"status":"excellent","topFinding":"28 release note files. Building Blocks guide (666 lines). All skill counts updated across 20+ docs. Comprehensive README, QUICKSTART, CONTRIBUTING, CLAUDE.md, CHANGELOG.","recommendation":"Add JSDoc to mcp-shared source.","riskIfIgnored":"Low remaining risk"},"specifications":{"score":7,"status":"good","topFinding":"5 ADRs in docs/decisions/. Zod schemas serve as implicit API specs. No ADRs for pre-v2.3.0 decisions.","recommendation":"Add ADR for project-oversight-mcp and activity tracking architecture.","riskIfIgnored":"Future decisions may lack documented rationale"},"projectDocs":{"score":7,"status":"good","topFinding":"23 CHANGELOG entries, 5 ADRs, 4 GitHub releases. Per-MCP-server CHANGELOG.md files (11 total).","recommendation":"Create missing GitHub releases for v1.1.0-v2.2.0.","riskIfIgnored":"Historical context gaps"},"progress":{"score":10,"status":"excellent","topFinding":"Hello Protocol deployed across 80 tools. /greeting skill surveys all installed tools.","recommendation":"Continue with remaining recommendations.","riskIfIgnored":"No critical gaps remaining"}},"tasks":[{"id":"t37","title":"Add project-oversight-mcp to CI build and test matrices","status":"done","priority":1,"impact":"high","effort":"low","expert":"devops","quadrant":"quick-win"},{"id":"t38","title":"Fix CORS wildcard in serve.ts","status":"done","priority":2,"impact":"high","effort":"low","expert":"security","quadrant":"quick-win"},{"id":"t39","title":"Wire MetricsCollector.recordCall() into registerTrackedToolHandler","status":"done","priority":3,"impact":"medium","effort":"low","expert":"monitoring","quadrant":"quick-win"},{"id":"t40","title":"Redesign multi-project dashboard HTML","status":"done","priority":4,"impact":"high","effort":"high","expert":"uiux","quadrant":"major-project"},{"id":"t41","title":"Make npm audit fail CI on high-severity CVEs","status":"done","priority":5,"impact":"medium","effort":"low","expert":"security","quadrant":"quick-win"},{"id":"t42","title":"Update TOOLS-INDEX.md Quick Stats table","status":"done","priority":6,"impact":"low","effort":"low","expert":"documentation","quadrant":"fill-in"},{"id":"t43","title":"Add /greeting skill for tool health survey","status":"done","priority":7,"impact":"medium","effort":"low","expert":"product","quadrant":"quick-win"}],"risks":[],"technicalDebt":[{"id":"d9","item":"19 changelog versions (v1.1.0-v2.2.0) have no GitHub release","category":"process","impact":"low","effort":"hours","interestRate":"stable"}],"history":[{"date":"2026-02-20T12:00:00Z","scores":{"qa":4,"uiux":6,"security":5,"devops":4,"networking":5,"development":7,"architecture":6,"product":8,"api":8,"monitoring":2,"database":5,"performance":5,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-20T14:00:00Z","scores":{"qa":5,"uiux":6,"security":6,"devops":7,"networking":5,"development":8,"architecture":6,"product":8,"api":8,"monitoring":2,"database":5,"performance":5,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-20T17:00:00Z","scores":{"qa":7,"uiux":7,"security":7,"devops":7,"networking":7,"development":8,"architecture":7,"product":8,"api":8,"monitoring":6,"database":8,"performance":7,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-20T19:00:00Z","scores":{"qa":7,"uiux":7,"security":8,"devops":8,"networking":7,"development":9,"architecture":7,"product":8,"api":8,"monitoring":8,"database":8,"performance":8,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-20T20:00:00Z","scores":{"qa":4,"uiux":7,"security":6,"devops":5,"networking":7,"development":5,"architecture":5,"product":8,"api":8,"monitoring":6,"database":8,"performance":7,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-21T06:30:00Z","scores":{"qa":7,"uiux":7,"security":8,"devops":7,"networking":7,"development":7,"architecture":8,"product":8,"api":8,"monitoring":6,"database":8,"performance":7,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-21T07:00:00Z","scores":{"qa":8,"uiux":7,"security":8,"devops":8,"networking":7,"development":8,"architecture":8,"product":8,"api":8,"monitoring":7,"database":8,"performance":7,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-21T08:00:00Z","scores":{"qa":8,"uiux":8,"security":8,"devops":8,"networking":8,"development":8,"architecture":8,"product":8,"api":8,"monitoring":8,"database":8,"performance":8,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-21T10:00:00Z","scores":{"qa":8,"uiux":8,"security":8,"devops":8,"networking":8,"development":8,"architecture":8,"product":8,"api":8,"monitoring":8,"database":8,"performance":8,"documentation":8,"specifications":5,"projectDocs":5,"progress":7}},{"date":"2026-02-21T11:00:00Z","scores":{"qa":8,"uiux":8,"security":8,"devops":8,"networking":8,"development":8,"architecture":8,"product":8,"api":8,"monitoring":8,"database":8,"performance":8,"documentation":8,"specifications":5,"projectDocs":5,"progress":8}},{"date":"2026-02-20T13:00:00Z","scores":{"qa":8,"uiux":8,"security":8,"devops":9,"networking":8,"development":8,"architecture":8,"product":9,"api":8,"monitoring":8,"database":8,"performance":8,"documentation":8,"specifications":5,"projectDocs":5,"progress":9}},{"date":"2026-02-20T14:00:00Z","scores":{"qa":9,"uiux":8,"security":8,"devops":9,"networking":8,"development":9,"architecture":9,"product":9,"api":8,"monitoring":8,"database":8,"performance":8,"documentation":8,"specifications":7,"projectDocs":7,"progress":9}},{"date":"2026-02-20T15:00:00Z","scores":{"qa":9,"uiux":8,"security":8,"devops":9,"networking":8,"development":9,"architecture":9,"product":9,"api":8,"monitoring":8,"database":8,"performance":8,"documentation":8,"specifications":7,"projectDocs":7,"progress":10}},{"date":"2026-02-20T16:00:00Z","scores":{"qa":9,"uiux":8,"security":8,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":8,"monitoring":8,"database":8,"performance":9,"documentation":9,"specifications":7,"projectDocs":7,"progress":10}},{"date":"2026-02-20T18:00:00Z","scores":{"qa":9,"uiux":8,"security":8,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":8,"monitoring":9,"database":8,"performance":9,"documentation":9,"specifications":7,"projectDocs":7,"progress":10}},{"date":"2026-02-20T19:00:00Z","scores":{"qa":9,"uiux":6,"security":8,"devops":9,"networking":8,"development":9,"architecture":9,"product":9,"api":8,"monitoring":9,"database":8,"performance":9,"documentation":9,"specifications":7,"projectDocs":7,"progress":9}},{"date":"2026-02-20T20:30:00Z","scores":{"qa":9,"uiux":8,"security":9,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":8,"monitoring":10,"database":8,"performance":9,"documentation":10,"specifications":7,"projectDocs":7,"progress":10}},{"date":"2026-02-21T14:00:00Z","scores":{"qa":9,"uiux":9,"security":9,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":8,"monitoring":10,"database":8,"performance":9,"documentation":10,"specifications":7,"projectDocs":7,"progress":10}},{"date":"2026-02-21T18:00:00Z","scores":{"qa":9,"uiux":9,"security":9,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":9,"monitoring":10,"database":8,"performance":9,"documentation":10,"specifications":7,"projectDocs":7,"progress":10}},{"date":"2026-02-21T19:00:00Z","scores":{"qa":9,"uiux":9,"security":9,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":9,"monitoring":10,"database":8,"performance":9,"documentation":10,"specifications":7,"projectDocs":7,"progress":10}},{"date":"2026-03-14T12:00:00Z","scores":{"qa":9,"uiux":9,"security":9,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":9,"monitoring":10,"database":8,"performance":9,"documentation":10,"specifications":7,"projectDocs":7,"progress":10}}]};
+
+var EXPERT_LABELS = {
+  qa: 'QA & Testing', uiux: 'UI/UX Design', security: 'Security',
+  devops: 'DevOps & IT', networking: 'Networking', development: 'Development',
+  architecture: 'Architecture', product: 'Product/Specs', api: 'API Quality',
+  monitoring: 'Monitoring', database: 'Database', performance: 'Performance',
+  documentation: 'Documentation', specifications: 'Specifications',
+  projectDocs: 'Project Docs', progress: 'Progress'
+};
+
+var EXPERT_KEYS = Object.keys(EXPERT_LABELS);
+var QUADRANTS = ['quick-win', 'major-project', 'fill-in', 'thankless'];
+var QUADRANT_LABELS = { 'quick-win': 'Quick Wins', 'major-project': 'Major Projects', 'fill-in': 'Fill-ins', 'thankless': 'Reconsider' };
+
+function statusClass(score) {
+  if (score >= 9) return 'excellent';
+  if (score >= 7) return 'good';
+  if (score >= 5) return 'fair';
+  if (score >= 3) return 'poor';
+  return 'critical';
+}
+
+var state = {
+  selectedExperts: new Set(EXPERT_KEYS),
+  minScore: 1,
+  selectedQuadrants: new Set(QUADRANTS),
+  showDone: true,
+  showTodo: true,
+  showHistory: true,
+  showMatrix: true,
+  showFindings: true,
+  historyRange: DATA.history.length,
+  expandedCard: null,
+  preset: 'all'
+};
+
+var PRESETS = {
+  'all': { label: 'All Domains', experts: new Set(EXPERT_KEYS), minScore: 1, quadrants: new Set(QUADRANTS) },
+  'weak': { label: 'Weakest Areas', experts: new Set(EXPERT_KEYS), minScore: 1, quadrants: new Set(QUADRANTS) },
+  'core': { label: 'Core Engineering', experts: new Set(['qa', 'security', 'development', 'architecture', 'performance']), minScore: 1, quadrants: new Set(QUADRANTS) },
+  'ops': { label: 'Operations', experts: new Set(['devops', 'networking', 'monitoring', 'database']), minScore: 1, quadrants: new Set(QUADRANTS) },
+  'product': { label: 'Product & Docs', experts: new Set(['product', 'documentation', 'specifications', 'projectDocs', 'progress', 'uiux']), minScore: 1, quadrants: new Set(QUADRANTS) }
+};
+
+function initControls() {
+  var presetsEl = document.getElementById('presets');
+  Object.keys(PRESETS).forEach(function(key) {
+    var btn = document.createElement('button');
+    btn.className = 'preset-btn' + (key === 'all' ? ' active' : '');
+    btn.textContent = PRESETS[key].label;
+    btn.dataset.key = key;
+    btn.onclick = function() { applyPreset(key); };
+    presetsEl.appendChild(btn);
+  });
+
+  var chipsEl = document.getElementById('expertChips');
+  EXPERT_KEYS.forEach(function(key) {
+    var chip = document.createElement('span');
+    var score = DATA.experts[key].score;
+    chip.className = 'chip active ' + statusClass(score);
+    chip.textContent = EXPERT_LABELS[key] + ' (' + score + ')';
+    chip.dataset.key = key;
+    chip.onclick = function() { toggleExpert(key); };
+    chipsEl.appendChild(chip);
+  });
+
+  var quadEl = document.getElementById('quadrantChips');
+  QUADRANTS.forEach(function(q) {
+    var chip = document.createElement('span');
+    chip.className = 'chip active';
+    chip.textContent = QUADRANT_LABELS[q];
+    chip.dataset.key = q;
+    chip.onclick = function() { toggleQuadrant(q); };
+    quadEl.appendChild(chip);
+  });
+
+  document.getElementById('scoreFilter').oninput = function(e) {
+    state.minScore = +e.target.value;
+    document.getElementById('scoreFilterVal').textContent = e.target.value;
+    state.preset = null;
+    clearPresetBtns();
+    updateAll();
+  };
+
+  document.getElementById('historyRange').max = DATA.history.length;
+  document.getElementById('historyRange').value = DATA.history.length;
+  document.getElementById('historyRange').oninput = function(e) {
+    var v = +e.target.value;
+    state.historyRange = v;
+    document.getElementById('historyRangeVal').textContent = v === DATA.history.length ? 'All' : 'Last ' + v;
+    updateAll();
+  };
+
+  document.getElementById('showDone').onchange = function(e) { state.showDone = e.target.checked; updateAll(); };
+  document.getElementById('showTodo').onchange = function(e) { state.showTodo = e.target.checked; updateAll(); };
+  document.getElementById('showHistory').onchange = function(e) { state.showHistory = e.target.checked; updateAll(); };
+  document.getElementById('showMatrix').onchange = function(e) { state.showMatrix = e.target.checked; updateAll(); };
+  document.getElementById('showFindings').onchange = function(e) { state.showFindings = e.target.checked; updateAll(); };
+
+  document.getElementById('copyBtn').onclick = copyPrompt;
+}
+
+function applyPreset(key) {
+  var p = PRESETS[key];
+  state.selectedExperts = new Set(p.experts);
+  state.minScore = p.minScore;
+  state.selectedQuadrants = new Set(p.quadrants);
+  state.preset = key;
+  document.getElementById('scoreFilter').value = p.minScore;
+  document.getElementById('scoreFilterVal').textContent = p.minScore;
+  document.querySelectorAll('#expertChips .chip').forEach(function(c) {
+    var k = c.dataset.key;
+    c.className = 'chip ' + (state.selectedExperts.has(k) ? 'active ' + statusClass(DATA.experts[k].score) : '');
+  });
+  document.querySelectorAll('#quadrantChips .chip').forEach(function(c) {
+    c.className = 'chip ' + (state.selectedQuadrants.has(c.dataset.key) ? 'active' : '');
+  });
+  document.querySelectorAll('#presets .preset-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.key === key);
+  });
+  updateAll();
+}
+
+function clearPresetBtns() {
+  document.querySelectorAll('#presets .preset-btn').forEach(function(b) { b.classList.remove('active'); });
+}
+
+function toggleExpert(key) {
+  if (state.selectedExperts.has(key)) state.selectedExperts.delete(key);
+  else state.selectedExperts.add(key);
+  state.preset = null;
+  clearPresetBtns();
+  var chip = document.querySelector('#expertChips .chip[data-key="' + key + '"]');
+  chip.className = 'chip ' + (state.selectedExperts.has(key) ? 'active ' + statusClass(DATA.experts[key].score) : '');
+  updateAll();
+}
+
+function toggleQuadrant(q) {
+  if (state.selectedQuadrants.has(q)) state.selectedQuadrants.delete(q);
+  else state.selectedQuadrants.add(q);
+  state.preset = null;
+  clearPresetBtns();
+  var chip = document.querySelector('#quadrantChips .chip[data-key="' + q + '"]');
+  chip.className = 'chip ' + (state.selectedQuadrants.has(q) ? 'active' : '');
+  updateAll();
+}
+
+function updateAll() { renderPreview(); updatePrompt(); }
+
+window.toggleCard = function(key) {
+  state.expandedCard = state.expandedCard === key ? null : key;
+  updateAll();
+};
+
+function esc(s) {
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.textContent;
+}
+
+function renderPreview() {
+  var el = document.getElementById('preview');
+  var visibleExperts = EXPERT_KEYS.filter(function(k) { return state.selectedExperts.has(k) && DATA.experts[k].score >= state.minScore; });
+  var visibleScores = visibleExperts.map(function(k) { return DATA.experts[k].score; });
+  var avg = visibleScores.length ? (visibleScores.reduce(function(a, b) { return a + b; }, 0) / visibleScores.length).toFixed(1) : 0;
+
+  // Build DOM safely
+  el.textContent = '';
+
+  // Overall banner
+  var banner = document.createElement('div');
+  banner.className = 'overall-banner';
+  var scoreEl = document.createElement('div');
+  scoreEl.className = 'overall-score c-' + statusClass(Math.round(parseFloat(avg)));
+  scoreEl.textContent = avg || '\u2014';
+  var labelEl = document.createElement('div');
+  labelEl.className = 'overall-label';
+  labelEl.textContent = (visibleExperts.length === EXPERT_KEYS.length ? 'Overall' : 'Filtered') + ' Health Score';
+  var subEl = document.createElement('div');
+  subEl.className = 'overall-sub';
+  subEl.textContent = visibleExperts.length + ' of ' + EXPERT_KEYS.length + ' domains \u00B7 ' + DATA.assessmentCount + ' assessments \u00B7 Last: ' + new Date(DATA.lastAssessment).toLocaleDateString();
+  banner.appendChild(scoreEl);
+  banner.appendChild(labelEl);
+  banner.appendChild(subEl);
+  el.appendChild(banner);
+
+  // Legend
+  var legend = document.createElement('div');
+  legend.className = 'legend';
+  [['excellent','Excellent (9-10)'],['good','Good (7-8)'],['fair','Fair (5-6)'],['poor','Poor (3-4)'],['critical','Critical (1-2)']].forEach(function(pair) {
+    var item = document.createElement('div');
+    item.className = 'legend-item';
+    var dot = document.createElement('div');
+    dot.className = 'legend-dot bg-' + pair[0];
+    item.appendChild(dot);
+    var txt = document.createTextNode(' ' + pair[1]);
+    item.appendChild(txt);
+    legend.appendChild(item);
+  });
+  el.appendChild(legend);
+
+  // Expert cards grid
+  var grid = document.createElement('div');
+  grid.className = 'dashboard-grid';
+  EXPERT_KEYS.forEach(function(key) {
+    var e = DATA.experts[key];
+    var visible = visibleExperts.indexOf(key) !== -1;
+    var sc = statusClass(e.score);
+    var expanded = state.expandedCard === key;
+    var card = document.createElement('div');
+    card.className = 'expert-card' + (expanded ? ' expanded' : '') + (visible ? '' : ' dimmed');
+    card.setAttribute('onclick', "toggleCard('" + key + "')");
+
+    var name = document.createElement('div');
+    name.className = 'expert-name';
+    name.textContent = EXPERT_LABELS[key];
+    card.appendChild(name);
+
+    var score = document.createElement('div');
+    score.className = 'expert-score c-' + sc;
+    score.textContent = e.score + '/10';
+    card.appendChild(score);
+
+    var status = document.createElement('div');
+    status.className = 'expert-status c-' + sc;
+    status.textContent = e.status;
+    card.appendChild(status);
+
+    var bar = document.createElement('div');
+    bar.className = 'score-bar';
+    var fill = document.createElement('div');
+    fill.className = 'score-bar-fill bg-' + sc;
+    fill.style.width = (e.score * 10) + '%';
+    bar.appendChild(fill);
+    card.appendChild(bar);
+
+    if (state.showFindings) {
+      var detail = document.createElement('div');
+      detail.className = 'expert-detail';
+
+      var lbl1 = document.createElement('span');
+      lbl1.className = 'detail-label';
+      lbl1.textContent = 'Top Finding:';
+      detail.appendChild(lbl1);
+      detail.appendChild(document.createTextNode(' ' + e.topFinding));
+
+      var lbl2 = document.createElement('span');
+      lbl2.className = 'detail-label';
+      lbl2.textContent = 'Recommendation:';
+      detail.appendChild(lbl2);
+      detail.appendChild(document.createTextNode(' ' + e.recommendation));
+
+      var lbl3 = document.createElement('span');
+      lbl3.className = 'detail-label';
+      lbl3.textContent = 'Risk if Ignored:';
+      detail.appendChild(lbl3);
+      detail.appendChild(document.createTextNode(' ' + e.riskIfIgnored));
+
+      card.appendChild(detail);
+    }
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+
+  // Priority Matrix
+  if (state.showMatrix) {
+    var matrixTitle = document.createElement('div');
+    matrixTitle.style.cssText = 'font-size:14px;font-weight:600;margin-bottom:8px;';
+    matrixTitle.textContent = 'Priority Matrix';
+    el.appendChild(matrixTitle);
+
+    var matrix = document.createElement('div');
+    matrix.className = 'matrix';
+    var tasksByQ = {};
+    QUADRANTS.forEach(function(q) { tasksByQ[q] = []; });
+    DATA.tasks.forEach(function(t) {
+      if (!state.selectedQuadrants.has(t.quadrant)) return;
+      if (t.status === 'done' && !state.showDone) return;
+      if (t.status !== 'done' && !state.showTodo) return;
+      tasksByQ[t.quadrant].push(t);
+    });
+
+    QUADRANTS.forEach(function(q) {
+      var dimmed = !state.selectedQuadrants.has(q);
+      var quad = document.createElement('div');
+      quad.className = 'matrix-quadrant';
+      if (dimmed) quad.style.opacity = '0.3';
+
+      var qlabel = document.createElement('div');
+      qlabel.className = 'matrix-label';
+      qlabel.textContent = QUADRANT_LABELS[q];
+      quad.appendChild(qlabel);
+
+      var qClass = 'q-' + q.replace(/-/g, '');
+      var tasks = tasksByQ[q] || [];
+      tasks.forEach(function(t) {
+        var taskEl = document.createElement('div');
+        taskEl.className = 'matrix-task ' + qClass + (t.status === 'done' ? ' done' : '');
+        taskEl.textContent = t.title;
+        quad.appendChild(taskEl);
+      });
+      if (!tasks.length) {
+        var empty = document.createElement('div');
+        empty.style.cssText = 'font-size:11px;color:#484f58;font-style:italic;';
+        empty.textContent = 'No tasks';
+        quad.appendChild(empty);
+      }
+      matrix.appendChild(quad);
+    });
+    el.appendChild(matrix);
+
+    // Tech debt
+    if (DATA.technicalDebt.length) {
+      var debtTitle = document.createElement('div');
+      debtTitle.style.cssText = 'font-size:14px;font-weight:600;margin-bottom:8px;';
+      debtTitle.textContent = 'Technical Debt';
+      el.appendChild(debtTitle);
+
+      DATA.technicalDebt.forEach(function(d) {
+        var rateColor = d.interestRate === 'accruing' ? '#f85149' : d.interestRate === 'stable' ? '#d29922' : '#3fb950';
+        var debtCard = document.createElement('div');
+        debtCard.style.cssText = 'background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:12px;font-size:13px;';
+        var itemText = document.createElement('div');
+        itemText.style.marginBottom = '4px';
+        itemText.textContent = d.item;
+        debtCard.appendChild(itemText);
+        var meta = document.createElement('div');
+        meta.style.cssText = 'font-size:11px;color:#8b949e;';
+        meta.textContent = 'Impact: ' + d.impact + ' \u00B7 Effort: ' + d.effort + ' \u00B7 ';
+        var rateSp = document.createElement('span');
+        rateSp.style.color = rateColor;
+        rateSp.textContent = 'Interest: ' + d.interestRate;
+        meta.appendChild(rateSp);
+        debtCard.appendChild(meta);
+        el.appendChild(debtCard);
+      });
+    }
+  }
+
+  // History chart (SVG is safe - all values are numbers from static data)
+  if (state.showHistory) {
+    var historySlice = DATA.history.slice(-state.historyRange);
+    if (historySlice.length > 1) {
+      var histSection = document.createElement('div');
+      histSection.className = 'history-section';
+      var histTitle = document.createElement('div');
+      histTitle.style.cssText = 'font-size:14px;font-weight:600;margin-bottom:8px;';
+      histTitle.textContent = 'Score History';
+      histSection.appendChild(histTitle);
+      var histChart = document.createElement('div');
+      histChart.className = 'history-chart';
+      histChart.appendChild(renderHistoryChartSVG(historySlice, visibleExperts));
+      histSection.appendChild(histChart);
+      el.appendChild(histSection);
+    }
+  }
+}
+
+function renderHistoryChartSVG(history, visibleExperts) {
+  var W = 800, H = 160, PAD = 30;
+  var n = history.length;
+  var colors = {
+    qa: '#f85149', uiux: '#bc8cff', security: '#f0883e', devops: '#3fb950',
+    networking: '#79c0ff', development: '#58a6ff', architecture: '#d29922',
+    product: '#a5d6ff', api: '#7ee787', monitoring: '#ffa657',
+    database: '#ff7b72', performance: '#d2a8ff', documentation: '#56d364',
+    specifications: '#e3b341', projectDocs: '#8b949e', progress: '#39d353'
+  };
+
+  var ns = 'http://www.w3.org/2000/svg';
+  var svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.setAttribute('class', 'history-svg');
+  svg.setAttribute('preserveAspectRatio', 'none');
+
+  // Grid lines
+  for (var s = 0; s <= 10; s += 2) {
+    var y = PAD + (1 - s / 10) * (H - PAD * 2);
+    var line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', PAD); line.setAttribute('y1', y);
+    line.setAttribute('x2', W - 10); line.setAttribute('y2', y);
+    line.setAttribute('class', 'history-grid');
+    svg.appendChild(line);
+    var txt = document.createElementNS(ns, 'text');
+    txt.setAttribute('x', PAD - 4); txt.setAttribute('y', y + 3);
+    txt.setAttribute('class', 'history-label'); txt.setAttribute('text-anchor', 'end');
+    txt.textContent = s;
+    svg.appendChild(txt);
+  }
+
+  // Lines for each visible expert
+  visibleExperts.forEach(function(key) {
+    var points = history.map(function(h, i) {
+      var x = PAD + (i / (n - 1)) * (W - PAD - 10);
+      var sc = h.scores[key] || 0;
+      var yy = PAD + (1 - sc / 10) * (H - PAD * 2);
+      return x + ',' + yy;
+    }).join(' ');
+    var pl = document.createElementNS(ns, 'polyline');
+    pl.setAttribute('points', points);
+    pl.setAttribute('class', 'history-line');
+    pl.setAttribute('stroke', colors[key]);
+    pl.setAttribute('opacity', '0.7');
+    svg.appendChild(pl);
+  });
+
+  // Overall average line
+  var avgPts = history.map(function(h, i) {
+    var scores = visibleExperts.map(function(k) { return h.scores[k] || 0; });
+    var avg = scores.reduce(function(a, b) { return a + b; }, 0) / scores.length;
+    var x = PAD + (i / (n - 1)) * (W - PAD - 10);
+    var yy = PAD + (1 - avg / 10) * (H - PAD * 2);
+    return x + ',' + yy;
+  }).join(' ');
+  var avgLine = document.createElementNS(ns, 'polyline');
+  avgLine.setAttribute('points', avgPts);
+  avgLine.setAttribute('class', 'history-line');
+  avgLine.setAttribute('stroke', '#fff');
+  avgLine.setAttribute('stroke-width', '3');
+  avgLine.setAttribute('opacity', '0.9');
+  svg.appendChild(avgLine);
+
+  // Date labels
+  [0, Math.floor(n / 2), n - 1].forEach(function(i) {
+    if (i >= n) return;
+    var x = PAD + (i / (n - 1)) * (W - PAD - 10);
+    var d = new Date(history[i].date);
+    var dtxt = document.createElementNS(ns, 'text');
+    dtxt.setAttribute('x', x); dtxt.setAttribute('y', H - 2);
+    dtxt.setAttribute('class', 'history-label'); dtxt.setAttribute('text-anchor', 'middle');
+    dtxt.textContent = d.toLocaleDateString();
+    svg.appendChild(dtxt);
+  });
+
+  return svg;
+}
+
+function updatePrompt() {
+  var visibleExperts = EXPERT_KEYS.filter(function(k) { return state.selectedExperts.has(k) && DATA.experts[k].score >= state.minScore; });
+  var parts = [];
+
+  var sorted = visibleExperts.slice().sort(function(a, b) { return DATA.experts[a].score - DATA.experts[b].score; });
+  var weakest = sorted.filter(function(k) { return DATA.experts[k].score < 9; });
+
+  if (weakest.length === 0 && visibleExperts.length > 0) {
+    parts.push('All ' + visibleExperts.length + ' visible domains are scoring 9+ (excellent).');
+  } else if (weakest.length > 0) {
+    var below8 = weakest.filter(function(k) { return DATA.experts[k].score < 8; });
+    if (below8.length > 0) {
+      parts.push('Focus on the ' + below8.length + ' domain' + (below8.length > 1 ? 's' : '') + ' scoring below 8: ' + below8.map(function(k) { return EXPERT_LABELS[k] + ' (' + DATA.experts[k].score + ')'; }).join(', ') + '.');
+    }
+    var topWeak = weakest[0];
+    var rec = DATA.experts[topWeak].recommendation;
+    if (rec) parts.push('Highest-priority recommendation: ' + rec);
+  }
+
+  var pendingTasks = DATA.tasks.filter(function(t) { return t.status !== 'done' && state.selectedQuadrants.has(t.quadrant); });
+  var doneTasks = DATA.tasks.filter(function(t) { return t.status === 'done'; });
+  if (pendingTasks.length > 0) {
+    parts.push(pendingTasks.length + ' pending task' + (pendingTasks.length > 1 ? 's' : '') + ' in selected quadrants.');
+  } else {
+    parts.push('All ' + doneTasks.length + ' tracked tasks are complete.');
+  }
+
+  var accruingDebt = DATA.technicalDebt.filter(function(d) { return d.interestRate === 'accruing'; });
+  if (accruingDebt.length > 0) {
+    parts.push(accruingDebt.length + ' accruing tech debt item' + (accruingDebt.length > 1 ? 's' : '') + ' need attention: ' + accruingDebt.map(function(d) { return d.item; }).join('; ') + '.');
+  }
+
+  if (DATA.risks.length > 0) {
+    var critical = DATA.risks.filter(function(r) { return r.severity === 'critical'; });
+    if (critical.length) parts.push(critical.length + ' critical risk' + (critical.length > 1 ? 's' : '') + ' require immediate action.');
+  } else {
+    parts.push('No active risks.');
+  }
+
+  if (DATA.history.length >= 2) {
+    var first = DATA.history[0].scores;
+    var last = DATA.history[DATA.history.length - 1].scores;
+    var improved = visibleExperts.filter(function(k) { return (last[k] || 0) > (first[k] || 0); });
+    if (improved.length > 0) {
+      parts.push(improved.length + ' domain' + (improved.length > 1 ? 's have' : ' has') + ' improved since first assessment.');
+    }
+  }
+
+  var filterNotes = [];
+  if (state.selectedExperts.size < EXPERT_KEYS.length) filterNotes.push('Showing ' + state.selectedExperts.size + ' of ' + EXPERT_KEYS.length + ' domains');
+  if (state.minScore > 1) filterNotes.push('filtered to scores >= ' + state.minScore);
+  if (filterNotes.length) parts.unshift('[Filter: ' + filterNotes.join(', ') + ']');
+
+  document.getElementById('promptOutput').textContent = parts.join('\n\n');
+}
+
+function copyPrompt() {
+  var text = document.getElementById('promptOutput').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy Prompt'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+initControls();
+updateAll();
+</script>
+</body>
+</html>

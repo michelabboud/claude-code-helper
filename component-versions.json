@@ -657,7 +657,7 @@
     },
     "agents/domain-experts/project-manager": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "1.2.0",
       "file": "agents/domain-experts/project-manager.md",
       "installPath": "agents/project-manager.md",
       "changelog": "agents/domain-experts/project-manager.md#changelog",
