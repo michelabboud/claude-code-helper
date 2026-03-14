@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Manager Playgrounds</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; padding: 40px 24px; }
+
+  .container { max-width: 960px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 48px; }
+  .header h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, #58a6ff, #bc8cff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header p { font-size: 14px; color: #8b949e; }
+  .project-name { font-family: 'SF Mono', 'Cascadia Code', 'Fira Code', monospace; font-size: 13px; color: #58a6ff; background: rgba(88,166,255,0.1); padding: 4px 10px; border-radius: 6px; display: inline-block; margin-top: 8px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; transition: all 0.2s; cursor: pointer; text-decoration: none; color: inherit; display: block; position: relative; overflow: hidden; }
+  .card:hover { border-color: #58a6ff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .card.disabled { opacity: 0.4; cursor: default; }
+  .card.disabled:hover { border-color: #30363d; transform: none; box-shadow: none; }
+
+  .card-icon { font-size: 32px; margin-bottom: 12px; }
+  .card-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .card-desc { font-size: 13px; color: #8b949e; line-height: 1.5; margin-bottom: 12px; }
+  .card-meta { font-size: 11px; color: #484f58; display: flex; gap: 12px; align-items: center; }
+  .card-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .badge-ready { background: rgba(63,185,80,0.15); color: #3fb950; border: 1px solid rgba(63,185,80,0.3); }
+  .badge-generate { background: rgba(210,153,34,0.15); color: #d29922; border: 1px solid rgba(210,153,34,0.3); }
+
+  .card-glow { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 12px 12px 0 0; }
+  .glow-green { background: linear-gradient(90deg, #3fb950, #56d364); }
+  .glow-blue { background: linear-gradient(90deg, #58a6ff, #79c0ff); }
+  .glow-orange { background: linear-gradient(90deg, #f0883e, #ffa657); }
+  .glow-red { background: linear-gradient(90deg, #f85149, #ff7b72); }
+  .glow-purple { background: linear-gradient(90deg, #bc8cff, #d2a8ff); }
+  .glow-teal { background: linear-gradient(90deg, #39d353, #7ee787); }
+
+  .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #8b949e; font-weight: 600; margin-bottom: 16px; padding-left: 4px; }
+
+  .footer { text-align: center; padding-top: 32px; border-top: 1px solid #21262d; }
+  .footer p { font-size: 12px; color: #484f58; }
+  .footer a { color: #58a6ff; text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  .quick-actions { display: flex; gap: 10px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap; }
+  .action-btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; border: 1px solid #30363d; background: #21262d; color: #c9d1d9; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
+  .action-btn:hover { background: #30363d; border-color: #58a6ff; color: #58a6ff; }
+  .action-btn.primary { background: #238636; border-color: #238636; color: #fff; }
+  .action-btn.primary:hover { background: #2ea043; }
+
+  .registry-info { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-bottom: 32px; font-size: 13px; line-height: 1.7; }
+  .registry-info code { font-family: 'SF Mono', 'Cascadia Code', monospace; background: #0d1117; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+  .registry-info ul { margin: 12px 0 0 20px; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>Project Manager Playgrounds</h1>
+    <p>Interactive explorers for project health data</p>
+    <div class="project-name" id="projectName">loading...</div>
+  </div>
+
+  <div class="quick-actions">
+    <a class="action-btn primary" href="pm-playground.html">Health Explorer</a>
+    <a class="action-btn" href="pm-dashboard.html">Static Dashboard</a>
+    <a class="action-btn" href="multi-project.html">Multi-Project View</a>
+  </div>
+
+  <div class="section-title">Available Playgrounds</div>
+  <div class="grid" id="playgroundGrid"></div>
+
+  <div class="section-title">How to Generate New Playgrounds</div>
+  <div class="registry-info">
+    <p>Ask the <strong>project-manager</strong> agent to generate playgrounds based on context:</p>
+    <ul>
+      <li><code>"Assess this project"</code> &rarr; Health Score Explorer</li>
+      <li><code>"Plan the next sprint"</code> &rarr; Priority Matrix</li>
+      <li><code>"Is this ready to deploy?"</code> &rarr; Risk Heatmap</li>
+      <li><code>"Show me the tech debt"</code> &rarr; Technical Debt Dashboard</li>
+      <li><code>"How have we improved?"</code> &rarr; Score Comparison Timeline</li>
+      <li><code>"Deep dive into security"</code> &rarr; Expert Deep-Dive</li>
+    </ul>
+    <p style="margin-top: 12px; color: #8b949e;">Requires <code>playground@claude-plugins-official</code> plugin. Each playground is a self-contained HTML file.</p>
+  </div>
+
+  <div class="footer">
+    <p>Part of <a href="https://github.com/michelabboud/claude-code-helper">claude-code-helper</a> by Michel Abboud</p>
+  </div>
+</div>
+
+<script>
+/*
+  PLAYGROUND REGISTRY
+  The project-manager agent updates this array after generating each playground.
+  To register a new playground: add an entry and set status to "ready".
+  Format: { id, title, description, icon, file, glow, status, createdAt }
+    status: "ready" = file exists and is clickable
+    status: "generate" = not yet created, shown as greyed-out
+    glow: "green" | "blue" | "orange" | "red" | "purple" | "teal"
+*/
+var PLAYGROUNDS = [
+  {
+    id: "health-explorer",
+    title: "Health Score Explorer",
+    description: "Filter and explore 16 expert domain scores, scrub through assessment history, view priority matrix and technical debt.",
+    icon: "\uD83D\uDCCA",
+    file: "pm-playground.html",
+    glow: "green",
+    status: "ready",
+    createdAt: "2026-03-15"
+  },
+  {
+    id: "priority-matrix",
+    title: "Priority Matrix",
+    description: "Interactive 2x2 impact vs effort grid. Explore tasks by quadrant, filter by expert source and status, plan sprints.",
+    icon: "\uD83C\uDFAF",
+    file: "pm-priority-matrix.html",
+    glow: "blue",
+    status: "generate",
+    createdAt: null
+  },
+  {
+    id: "risk-heatmap",
+    title: "Risk Heatmap",
+    description: "Severity x likelihood matrix. Click risks for mitigation details, filter by expert source, track escalation status.",
+    icon: "\u26A0\uFE0F",
+    file: "pm-risk-heatmap.html",
+    glow: "red",
+    status: "generate",
+    createdAt: null
+  },
+  {
+    id: "tech-debt",
+    title: "Technical Debt Dashboard",
+    description: "Debt items sorted by ROI. Filter by category and interest rate, color-coded accruing vs stable vs declining.",
+    icon: "\uD83D\uDCB3",
+    file: "pm-tech-debt.html",
+    glow: "orange",
+    status: "generate",
+    createdAt: null
+  },
+  {
+    id: "score-timeline",
+    title: "Score Comparison Timeline",
+    description: "Multi-line chart showing score evolution per domain. Delta mode, date range filter, progress report generation.",
+    icon: "\uD83D\uDCC8",
+    file: "pm-score-timeline.html",
+    glow: "purple",
+    status: "generate",
+    createdAt: null
+  },
+  {
+    id: "expert-deep-dive",
+    title: "Expert Deep-Dive",
+    description: "Full detail view for a single expert domain. Finding, recommendation, risk, history sparkline, related tasks.",
+    icon: "\uD83D\uDD0D",
+    file: "pm-expert-dive.html",
+    glow: "teal",
+    status: "generate",
+    createdAt: null
+  }
+];
+
+function renderGrid() {
+  var grid = document.getElementById('playgroundGrid');
+  grid.textContent = '';
+
+  PLAYGROUNDS.forEach(function(pg) {
+    var isReady = pg.status === 'ready';
+    var card = document.createElement('a');
+    card.className = 'card' + (isReady ? '' : ' disabled');
+    if (isReady) card.href = pg.file;
+
+    var glow = document.createElement('div');
+    glow.className = 'card-glow glow-' + pg.glow;
+    card.appendChild(glow);
+
+    var icon = document.createElement('div');
+    icon.className = 'card-icon';
+    icon.textContent = pg.icon;
+    card.appendChild(icon);
+
+    var title = document.createElement('div');
+    title.className = 'card-title';
+    title.textContent = pg.title;
+    card.appendChild(title);
+
+    var desc = document.createElement('div');
+    desc.className = 'card-desc';
+    desc.textContent = pg.description;
+    card.appendChild(desc);
+
+    var meta = document.createElement('div');
+    meta.className = 'card-meta';
+
+    var badge = document.createElement('span');
+    badge.className = 'card-badge ' + (isReady ? 'badge-ready' : 'badge-generate');
+    badge.textContent = isReady ? 'Ready' : 'Ask agent to generate';
+    meta.appendChild(badge);
+
+    if (pg.createdAt) {
+      var date = document.createElement('span');
+      date.textContent = pg.createdAt;
+      meta.appendChild(date);
+    }
+
+    card.appendChild(meta);
+    grid.appendChild(card);
+  });
+}
+
+function loadProjectName() {
+  var el = document.getElementById('projectName');
+  el.textContent = 'Project Manager Playgrounds';
+}
+
+loadProjectName();
+renderGrid();
+</script>
+</body>
+</html>

@@ -862,6 +862,60 @@ Args: "expert deep-dive — embed experts, tasks, and risks from .claude/pm-dash
 
 **Always mention the playground is a single HTML file** that can be shared, opened anywhere, and works offline — this is a key benefit over the static dashboard.
 
+---
+
+### Playground Master Index
+
+All playgrounds are accessible from a single hub: **`pm-playgrounds.html`**.
+
+**Open the master index:**
+```bash
+cp ~/.claude/dashboard/public/pm-playgrounds.html .claude/pm-playgrounds.html
+open .claude/pm-playgrounds.html       # macOS
+xdg-open .claude/pm-playgrounds.html   # Linux
+```
+
+The index shows all 6 playground types as cards — ready playgrounds are clickable, ungenerated ones are greyed out with "Ask agent to generate".
+
+**MANDATORY: Update the master index after generating any playground.**
+
+After creating a new playground HTML file, update the `PLAYGROUNDS` registry array in `pm-playgrounds.html`:
+1. Find the entry matching the playground type by `id`
+2. Set `status` to `"ready"`
+3. Set `createdAt` to today's date (YYYY-MM-DD format)
+4. Ensure the `file` field matches the generated filename
+
+Example — after generating a Priority Matrix playground:
+```javascript
+// In pm-playgrounds.html, update the registry entry:
+{
+  id: "priority-matrix",
+  ...
+  status: "ready",      // was "generate"
+  createdAt: "2026-03-15"  // was null
+}
+```
+
+**Also copy the master index to the project:**
+```bash
+cp pm-playgrounds.html .claude/pm-playgrounds.html
+```
+
+This ensures users always have a current hub linking to all their generated playgrounds.
+
+**File naming convention for generated playgrounds:**
+
+| Playground type | Filename |
+|---|---|
+| Health Score Explorer | `pm-playground.html` |
+| Priority Matrix | `pm-priority-matrix.html` |
+| Risk Heatmap | `pm-risk-heatmap.html` |
+| Technical Debt Dashboard | `pm-tech-debt.html` |
+| Score Comparison Timeline | `pm-score-timeline.html` |
+| Expert Deep-Dive | `pm-expert-dive.html` |
+
+All playground files live alongside `pm-playgrounds.html` in the same directory.
+
 ### Installing the Playground Plugin
 
 The playground plugin is an **official Anthropic plugin** from the `claude-plugins-official` marketplace.
