@@ -15,27 +15,18 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 - Auto-discovered from nested `.claude/skills` directories (v2.1.6+)
 - Visible in slash command menu by default (opt-out with `user-invocable: false`)
 
-## Available Skills (23)
+## Available Skills (14)
 
 | Skill | Description | Category |
 |-------|-------------|----------|
-| **documentation** | JSDoc/TSDoc, inline comments, README updates | Documentation |
-| **api-documentation** | OpenAPI 3.0 and REST documentation standards | Documentation |
-| **testing-standards** | Generate comprehensive test suites | Testing |
-| **tdd-workflow** | Red-Green-Refactor cycle and TDD patterns | Testing |
-| **bdd-framework-examples** | Cucumber, Behave, SpecFlow examples | Testing |
-| **contract-testing** | Pact and consumer-driven contracts | Testing |
-| **mutation-testing** | Stryker, PITest, Mutmut patterns | Testing |
-| **visual-regression-testing** | Percy, Chromatic, BackstopJS | Testing |
-| **advanced-e2e-testing** | Complex workflows, auth, mocking | Testing |
-| **code-review-workflow** | Comprehensive code review with security/quality analysis | Quality |
+| **documentation** | JSDoc/TSDoc, inline comments, README updates, OpenAPI 3.0 | Documentation |
+| **testing** | Comprehensive testing: unit/integration/E2E, TDD, BDD, contract, mutation, visual regression | Testing |
 | **refactoring-strategy** | Interactive refactoring with safety checks and rollback | Development |
 | **project-scaffolding** | Generate project structure and boilerplate code | Development |
 | **api-design-patterns** | RESTful API design best practices | Development |
 | **database-design-patterns** | Schema design and optimization | Development |
 | **ci-best-practices** | CI/CD pipeline patterns | DevOps |
 | **release-management** | Release workflows and versioning | DevOps |
-| **caching-expert** | Static, Object, HTTP, CDN caching | Performance |
 | **pm-dashboard** | Project Manager health dashboard management | Project Management |
 | **model-mode** | Switch model mode (default/opus-only/sonnet-only/haiku-only/custom) | Configuration |
 | **update-check** | Check for new releases (never auto-updates) | Maintenance |
@@ -50,9 +41,8 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 ```bash
 mkdir -p ~/.claude/skills
 cp -r *.md ~/.claude/skills/
-cp -r api-documentation ~/.claude/skills/
-cp -r testing-standards ~/.claude/skills/
 cp -r documentation ~/.claude/skills/
+cp -r testing ~/.claude/skills/
 cp -r project-scaffolding ~/.claude/skills/
 cp -r pm-dashboard ~/.claude/skills/
 cp -r model-mode ~/.claude/skills/
@@ -130,7 +120,7 @@ Skills activate automatically based on context:
 # Claude detects testing context
 > Help me write tests for this function
 
-# tdd-workflow or testing-standards skill activates
+# testing skill activates
 # Claude applies TDD patterns and best practices
 ```
 
@@ -138,9 +128,8 @@ Or invoke explicitly:
 
 ```bash
 /refactoring-strategy extract-method src/utils/parser.ts
-/testing-standards src/services/user-service unit
+/testing src/services/user-service unit
 /project-scaffolding nextjs-app my-app --typescript --tailwind
-/code-review-workflow src/api/auth.ts
 /documentation src/utils/helpers.ts
 ```
 
@@ -148,40 +137,10 @@ Or invoke explicitly:
 
 ### Testing Skills
 
-#### tdd-workflow
-Red-Green-Refactor cycle, test-first development, TDD best practices.
+#### testing
+Comprehensive testing skill covering all testing methodologies and frameworks.
 
-**Covers**: Red-Green-Refactor cycle, TDD patterns, when to use TDD, common pitfalls, framework-specific examples
-
-#### testing-standards
-Generate comprehensive test suites (unit, integration, E2E, API, component).
-
-**Covers**: AAA pattern, test generation, edge case identification, mock generation, multi-framework support (Jest, Vitest, pytest, RSpec, JUnit)
-
-#### bdd-framework-examples
-Behavior-Driven Development with Gherkin syntax.
-
-**Covers**: Cucumber (JS/Ruby), Behave (Python), SpecFlow (.NET), feature files, step definitions
-
-#### contract-testing
-Consumer-driven contract testing patterns.
-
-**Covers**: Pact framework, provider verification, consumer tests, contract versioning
-
-#### mutation-testing
-Measure test quality through mutation analysis.
-
-**Covers**: Stryker (JS/TS), PITest (Java), Mutmut (Python), mutation score interpretation
-
-#### visual-regression-testing
-Catch visual bugs with screenshot comparison.
-
-**Covers**: Percy, Chromatic for Storybook, BackstopJS, baseline management
-
-#### advanced-e2e-testing
-Complex E2E testing scenarios.
-
-**Covers**: Authentication flows, multi-step workflows, API mocking, flaky test handling
+**Covers**: Unit/integration/E2E/API/component testing, AAA pattern, TDD (Red-Green-Refactor), BDD (Cucumber, Behave, SpecFlow), contract testing (Pact), mutation testing (Stryker, PITest, Mutmut), visual regression (Percy, Chromatic, BackstopJS), advanced E2E (auth flows, API mocking, flaky test handling), multi-framework support (Jest, Vitest, pytest, RSpec, JUnit)
 
 ---
 
@@ -207,24 +166,14 @@ Schema design and optimization.
 
 **Covers**: Normalization, indexing strategies, query optimization, migration patterns
 
-#### code-review-workflow
-Comprehensive code review with security, quality, and performance analysis.
-
-**Covers**: Review checklist, security review, performance review, feedback patterns
-
 ---
 
 ### Documentation Skills
 
 #### documentation
-Add comprehensive documentation to code (JSDoc/TSDoc, inline comments, READMEs).
+Comprehensive documentation skill covering code docs, READMEs, and API specifications.
 
-**Covers**: JSDoc/TSDoc, Python docstrings, inline comments, README structure, API docs, language-specific conventions
-
-#### api-documentation
-OpenAPI 3.0 and REST documentation standards.
-
-**Covers**: OpenAPI spec format, documentation checklist, response schemas
+**Covers**: JSDoc/TSDoc, Python docstrings, inline comments, README structure, API docs, language-specific conventions, OpenAPI 3.0 spec format, REST documentation standards, response schemas
 
 ---
 
@@ -239,15 +188,6 @@ CI/CD pipeline patterns.
 Release workflows and versioning.
 
 **Covers**: Semantic versioning, changelog generation, release branches, hotfix processes
-
----
-
-### Performance Skills
-
-#### caching-expert
-Comprehensive caching strategies.
-
-**Covers**: Static file caching, object caching (Redis, Memcached), HTTP caching headers, CDN configuration
 
 ---
 

@@ -1,11 +1,11 @@
 ---
 skill_name: Documentation
-description: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and API docs. Use when documenting code, generating docs, or improving project documentation.
+description: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use when documenting code, generating docs, or improving project documentation.
 category: Documentation
 priority: P1
-argument-hint: '[target-file-or-directory] | hello | hello ID'
+argument-hint: '[target] | api | hello | hello ID'
 allowed-tools: Read, Write, Edit, Grep, Glob
-version: 1.0.0
+version: 1.1.0
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -22,6 +22,7 @@ Systematic approach to adding comprehensive, maintainable documentation to any c
 /documentation src/utils/helpers.ts
 /documentation src/services/
 /documentation                     # Document current changes
+/documentation api                 # Generate OpenAPI 3.0 API docs
 ```
 
 ## Workflow
@@ -130,6 +131,56 @@ Create a new user account.
 - `409` - Email already registered
 ```
 
+## API Documentation
+
+When invoked with `/documentation api`, generate OpenAPI 3.0 specifications for REST APIs.
+
+```yaml
+openapi: 3.0.0
+info:
+  title: Your API Name
+  version: 1.0.0
+  description: Clear API description
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /users:
+    get:
+      summary: List all users
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+components:
+  schemas:
+    User:
+      type: object
+      required: [id, email]
+      properties:
+        id: { type: string }
+        email: { type: string }
+```
+
+### API Documentation Checklist
+
+- Endpoint path and HTTP method
+- Clear summary and detailed description
+- All query/path/header parameters documented
+- Request body schema (if applicable)
+- All response status codes and schemas
+- Authentication requirements
+- Rate limiting information
+- Example requests and responses
+
 ## Best Practices
 
 1. **Document the why, not the what** - Code shows what happens; comments explain why
@@ -155,18 +206,22 @@ Create a new user account.
 
 ### `hello`
 Respond with:
-> 👋 Hello! I'm **Documentation** v1.0.0. Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and API docs. Use `/documentation hello ID` for the full guide.
+> 👋 Hello! I'm **Documentation** v1.1.0. Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use `/documentation hello ID` for the full guide.
 
 ### `hello ID`
 Respond with complete skill information:
-- **Name**: Documentation v1.0.0
-- **Description**: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and API docs. Use when documenting code, generating docs, or improving project documentation.
-- **How to invoke**: `/documentation [target-file-or-directory]`
-- **Available arguments**: `[target-file-or-directory] | hello | hello ID`
+- **Name**: Documentation v1.1.0
+- **Description**: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use when documenting code, generating docs, or improving project documentation.
+- **How to invoke**: `/documentation [target]` or `/documentation api`
+- **Available arguments**: `[target] | api | hello | hello ID`
 - **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
 - **License**: Apache-2.0
 
 ## Changelog
+
+### 1.1.0 (2026-03-14)
+- Merged `api-documentation` skill into unified `/documentation api` subcommand
+- Added OpenAPI 3.0 template and API documentation checklist
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
