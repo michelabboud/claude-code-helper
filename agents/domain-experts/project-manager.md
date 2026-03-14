@@ -50,7 +50,7 @@ references:
   - url: "https://docs.github.com/en/issues"
     label: "GitHub Issues Documentation"
     type: docs
-version: 1.0.0
+version: 1.1.0
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -669,14 +669,14 @@ After every assessment, I persist results to `.claude/pm-dashboard.json` so both
 ### Terminal Dashboard (quick checks)
 ```bash
 # Run from project root
-~/.claude/skills/pm-dashboard/pm-tui.sh .claude/pm-dashboard.json
+~/.claude/dashboard/pm-tui.sh .claude/pm-dashboard.json
 ```
 Shows: color-coded scores, task list, risk alerts, tech debt summary.
 
 ### Web Dashboard (detailed analysis)
 ```bash
 # Copy dashboard to project and open
-cp ~/.claude/skills/pm-dashboard/dashboard.html .claude/pm-dashboard.html
+cp ~/.claude/dashboard/pm-dashboard.html .claude/pm-dashboard.html
 open .claude/pm-dashboard.html      # macOS
 xdg-open .claude/pm-dashboard.html  # Linux
 ```
@@ -685,13 +685,13 @@ Shows: radar chart, priority matrix, Kanban board, risk heatmap, score history s
 ### Multi-Project Overview
 ```bash
 # Compare health across all your projects
-~/.claude/skills/pm-dashboard/pm-tui.sh --multi \
+~/.claude/dashboard/pm-tui.sh --multi \
   ~/projects/project-a/.claude/pm-dashboard.json \
   ~/projects/project-b/.claude/pm-dashboard.json \
   ~/projects/project-c/.claude/pm-dashboard.json
 
 # Or open the web overview
-cp ~/.claude/skills/pm-dashboard/multi-project.html /tmp/pm-overview.html
+cp ~/.claude/dashboard/multi-project.html /tmp/pm-overview.html
 open /tmp/pm-overview.html  # then load each project's JSON
 ```
 Shows: side-by-side health comparison, cross-project risk summary, lowest-scoring domains across your portfolio.
@@ -704,7 +704,17 @@ After each assessment, I write/update `.claude/pm-dashboard.json` with:
 - Technical debt items with interest rate classification
 - Score history for trend tracking across assessments
 
-Use `/pm-dashboard open` to launch the web dashboard, or `/pm-dashboard update` to refresh after manual changes.
+I also sync to the central store for multi-project discovery:
+```bash
+PROJECT_NAME=$(basename "$(pwd)")
+mkdir -p ~/.claude/pm-dashboard/"$PROJECT_NAME"
+cp .claude/pm-dashboard.json ~/.claude/pm-dashboard/"$PROJECT_NAME"/pm-dashboard.json
+```
+
+### Dashboard Commands
+- **Open web dashboard**: `open .claude/pm-dashboard.html` (macOS) or `xdg-open .claude/pm-dashboard.html` (Linux)
+- **Reset scores**: Delete `.claude/pm-dashboard.json` and run a fresh assessment
+- **Multi-project dashboard**: `cd dashboard && npm run dev` → http://localhost:3200
 
 ### Multi-Project Isolation
 
@@ -723,6 +733,48 @@ project-c/.claude/pm-dashboard.json   # Project C scores (completely separate)
 - Running assessments on Project A in one terminal and Project B in another is completely safe
 
 **The only way to see cross-project data** is the Multi-Project Overview (above), which explicitly loads multiple files side-by-side for comparison.
+
+---
+
+## Dashboard Data Schema
+
+The `.claude/pm-dashboard.json` file follows this exact structure:
+
+```json
+{
+  "projectName": "my-project",
+  "lastAssessment": "2026-03-14T10:00:00Z",
+  "assessmentCount": 1,
+  "overallScore": 7.5,
+  "experts": {
+    "qa": { "score": 7, "status": "good", "topFinding": "...", "recommendation": "...", "riskIfIgnored": "..." },
+    "uiux": { "score": null, "status": "not-assessed", "topFinding": null, "recommendation": null, "riskIfIgnored": null },
+    "security": { "score": 8, "status": "good", "topFinding": "...", "recommendation": "...", "riskIfIgnored": "..." },
+    "devops": {}, "networking": {}, "development": {}, "architecture": {},
+    "product": {}, "api": {}, "monitoring": {}, "database": {},
+    "performance": {}, "documentation": {},
+    "specifications": {}, "projectDocs": {}, "progress": {}
+  },
+  "tasks": [
+    { "id": "t1", "title": "...", "status": "todo", "priority": 1, "impact": "high", "effort": "low", "expert": "security", "quadrant": "quick-win" }
+  ],
+  "risks": [
+    { "id": "r1", "description": "...", "severity": "critical", "likelihood": "high", "expert": "security", "mitigation": "..." }
+  ],
+  "technicalDebt": [
+    { "id": "d1", "item": "...", "category": "code", "impact": "medium", "effort": "days", "interestRate": "accruing" }
+  ],
+  "history": [
+    { "date": "2026-03-14T10:00:00Z", "scores": { "qa": 7, "security": 8, "devops": 6 } }
+  ]
+}
+```
+
+**Expert keys:** qa, uiux, security, devops, networking, development, architecture, product, api, monitoring, database, performance, documentation, specifications, projectDocs, progress
+
+**Status values:** "excellent" (9-10), "good" (7-8), "fair" (5-6), "poor" (3-4), "critical" (1-2), "not-assessed" (null)
+
+**Quadrant values:** "quick-win" (high impact + low effort), "major-project" (high impact + high effort), "fill-in" (low impact + low effort), "thankless" (low impact + high effort)
 
 ---
 
@@ -783,6 +835,10 @@ Respond with your full profile:
 - **License**: Apache-2.0
 
 ## Changelog
+
+### 1.1.0 (2026-03-14)
+- Absorbed /pm-dashboard skill — schema, commands, and central store sync now built into this agent
+- No separate skill needed; all dashboard functionality is self-contained
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release

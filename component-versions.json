@@ -1366,13 +1366,6 @@
       "installPath": "skills/model-mode/",
       "changelog": "skills/model-mode/SKILL.md#changelog"
     },
-    "skills/pm-dashboard": {
-      "type": "skill",
-      "version": "1.1.0",
-      "file": "skills/pm-dashboard/SKILL.md",
-      "installPath": "skills/pm-dashboard/",
-      "changelog": "skills/pm-dashboard/SKILL.md#changelog"
-    },
     "skills/project-scaffolding": {
       "type": "skill",
       "version": "1.0.0",

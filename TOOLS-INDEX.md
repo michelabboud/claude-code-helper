@@ -20,7 +20,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 - [Example Agents (27 Agents)](#example-agents-27-agents)
   - [MCP Agents](#mcp-agents-9-agents)
   - [Sub-Agents - Domain Specialists](#sub-agents---domain-specialists-18-agents)
-- [Skills (14 Workflow Skills)](#skills-14-workflow-skills)
+- [Skills (13 Workflow Skills)](#skills-14-workflow-skills)
   - [Core Workflow Skills](#core-workflow-skills)
 - [Commands (5 Slash Commands)](#commands-5-slash-commands)
 - [Hooks (4 Automation Hooks)](#hooks-4-automation-hooks)
@@ -296,7 +296,7 @@ Specialized agents for specific technology domains.
 
 ---
 
-## Skills (14 Workflow Skills)
+## Skills (13 Workflow Skills)
 
 **Location:** [`skills/`](skills/)
 
@@ -306,7 +306,6 @@ Specialized agents for specific technology domains.
 |-------|------|-------------|
 | Greeting | [`greeting/SKILL.md`](skills/greeting/SKILL.md) | Survey all installed MCP servers, agents, and skills — generate health report |
 | Model Mode | [`model-mode/SKILL.md`](skills/model-mode/SKILL.md) | Switch MODEL_MODE in CLAUDE.md without manual editing |
-| PM Dashboard | [`pm-dashboard/SKILL.md`](skills/pm-dashboard/SKILL.md) | Update project health dashboard with expert scores and tasks |
 | Update Check | [`update-check/SKILL.md`](skills/update-check/SKILL.md) | Check claude-code-helper installation for available updates |
 | Refresh | [`refresh/SKILL.md`](skills/refresh/SKILL.md) | Refresh agent knowledge from official reference URLs |
 | Auto Plan | [`auto-plan/SKILL.md`](skills/auto-plan/SKILL.md) | Plan with Opus, build with Sonnet |

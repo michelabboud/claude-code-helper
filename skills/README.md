@@ -15,7 +15,7 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 - Auto-discovered from nested `.claude/skills` directories (v2.1.6+)
 - Visible in slash command menu by default (opt-out with `user-invocable: false`)
 
-## Available Skills (14)
+## Available Skills (13)
 
 | Skill | Description | Category |
 |-------|-------------|----------|
@@ -27,7 +27,6 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 | **database-design-patterns** | Schema design and optimization | Development |
 | **ci-best-practices** | CI/CD pipeline patterns | DevOps |
 | **release-management** | Release workflows and versioning | DevOps |
-| **pm-dashboard** | Project Manager health dashboard management | Project Management |
 | **model-mode** | Switch model mode (default/opus-only/sonnet-only/haiku-only/custom) | Configuration |
 | **update-check** | Check for new releases (never auto-updates) | Maintenance |
 | **greeting** | Survey all installed tools and generate health report | Tooling |
@@ -44,7 +43,6 @@ cp -r *.md ~/.claude/skills/
 cp -r documentation ~/.claude/skills/
 cp -r testing ~/.claude/skills/
 cp -r project-scaffolding ~/.claude/skills/
-cp -r pm-dashboard ~/.claude/skills/
 cp -r model-mode ~/.claude/skills/
 cp -r update-check ~/.claude/skills/
 cp -r greeting ~/.claude/skills/
@@ -188,15 +186,6 @@ CI/CD pipeline patterns.
 Release workflows and versioning.
 
 **Covers**: Semantic versioning, changelog generation, release branches, hotfix processes
-
----
-
-### Project Management Skills
-
-#### pm-dashboard
-Manage the Project Manager health dashboard.
-
-**Covers**: 16 expert dimensions, scoring, task tracking, risk management, trend history
 
 ---
 

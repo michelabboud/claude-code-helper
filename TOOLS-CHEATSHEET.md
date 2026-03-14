@@ -4,7 +4,7 @@
 
 Version: v2.8.0
 Last Updated: 2026-02-21
-Total: 68 MCP tools • 55 agents • 14 skills • 7 commands
+Total: 68 MCP tools • 55 agents • 13 skills • 7 commands
 
 ---
 
@@ -572,12 +572,6 @@ Total: 68 MCP tools • 55 agents • 14 skills • 7 commands
 | `update-check` | Check and apply updates | `/update-check`, `/update-check update` |
 | `model-mode` | Switch model mode | `/model-mode opus-only` |
 | `refresh` | Refresh agent knowledge | `/refresh status`, `/refresh <agent>` |
-
-### Project Management (1)
-
-| Skill | Purpose | Usage |
-|-------|---------|-------|
-| `pm-dashboard` | Project health dashboard | `/pm-dashboard update` |
 
 ---
 

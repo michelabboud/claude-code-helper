@@ -1,8 +1,8 @@
 {
   "projectName": "claude-code-helper",
-  "lastAssessment": "2026-02-21T19:00:00Z",
-  "assessmentCount": 20,
-  "overallScore": 9.0,
+  "lastAssessment": "2026-03-14T12:00:00Z",
+  "assessmentCount": 21,
+  "overallScore": 9.1,
   "experts": {
     "qa": {
       "score": 9,
@@ -56,8 +56,8 @@
     "product": {
       "score": 9,
       "status": "excellent",
-      "topFinding": "77 distributable components: 46 agents, 14 skills, 11 MCP servers, 3 hooks, 6 plugins, 2 integrations. 4 GitHub releases (v1.0.0, v2.3.0, v2.3.1, v2.4.0). 24 changelog entries. component-versions.json tracks all 77 components.",
-      "recommendation": "Create GitHub releases for versions v1.1.0-v2.2.0 (19 missing releases). Update TOOLS-INDEX.md Quick Stats table (shows 7 servers, reality 10+).",
+      "topFinding": "68 distributable components: 46 agents, 13 skills, 11 MCP servers, 3 hooks, 6 plugins, 2 integrations. Skills consolidated from 23 to 13 (pm-dashboard absorbed into project-manager agent). 25 changelog entries. 28 release note files. Building Blocks guide added.",
+      "recommendation": "Create GitHub releases for versions v1.1.0-v2.2.0 (19 missing releases).",
       "riskIfIgnored": "Users can't discover intermediate releases via GitHub Releases page"
     },
     "api": {
@@ -91,7 +91,7 @@
     "documentation": {
       "score": 10,
       "status": "excellent",
-      "topFinding": "Added docs/reference/hello-protocol.md: full protocol spec with copy-paste patterns for MCP servers, skills, and agents. CLAUDE.md updated with mandatory Hello Protocol requirement for new tools. TOOLS-INDEX.md counts accurate. Comprehensive docs: README, QUICKSTART, CONTRIBUTING, CLAUDE.md, CHANGELOG. mcp-shared/API.md. component-browser.html. All 11 MCP servers have CHANGELOG.md.",
+      "topFinding": "28 release note files (v1.3.0-v2.9.0 + CLI v2.1.50-v2.1.76). New Building Blocks guide (666 lines) explaining Skills, Agents, Hooks, MCP Servers, Plugins. All skill counts updated across 20+ docs after consolidation. Comprehensive docs: README, QUICKSTART, CONTRIBUTING, CLAUDE.md, CHANGELOG. mcp-shared/API.md. component-browser.html. All 11 MCP servers have CHANGELOG.md.",
       "recommendation": "Add JSDoc to mcp-shared source. Create missing GitHub releases for v1.1.0-v2.2.0.",
       "riskIfIgnored": "Low remaining risk - documentation is comprehensive and accurate"
     },
@@ -280,6 +280,10 @@
     {
       "date": "2026-02-21T19:00:00Z",
       "scores": { "qa": 9, "uiux": 9, "security": 9, "devops": 10, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 9, "monitoring": 10, "database": 8, "performance": 9, "documentation": 10, "specifications": 7, "projectDocs": 7, "progress": 10 }
+    },
+    {
+      "date": "2026-03-14T12:00:00Z",
+      "scores": { "qa": 9, "uiux": 9, "security": 9, "devops": 10, "networking": 8, "development": 9, "architecture": 9, "product": 9, "api": 9, "monitoring": 10, "database": 8, "performance": 9, "documentation": 10, "specifications": 7, "projectDocs": 8, "progress": 10 }
     }
   ]
 }
