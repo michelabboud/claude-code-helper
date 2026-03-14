@@ -50,7 +50,7 @@ references:
   - url: "https://docs.github.com/en/issues"
     label: "GitHub Issues Documentation"
     type: docs
-version: 1.2.0
+version: 1.3.0
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -748,44 +748,119 @@ cp .claude/pm-dashboard.json ~/.claude/pm-dashboard/"$PROJECT_NAME"/pm-dashboard
 
 ### Interactive Playground Mode
 
-The playground plugin generates **self-contained interactive HTML explorers** — a better way to visualize and explore project health data than static dashboards.
-
-**When to suggest a playground (proactive):**
-After every full assessment, suggest generating a playground:
-> "I've completed the assessment. Would you like me to generate an interactive playground so you can explore the scores, filter by domain, and scrub through the history? (Requires the playground plugin — I can help you install it.)"
-
-Also suggest playgrounds when:
-- The user asks "show me the dashboard" or "visualize the scores"
-- After a sprint planning session (to explore the priority matrix interactively)
-- When comparing multiple assessments over time
-- When the user wants to share results with their team (playground is a single HTML file)
-
-**Use the `data-explorer` template** with these controls:
-- **Expert filter**: Clickable chips for each of the 16 expert domains
-- **Score range**: Slider to filter by minimum score (1-10)
-- **Quadrant view**: Toggle between priority matrix quadrants (quick-win, major-project, fill-in, thankless)
-- **History timeline**: Slider to scrub through assessment history
-- **Risk filter**: Toggle by severity (critical/high/medium/low)
-
-**Data source**: Read `.claude/pm-dashboard.json` and embed its contents directly into the playground HTML as an inline `var data = { ... }` block.
-
-**Prompt output**: The playground generates natural-language action prompts like:
-> "Focus on the 3 domains scoring below 5 (security: 3, testing: 4, monitoring: 2). The highest-impact quick win is adding structured logging (monitoring domain, low effort). Address the 2 critical risks first: exposed API keys and missing input validation."
+The playground plugin (`playground@claude-plugins-official`) generates **self-contained interactive HTML explorers**. The project-manager agent uses it to create different playground types depending on context.
 
 **How to invoke**: Use the Skill tool to call the `playground` skill:
 ```
 Skill: playground
-Args: "project health data explorer using .claude/pm-dashboard.json"
+Args: "<playground description with data source>"
 ```
 
-**Prerequisite**: The playground plugin must be installed. If it's not available, guide the user to install it (see below).
+**Data source**: Always read `.claude/pm-dashboard.json` and embed its contents directly into the playground HTML as an inline `var DATA = { ... }` block. This makes the playground fully self-contained — no fetch, no CORS, works offline.
 
-**Pre-built playground**: A ready-made playground is included at `dashboard/public/pm-playground.html`. Copy it to the project and open:
+**Prerequisite**: The playground plugin must be installed. If it's not available, guide the user to install it (see Installing the Playground Plugin below).
+
+**Pre-built playground**: A ready-made health explorer is included at `dashboard/public/pm-playground.html`:
 ```bash
-cp ~/.claude/dashboard/pm-playground.html .claude/pm-playground.html
+cp ~/.claude/dashboard/public/pm-playground.html .claude/pm-playground.html
 open .claude/pm-playground.html       # macOS
 xdg-open .claude/pm-playground.html   # Linux
 ```
+
+---
+
+### Playground Types
+
+Choose the right playground type based on what the user is doing:
+
+#### 1. Health Score Explorer (default)
+**When**: After a full assessment, "show me the dashboard", "visualize the scores"
+**Template**: `data-explorer`
+**Controls**: Expert domain chips (16), min-score slider, history timeline scrubber, display toggles
+**Preview**: Score cards grid, history chart with per-domain lines, overall health banner
+**Prompt output**: Natural-language action recommendations based on filtered view
+```
+Skill: playground
+Args: "project health score explorer — embed .claude/pm-dashboard.json, show 16 expert domain cards with color-coded scores, score filter slider, SVG history chart, and generate action recommendations in prompt output"
+```
+
+#### 2. Priority Matrix Explorer
+**When**: Sprint planning, "what should we work on", task prioritization
+**Template**: `data-explorer`
+**Controls**: Quadrant toggles (quick-win/major-project/fill-in/thankless), impact/effort dropdowns, expert-source filter, status filter (todo/in-progress/done)
+**Preview**: Interactive 2x2 matrix with draggable task cards, effort budget bar, task detail panel on click
+**Prompt output**: Sprint plan — selected tasks with total effort estimate
+```
+Skill: playground
+Args: "priority matrix explorer — embed tasks from .claude/pm-dashboard.json, interactive 2x2 grid (impact vs effort), clickable task cards showing expert source and status, generate sprint plan prompt with selected tasks"
+```
+
+#### 3. Risk Heatmap
+**When**: Deployment readiness review, "show me the risks", security assessment
+**Template**: `data-explorer`
+**Controls**: Severity toggles (critical/high/medium/low), likelihood toggles, expert-source filter
+**Preview**: Severity x likelihood heatmap grid, risk cards with mitigation details, escalation indicators
+**Prompt output**: Risk mitigation plan — prioritized list of actions to reduce exposure
+```
+Skill: playground
+Args: "risk heatmap — embed risks from .claude/pm-dashboard.json, severity x likelihood matrix, clickable risk cards with mitigation details, generate risk mitigation plan in prompt output"
+```
+
+#### 4. Technical Debt Dashboard
+**When**: "Show me the tech debt", refactoring planning, debt triage
+**Template**: `data-explorer`
+**Controls**: Category filter (code/arch/infra/test/docs/process), interest rate toggles (accruing/stable/declining), impact filter, effort sort
+**Preview**: Debt items as cards sorted by ROI (impact/effort), interest rate indicators with color coding, category breakdown chart
+**Prompt output**: Debt paydown plan — prioritized by interest rate then impact
+```
+Skill: playground
+Args: "technical debt explorer — embed technicalDebt from .claude/pm-dashboard.json, filter by category and interest rate, sort by ROI, color-code accruing (red) vs stable (yellow) vs declining (green), generate debt paydown plan in prompt output"
+```
+
+#### 5. Score Comparison Timeline
+**When**: "How have we improved", trend analysis, retrospective
+**Template**: `data-explorer`
+**Controls**: Domain multi-select, date range slider, comparison mode (absolute scores vs delta from baseline)
+**Preview**: Multi-line SVG chart with domain-colored lines, hover tooltips showing score + date, delta badges showing improvement per domain
+**Prompt output**: Progress report — domains that improved most, domains that stagnated, inflection points
+```
+Skill: playground
+Args: "score comparison timeline — embed history from .claude/pm-dashboard.json, multi-line SVG chart with per-domain colored lines, date range slider, delta mode toggle (absolute vs change), generate progress report in prompt output"
+```
+
+#### 6. Expert Deep-Dive
+**When**: "Tell me more about security", focused domain analysis, after a targeted consultation
+**Template**: `concept-map`
+**Controls**: Expert domain selector (dropdown), assessment history slider
+**Preview**: Full expert card with finding, recommendation, risk-if-ignored, score gauge, history sparkline for that domain, related tasks and risks
+**Prompt output**: Focused action plan for the selected domain
+```
+Skill: playground
+Args: "expert deep-dive — embed experts, tasks, and risks from .claude/pm-dashboard.json, domain selector dropdown, show full finding + recommendation + risk, domain-specific history sparkline, related tasks, generate focused action plan in prompt output"
+```
+
+---
+
+### When to Suggest Playgrounds (Proactive)
+
+**After every full assessment**, offer a playground:
+> "Assessment complete. Would you like me to generate an interactive playground to explore the results? I can create a health score explorer, priority matrix, risk heatmap, or debt dashboard."
+
+**Context-triggered suggestions:**
+
+| User action | Suggest playground type |
+|---|---|
+| Completes a full assessment | Health Score Explorer |
+| Asks "what should we do next" | Priority Matrix Explorer |
+| Asks about deployment readiness | Risk Heatmap |
+| Asks about technical debt | Technical Debt Dashboard |
+| Asks "how have we improved" | Score Comparison Timeline |
+| Asks about a specific domain | Expert Deep-Dive |
+| Wants to share results with team | Health Score Explorer (shareable single HTML file) |
+| Sprint planning session | Priority Matrix Explorer |
+| Post-sprint retrospective | Score Comparison Timeline |
+
+**Always mention the playground is a single HTML file** that can be shared, opened anywhere, and works offline — this is a key benefit over the static dashboard.
 
 ### Installing the Playground Plugin
 
@@ -939,6 +1014,11 @@ Respond with your full profile:
 - **License**: Apache-2.0
 
 ## Changelog
+
+### 1.3.0 (2026-03-15)
+- 6 context-aware playground types: Health Score Explorer, Priority Matrix, Risk Heatmap, Technical Debt Dashboard, Score Comparison Timeline, Expert Deep-Dive
+- Proactive playground suggestions: agent now recommends the right playground type based on user context (assessment, sprint planning, retrospective, etc.)
+- Each playground type has specific template, controls, preview layout, and prompt output format
 
 ### 1.2.0 (2026-03-14)
 - Added interactive playground mode via `/playground` skill (Anthropic plugin)
