@@ -42,7 +42,7 @@ This plugin provides everything needed to build production-ready web application
 - Query optimization
 - Data modeling patterns
 
-### Skills (5)
+### Skills (4)
 ✅ **API Design Patterns**
 - RESTful API best practices
 - GraphQL integration
@@ -50,19 +50,12 @@ This plugin provides everything needed to build production-ready web application
 - Error handling patterns
 - Documentation generation
 
-✅ **Test-Driven Development (TDD)**
-- Red-Green-Refactor workflow
+✅ **Testing** (`/testing` with subcommands: tdd, e2e, bdd, contract, mutation, visual)
+- Red-Green-Refactor workflow (tdd)
 - Unit testing best practices
 - Integration testing patterns
 - Test doubles and mocking
 - Coverage optimization
-
-✅ **Code Review Workflow**
-- Systematic review process
-- Language-specific checklists
-- Security review guidelines
-- Performance considerations
-- Accessibility checks
 
 ✅ **Refactoring Strategy**
 - Safe refactoring process
@@ -161,8 +154,7 @@ cp agents/domain-experts/database-expert.md ~/.claude/agents/
 2. **Install Skills**:
 ```bash
 cp -r skills/api-design-patterns ~/.claude/skills/
-cp -r skills/tdd-workflow ~/.claude/skills/
-cp -r skills/code-review-workflow ~/.claude/skills/
+cp -r skills/testing ~/.claude/skills/
 cp -r skills/refactoring-strategy ~/.claude/skills/
 cp -r skills/database-design-patterns ~/.claude/skills/
 ```

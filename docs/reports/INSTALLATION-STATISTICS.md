@@ -17,7 +17,7 @@ This document provides comprehensive statistics and impact analysis for the comp
 |----------|-------|------------|-----------|
 | **MCP Servers** | 9 servers | 468 MB | ~650 MB |
 | **Agents** | 46 configs | 780 KB | ~5 MB |
-| **Skills** | 16 skills | 352 KB | ~2 MB |
+| **Skills** | 10 skills | 352 KB | ~2 MB |
 | **Commands** | 7 commands | 36 KB | ~1 MB |
 | **Config Bundle** | Full | 291 MB | ~2 MB |
 | **Total** | 78+ components | 759 MB | ~660 MB |
@@ -41,7 +41,7 @@ This document provides comprehensive statistics and impact analysis for the comp
 ├── agents/                         (780 KB, 46 files)
 │   ├── *.json (14 MCP agents)
 │   └── *.md (34 sub-agents)
-├── skills/                         (352 KB, 16 directories)
+├── skills/                         (352 KB, 10 directories)
 │   └── */SKILL.md
 ├── commands/                       (36 KB, 7 files)
 │   ├── *.md (5 command definitions)
@@ -222,45 +222,37 @@ This document provides comprehensive statistics and impact analysis for the comp
 
 ## ✨ Skills - Complete Catalog
 
-### Workflow Skills (8)
+### Workflow Skills (5)
 
 | Skill | Purpose | Size | Components |
 |-------|---------|------|------------|
-| code-review-workflow | Systematic code review | 18 KB | SKILL.md |
+| testing | Unified testing (tdd, e2e, bdd, contract, mutation, visual) | 40 KB | SKILL.md |
 | refactoring-strategy | Safe refactoring patterns | 22 KB | SKILL.md |
-| tdd-workflow | Test-driven development | 20 KB | SKILL.md |
 | release-management | Semantic versioning, releases | 24 KB | SKILL.md |
 | ci-best-practices | CI/CD best practices | 19 KB | SKILL.md |
 | auto-plan | Automatic planning | 15 KB | SKILL.md (config-bundle) |
-| api-documentation | API documentation generation | 28 KB | SKILL.md + examples |
-| testing-standards | Testing standards | 16 KB | SKILL.md + examples |
 
-### Testing Skills (5)
-
-| Skill | Purpose | Size |
-|-------|---------|------|
-| visual-regression-testing | Visual regression | 21 KB |
-| contract-testing | API contract testing | 19 KB |
-| mutation-testing | Test effectiveness | 20 KB |
-| bdd-framework-examples | BDD patterns | 23 KB |
-| advanced-e2e-testing | E2E testing | 25 KB |
-
-### Architecture Skills (3)
+### API & Documentation Skills (2)
 
 | Skill | Purpose | Size |
 |-------|---------|------|
 | api-design-patterns | REST API design | 26 KB |
+| documentation | API documentation (subcommand: api) | 28 KB |
+
+### Architecture Skills (1)
+
+| Skill | Purpose | Size |
+|-------|---------|------|
 | database-design-patterns | Database patterns | 24 KB |
-| caching-expert | Caching strategies | 22 KB |
 
 ### Skill Statistics
 
 | Category | Count | Total Size | Avg Size |
 |----------|-------|------------|----------|
-| Workflow | 8 | 162 KB | 20 KB |
-| Testing | 5 | 108 KB | 22 KB |
-| Architecture | 3 | 72 KB | 24 KB |
-| **Total** | **16** | **352 KB** | **22 KB** |
+| Workflow | 5 | 120 KB | 24 KB |
+| API & Documentation | 2 | 54 KB | 27 KB |
+| Architecture | 1 | 24 KB | 24 KB |
+| **Total** | **10** | **198 KB** | **20 KB** |
 
 ---
 
@@ -507,9 +499,9 @@ Complex Workflows:
 
 | Category | Count | Status | Hot-Reload |
 |----------|-------|--------|------------|
-| Workflow | 8 | ⏳ Testing needed | ✅ Enabled |
-| Testing | 5 | ⏳ Testing needed | ✅ Enabled |
-| Architecture | 3 | ⏳ Testing needed | ✅ Enabled |
+| Workflow | 5 | ⏳ Testing needed | ✅ Enabled |
+| API & Documentation | 2 | ⏳ Testing needed | ✅ Enabled |
+| Architecture | 1 | ⏳ Testing needed | ✅ Enabled |
 
 ### Commands
 
@@ -606,7 +598,7 @@ Complex Workflows:
    - [ ] Check agent orchestration
 
 3. **Skill Testing**
-   - [ ] Invoke all 16 skills
+   - [ ] Invoke all 10 skills
    - [ ] Verify hot-reload works
    - [ ] Test skill parameters
    - [ ] Check skill outputs
@@ -643,7 +635,7 @@ See **TESTING-GUIDE.md** for:
 Components Installed:         78+
   ├─ MCP Servers:            9 (60 tools)
   ├─ Agents:                 48 configs
-  ├─ Skills:                 16 workflows
+  ├─ Skills:                 10 workflows
   └─ Commands:               7 shortcuts
 
 Disk Space Used:             759 MB

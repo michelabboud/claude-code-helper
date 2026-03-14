@@ -29,8 +29,7 @@ Integrations are comprehensive examples that demonstrate how to combine multiple
 
 **Claude Code Components Used**:
 - Multiple specialized agents (API, Database, Security)
-- TDD workflow skill
-- Code review workflow
+- Testing skill (`/testing tdd`)
 - Build validation hooks
 
 **Key Patterns**:
@@ -75,7 +74,7 @@ cat ecommerce-platform.md
 # Install referenced components as needed
 cp ../agents/subagents/api-expert.md ~/.claude/agents/
 cp ../agents/subagents/database-expert.md ~/.claude/agents/
-cp ../skills/tdd-workflow.md ~/.claude/skills/
+cp -r ../skills/testing ~/.claude/skills/
 ```
 
 ## Using Integrations

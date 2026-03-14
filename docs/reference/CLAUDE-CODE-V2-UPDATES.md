@@ -155,36 +155,6 @@ hooks:
 
 ### 3. Skill Examples - New Frontmatter Capabilities
 
-#### code-review-workflow.md
-**Location**: `/skills/code-review-workflow.md`
-
-**Changes**:
-- Added "Advanced Frontmatter Options" section
-- Documented three new capabilities with examples
-
-**Features Added**:
-
-##### Context Forking
-```yaml
-context: fork
-```
-- Execute in forked context
-- Useful for lengthy code reviews
-- Prevents main conversation clutter
-
-##### Agent Specification
-```yaml
-agent: code-review-expert
-```
-- Automatically invoke specialized sub-agent
-- Enhanced context for code review
-- Better quality analysis
-
-##### Skill Hot-Reload
-- Documentation of instant updates
-- No restart required
-- Rapid development iteration
-
 #### refactoring-strategy.md
 **Location**: `/skills/refactoring-strategy.md`
 
@@ -262,7 +232,7 @@ hooks:
 ### Documentation Coverage
 ✅ **Core Documentation**: CLAUDE.md fully updated with v2.1.3+ features
 ✅ **Hook Examples**: All 3 P1 hooks updated (100% coverage)
-✅ **Skill Examples**: 2 comprehensive P1 skills updated (code-review-workflow, refactoring-strategy)
+✅ **Skill Examples**: 1 comprehensive P1 skill updated (refactoring-strategy)
 ✅ **Command Examples**: 3 P1 commands updated (scaffold, refactor, test-generate)
 
 ### Feature Adoption Readiness
@@ -376,14 +346,13 @@ hooks:
 2. `/hooks/security-scan.md` - Enhanced with timeout + frontmatter docs
 3. `/hooks/code-quality-gate.md` - Enhanced with timeout + frontmatter docs
 4. `/hooks/build-validation.md` - Enhanced with timeout + frontmatter docs
-5. `/skills/code-review-workflow.md` - Added advanced frontmatter section
-6. `/skills/refactoring-strategy.md` - Added advanced frontmatter section
+5. `/skills/refactoring-strategy.md` - Added advanced frontmatter section
 7. `/commands/scaffold.md` - Added unified model note
 8. `/commands/refactor.md` - Added unified model note
 9. `/commands/test-generate.md` - Added unified model note
 
-**Total Files Updated**: 9
-**Lines Added**: ~400
+**Total Files Updated**: 8
+**Lines Added**: ~350
 **Breaking Changes**: 0
 
 ## References
@@ -405,7 +374,7 @@ grep -A 5 "Latest Claude Code Features" CLAUDE.md
 grep "10-minute timeout" hooks/*.md
 
 # Check skills have frontmatter options
-grep "context: fork" skills/*.md
+grep -r "context: fork" skills/
 
 # Check commands have unified model notes
 grep "unified mental model" commands/*.md

@@ -20,9 +20,8 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 - [Example Agents (27 Agents)](#example-agents-27-agents)
   - [MCP Agents](#mcp-agents-9-agents)
   - [Sub-Agents - Domain Specialists](#sub-agents---domain-specialists-18-agents)
-- [Skills (22 Workflow Skills)](#skills-21-workflow-skills)
+- [Skills (14 Workflow Skills)](#skills-14-workflow-skills)
   - [Core Workflow Skills](#core-workflow-skills)
-  - [Advanced Testing Skills](#advanced-testing-skills)
 - [Commands (5 Slash Commands)](#commands-5-slash-commands)
 - [Hooks (4 Automation Hooks)](#hooks-4-automation-hooks)
 - [Plugins (6 Complete Packages)](#plugins-6-complete-packages)
@@ -46,7 +45,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 | **MCP Servers** | 11 | Production-ready TypeScript servers with 47+ tools |
 | **MCP Tools** | 80+ | Individual automation tools across all servers (incl. 11 hello tools) |
 | **Agents** | 54 | MCP agents, sub-agents, and technology specialists |
-| **Skills** | 23 | Workflow, testing, tooling, and documentation skills |
+| **Skills** | 14 | Workflow, testing, tooling, and documentation skills |
 | **Commands** | 5 | Slash commands for common workflows |
 | **Hooks** | 4 | Event-driven automation hooks |
 | **Plugins** | 6 | Complete feature packages |
@@ -297,7 +296,7 @@ Specialized agents for specific technology domains.
 
 ---
 
-## Skills (22 Workflow Skills)
+## Skills (14 Workflow Skills)
 
 **Location:** [`skills/`](skills/)
 
@@ -312,26 +311,13 @@ Specialized agents for specific technology domains.
 | Refresh | [`refresh/SKILL.md`](skills/refresh/SKILL.md) | Refresh agent knowledge from official reference URLs |
 | Auto Plan | [`auto-plan/SKILL.md`](skills/auto-plan/SKILL.md) | Plan with Opus, build with Sonnet |
 | RAG | [`rag/SKILL.md`](skills/rag/SKILL.md) | Setup wizard (`/rag init`), index codebases, semantic search, configure backends, two-layer auto-discovery, multi-repo |
+| Testing | [`testing/SKILL.md`](skills/testing/SKILL.md) | Unified testing skill with subcommands: `tdd`, `e2e`, `bdd`, `contract`, `mutation`, `visual` |
+| Documentation | [`documentation/SKILL.md`](skills/documentation/SKILL.md) | Generate comprehensive documentation (subcommand: `api` for API docs) |
 | API Design Patterns | [`api-design-patterns.md`](skills/api-design-patterns.md) | REST API design best practices, versioning, error handling |
-| API Documentation | [`api-documentation/SKILL.md`](skills/api-documentation/SKILL.md) | Automated API documentation generation |
-| Caching Expert | [`caching-expert.md`](skills/caching-expert.md) | Caching strategies (Static, Object, HTTP, CDN) |
 | CI Best Practices | [`ci-best-practices.md`](skills/ci-best-practices.md) | CI/CD pipeline configuration and optimization |
-| Code Review Workflow | [`code-review-workflow.md`](skills/code-review-workflow.md) | Structured code review process |
 | Database Design Patterns | [`database-design-patterns.md`](skills/database-design-patterns.md) | Schema design, normalization, indexing strategies |
 | Refactoring Strategy | [`refactoring-strategy.md`](skills/refactoring-strategy.md) | Code refactoring techniques and patterns |
 | Release Management | [`release-management.md`](skills/release-management.md) | Release and deployment workflows |
-| TDD Workflow | [`tdd-workflow.md`](skills/tdd-workflow.md) | Test-driven development workflow |
-
-### Advanced Testing Skills
-
-| Skill | File | Description |
-|-------|------|-------------|
-| Advanced E2E Testing | [`advanced-e2e-testing.md`](skills/advanced-e2e-testing.md) | Complex E2E scenarios, auth mocking, parallel execution |
-| BDD Framework Examples | [`bdd-framework-examples.md`](skills/bdd-framework-examples.md) | Cucumber, Behave, SpecFlow implementations |
-| Contract Testing | [`contract-testing.md`](skills/contract-testing.md) | Pact, consumer-driven contract testing |
-| Mutation Testing | [`mutation-testing.md`](skills/mutation-testing.md) | Stryker, PITest, Mutmut mutation testing |
-| Testing Standards | [`testing-standards/SKILL.md`](skills/testing-standards/SKILL.md) | Testing standards and guidelines |
-| Visual Regression Testing | [`visual-regression-testing.md`](skills/visual-regression-testing.md) | Percy, Chromatic, BackstopJS visual testing |
 
 ---
 
@@ -343,11 +329,11 @@ Slash commands for common development workflows.
 
 | Command | File | Usage | Description |
 |---------|------|-------|-------------|
-| Document | [`documentation/SKILL.md`](skills/documentation/SKILL.md) | `/document` | Generate comprehensive documentation |
+| Document | [`documentation/SKILL.md`](skills/documentation/SKILL.md) | `/document` | Generate comprehensive documentation (use `/document api` for API docs) |
 | Refactor | [`refactoring-strategy.md`](skills/refactoring-strategy.md) | `/refactor` | Code refactoring workflow |
-| Review | [`code-review-workflow.md`](skills/code-review-workflow.md) | `/review` | Code review with suggestions |
+| Review | [`code-reviewer.md`](agents/domain-experts/code-reviewer.md) | `@code-reviewer` | Code review (use the code-reviewer agent) |
 | Scaffold | [`project-scaffolding/SKILL.md`](skills/project-scaffolding/SKILL.md) | `/scaffold` | Project scaffolding |
-| Test Generate | [`testing-standards/SKILL.md`](skills/testing-standards/SKILL.md) | `/test-generate` | Generate tests for code |
+| Test Generate | [`testing/SKILL.md`](skills/testing/SKILL.md) | `/testing` | Generate and manage tests (subcommands: `tdd`, `e2e`, `bdd`, `contract`, `mutation`, `visual`) |
 
 ---
 
@@ -640,9 +626,7 @@ cat guides/complete-guide/00-ZERO-TO-HERO-GUIDE.md
 - Multi-framework test execution (Jest, Pytest, Mocha, Vitest)
 - Code coverage analysis
 - Test quality assessment
-- Mutation testing support
-- Contract testing with Pact
-- Visual regression testing
+- Unified `/testing` skill with TDD, E2E, BDD, contract, mutation, and visual regression subcommands
 
 ### API Development
 - OpenAPI/Swagger validation
@@ -690,7 +674,7 @@ When adding new tools:
 
 ---
 
-*Last updated: February 2026*
+*Last updated: March 2026*
 *Total documented components: 100+*
 
 ---

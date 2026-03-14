@@ -4,7 +4,7 @@
 
 Version: v2.8.0
 Last Updated: 2026-02-21
-Total: 68 MCP tools • 55 agents • 23 skills • 7 commands
+Total: 68 MCP tools • 55 agents • 14 skills • 7 commands
 
 ---
 
@@ -22,7 +22,7 @@ Total: 68 MCP tools • 55 agents • 23 skills • 7 commands
    - [n8n Automation MCP (6)](#9-n8n-automation-mcp-6-tools)
    - [RAG MCP (8)](#10-rag-mcp-8-tools)
 2. [Agents (55)](#agents)
-3. [Skills (22)](#skills)
+3. [Skills (14)](#skills)
 4. [Commands (7)](#commands)
 5. [Quick Start Examples](#quick-start-examples)
 
@@ -526,37 +526,34 @@ Total: 68 MCP tools • 55 agents • 23 skills • 7 commands
 
 ## Skills
 
-### Code Quality (4)
+### Testing (1 unified skill with 6 subcommands)
 
 | Skill | Purpose | Usage |
 |-------|---------|-------|
-| `code-review-workflow` | Systematic code review | "Review this function" |
-| `refactoring-strategy` | Safe refactoring | "Refactor this code" |
-| `tdd-workflow` | Test-driven development | "Guide me through TDD" |
-| `testing-standards` | Testing best practices | "Review test standards" |
+| `testing` | Unified testing skill | `/testing tdd`, `/testing e2e`, `/testing bdd`, `/testing contract`, `/testing mutation`, `/testing visual` |
 
-### API Development (2)
+### Code Quality (1)
+
+| Skill | Purpose | Usage |
+|-------|---------|-------|
+| `refactoring-strategy` | Safe refactoring | "Refactor this code" |
+
+### API Development (1)
 
 | Skill | Purpose | Usage |
 |-------|---------|-------|
 | `api-design-patterns` | REST/GraphQL design | "Design API for blog" |
-| `api-documentation` | API docs generation | "Document these endpoints" |
 
-### Testing Specializations (6)
-
-| Skill | Purpose | Usage |
-|-------|---------|-------|
-| `advanced-e2e-testing` | E2E test strategies | "Design E2E suite" |
-| `bdd-framework-examples` | BDD/Gherkin | "Write BDD scenarios" |
-| `contract-testing` | API contract tests | "Implement contract tests" |
-| `mutation-testing` | Mutation testing | "Explain mutation testing" |
-| `visual-regression-testing` | Visual diffs | "Setup visual regression" |
-
-### Infrastructure (4)
+### Documentation (1)
 
 | Skill | Purpose | Usage |
 |-------|---------|-------|
-| `caching-expert` | Caching strategies | "Design cache strategy" |
+| `documentation` | Generate docs (inc. API docs) | `/document`, `/document api` |
+
+### Infrastructure (3)
+
+| Skill | Purpose | Usage |
+|-------|---------|-------|
 | `ci-best-practices` | CI/CD optimization | "Review CI pipeline" |
 | `database-design-patterns` | Schema design | "Design user schema" |
 | `release-management` | Release planning | "Plan v2.0 release" |
@@ -591,8 +588,8 @@ Total: 68 MCP tools • 55 agents • 23 skills • 7 commands
 | Command | Purpose | Example Usage |
 |---------|---------|---------------|
 | `/plan` | Feature planning with Opus | `/plan User authentication system` |
-| `/review` | Code review | `/review [paste code]` |
-| `/test-generate` | Generate test suite | `/test-generate [function]` |
+| `@code-reviewer` | Code review | `@code-reviewer [paste code]` (use code-reviewer agent) |
+| `/testing` | Generate and manage tests | `/testing tdd [function]`, `/testing e2e`, `/testing bdd` |
 | `/scaffold` | Project scaffolding | `/scaffold React component library` |
 | `/document` | Generate documentation | `/document [code]` |
 | `/refactor` | Interactive refactoring | `/refactor [code]` |
@@ -660,8 +657,8 @@ Total: 68 MCP tools • 55 agents • 23 skills • 7 commands
 ```
 1. /plan feature with requirements
 2. @implementer build feature
-3. /review code quality
-4. /test-generate create test suite
+3. @code-reviewer review code quality
+4. /testing tdd create test suite
 5. @security-reviewer final scan
 ```
 
@@ -669,7 +666,7 @@ Total: 68 MCP tools • 55 agents • 23 skills • 7 commands
 ```
 1. @database-engineer generate migration
 2. @database-engineer analyze performance
-3. /review migration code
+3. @code-reviewer review migration code
 4. @test-quality-enforcer verify tests
 ```
 
@@ -702,7 +699,7 @@ Total: 68 MCP tools • 55 agents • 23 skills • 7 commands
 **Skill Usage:**
 ```bash
 # Explicit invocation
-"Use the tdd-workflow skill to guide me"
+"Use the /testing tdd workflow to guide me"
 
 # Implicit (Claude auto-selects)
 "Help me refactor this code"  # May use refactoring-strategy skill
@@ -723,9 +720,9 @@ Total: 68 MCP tools • 55 agents • 23 skills • 7 commands
 |----------|-------|--------|
 | **MCP Tools** | 68 | 38 production + 30 experimental |
 | **Agents** | 52 | 14 MCP + 38 domain experts |
-| **Skills** | 23 | All production-ready |
+| **Skills** | 14 | All production-ready |
 | **Commands** | 7 | All production-ready |
-| **Total Components** | 149 | Ready to use |
+| **Total Components** | 140 | Ready to use |
 
 **Resource Impact:**
 - **Disk:** 759 MB (MCP servers + agents + skills)

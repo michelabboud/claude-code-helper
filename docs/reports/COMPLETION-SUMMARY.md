@@ -198,21 +198,11 @@ The claude-code-helper repository has reached **100% completion** with the addit
 
 ---
 
-### Skills (2 Comprehensive Guides)
+### Skills (1 Comprehensive Guide)
 
-#### 1. **Caching Expert** (`skills/caching-expert.md`)
-- **Lines:** ~900
-- **Coverage:** All 4 Cache Types (as specifically requested)
-- **Key Features:**
-  - **Static Cache:** File-based caching, static site generation
-  - **Object Cache:** Redis, Memcached, in-memory caching patterns
-  - **HTTP Cache:** Cache-Control headers, ETags, conditional requests
-  - **CDN Cache:** CloudFront, Cloudflare, cache invalidation
-  - Multi-layer cache architecture
-  - Cache metrics and monitoring
-  - Best practices for each type
+> **Note:** The former Caching Expert skill has been removed. Caching guidance is now covered by the Redis Expert agent and database-design-patterns skill.
 
-#### 2. **CI Best Practices** (`skills/ci-best-practices.md`)
+#### 1. **CI Best Practices** (`skills/ci-best-practices.md`)
 - **Lines:** ~1000
 - **Coverage:** Complete CI/CD Pipeline Design and Optimization
 - **Key Features:**
@@ -327,7 +317,7 @@ The claude-code-helper repository has reached **100% completion** with the addit
 | Metric | Before P3 | After P3 | Growth |
 |--------|-----------|----------|--------|
 | **Sub-Agents** | 11 | 26 | +136% |
-| **Skills** | 8 | 10 | +25% |
+| **Skills** | 8 | 10 | +25% (later consolidated to 10 via merges) |
 | **MCP Servers** | 8 | 9 | +13% |
 | **Total Resources** | 56 | 74 | +32% |
 | **Lines of Documentation** | ~40,000 | ~55,000+ | +38% |
@@ -515,42 +505,13 @@ The claude-code-helper repository is now the most comprehensive Claude Code educ
 
 ### Added Testing Resources (5 comprehensive guides)
 
-1. **Visual Regression Testing** (`skills/visual-regression-testing.md`)
-   - Percy integration with Playwright and Cypress
-   - Chromatic for Storybook visual testing
-   - BackstopJS self-hosted solution
-   - Playwright built-in screenshot testing
-   - Best practices and CI/CD integration
-
-2. **Contract Testing** (`skills/contract-testing.md`)
-   - Pact consumer-driven contract testing
-   - Provider verification patterns
-   - GraphQL contract testing
-   - Message/event contract testing
-   - Pact Broker integration
-
-3. **Mutation Testing** (`skills/mutation-testing.md`)
-   - Stryker for JavaScript/TypeScript
-   - PITest for Java/Kotlin
-   - Mutmut for Python
-   - Test quality measurement
-   - Mutation operators and analysis
-
-4. **BDD Framework Examples** (`skills/bdd-framework-examples.md`)
-   - Cucumber (JavaScript/TypeScript)
-   - Behave (Python)
-   - SpecFlow (.NET/C#)
-   - Gherkin syntax and patterns
-   - Step definitions and page objects
-
-5. **Advanced E2E Testing** (`skills/advanced-e2e-testing.md`)
-   - Complex multi-step workflows
-   - Authentication and authorization flows
-   - API mocking and network interception
-   - File upload/download testing
-   - WebSocket and real-time testing
-   - Mobile and responsive testing
-   - Cross-browser testing patterns
+These testing skills have been consolidated into the unified `/testing` skill with subcommands:
+- `/testing visual` - Visual regression testing (Percy, Chromatic, BackstopJS, Playwright)
+- `/testing contract` - Contract testing (Pact, GraphQL, message/event contracts)
+- `/testing mutation` - Mutation testing (Stryker, PITest, Mutmut)
+- `/testing bdd` - BDD frameworks (Cucumber, Behave, SpecFlow, Gherkin)
+- `/testing e2e` - Advanced E2E testing (complex workflows, auth flows, API mocking)
+- `/testing tdd` - TDD workflow (Red-Green-Refactor)
 
 ### Testing Coverage Now Complete
 

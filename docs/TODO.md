@@ -433,7 +433,7 @@
 
 **Educational Value**: TDD methodology, test-first development, code quality through tests
 
-**Location**: `skills/tdd-workflow.md`
+**Location**: `skills/testing/SKILL.md` (subcommand: tdd)
 
 ---
 
@@ -1211,7 +1211,7 @@ All remaining items
     - Integration Examples: 2/2 (Real-Time Chat, ML Model Deployment)
   - **P3**: ADDITIONAL RESOURCES CREATED ✅ 23 items
     - Sub-Agents (15): Angular, Android, Ruby/Rails, Rust, Go, Laravel, WordPress, PHP, Redis, AWS Architect, Azure Architect, GCP Architect, IoT/Embedded, Game Design, Hugging Face
-    - Skills (7): Caching Expert, CI Best Practices, Visual Regression Testing, Contract Testing, Mutation Testing, BDD Framework Examples, Advanced E2E Testing
+    - Skills (2): CI Best Practices (standalone); Testing skill consolidation (tdd, e2e, bdd, contract, mutation, visual subcommands merged into `/testing`)
     - MCP Servers (1): n8n Automation (workflow generation, optimization, troubleshooting)
   - **Claude Code v2.1.3+ Updates**: Applied to 9 files
 **In Progress**: 0

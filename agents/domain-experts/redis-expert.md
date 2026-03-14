@@ -415,7 +415,6 @@ OBJECT ENCODING key
 
 ## Related Resources
 
-- **Caching Strategies**: `skills/caching-expert.md`
 - **Database Patterns**: `skills/database-design-patterns.md`
 - **Microservices**: `skills/microservices-patterns.md`
 

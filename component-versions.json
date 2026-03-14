@@ -1324,13 +1324,6 @@
       "installPath": "plugins/security-hardening-plugin.md",
       "changelog": "plugins/security-hardening-plugin.md#changelog"
     },
-    "skills/advanced-e2e-testing": {
-      "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/advanced-e2e-testing.md",
-      "installPath": "skills/advanced-e2e-testing.md",
-      "changelog": "skills/advanced-e2e-testing.md#changelog"
-    },
     "skills/api-design-patterns": {
       "type": "skill",
       "version": "1.0.0",
@@ -1338,47 +1331,12 @@
       "installPath": "skills/api-design-patterns.md",
       "changelog": "skills/api-design-patterns.md#changelog"
     },
-    "skills/api-documentation": {
-      "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/api-documentation/SKILL.md",
-      "installPath": "skills/api-documentation/",
-      "changelog": "skills/api-documentation/SKILL.md#changelog"
-    },
-    "skills/bdd-framework-examples": {
-      "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/bdd-framework-examples.md",
-      "installPath": "skills/bdd-framework-examples.md",
-      "changelog": "skills/bdd-framework-examples.md#changelog"
-    },
-    "skills/caching-expert": {
-      "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/caching-expert.md",
-      "installPath": "skills/caching-expert.md",
-      "changelog": "skills/caching-expert.md#changelog"
-    },
     "skills/ci-best-practices": {
       "type": "skill",
       "version": "1.0.0",
       "file": "skills/ci-best-practices.md",
       "installPath": "skills/ci-best-practices.md",
       "changelog": "skills/ci-best-practices.md#changelog"
-    },
-    "skills/code-review-workflow": {
-      "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/code-review-workflow.md",
-      "installPath": "skills/code-review-workflow.md",
-      "changelog": "skills/code-review-workflow.md#changelog"
-    },
-    "skills/contract-testing": {
-      "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/contract-testing.md",
-      "installPath": "skills/contract-testing.md",
-      "changelog": "skills/contract-testing.md#changelog"
     },
     "skills/database-design-patterns": {
       "type": "skill",
@@ -1389,7 +1347,7 @@
     },
     "skills/documentation": {
       "type": "skill",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "file": "skills/documentation/SKILL.md",
       "installPath": "skills/documentation/",
       "changelog": "skills/documentation/SKILL.md#changelog"
@@ -1407,13 +1365,6 @@
       "file": "skills/model-mode/SKILL.md",
       "installPath": "skills/model-mode/",
       "changelog": "skills/model-mode/SKILL.md#changelog"
-    },
-    "skills/mutation-testing": {
-      "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/mutation-testing.md",
-      "installPath": "skills/mutation-testing.md",
-      "changelog": "skills/mutation-testing.md#changelog"
     },
     "skills/pm-dashboard": {
       "type": "skill",
@@ -1457,19 +1408,12 @@
       "installPath": "skills/release-management.md",
       "changelog": "skills/release-management.md#changelog"
     },
-    "skills/tdd-workflow": {
+    "skills/testing": {
+      "version": "2.0.0",
       "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/tdd-workflow.md",
-      "installPath": "skills/tdd-workflow.md",
-      "changelog": "skills/tdd-workflow.md#changelog"
-    },
-    "skills/testing-standards": {
-      "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/testing-standards/SKILL.md",
-      "installPath": "skills/testing-standards/",
-      "changelog": "skills/testing-standards/SKILL.md#changelog"
+      "file": "skills/testing/SKILL.md",
+      "installPath": "skills/testing/",
+      "changelog": "skills/testing/SKILL.md#changelog"
     },
     "skills/update-check": {
       "type": "skill",
@@ -1477,13 +1421,6 @@
       "file": "skills/update-check/SKILL.md",
       "installPath": "skills/update-check/",
       "changelog": "skills/update-check/SKILL.md#changelog"
-    },
-    "skills/visual-regression-testing": {
-      "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/visual-regression-testing.md",
-      "installPath": "skills/visual-regression-testing.md",
-      "changelog": "skills/visual-regression-testing.md#changelog"
     }
   }
 }

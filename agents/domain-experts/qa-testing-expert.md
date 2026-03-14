@@ -1228,7 +1228,7 @@ This agent implements the concepts from `guides/advanced-patterns/testing-strate
 ## Related Resources
 
 - **Testing Strategy Guide**: `guides/advanced-patterns/testing-strategy.md`
-- **TDD Workflow Skill**: `skills/tdd-workflow.md`
+- **Testing Skill**: `skills/testing/SKILL.md` (subcommands: tdd, e2e, bdd, contract, mutation, visual)
 - **Modern Web Stack Plugin**: `plugins/modern-web-stack-plugin.md`
 - **CI Best Practices Skill**: `skills/ci-best-practices.md`
 

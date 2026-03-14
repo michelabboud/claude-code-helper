@@ -36,9 +36,8 @@ Plugins are documentation/reference bundles. To use them:
 # Example: Installing code-quality-suite plugin components
 
 # 1. Install the referenced skills
-cp ../skills/tdd-workflow.md ~/.claude/skills/
-cp ../skills/code-review-workflow.md ~/.claude/skills/
-cp ../skills/refactoring-strategy.md ~/.claude/skills/
+cp -r ../skills/testing ~/.claude/skills/
+cp -r ../skills/refactoring-strategy ~/.claude/skills/
 
 # 2. Install the referenced agent
 cp ../agents/subagents/qa-testing-expert.md ~/.claude/agents/
@@ -63,9 +62,8 @@ Each plugin file lists its components. Use the plugin as a guide for what to ins
 
 **Components**:
 - QA/Testing Expert Agent
-- Code Review Workflow Skill
 - Refactoring Strategy Skill
-- TDD Workflow Skill
+- Testing Skill (`/testing` with tdd, e2e, bdd, contract, mutation, visual subcommands)
 - Code Quality Gate Hook
 
 **Use Cases**:

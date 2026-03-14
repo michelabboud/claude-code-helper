@@ -643,7 +643,7 @@ Write code
 ```
 Main agent (orchestrator)
   → Kevin (architect sub-agent) + design-patterns skill
-  → Dave (test-writer sub-agent) + testing-standards skill
+  → Dave (test-writer sub-agent) + testing skill
   → Stuart (reviewer sub-agent) + secaudit MCP
     → all coordinated through slash commands
 ```

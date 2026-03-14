@@ -3,7 +3,7 @@
 **Purpose:** Validate that all installed components work correctly
 **Version:** v1.3.0
 **Date:** 2026-01-11
-**Components to Test:** 9 MCP servers (60 tools), 48 agents, 16 skills, 7 commands
+**Components to Test:** 9 MCP servers (60 tools), 48 agents, 10 skills, 7 commands
 
 ---
 
@@ -103,26 +103,18 @@ ls -1 ~/.claude/agents/
 # Test command
 ls -1 ~/.claude/skills/
 
-# Expected output (16 skills)
-advanced-e2e-testing
+# Expected output (10 skills)
 api-design-patterns
-api-documentation
 auto-plan
-bdd-framework-examples
-caching-expert
 ci-best-practices
-code-review-workflow
-contract-testing
 database-design-patterns
-mutation-testing
+documentation
 refactoring-strategy
 release-management
-tdd-workflow
-testing-standards
-visual-regression-testing
+testing
 
 # Validation
-✅ Count >= 16 directories
+✅ Count >= 10 directories
 ✅ Each contains SKILL.md
 ```
 
@@ -1384,36 +1376,9 @@ Validate:
 
 ---
 
-## Phase 3: Skill Testing (16 skills)
+## Phase 3: Skill Testing (10 skills)
 
-### Skill 1: code-review-workflow
-
-**Test Prompt:**
-```
-I need to perform a code review. Use the code-review-workflow skill.
-
-Code to review:
-function calculateDiscount(price, coupon) {
-  return price - coupon;
-}
-```
-
-**Expected Output:**
-- ✅ Systematic review process
-- ✅ Multiple check categories
-- ✅ Specific findings
-- ✅ Recommendations
-
-**Validation:**
-```
-✅ Skill activates
-✅ Follows workflow
-✅ Comprehensive review
-```
-
----
-
-### Skill 2: tdd-workflow
+### Skill 1: testing (subcommand: tdd)
 
 **Test Prompt:**
 ```
@@ -1467,7 +1432,7 @@ function process(data) {
 
 ---
 
-### Skills 4-16: Quick Tests
+### Skills 4-10: Quick Tests
 
 **For each skill:**
 
@@ -1476,17 +1441,13 @@ Skill: api-design-patterns
 Test: "Design a RESTful API for a blog"
 Expected: REST principles applied
 
-Skill: api-documentation
+Skill: documentation (subcommand: api)
 Test: "Document this API endpoint"
 Expected: Comprehensive docs
 
 Skill: database-design-patterns
 Test: "Design a user-profile schema"
 Expected: Normalized schema
-
-Skill: caching-expert
-Test: "Design caching strategy for API"
-Expected: Cache recommendations
 
 Skill: ci-best-practices
 Test: "Review this CI pipeline"
@@ -1496,23 +1457,23 @@ Skill: release-management
 Test: "Plan v2.0.0 release"
 Expected: Release strategy
 
-Skill: visual-regression-testing
+Skill: testing (subcommand: visual)
 Test: "Set up visual regression tests"
 Expected: Testing approach
 
-Skill: contract-testing
+Skill: testing (subcommand: contract)
 Test: "Implement contract tests"
 Expected: Contract testing setup
 
-Skill: mutation-testing
+Skill: testing (subcommand: mutation)
 Test: "Explain mutation testing"
 Expected: Mutation testing guide
 
-Skill: bdd-framework-examples
+Skill: testing (subcommand: bdd)
 Test: "Write BDD scenarios"
 Expected: Gherkin examples
 
-Skill: advanced-e2e-testing
+Skill: testing (subcommand: e2e)
 Test: "Design E2E test suite"
 Expected: E2E strategy
 ```
@@ -1855,24 +1816,16 @@ API: https://jsonplaceholder.typicode.com/users
 - [ ] python-backend-expert
 - [ ] [others as needed]
 
-### Skills (16)
+### Skills (10)
 
-- [ ] code-review-workflow
-- [ ] tdd-workflow
+- [ ] testing (subcommands: tdd, e2e, bdd, contract, mutation, visual)
+- [ ] documentation (subcommand: api)
 - [ ] refactoring-strategy
 - [ ] release-management
 - [ ] ci-best-practices
 - [ ] api-design-patterns
-- [ ] api-documentation
 - [ ] database-design-patterns
-- [ ] caching-expert
-- [ ] visual-regression-testing
-- [ ] contract-testing
-- [ ] mutation-testing
-- [ ] bdd-framework-examples
-- [ ] advanced-e2e-testing
 - [ ] auto-plan
-- [ ] testing-standards
 
 ### Commands (7)
 
@@ -1901,7 +1854,7 @@ API: https://jsonplaceholder.typicode.com/users
 ```
 ✅ At least 48/60 MCP tools working
 ✅ At least 38/48 agents functional
-✅ At least 13/16 skills operational
+✅ At least 8/10 skills operational
 ✅ All 7/7 commands working
 ✅ Basic integration tests pass
 ```
@@ -1911,7 +1864,7 @@ API: https://jsonplaceholder.typicode.com/users
 ```
 ✅ 57/60+ MCP tools working
 ✅ 46/48+ agents functional
-✅ 15/16+ skills operational
+✅ 10/10 skills operational
 ✅ 7/7 commands working
 ✅ All integration tests pass
 ```
@@ -1942,10 +1895,10 @@ API: https://jsonplaceholder.typicode.com/users
 |-----------|--------|--------|--------|-----------|
 | MCP Tools | 60 | XX | XX | XX% |
 | Agents | 48 | XX | XX | XX% |
-| Skills | 16 | XX | XX | XX% |
+| Skills | 10 | XX | XX | XX% |
 | Commands | 7 | XX | XX | XX% |
 | Integration | 5 | XX | XX | XX% |
-| **TOTAL** | **136** | **XX** | **XX** | **XX%** |
+| **TOTAL** | **130** | **XX** | **XX** | **XX%** |
 
 ## Issues Found
 

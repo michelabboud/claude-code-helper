@@ -12,7 +12,7 @@ Last Updated: 2026-01-11
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                     CLAUDE CODE HELPER TOOLKIT                          │
-│                        131 Components Total                             │
+│                        125 Components Total                             │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
                 ┌───────────────────┼───────────────────┐
@@ -20,7 +20,7 @@ Last Updated: 2026-01-11
                 ▼                   ▼                   ▼
        ┌────────────────┐  ┌────────────────┐  ┌────────────────┐
        │  MCP SERVERS   │  │     AGENTS     │  │ SKILLS+COMMANDS│
-       │   60 Tools     │  │   48 Configs   │  │   16 + 7       │
+       │   60 Tools     │  │   48 Configs   │  │   10 + 7       │
        │   9 Servers    │  │                │  │                │
        └────────────────┘  └────────────────┘  └────────────────┘
                 │                   │                   │
@@ -273,43 +273,35 @@ User Request → Claude Code → MCP Server → Tool Execution → Results
 
 ---
 
-### Layer 4: Skills & Commands (23 Components)
+### Layer 4: Skills & Commands (17 Components)
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │                      SKILLS & COMMANDS                               │
 └──────────────────────────────────────────────────────────────────────┘
 
-┌─── SKILLS (16) ───────────────────────────────────────────────────┐
+┌─── SKILLS (10) ───────────────────────────────────────────────────┐
 │  Reusable workflow patterns and methodologies                     │
 │                                                                   │
-│  Code Quality (4):                                                │
-│  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐       │
-│  │ code-review-   │  │ refactoring-   │  │ tdd-workflow   │       │
-│  │ workflow       │  │ strategy       │  │                │       │
-│  │                │  │                │  │ Red→Green→     │       │
-│  │ Systematic     │  │ Safe code      │  │ Refactor cycle │       │
-│  │ review process │  │ improvements   │  │                │       │
-│  └────────────────┘  └────────────────┘  └────────────────┘       │
+│  Code Quality (2):                                                │
+│  ┌────────────────┐  ┌────────────────┐                           │
+│  │ refactoring-   │  │ testing        │                           │
+│  │ strategy       │  │                │                           │
+│  │                │  │ Unified test   │                           │
+│  │ Safe code      │  │ skill with     │                           │
+│  │ improvements   │  │ subcommands:   │                           │
+│  └────────────────┘  │ tdd, e2e, bdd, │                           │
+│                      │ contract,      │                           │
+│                      │ mutation,      │                           │
+│                      │ visual         │                           │
+│                      └────────────────┘                           │
 │                                                                   │
-│  ┌────────────────┐                                               │
-│  │ testing-       │                                               │
-│  │ standards      │                                               │
-│  │                │                                               │
-│  │ Best practices │                                               │
-│  └────────────────┘                                               │
-│                                                                   │
-│  API Development (2):                                             │
-│  • api-design-patterns      • api-documentation                   │
-│                                                                   │
-│  Testing Specializations (6):                                     │
-│  • advanced-e2e-testing     • bdd-framework-examples              │
-│  • contract-testing         • mutation-testing                    │
-│  • visual-regression-testing                                      │
+│  API & Documentation (2):                                         │
+│  • api-design-patterns      • documentation (subcommand: api)     │
 │                                                                   │
 │  Infrastructure (4):                                              │
-│  • caching-expert           • ci-best-practices                   │
-│  • database-design-patterns • release-management                  │
+│  • ci-best-practices        • database-design-patterns            │
+│  • release-management       • auto-plan                           │
 └───────────────────────────────────────────────────────────────────┘
 
 ┌─── COMMANDS (7) ──────────────────────────────────────────────────┐
@@ -356,7 +348,7 @@ Step 2: IMPLEMENT
 │                                      │
 │ → implementer agent activates        │
 │ → Writes code, creates files         │
-│ → Uses: tdd-workflow skill           │
+│ → Uses: /testing tdd skill           │
 └──────────────────────────────────────┘
                   │
                   ▼
@@ -478,7 +470,7 @@ Repository:
 ├── agents/                   # 46 production-ready agents
 │   ├── domain-experts/       # 34 specialized agents
 │   └── mcp-integrated/       # 12 MCP agent JSON files
-├── skills/                   # 16 workflow skills
+├── skills/                   # 10 workflow skills
 ├── commands/                 # 6 slash commands
 ├── hooks/                    # Event automation
 ├── plugins/                  # Plugin packages
@@ -491,7 +483,7 @@ Global Installation:
 ├── agents/                   # 48 agent configs
 │   ├── *.json               # 14 MCP agents
 │   └── *.md                 # 34 sub-agents
-├── skills/                   # 16 skills
+├── skills/                   # 10 skills
 │   └── [skill-name]/
 │       └── SKILL.md
 ├── commands/                 # 7 commands
@@ -611,9 +603,9 @@ START HERE
 **Total Toolkit:**
 - **60 MCP Tools** across 9 servers
 - **48 Agents** (14 MCP + 34 sub-agents)
-- **16 Skills** for workflows
+- **10 Skills** for workflows
 - **7 Commands** for quick actions
-- **131 Total Components**
+- **125 Total Components**
 
 **Resource Requirements:**
 - **Disk:** 759 MB
