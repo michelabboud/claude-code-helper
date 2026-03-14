@@ -15,6 +15,20 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.9.1] - 2026-03-14
+
+### Changed
+
+- **Skills consolidated from 23 to 14** — reduced redundancy and improved discoverability:
+  - **7 testing skills merged** into unified `/testing` with subcommands (`tdd`, `e2e`, `bdd`, `contract`, `mutation`, `visual`) — 5,600 lines condensed to 452
+  - **`/api-documentation` merged** into `/documentation` with `api` subcommand
+  - **`/caching-expert` removed** — redundant with `redis-expert` agent
+  - **`/code-review-workflow` removed** — redundant with `code-reviewer` agent
+- **Documentation updated** across 15+ files (TOOLS-INDEX, TOOLS-CHEATSHEET, component-versions.json, README, agents, plugins, guides, reports)
+- **18 release note files added** for all previously undocumented versions (v1.9.2 through v2.9.0) plus CLI features summary (v2.1.50-v2.1.76)
+
+---
+
 ## [2.9.0] - 2026-02-21
 
 ### Changed
