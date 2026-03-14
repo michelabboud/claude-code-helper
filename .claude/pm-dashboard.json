@@ -56,7 +56,7 @@
     "product": {
       "score": 9,
       "status": "excellent",
-      "topFinding": "86 distributable components: 46 agents, 19 skills, 11 MCP servers, 3 hooks, 6 plugins, 2 integrations. 4 GitHub releases (v1.0.0, v2.3.0, v2.3.1, v2.4.0). 23 changelog entries. component-versions.json tracks all 86 components.",
+      "topFinding": "77 distributable components: 46 agents, 14 skills, 11 MCP servers, 3 hooks, 6 plugins, 2 integrations. 4 GitHub releases (v1.0.0, v2.3.0, v2.3.1, v2.4.0). 24 changelog entries. component-versions.json tracks all 77 components.",
       "recommendation": "Create GitHub releases for versions v1.1.0-v2.2.0 (19 missing releases). Update TOOLS-INDEX.md Quick Stats table (shows 7 servers, reality 10+).",
       "riskIfIgnored": "Users can't discover intermediate releases via GitHub Releases page"
     },

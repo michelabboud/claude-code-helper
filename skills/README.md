@@ -11,7 +11,7 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 - Provide comprehensive knowledge in a domain
 - Can include examples, patterns, and best practices
 - Hot-reload when saved (no restart needed)
-- Invoked via `/name` syntax (e.g., `/refactoring-strategy`, `/testing-standards`)
+- Invoked via `/name` syntax (e.g., `/refactoring-strategy`, `/testing`)
 - Auto-discovered from nested `.claude/skills` directories (v2.1.6+)
 - Visible in slash command menu by default (opt-out with `user-invocable: false`)
 
@@ -66,7 +66,7 @@ cp -r /path/to/skills/* .claude/skills/
 cp -r documentation ~/.claude/skills/
 
 # Standalone skill files
-cp tdd-workflow.md ~/.claude/skills/
+cp refactoring-strategy.md ~/.claude/skills/
 ```
 
 ### Quick Install via curl
@@ -75,8 +75,8 @@ cp tdd-workflow.md ~/.claude/skills/
 mkdir -p ~/.claude/skills
 
 # Install a specific skill
-curl -sO ~/.claude/skills/tdd-workflow.md \
-  https://raw.githubusercontent.com/michelabboud/claude-code-helper/main/skills/tdd-workflow.md
+curl -sO ~/.claude/skills/refactoring-strategy.md \
+  https://raw.githubusercontent.com/michelabboud/claude-code-helper/main/skills/refactoring-strategy.md
 ```
 
 ## Skill Formats

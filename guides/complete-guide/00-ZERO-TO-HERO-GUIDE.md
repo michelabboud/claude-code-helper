@@ -827,7 +827,7 @@ name: test-writer
 description: Specialized agent for writing comprehensive test suites. Use when generating tests for any code
 tools: Read, Write, Edit
 model: sonnet
-skills: testing-standards
+skills: testing
 ---
 
 # Test Writer Sub-agent
@@ -1766,7 +1766,7 @@ name: pr-reviewer
 description: Automated PR review specialist
 tools: Read, Grep, Glob
 model: sonnet
-skills: security-patterns, testing-standards
+skills: security-patterns, testing
 ---
 
 # PR Reviewer
@@ -1897,7 +1897,7 @@ Create `.claude/agents/test-automator.md`:
 name: test-automator
 description: Automated test generation and maintenance
 tools: Read, Write, Edit, Bash
-skills: testing-standards
+skills: testing
 ---
 
 # Test Automator
