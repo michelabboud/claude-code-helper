@@ -603,7 +603,7 @@ function drawRadar(scores) {
   ctx.closePath();
   ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--radar-fill').trim();
   ctx.fill();
-  ctx.strokeStyle = 'var(--accent)';
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
   ctx.lineWidth = 2;
   ctx.stroke();
 
@@ -807,69 +807,30 @@ function handleFile(event) {
 }
 
 function loadData() {
-  // Try to load from same directory
+  // Try to load from same directory first
   fetch('pm-dashboard.json')
-    .then(r => {
+    .then(function(r) {
       if (!r.ok) throw new Error('not found');
       return r.json();
     })
-    .then(data => renderDashboard(data))
-    .catch(() => {
-      // Show demo data
-      renderDashboard(DEMO_DATA);
+    .then(function(data) { renderDashboard(data); })
+    .catch(function() {
+      // Try parent .claude/ directory
+      fetch('../.claude/pm-dashboard.json')
+        .then(function(r) {
+          if (!r.ok) throw new Error('not found');
+          return r.json();
+        })
+        .then(function(data) { renderDashboard(data); })
+        .catch(function() {
+          // Use embedded real data as fallback (works with file:// protocol)
+          renderDashboard(EMBEDDED_DATA);
+        });
     });
 }
 
-// Demo data for preview
-const DEMO_DATA = {
-  projectName: "Demo Project",
-  lastAssessment: new Date().toISOString(),
-  assessmentCount: 3,
-  overallScore: 6.2,
-  experts: {
-    qa: { score: 7, topFinding: "Good unit test coverage but missing integration tests" },
-    uiux: { score: 5, topFinding: "Inconsistent spacing and no dark mode support" },
-    security: { score: 4, topFinding: "API keys found in config file" },
-    devops: { score: 8, topFinding: "CI/CD pipeline is solid" },
-    networking: { score: 6, topFinding: "No CDN configured for static assets" },
-    development: { score: 7, topFinding: "Clean code structure, some tech debt" },
-    architecture: { score: 6, topFinding: "Monolith will struggle at 10x scale" },
-    product: { score: 8, topFinding: "Most specs implemented" },
-    api: { score: 5, topFinding: "Inconsistent error responses" },
-    monitoring: { score: 3, topFinding: "Only console.log, no structured logging" },
-    database: { score: 7, topFinding: "Good schema, missing some indexes" },
-    performance: { score: 6, topFinding: "Bundle size could be reduced 40%" },
-    documentation: { score: 5, topFinding: "README outdated, no API docs" },
-    specifications: { score: 4, topFinding: "Acceptance criteria missing for most features" },
-    projectDocs: { score: 3, topFinding: "No ADRs, decisions not recorded" },
-    progress: { score: 5, topFinding: "Tasks lack context for cold-start pickup" }
-  },
-  tasks: [
-    { id: "t1", title: "Move API keys to env vars", status: "todo", priority: 1, impact: "high", effort: "low", expert: "security", quadrant: "quick-win" },
-    { id: "t2", title: "Add structured logging", status: "in-progress", priority: 2, impact: "high", effort: "medium", expert: "monitoring", quadrant: "quick-win" },
-    { id: "t3", title: "Standardize API error responses", status: "todo", priority: 3, impact: "medium", effort: "medium", expert: "api", quadrant: "major-project" },
-    { id: "t4", title: "Set up CDN for static assets", status: "todo", priority: 4, impact: "medium", effort: "low", expert: "networking", quadrant: "quick-win" },
-    { id: "t5", title: "Add integration test suite", status: "done", priority: 5, impact: "high", effort: "high", expert: "qa", quadrant: "major-project" },
-    { id: "t6", title: "Update README and add API docs", status: "todo", priority: 6, impact: "low", effort: "medium", expert: "documentation", quadrant: "fill-in" },
-    { id: "t7", title: "Evaluate microservices migration", status: "todo", priority: 7, impact: "high", effort: "high", expert: "architecture", quadrant: "reconsider" }
-  ],
-  risks: [
-    { id: "r1", description: "API keys exposed in config files", severity: "critical", likelihood: "high", expert: "security", mitigation: "Move to environment variables" },
-    { id: "r2", description: "No production monitoring - blind to outages", severity: "high", likelihood: "medium", expert: "monitoring", mitigation: "Implement structured logging + alerting" },
-    { id: "r3", description: "No database backup automation", severity: "medium", likelihood: "low", expert: "database", mitigation: "Set up automated daily backups" }
-  ],
-  technicalDebt: [
-    { id: "d1", item: "Legacy jQuery dependency in admin panel", category: "code", impact: "medium", effort: "days", interestRate: "accruing" },
-    { id: "d2", item: "Unused API endpoints (12 routes)", category: "api", impact: "low", effort: "hours", interestRate: "stable" },
-    { id: "d3", item: "Monolithic architecture", category: "architecture", impact: "high", effort: "weeks", interestRate: "accruing" },
-    { id: "d4", item: "Inline CSS in 8 components", category: "code", impact: "low", effort: "hours", interestRate: "stable" }
-  ],
-  history: [
-    { date: "2026-02-01", scores: { qa: 4, security: 2, devops: 6, monitoring: 1, development: 5, api: 3, specifications: 0, projectDocs: 0, progress: 0 } },
-    { date: "2026-02-10", scores: { qa: 6, security: 3, devops: 7, monitoring: 2, development: 6, api: 4, specifications: 0, projectDocs: 0, progress: 0 } },
-    { date: "2026-02-20", scores: { qa: 7, security: 4, devops: 8, monitoring: 3, development: 7, api: 5, specifications: 4, projectDocs: 3, progress: 5 } }
-  ]
-};
+// Real project data embedded for file:// protocol compatibility
+var EMBEDDED_DATA = {"projectName":"claude-code-helper","lastAssessment":"2026-03-14T12:00:00Z","assessmentCount":21,"overallScore":9.1,"experts":{"qa":{"score":9,"status":"excellent","topFinding":"1,480 total tests across all workspaces: 12 Jest suites (1,224 tests), trigger-matcher (200 tests via node:test). All passing.","recommendation":"Add project-oversight-mcp to CI test matrix.","riskIfIgnored":"Low remaining risk"},"uiux":{"score":9,"status":"excellent","topFinding":"Full dashboard redesign: SVG sparkline trend charts, score delta badges, clickable domain bars with inline expert details.","recommendation":"Add ARIA labels and keyboard navigation.","riskIfIgnored":"Low remaining risk"},"security":{"score":9,"status":"excellent","topFinding":"CORS fixed to localhost. npm audit enforced in CI. 62 sanitizePath() calls. Zero unsafe calls.","recommendation":"Add Content-Security-Policy headers.","riskIfIgnored":"Low remaining risk"},"devops":{"score":10,"status":"excellent","topFinding":"CI with 12 jobs: matrix build/test for all 11 servers, lint, typecheck, frontmatter validation, ShellCheck, benchmark.","recommendation":"Make ShellCheck and benchmark SLA non-advisory.","riskIfIgnored":"Low remaining risk"},"networking":{"score":8,"status":"good","topFinding":"Stdio transport for MCP servers. serve.ts binds 127.0.0.1 with auto-shutdown.","recommendation":"Add periodic health checks for long-running servers.","riskIfIgnored":"Low remaining risk"},"development":{"score":9,"status":"excellent","topFinding":"npm workspaces monorepo, 13 packages. ESLint zero-tolerance. husky + lint-staged.","recommendation":"Add tsc --noEmit for MCP servers to CI.","riskIfIgnored":"Type errors only caught at build time"},"architecture":{"score":9,"status":"excellent","topFinding":"Per-component versioning. All servers use runServer() + registerTrackedToolHandler(). 5 ADRs.","recommendation":"Add ADR for project-oversight-mcp.","riskIfIgnored":"Low remaining risk"},"product":{"score":9,"status":"excellent","topFinding":"68 components: 46 agents, 13 skills, 11 MCP servers, 3 hooks, 6 plugins, 2 integrations.","recommendation":"Create GitHub releases for v1.1.0-v2.2.0.","riskIfIgnored":"Users cannot discover intermediate releases"},"api":{"score":9,"status":"excellent","topFinding":"60+ MCP tools. Hello Protocol for universal discovery. Consistent Zod validation.","recommendation":"Expose MetricsCollector via API endpoint.","riskIfIgnored":"Low remaining risk"},"monitoring":{"score":10,"status":"excellent","topFinding":"100% instrumentation. MetricsCollector p50/p95/p99. ActivityTracker JSONL. project-oversight-mcp 9 tools + 7 routes.","recommendation":"Expose MetricsCollector via dashboard. Add alerting.","riskIfIgnored":"Low remaining risk"},"database":{"score":8,"status":"good","topFinding":"rag-mcp healthCheck() with retry. Adapter pattern: ChromaDB, Qdrant, Redis.","recommendation":"Add periodic health checks and connection pool monitoring.","riskIfIgnored":"Post-startup drops need manual detection"},"performance":{"score":9,"status":"excellent","topFinding":"CI benchmark with trend detection. 120s SLA. npm workspaces hoisting.","recommendation":"Make benchmark SLA blocking.","riskIfIgnored":"Runtime performance invisible"},"documentation":{"score":10,"status":"excellent","topFinding":"28 release notes. Building Blocks guide. Comprehensive README, QUICKSTART, CLAUDE.md.","recommendation":"Add JSDoc to mcp-shared.","riskIfIgnored":"Low remaining risk"},"specifications":{"score":7,"status":"good","topFinding":"5 ADRs. Zod schemas as implicit API specs. No ADRs for pre-v2.3.0 decisions.","recommendation":"Add ADR for project-oversight-mcp.","riskIfIgnored":"Future decisions lack rationale"},"projectDocs":{"score":7,"status":"good","topFinding":"23 CHANGELOG entries, 5 ADRs, 4 GitHub releases. 11 per-server CHANGELOGs.","recommendation":"Create missing GitHub releases.","riskIfIgnored":"Historical context gaps"},"progress":{"score":10,"status":"excellent","topFinding":"Hello Protocol on 80 tools. /greeting surveys all installed tools.","recommendation":"Continue remaining recommendations.","riskIfIgnored":"No critical gaps"}},"tasks":[{"id":"t37","title":"Add project-oversight-mcp to CI","status":"done","priority":1,"impact":"high","effort":"low","expert":"devops","quadrant":"quick-win"},{"id":"t38","title":"Fix CORS wildcard in serve.ts","status":"done","priority":2,"impact":"high","effort":"low","expert":"security","quadrant":"quick-win"},{"id":"t39","title":"Wire MetricsCollector into registerTrackedToolHandler","status":"done","priority":3,"impact":"medium","effort":"low","expert":"monitoring","quadrant":"quick-win"},{"id":"t40","title":"Redesign multi-project dashboard","status":"done","priority":4,"impact":"high","effort":"high","expert":"uiux","quadrant":"major-project"},{"id":"t41","title":"Make npm audit fail CI on high-severity CVEs","status":"done","priority":5,"impact":"medium","effort":"low","expert":"security","quadrant":"quick-win"},{"id":"t42","title":"Update TOOLS-INDEX.md Quick Stats","status":"done","priority":6,"impact":"low","effort":"low","expert":"documentation","quadrant":"fill-in"},{"id":"t43","title":"Add /greeting skill for tool health survey","status":"done","priority":7,"impact":"medium","effort":"low","expert":"product","quadrant":"quick-win"}],"risks":[],"technicalDebt":[{"id":"d9","item":"19 changelog versions (v1.1.0-v2.2.0) have no GitHub release","category":"process","impact":"low","effort":"hours","interestRate":"stable"}],"history":[{"date":"2026-02-20T12:00:00Z","scores":{"qa":4,"uiux":6,"security":5,"devops":4,"networking":5,"development":7,"architecture":6,"product":8,"api":8,"monitoring":2,"database":5,"performance":5,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-20T17:00:00Z","scores":{"qa":7,"uiux":7,"security":7,"devops":7,"networking":7,"development":8,"architecture":7,"product":8,"api":8,"monitoring":6,"database":8,"performance":7,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-21T08:00:00Z","scores":{"qa":8,"uiux":8,"security":8,"devops":8,"networking":8,"development":8,"architecture":8,"product":8,"api":8,"monitoring":8,"database":8,"performance":8,"documentation":8,"specifications":0,"projectDocs":0,"progress":0}},{"date":"2026-02-21T10:00:00Z","scores":{"qa":8,"uiux":8,"security":8,"devops":8,"networking":8,"development":8,"architecture":8,"product":8,"api":8,"monitoring":8,"database":8,"performance":8,"documentation":8,"specifications":5,"projectDocs":5,"progress":7}},{"date":"2026-02-20T16:00:00Z","scores":{"qa":9,"uiux":8,"security":8,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":8,"monitoring":8,"database":8,"performance":9,"documentation":9,"specifications":7,"projectDocs":7,"progress":10}},{"date":"2026-02-20T20:30:00Z","scores":{"qa":9,"uiux":8,"security":9,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":8,"monitoring":10,"database":8,"performance":9,"documentation":10,"specifications":7,"projectDocs":7,"progress":10}},{"date":"2026-02-21T14:00:00Z","scores":{"qa":9,"uiux":9,"security":9,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":8,"monitoring":10,"database":8,"performance":9,"documentation":10,"specifications":7,"projectDocs":7,"progress":10}},{"date":"2026-03-14T12:00:00Z","scores":{"qa":9,"uiux":9,"security":9,"devops":10,"networking":8,"development":9,"architecture":9,"product":9,"api":9,"monitoring":10,"database":8,"performance":9,"documentation":10,"specifications":7,"projectDocs":7,"progress":10}}]};
 
 // Theme management
 function getTheme() {
