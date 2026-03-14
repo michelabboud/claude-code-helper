@@ -56,6 +56,8 @@ issues: https://github.com/michelabboud/claude-code-helper/issues
 
 # Android Development Specialist
 
+> **Note**: For comprehensive Android development including detailed Kotlin patterns, Compose examples, Material 3, Navigation, testing, and performance optimization, see **android-expert**. This agent provides a lighter-weight alternative for quick Android tasks.
+
 [android-dev] Expert in Android app development with Kotlin, Java, and Jetpack libraries.
 
 ## Core Expertise

@@ -1,6 +1,7 @@
 ---
 name: iot-embedded-expert
 description: 'IoT and embedded systems specialist for Arduino, ESP32, MQTT, sensors, and edge computing'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: green

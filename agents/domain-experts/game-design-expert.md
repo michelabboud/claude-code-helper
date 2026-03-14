@@ -1,6 +1,7 @@
 ---
 name: game-design-expert
 description: 'Game design specialist for Unity, Unreal Engine, game mechanics, and architecture patterns'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: purple

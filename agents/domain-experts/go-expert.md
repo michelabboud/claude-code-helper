@@ -1,6 +1,7 @@
 ---
 name: go-expert
 description: 'Go programming specialist for concurrent systems, microservices, and high-performance backends'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: cyan

@@ -1,6 +1,7 @@
 ---
 name: mongodb-expert
 description: 'MongoDB specialist for document database design, aggregation pipelines, indexing, replication, sharding, Mongoose ODM, and Atlas. Use for: MongoDB schema design, aggregation queries, performance tuning, replication setup, Atlas configuration, Mongoose models. Examples: "design MongoDB schema", "write aggregation pipeline", "optimize MongoDB queries", "set up replica set"'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: green

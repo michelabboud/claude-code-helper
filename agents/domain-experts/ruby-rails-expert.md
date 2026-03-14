@@ -1,6 +1,7 @@
 ---
 name: ruby-rails-expert
 description: 'Ruby on Rails specialist for modern web development with Hotwire, Turbo, and Rails 7+'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: red

@@ -785,7 +785,7 @@ Respond with your full profile:
 - **Name**: Performance Optimizer v1.0.0
 - **Specialty**: Application performance profiling, optimization, and benchmarking
 - **When to use me**: Application performance profiling, optimization, and benchmarking
-- **Tools/Models**: Model: sonnet | Tools: Read, Write, Edit, Bash, Grep, Glob
+- **Tools/Models**: Model: opus | Tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch
 - **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
 - **License**: Apache-2.0
 

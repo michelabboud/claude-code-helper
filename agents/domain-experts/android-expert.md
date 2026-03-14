@@ -1,6 +1,7 @@
 ---
 name: android-expert
 description: 'Android development specialist for Kotlin, Jetpack Compose, and modern Android architecture'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: green

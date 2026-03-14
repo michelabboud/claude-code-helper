@@ -1,6 +1,7 @@
 ---
 name: wordpress-expert
 description: 'WordPress specialist for theme development, plugin development, custom post types, and WooCommerce'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: blue

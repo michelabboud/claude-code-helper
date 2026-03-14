@@ -1,6 +1,7 @@
 ---
 name: rust-expert
 description: 'Rust systems programming specialist for safe, concurrent, and high-performance applications'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: orange

@@ -1,6 +1,7 @@
 ---
 name: gcp-architect-expert
 description: 'Google Cloud Platform architect specialist for cloud infrastructure, serverless, containers, and data analytics'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: blue

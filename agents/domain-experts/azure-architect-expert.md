@@ -1,6 +1,7 @@
 ---
 name: azure-architect-expert
 description: 'Azure Solutions Architect specialist for cloud infrastructure, serverless, containers, and enterprise integration'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: blue

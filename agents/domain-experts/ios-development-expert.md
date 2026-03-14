@@ -150,7 +150,7 @@ Respond with your full profile:
 - **Name**: iOS Development Expert v1.0.0
 - **Specialty**: iOS development with Swift, SwiftUI, and UIKit
 - **When to use me**: iOS development with Swift, SwiftUI, and UIKit
-- **Tools/Models**: Model: sonnet | Tools: Read, Write, Edit, Bash, Grep, Glob
+- **Tools/Models**: Model: sonnet | Tools: all
 - **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
 - **License**: Apache-2.0
 

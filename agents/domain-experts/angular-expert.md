@@ -1,6 +1,7 @@
 ---
 name: angular-expert
 description: 'Angular 17+ specialist for enterprise application development with standalone components, signals, and RxJS'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: red

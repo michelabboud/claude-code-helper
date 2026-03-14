@@ -1,6 +1,7 @@
 ---
 name: laravel-expert
-description: 'Laravel PHP framework specialist for modern web applications with Eloquent, Livewire, and API development'
+description: 'Laravel PHP framework specialist for modern web applications with Eloquent, Livewire, and API development. For core PHP/Composer/PSR topics, see php-expert instead.'
+tools: Read, Write, Edit, Bash, Grep, Glob
 version: 1.0.0
 model: sonnet
 color: red
