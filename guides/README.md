@@ -25,7 +25,28 @@ Comprehensive learning resources for mastering Claude Code from beginner to expe
 
 ---
 
-### 2. [Sub-Agents Guide](./subagents-guide/)
+### 2. [Building Blocks Guide](./CLAUDE-CODE-BUILDING-BLOCKS.md)
+**Understand how Skills, Agents, Hooks, MCP Servers, and Plugins fit together**
+
+Explains the 5 Claude Code extension points with practical examples, comparison tables, and a decision guide for choosing the right tool for any job.
+
+**Covers:**
+- Skills vs Agents vs Hooks vs MCP Servers vs Plugins
+- When to use each (decision lookup table)
+- How they work together (real-world flow)
+- File formats, configuration, and anatomy of each
+- Complexity ladder from simple to advanced
+
+**Best for:**
+- Understanding the Claude Code architecture
+- Choosing the right building block for your task
+- Seeing how all the pieces connect
+
+**Start here:** [Building Blocks Guide](./CLAUDE-CODE-BUILDING-BLOCKS.md)
+
+---
+
+### 3. [Sub-Agents Guide](./subagents-guide/)
 **Advanced guide to Claude Code sub-agents with production-ready examples**
 
 **Contents:**
@@ -55,7 +76,7 @@ Comprehensive learning resources for mastering Claude Code from beginner to expe
 
 ---
 
-### 3. [Advanced Patterns](./advanced-patterns/)
+### 4. [Advanced Patterns](./advanced-patterns/)
 **Production-ready patterns for robust, reliable agentic systems**
 
 **Contents:**
@@ -98,6 +119,11 @@ Comprehensive learning resources for mastering Claude Code from beginner to expe
 - Get a comprehensive overview
 - Find quick references
 
+### Choose Building Blocks Guide if you want to:
+- Understand the difference between Skills, Agents, Hooks, MCP Servers, and Plugins
+- Know which building block to use for a given task
+- See how all the extension points work together
+
 ### Choose Sub-Agents Guide if you want to:
 - Build specialized agents
 - Implement multi-agent workflows
@@ -128,11 +154,12 @@ Comprehensive learning resources for mastering Claude Code from beginner to expe
 
 ### Week 1-2: Foundations
 1. Read [Complete Guide: Zero to Hero](./complete-guide/00-ZERO-TO-HERO-GUIDE.md)
-2. Review [Tools Comparison](./complete-guide/01-TOOLS-COMPARISON.md)
-3. Keep [Quick Reference](./complete-guide/02-QUICK-REFERENCE.md) handy
+2. Read [Building Blocks Guide](./CLAUDE-CODE-BUILDING-BLOCKS.md) — understand the 5 extension points
+3. Review [Tools Comparison](./complete-guide/01-TOOLS-COMPARISON.md)
+4. Keep [Quick Reference](./complete-guide/02-QUICK-REFERENCE.md) handy
 
 ### Week 3-4: Advanced Features
-4. Study [Sub-Agents Overview](./subagents-guide/README.md)
+5. Study [Sub-Agents Overview](./subagents-guide/README.md)
 5. Try [Integration Example](./subagents-guide/INTEGRATION-EXAMPLE.md)
 6. Explore [Agent Examples](./subagents-guide/examples/)
 
@@ -177,8 +204,7 @@ claude
 ## 📚 Additional Resources
 
 - [Agents Directory](../agents/) - 46 production-ready agents
-- [Skills Directory](../skills/) - 16 workflow skills
-- [Skills Directory](../skills/) - Skills and commands (unified)
+- [Skills Directory](../skills/) - 14 workflow skills
 - [Templates Directory](../templates/) - Starter templates
 - [MCP Servers](../mcp-servers/) - 10 specialized MCP servers
 - [Config Bundle](../config-bundle/) - Production configuration
