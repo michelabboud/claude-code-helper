@@ -201,4 +201,21 @@ if [ -f "$REPO_ROOT/scripts/manifest-helper.sh" ]; then
     echo ""
 fi
 
+# Offer to install MCP servers
+MCP_SCRIPT="$REPO_ROOT/mcp-servers/install-all.sh"
+if [ -f "$MCP_SCRIPT" ]; then
+    echo ""
+    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    read -p "Would you also like to build and install MCP servers? [y/N]: " INSTALL_MCP
+    if [[ "$INSTALL_MCP" =~ ^[Yy] ]]; then
+        echo ""
+        bash "$MCP_SCRIPT"
+    else
+        echo ""
+        echo "Skipped MCP servers. Install later with:"
+        echo "  cd mcp-servers && ./install-all.sh"
+    fi
+    echo ""
+fi
+
 echo "Enjoy your optimized Claude Code experience! 🚀"

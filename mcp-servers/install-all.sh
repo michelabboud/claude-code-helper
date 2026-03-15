@@ -1,7 +1,7 @@
 #!/bin/bash
 # Multi-Agent MCP System - Installation Script
-# Builds MCP servers in the repo, then copies them to ~/.claude/mcp-servers/
-# for stable paths that survive repo deletion.
+# Builds MCP servers in the repo, then installs them for stable paths.
+# Default: ~/.claude/mcp-servers/  |  Optional: shared CLI-neutral folder
 #
 # ─────────────────────────────────────────────────────────────────────────────
 # Credits:
@@ -19,6 +19,8 @@ echo ""
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
 NC='\033[0m' # No Color
 
 # Check Node.js version
@@ -39,12 +41,87 @@ fi
 echo -e "${GREEN}✓ Node.js $(node -v) detected${NC}"
 echo ""
 
-# Install root dependencies first (needed for workspaces and shared packages)
+# ─────────────────────────────────────────────────────────────────────────────
+# Ask user where to install MCP servers
+# ─────────────────────────────────────────────────────────────────────────────
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
-CLAUDE_HOME="${CLAUDE_HOME:-$HOME/.claude}"
-MCP_INSTALL_DIR="$CLAUDE_HOME/mcp-servers"
+DEFAULT_DIR="$HOME/.claude/mcp-servers"
+SUGGESTED_SHARED="$HOME/.claude-code-helper-mcps"
 
+# Allow override via env var (for CI / non-interactive use)
+if [ -n "$MCP_INSTALL_DIR" ]; then
+    echo -e "Using MCP_INSTALL_DIR from environment: ${BOLD}$MCP_INSTALL_DIR${NC}"
+    SHARED_INSTALL=false
+    # If it's not under ~/.claude, treat as shared
+    case "$MCP_INSTALL_DIR" in
+        "$HOME/.claude/"*) SHARED_INSTALL=false ;;
+        *) SHARED_INSTALL=true ;;
+    esac
+else
+    # Detect other CLI tools
+    HAS_GEMINI=false
+    HAS_CODEX=false
+    command -v gemini &> /dev/null && HAS_GEMINI=true
+    command -v codex &> /dev/null && HAS_CODEX=true
+
+    if [ "$HAS_GEMINI" = "true" ] || [ "$HAS_CODEX" = "true" ]; then
+        echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${BOLD}MCP servers can be shared across multiple AI coding CLIs.${NC}"
+        echo ""
+        echo "Detected CLIs:"
+        echo -e "  ${GREEN}✓${NC} Claude Code"
+        [ "$HAS_GEMINI" = "true" ] && echo -e "  ${GREEN}✓${NC} Gemini CLI"
+        [ "$HAS_CODEX" = "true" ] && echo -e "  ${GREEN}✓${NC} Codex CLI"
+        echo ""
+        echo "Options:"
+        echo -e "  ${BOLD}1)${NC} Install to ${BOLD}~/.claude/mcp-servers/${NC} (Claude Code only — default)"
+        echo -e "  ${BOLD}2)${NC} Install to ${BOLD}~/.claude-code-helper-mcps/${NC} (shared across all CLIs)"
+        echo -e "  ${BOLD}3)${NC} Custom path (you choose)"
+        echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+        read -p "Choose [1/2/3] (default: 1): " MCP_CHOICE
+        MCP_CHOICE="${MCP_CHOICE:-1}"
+
+        case "$MCP_CHOICE" in
+            2)
+                MCP_INSTALL_DIR="$SUGGESTED_SHARED"
+                SHARED_INSTALL=true
+                ;;
+            3)
+                read -p "Enter install path (e.g. ~/.my-mcps): " CUSTOM_PATH
+                # Expand ~ to $HOME
+                CUSTOM_PATH="${CUSTOM_PATH/#\~/$HOME}"
+                if [ -z "$CUSTOM_PATH" ]; then
+                    echo "No path entered, using default."
+                    MCP_INSTALL_DIR="$DEFAULT_DIR"
+                    SHARED_INSTALL=false
+                else
+                    MCP_INSTALL_DIR="$CUSTOM_PATH"
+                    SHARED_INSTALL=true
+                fi
+                ;;
+            *)
+                MCP_INSTALL_DIR="$DEFAULT_DIR"
+                SHARED_INSTALL=false
+                ;;
+        esac
+    else
+        # No other CLIs detected — use default
+        MCP_INSTALL_DIR="$DEFAULT_DIR"
+        SHARED_INSTALL=false
+    fi
+fi
+
+echo ""
+echo -e "📂 MCP servers will be installed to: ${BOLD}$MCP_INSTALL_DIR${NC}"
+echo ""
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Build servers
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Install root dependencies first (needed for workspaces and shared packages)
 if [ -f "$REPO_ROOT/package.json" ]; then
     echo "📦 Installing root dependencies..."
     cd "$REPO_ROOT"
@@ -109,9 +186,9 @@ derive_mcp_name() {
     echo "$1" | sed 's/-mcp$//'
 }
 
-# Function to copy a built server to ~/.claude/mcp-servers/<name>/
+# Function to copy a built server to the install directory
 # This creates a standalone installation with its own node_modules.
-install_to_claude() {
+install_to_dest() {
     local server_dir=$1
     local dest="$MCP_INSTALL_DIR/$server_dir"
 
@@ -182,13 +259,15 @@ install_server "Testing MCP" "testing-mcp"
 install_server "UI/UX Review MCP" "uiux-review-mcp"
 install_server "Project Oversight MCP" "project-oversight-mcp"
 
-# Build mcp-shared (needed for install_to_claude)
+# Build mcp-shared (needed for install_to_dest)
 if [ -d "mcp-shared" ] && [ ! -d "mcp-shared/build" ]; then
     echo "📦 Building mcp-shared..."
     cd mcp-shared && npm run build --silent && cd ..
 fi
 
-# Copy each server to ~/.claude/mcp-servers/
+# ─────────────────────────────────────────────────────────────────────────────
+# Copy servers to install directory
+# ─────────────────────────────────────────────────────────────────────────────
 echo ""
 echo "📂 Copying MCP servers to $MCP_INSTALL_DIR ..."
 echo ""
@@ -206,7 +285,7 @@ SERVERS=(
 
 for server_dir in "${SERVERS[@]}"; do
     if [ -f "$server_dir/build/index.js" ]; then
-        install_to_claude "$server_dir"
+        install_to_dest "$server_dir"
     fi
 done
 
@@ -223,157 +302,148 @@ for dir in */build/index.js; do
         fi
     done
     if [ "$already_installed" = "false" ]; then
-        install_to_claude "$server"
+        install_to_dest "$server"
     fi
 done
 
 echo ""
 
-# Register MCP servers with Claude Code CLI (user scope)
-CLI_REGISTERED=false
-if command -v claude &> /dev/null; then
-    CLI_REGISTERED=true
-    echo "🔗 Registering MCP servers with Claude Code CLI (user scope)..."
-    echo ""
+# ─────────────────────────────────────────────────────────────────────────────
+# Register MCP servers with detected CLI tools
+# ─────────────────────────────────────────────────────────────────────────────
+register_with_cli() {
+    local cli_name=$1
+
+    echo "🔗 Registering MCP servers with ${cli_name}..."
 
     for server_entry in "$MCP_INSTALL_DIR"/*/build/index.js; do
         dir_name=$(basename "$(dirname "$(dirname "$server_entry")")")
         [ "$dir_name" = "mcp-shared" ] && continue
         mcp_name=$(derive_mcp_name "$dir_name")
-        server_path="$server_entry"
 
-        # Remove existing registration (silently)
-        claude mcp remove -s user "$mcp_name" 2>/dev/null || true
-
-        # Register at user scope
-        if claude mcp add -s user "$mcp_name" -- node "$server_path" 2>/dev/null; then
-            echo -e "  ${GREEN}✓ $mcp_name${NC} → $server_path"
-        else
-            echo -e "  ${RED}✗ $mcp_name failed to register${NC}"
-        fi
+        case "$cli_name" in
+            "Claude Code")
+                claude mcp remove -s user "$mcp_name" 2>/dev/null || true
+                if claude mcp add -s user "$mcp_name" -- node "$server_entry" 2>/dev/null; then
+                    echo -e "  ${GREEN}✓ $mcp_name${NC}"
+                else
+                    echo -e "  ${RED}✗ $mcp_name${NC}"
+                fi
+                ;;
+            "Gemini CLI")
+                gemini mcp remove "$mcp_name" 2>/dev/null || true
+                if gemini mcp add "$mcp_name" node -- "$server_entry" 2>/dev/null; then
+                    echo -e "  ${GREEN}✓ $mcp_name${NC}"
+                else
+                    # Fallback: write directly to settings.json
+                    node -e "
+const fs = require('fs'), p = require('path');
+const sf = p.join(process.env.HOME, '.gemini/settings.json');
+try {
+    const s = JSON.parse(fs.readFileSync(sf, 'utf8'));
+    s.mcpServers = s.mcpServers || {};
+    s.mcpServers['${mcp_name}'] = { command: 'node', args: ['${server_entry}'] };
+    fs.writeFileSync(sf, JSON.stringify(s, null, 2));
+    process.stdout.write('  \x1b[32m✓ ${mcp_name}\x1b[0m (settings.json)\n');
+} catch(e) { process.stdout.write('  \x1b[31m✗ ${mcp_name}\x1b[0m\n'); }
+" 2>/dev/null
+                fi
+                ;;
+            "Codex CLI")
+                codex mcp remove "$mcp_name" 2>/dev/null || true
+                if codex mcp add "$mcp_name" -- node "$server_entry" 2>/dev/null; then
+                    echo -e "  ${GREEN}✓ $mcp_name${NC}"
+                else
+                    echo -e "  ${RED}✗ $mcp_name${NC}"
+                fi
+                ;;
+        esac
     done
+    echo ""
+}
 
-    echo ""
-    echo "Verify with: claude mcp list"
-    echo ""
+CLI_REGISTERED=false
+
+# Always register with Claude Code if available
+if command -v claude &> /dev/null; then
+    CLI_REGISTERED=true
+    register_with_cli "Claude Code"
 fi
 
-# All paths now point to ~/.claude/mcp-servers/
-echo "📍 Installation paths (stable — safe to delete repo clone):"
-RAG_PATH="$MCP_INSTALL_DIR/rag-mcp/build/index.js"
-API_SPECIALIST_PATH="$MCP_INSTALL_DIR/api-specialist-mcp/build/index.js"
-CODE_REVIEW_PATH="$MCP_INSTALL_DIR/code-review-mcp/build/index.js"
-DESIGN_SYSTEM_PATH="$MCP_INSTALL_DIR/design-system-mcp/build/index.js"
-TESTING_PATH="$MCP_INSTALL_DIR/testing-mcp/build/index.js"
-UIUX_REVIEW_PATH="$MCP_INSTALL_DIR/uiux-review-mcp/build/index.js"
-OVERSIGHT_PATH="$MCP_INSTALL_DIR/project-oversight-mcp/build/index.js"
+# Register with other CLIs only if user chose a shared location
+if [ "$SHARED_INSTALL" = "true" ]; then
+    if command -v gemini &> /dev/null; then
+        CLI_REGISTERED=true
+        register_with_cli "Gemini CLI"
+    fi
+    if command -v codex &> /dev/null; then
+        CLI_REGISTERED=true
+        register_with_cli "Codex CLI"
+    fi
+fi
 
-echo "  • RAG MCP:            $RAG_PATH"
-echo "  • API Specialist MCP: $API_SPECIALIST_PATH"
-echo "  • Code Review MCP:    $CODE_REVIEW_PATH"
-echo "  • Design System MCP:  $DESIGN_SYSTEM_PATH"
-echo "  • Testing MCP:        $TESTING_PATH"
-echo "  • UI/UX Review MCP:   $UIUX_REVIEW_PATH"
-echo "  • Project Oversight MCP: $OVERSIGHT_PATH"
+# ─────────────────────────────────────────────────────────────────────────────
+# Summary and configuration output
+# ─────────────────────────────────────────────────────────────────────────────
+echo "📍 Installation paths (stable — safe to delete repo clone):"
+for server_entry in "$MCP_INSTALL_DIR"/*/build/index.js; do
+    dir_name=$(basename "$(dirname "$(dirname "$server_entry")")")
+    [ "$dir_name" = "mcp-shared" ] && continue
+    mcp_name=$(derive_mcp_name "$dir_name")
+    echo "  • $mcp_name → $server_entry"
+done
 echo ""
 
-# Generate configuration
+# Generate Claude Desktop configuration
 echo "⚙️  Configuration for Claude Desktop:"
 echo ""
-cat << EOF
-{
-  "mcpServers": {
-    "rag": {
-      "command": "node",
-      "args": ["$RAG_PATH"]
-    },
-    "api-specialist": {
-      "command": "node",
-      "args": ["$API_SPECIALIST_PATH"]
-    },
-    "code-review": {
-      "command": "node",
-      "args": ["$CODE_REVIEW_PATH"]
-    },
-    "design-system": {
-      "command": "node",
-      "args": ["$DESIGN_SYSTEM_PATH"]
-    },
-    "testing": {
-      "command": "node",
-      "args": ["$TESTING_PATH"]
-    },
-    "uiux-review": {
-      "command": "node",
-      "args": ["$UIUX_REVIEW_PATH"]
-    },
-    "project-oversight": {
-      "command": "node",
-      "args": ["$OVERSIGHT_PATH"]
-    }
-  }
-}
-EOF
+echo "{"
+echo "  \"mcpServers\": {"
+first=true
+for server_entry in "$MCP_INSTALL_DIR"/*/build/index.js; do
+    dir_name=$(basename "$(dirname "$(dirname "$server_entry")")")
+    [ "$dir_name" = "mcp-shared" ] && continue
+    mcp_name=$(derive_mcp_name "$dir_name")
+    [ "$first" = "true" ] && first=false || echo ","
+    printf "    \"%s\": {\n      \"command\": \"node\",\n      \"args\": [\"%s\"]\n    }" "$mcp_name" "$server_entry"
+done
+echo ""
+echo "  }"
+echo "}"
 echo ""
 
 # Save configuration to file
 CONFIG_FILE="claude_desktop_config.json"
-cat > "$CONFIG_FILE" << EOF
 {
-  "mcpServers": {
-    "rag": {
-      "command": "node",
-      "args": ["$RAG_PATH"]
-    },
-    "api-specialist": {
-      "command": "node",
-      "args": ["$API_SPECIALIST_PATH"]
-    },
-    "code-review": {
-      "command": "node",
-      "args": ["$CODE_REVIEW_PATH"]
-    },
-    "design-system": {
-      "command": "node",
-      "args": ["$DESIGN_SYSTEM_PATH"]
-    },
-    "testing": {
-      "command": "node",
-      "args": ["$TESTING_PATH"]
-    },
-    "uiux-review": {
-      "command": "node",
-      "args": ["$UIUX_REVIEW_PATH"]
-    },
-    "project-oversight": {
-      "command": "node",
-      "args": ["$OVERSIGHT_PATH"]
-    }
-  }
-}
-EOF
-
+    echo "{"
+    echo "  \"mcpServers\": {"
+    first=true
+    for server_entry in "$MCP_INSTALL_DIR"/*/build/index.js; do
+        dir_name=$(basename "$(dirname "$(dirname "$server_entry")")")
+        [ "$dir_name" = "mcp-shared" ] && continue
+        mcp_name=$(derive_mcp_name "$dir_name")
+        [ "$first" = "true" ] && first=false || echo ","
+        printf "    \"%s\": {\n      \"command\": \"node\",\n      \"args\": [\"%s\"]\n    }" "$mcp_name" "$server_entry"
+    done
+    echo ""
+    echo "  }"
+    echo "}"
+} > "$CONFIG_FILE"
 echo -e "${GREEN}✓ Configuration saved to $CONFIG_FILE${NC}"
 echo ""
 
-# Instructions
+# Instructions when no CLI was auto-registered
 if [ "$CLI_REGISTERED" = "false" ]; then
-    echo "📝 Next steps:"
+    echo "📝 No CLI tools detected. Register MCP servers manually:"
     echo ""
-    echo "=== Option 1: Claude Code CLI (Recommended) ==="
+    echo "=== Claude Code ==="
+    echo "  claude mcp add -s user <name> -- node \"$MCP_INSTALL_DIR/<server>/build/index.js\""
     echo ""
-    echo "Run these commands to add MCP servers:"
+    echo "=== Gemini CLI ==="
+    echo "  gemini mcp add <name> node -- \"$MCP_INSTALL_DIR/<server>/build/index.js\""
     echo ""
-    echo "  claude mcp add -s user rag -- node \"$RAG_PATH\""
-    echo "  claude mcp add -s user api-specialist -- node \"$API_SPECIALIST_PATH\""
-    echo "  claude mcp add -s user code-review -- node \"$CODE_REVIEW_PATH\""
-    echo "  claude mcp add -s user design-system -- node \"$DESIGN_SYSTEM_PATH\""
-    echo "  claude mcp add -s user testing -- node \"$TESTING_PATH\""
-    echo "  claude mcp add -s user uiux-review -- node \"$UIUX_REVIEW_PATH\""
-    echo "  claude mcp add -s user project-oversight -- node \"$OVERSIGHT_PATH\""
-    echo ""
-    echo "Then verify with:"
-    echo "  claude mcp list"
+    echo "=== Codex CLI ==="
+    echo "  codex mcp add <name> -- node \"$MCP_INSTALL_DIR/<server>/build/index.js\""
     echo ""
 fi
 
@@ -382,17 +452,14 @@ echo ""
 echo "1. Copy the configuration to Claude Desktop:"
 echo ""
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS
     CONFIG_PATH="$HOME/Library/Application Support/Claude/claude_desktop_config.json"
     echo "   macOS:"
     echo "   cp $CONFIG_FILE \"$CONFIG_PATH\""
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    # Linux
     CONFIG_PATH="$HOME/.config/Claude/claude_desktop_config.json"
     echo "   Linux:"
     echo "   cp $CONFIG_FILE \"$CONFIG_PATH\""
 elif [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-    # Windows
     CONFIG_PATH="%APPDATA%\\Claude\\claude_desktop_config.json"
     echo "   Windows:"
     echo "   copy $CONFIG_FILE \"$CONFIG_PATH\""
@@ -407,6 +474,7 @@ echo -e "${GREEN}✅ Installation complete!${NC}"
 echo -e "   MCP servers are installed to ${YELLOW}$MCP_INSTALL_DIR${NC}"
 echo -e "   You can safely delete this repo clone — servers will keep working."
 echo ""
+
 # Write installation manifest (v2: per-component registration)
 SCRIPT_DIR_MCP="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO_ROOT_MCP="$( cd "$SCRIPT_DIR_MCP/.." && pwd )"
@@ -427,7 +495,7 @@ if [ -f "$REPO_ROOT_MCP/scripts/manifest-helper.sh" ]; then
 
     # Also keep legacy manifest data for backward compatibility
     SERVERS_LIST=$(ls -d */build/index.js 2>/dev/null | sed 's|/build/index.js||' | paste -sd ',' - | sed 's/,/", "/g')
-    update_manifest "mcp-servers" "{\"servers\": [\"${SERVERS_LIST}\"]}"
+    update_manifest "mcp-servers" "{\"servers\": [\"${SERVERS_LIST}\"], \"install_dir\": \"${MCP_INSTALL_DIR}\"}"
 fi
 
 echo "📚 Documentation:"
