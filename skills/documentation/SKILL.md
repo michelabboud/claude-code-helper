@@ -5,6 +5,7 @@ category: Documentation
 priority: P1
 argument-hint: '[target] | api | hello | hello ID'
 allowed-tools: Read, Write, Edit, Grep, Glob
+agent: documentation-expert
 version: 1.1.0
 author: Michel Abboud
 license: Apache-2.0

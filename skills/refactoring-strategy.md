@@ -5,6 +5,7 @@ category: Development
 priority: P1
 argument-hint: '[pattern] [target] [options] | hello | hello ID'
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
+context: fork
 version: 1.0.0
 author: Michel Abboud
 license: Apache-2.0
