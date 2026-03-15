@@ -132,6 +132,136 @@ I'm a Data Engineering Expert specialized in building scalable data pipelines, d
 
 ---
 
+## Practical Code Examples
+
+### Airflow DAG Example
+
+```python
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime, timedelta
+
+default_args = {"retries": 2, "retry_delay": timedelta(minutes=5)}
+
+with DAG(
+    "daily_etl_pipeline",
+    default_args=default_args,
+    schedule_interval="@daily",
+    start_date=datetime(2026, 1, 1),
+    catchup=False,
+) as dag:
+    extract = PythonOperator(task_id="extract", python_callable=extract_data)
+    transform = PythonOperator(task_id="transform", python_callable=transform_data)
+    load = PythonOperator(task_id="load", python_callable=load_to_warehouse)
+
+    extract >> transform >> load
+```
+
+### dbt Incremental Model
+
+```sql
+-- models/orders_enriched.sql
+{{ config(
+    materialized='incremental',
+    unique_key='order_id',
+    on_schema_change='sync_all_columns'
+) }}
+
+SELECT
+    o.order_id,
+    o.customer_id,
+    c.customer_name,
+    o.amount,
+    o.created_at
+FROM {{ ref('stg_orders') }} o
+JOIN {{ ref('stg_customers') }} c ON o.customer_id = c.customer_id
+
+{% if is_incremental() %}
+WHERE o.created_at > (SELECT MAX(created_at) FROM {{ this }})
+{% endif %}
+```
+
+### Kafka Producer / Consumer
+
+```python
+# ❌ Bad — no error handling, no serialization config
+from kafka import KafkaProducer
+p = KafkaProducer(bootstrap_servers="localhost:9092")
+p.send("topic", b"raw bytes")
+
+# ✅ Good — confluent-kafka with delivery callbacks and JSON serialization
+from confluent_kafka import Producer, Consumer
+import json
+
+producer = Producer({"bootstrap.servers": "broker:9092", "acks": "all"})
+
+def delivery_cb(err, msg):
+    if err:
+        print(f"Delivery failed: {err}")
+
+producer.produce("events", json.dumps({"user": 1}).encode(), callback=delivery_cb)
+producer.flush()
+
+consumer = Consumer({
+    "bootstrap.servers": "broker:9092",
+    "group.id": "etl-group",
+    "auto.offset.reset": "earliest",
+})
+consumer.subscribe(["events"])
+msg = consumer.poll(timeout=1.0)
+if msg and not msg.error():
+    print(json.loads(msg.value()))
+consumer.close()
+```
+
+### PySpark Data Processing
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, to_date, sum as spark_sum
+
+spark = SparkSession.builder.appName("daily_sales_etl").getOrCreate()
+
+raw_df = spark.read.parquet("s3a://data-lake/raw/sales/")
+
+clean_df = (
+    raw_df
+    .filter(col("amount") > 0)
+    .withColumn("sale_date", to_date(col("timestamp")))
+    .groupBy("sale_date", "product_id")
+    .agg(spark_sum("amount").alias("total_sales"))
+)
+
+clean_df.write.mode("overwrite").partitionBy("sale_date").parquet(
+    "s3a://data-lake/curated/daily_sales/"
+)
+```
+
+### Great Expectations Data Validation
+
+```python
+import great_expectations as gx
+
+context = gx.get_context()
+
+datasource = context.data_sources.add_pandas("sales_source")
+data_asset = datasource.add_dataframe_asset("daily_sales")
+batch = data_asset.add_batch_definition_whole_dataframe("full").get_batch(
+    batch_parameters={"dataframe": clean_df.toPandas()}
+)
+
+suite = context.add_expectation_suite("sales_quality")
+suite.add_expectation(gx.expectations.ExpectColumnValuesToNotBeNull(column="product_id"))
+suite.add_expectation(gx.expectations.ExpectColumnValuesToBeBetween(
+    column="total_sales", min_value=0
+))
+
+result = batch.validate(suite)
+assert result.success, f"Validation failed: {result.statistics}"
+```
+
+---
+
 
 ## Hello Protocol
 

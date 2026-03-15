@@ -191,6 +191,148 @@ Use the **Security Expert** agent when you need help with:
 
 **Note**: This agent provides comprehensive security guidance and code examples for implementing secure applications. All examples follow industry best practices and OWASP guidelines.
 
+## Practical Code Examples
+
+### 1. Input Validation (Express.js + Zod)
+
+❌ **Bad** — No validation:
+```js
+app.post('/users', (req, res) => {
+  db.createUser(req.body.name, req.body.email); // raw input straight to DB
+});
+```
+
+✅ **Good** — Validated with Zod middleware:
+```js
+import { z } from 'zod';
+
+const UserSchema = z.object({
+  name: z.string().min(1).max(100).trim(),
+  email: z.string().email(),
+  age: z.number().int().min(13).max(120).optional(),
+});
+
+app.post('/users', (req, res) => {
+  const result = UserSchema.safeParse(req.body);
+  if (!result.success) return res.status(400).json({ errors: result.error.issues });
+  db.createUser(result.data); // only validated data reaches the DB
+});
+```
+
+### 2. Password Hashing (bcrypt)
+
+```js
+import bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = 12;
+
+async function hashPassword(plain) {
+  return bcrypt.hash(plain, SALT_ROUNDS);
+}
+
+async function verifyPassword(plain, hash) {
+  return bcrypt.compare(plain, hash); // returns true/false, timing-safe
+}
+```
+
+### 3. JWT Authentication
+
+```js
+import jwt from 'jsonwebtoken';
+
+const SECRET = process.env.JWT_SECRET; // always from env, never hardcoded
+
+function generateToken(user) {
+  return jwt.sign({ sub: user.id, role: user.role }, SECRET, {
+    expiresIn: '15m',
+    algorithm: 'HS256',
+  });
+}
+
+function verifyToken(token) {
+  try {
+    return jwt.verify(token, SECRET, { algorithms: ['HS256'] });
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') throw new Error('Token expired');
+    throw new Error('Invalid token');
+  }
+}
+```
+
+### 4. SQL Injection Prevention
+
+❌ **Bad** — String concatenation:
+```js
+const query = `SELECT * FROM users WHERE id = '${req.params.id}'`; // injectable!
+db.query(query);
+```
+
+✅ **Good** — Parameterized query:
+```js
+const query = 'SELECT * FROM users WHERE id = $1';
+db.query(query, [req.params.id]); // value is escaped by the driver
+```
+
+### 5. CORS Configuration
+
+❌ **Bad** — Wildcard origin:
+```js
+app.use(cors({ origin: '*' })); // allows any domain
+```
+
+✅ **Good** — Explicit allowlist:
+```js
+import cors from 'cors';
+
+const ALLOWED_ORIGINS = ['https://app.example.com', 'https://admin.example.com'];
+
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    cb(new Error('Blocked by CORS'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));
+```
+
+### 6. Rate Limiting
+
+```js
+import rateLimit from 'express-rate-limit';
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,                  // 100 requests per window per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests, try again later.' },
+});
+
+app.use('/api/', apiLimiter);
+```
+
+### 7. Secrets Management
+
+❌ **Bad** — Hardcoded secrets:
+```js
+const API_KEY = 'sk-live-abc123secretkey'; // exposed in source control!
+```
+
+✅ **Good** — Environment variable validation at startup:
+```js
+const REQUIRED_ENV = ['JWT_SECRET', 'DATABASE_URL', 'API_KEY'];
+
+for (const key of REQUIRED_ENV) {
+  if (!process.env[key]) {
+    console.error(`FATAL: Missing required env var: ${key}`);
+    process.exit(1);
+  }
+}
+
+const config = Object.fromEntries(REQUIRED_ENV.map((k) => [k, process.env[k]]));
+```
+
 ---
 
 
