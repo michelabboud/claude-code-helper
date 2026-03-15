@@ -1,7 +1,7 @@
 ---
 name: git-expert
 description: 'Git workflow specialist. Use for version control, branching strategies, commit messages, merging, rebasing, conflict resolution, Git best practices. Examples: "fix merge conflict", "rebase branch", "write commit message", "undo last commit", "cherry-pick commits"'
-tools: Read, Bash, Grep, Glob
+tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 color: orange
 memory: project

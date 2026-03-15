@@ -3,6 +3,31 @@
   "repoVersion": "2.9.1",
   "generatedAt": "2026-02-21T21:31:22.922Z",
   "components": {
+    "agents/domain-experts/accessibility-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/accessibility-expert.md",
+      "installPath": "agents/accessibility-expert.md",
+      "changelog": "agents/domain-experts/accessibility-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://www.w3.org/WAI/standards-guidelines/wcag/",
+          "label": "WCAG 2.2 Guidelines",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.w3.org/WAI/ARIA/apg/",
+          "label": "WAI-ARIA Authoring Practices Guide",
+          "type": "docs"
+        },
+        {
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility",
+          "label": "MDN Web Accessibility",
+          "type": "docs"
+        }
+      ],
+      "webSearchEnabled": true
+    },
     "agents/domain-experts/android-dev": {
       "type": "agent",
       "version": "1.0.0",
@@ -270,6 +295,31 @@
         }
       ]
     },
+    "agents/domain-experts/flutter-react-native-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/flutter-react-native-expert.md",
+      "installPath": "agents/flutter-react-native-expert.md",
+      "changelog": "agents/domain-experts/flutter-react-native-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://flutter.dev/docs",
+          "label": "Flutter Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://reactnative.dev/docs/getting-started",
+          "label": "React Native Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://dart.dev/guides",
+          "label": "Dart Language Guides",
+          "type": "docs"
+        }
+      ],
+      "webSearchEnabled": true
+    },
     "agents/domain-experts/game-design-expert": {
       "type": "agent",
       "version": "1.0.0",
@@ -369,6 +419,31 @@
       ],
       "webSearchEnabled": true
     },
+    "agents/domain-experts/graphql-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/graphql-expert.md",
+      "installPath": "agents/graphql-expert.md",
+      "changelog": "agents/domain-experts/graphql-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://graphql.org/learn/",
+          "label": "GraphQL Specification & Learn",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.apollographql.com/docs/",
+          "label": "Apollo GraphQL Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://relay.dev/docs/",
+          "label": "Relay Documentation",
+          "type": "docs"
+        }
+      ],
+      "webSearchEnabled": true
+    },
     "agents/domain-experts/huggingface-expert": {
       "type": "agent",
       "version": "1.0.0",
@@ -440,6 +515,36 @@
           "url": "https://mqtt.org/mqtt-specification/",
           "label": "MQTT Specification",
           "type": "docs"
+        }
+      ],
+      "webSearchEnabled": true
+    },
+    "agents/domain-experts/java-spring-boot-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/java-spring-boot-expert.md",
+      "installPath": "agents/java-spring-boot-expert.md",
+      "changelog": "agents/domain-experts/java-spring-boot-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://spring.io/projects/spring-boot",
+          "label": "Spring Boot Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://docs.spring.io/spring-framework/reference",
+          "label": "Spring Framework Reference",
+          "type": "docs"
+        },
+        {
+          "url": "https://www.baeldung.com/spring-boot",
+          "label": "Baeldung Spring Tutorials",
+          "type": "tutorial"
+        },
+        {
+          "url": "https://docs.oracle.com/en/java/",
+          "label": "Java SE Documentation",
+          "type": "api-ref"
         }
       ],
       "webSearchEnabled": true
@@ -873,6 +978,66 @@
           "url": "https://supabase.com/docs/reference/javascript/introduction",
           "label": "Supabase JS SDK Reference",
           "type": "api-ref"
+        }
+      ],
+      "webSearchEnabled": true
+    },
+    "agents/domain-experts/svelte-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/svelte-expert.md",
+      "installPath": "agents/svelte-expert.md",
+      "changelog": "agents/domain-experts/svelte-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://svelte.dev/docs/svelte",
+          "label": "Svelte 5 Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://svelte.dev/docs/kit",
+          "label": "SvelteKit Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://svelte.dev/tutorial/kit/introducing-sveltekit",
+          "label": "SvelteKit Interactive Tutorial",
+          "type": "docs"
+        },
+        {
+          "url": "https://github.com/sveltejs/svelte/releases",
+          "label": "Svelte Releases",
+          "type": "release-notes"
+        }
+      ],
+      "webSearchEnabled": true
+    },
+    "agents/domain-experts/terraform-iac-expert": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/domain-experts/terraform-iac-expert.md",
+      "installPath": "agents/terraform-iac-expert.md",
+      "changelog": "agents/domain-experts/terraform-iac-expert.md#changelog",
+      "references": [
+        {
+          "url": "https://developer.hashicorp.com/terraform/docs",
+          "label": "Terraform Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://registry.terraform.io",
+          "label": "Terraform Registry",
+          "type": "docs"
+        },
+        {
+          "url": "https://opentofu.org/docs",
+          "label": "OpenTofu Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://terragrunt.gruntwork.io/docs",
+          "label": "Terragrunt Documentation",
+          "type": "docs"
         }
       ],
       "webSearchEnabled": true

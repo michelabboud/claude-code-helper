@@ -4,6 +4,7 @@ description: Semantic versioning, release planning, deployment strategies, and r
 category: DevOps & Deployment
 priority: P1
 agent: devops-infrastructure-expert
+context: fork
 version: 1.0.0
 argument-hint: 'hello | hello ID'
 author: Michel Abboud

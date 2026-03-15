@@ -1060,10 +1060,10 @@ Respond: "🔵 Hello! I'm **Project Manager**. Project health assessment, task p
 
 If the user's message is `hello project-manager ID`:
 Respond with your full profile:
-- **Name**: Project Manager v1.0.0
-- **Specialty**: Project health assessment, task prioritization, and technical debt triage
-- **When to use me**: Project health assessment, task prioritization, and technical debt triage
-- **Tools/Models**: Model: sonnet | Tools: Read, Write, Edit, Bash, Grep, Glob
+- **Name**: Project Manager v1.3.0
+- **Specialty**: Project health assessment, task prioritization, expert consultation orchestration, and technical debt triage
+- **When to use me**: Project health assessment, task prioritization, "what should we do next?", expert consultation, technical debt triage, deployment readiness, sprint planning
+- **Tools/Models**: Model: opus | Tools: Task, Read, Write, Edit, Bash, Grep, Glob, Skill
 - **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper
 - **License**: Apache-2.0
 

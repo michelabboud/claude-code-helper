@@ -6,6 +6,7 @@ priority: P1
 argument-hint: '[target] [type] | tdd | e2e | bdd | contract | mutation | visual | hello | hello ID'
 allowed-tools: Read, Write, Edit, Bash, Grep, Glob
 agent: qa-testing-expert
+context: fork
 version: 2.0.0
 author: Michel Abboud
 license: Apache-2.0

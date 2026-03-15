@@ -15,6 +15,31 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.10.0] - 2026-03-15 — Agent Audit & Skills 2.0
+
+### Added
+
+- **6 new domain expert agents**: `flutter-react-native-expert`, `graphql-expert`, `accessibility-expert`, `java-spring-boot-expert`, `terraform-iac-expert`, `svelte-expert`
+- **Skills 2.0 frontmatter adoption**: `context: fork` on `refactoring-strategy` and `project-scaffolding`, `agent: documentation-expert` on documentation skill
+- **2 new MCP-integrated agents**: `project-oversight-agent`, `rag-agent` (pending)
+
+### Fixed
+
+- Fixed broken MCP server reference in `uiux-design-critic.json` (pointed to wrong server)
+- Fixed name collision between domain-expert and MCP `performance-optimizer` agents
+- Fixed Hello Protocol inconsistencies in 3 agents (model mismatch, tools mismatch)
+- Fixed emoji collision between `supabase-expert` and `performance-optimizer`
+- Added missing `tools:` frontmatter field to 17 agents
+
+### Improved
+
+- Expanded 4 sparse agents with production code examples: `data-engineering`, `observability`, `ml-ai`, `security`
+- Added cross-references between related agents (`php`/`laravel`, `android-dev`/`android-expert`)
+- Updated agent counts across CLAUDE.md and README.md (now 57 total agents)
+- All trigger priorities normalized to 90 for new agents
+
+---
+
 ## [2.9.1] - 2026-03-14
 
 ### Changed
