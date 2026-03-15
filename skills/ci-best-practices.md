@@ -1,6 +1,6 @@
 ---
 skill_name: CI Best Practices
-description: CI pipeline design, parallel execution, caching strategies, and quality gates
+description: "CI pipeline design, parallel execution, caching strategies, and quality gates. Use when setting up CI/CD pipelines, configuring GitHub Actions, automating deployments, optimizing build times, or implementing quality gates. Triggers on 'CI/CD pipeline', 'GitHub Actions', 'deploy', 'build pipeline', 'continuous integration', 'automated deployment'."
 category: DevOps
 priority: P1
 agent: devops-infrastructure-expert

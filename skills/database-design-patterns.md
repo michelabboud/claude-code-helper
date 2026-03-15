@@ -1,6 +1,6 @@
 ---
 skill_name: Database Design Patterns
-description: Database schema design, migration strategies, indexing, query optimization, and scaling patterns
+description: "Database schema design, migration strategies, indexing, query optimization, and scaling patterns. Use when designing schemas, planning migrations, optimizing queries, choosing indexes, normalizing data, or scaling databases. Triggers on 'design schema', 'database migration', 'normalize', 'indexing strategy', 'query optimization', 'data modeling'."
 category: Architecture
 priority: P1
 agent: database-expert

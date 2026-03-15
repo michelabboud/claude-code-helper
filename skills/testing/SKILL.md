@@ -1,6 +1,6 @@
 ---
 skill_name: testing
-description: Comprehensive testing skill covering TDD, E2E, BDD, contract testing, mutation testing, and visual regression. Use for writing tests, test strategy, or any testing task.
+description: "Comprehensive testing skill covering TDD, E2E, BDD, contract testing, mutation testing, and visual regression. Use when writing tests, designing test strategy, adding test coverage, fixing flaky tests, mocking services, setting up testing frameworks, or any testing task. Triggers on 'write tests', 'add test coverage', 'test strategy', 'fix flaky test', 'mock', 'E2E test', 'unit test', 'integration test'."
 category: Testing
 priority: P1
 argument-hint: '[target] [type] | tdd | e2e | bdd | contract | mutation | visual | hello | hello ID'

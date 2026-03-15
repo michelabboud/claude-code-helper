@@ -1243,6 +1243,46 @@
         }
       ]
     },
+    "agents/mcp-integrated/project-oversight-agent": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/project-oversight-agent.json",
+      "installPath": "agents/project-oversight-agent.json",
+      "changelog": null,
+      "references": [
+        {
+          "url": "https://docs.anthropic.com/en/docs/claude-code/mcp",
+          "label": "Claude Code MCP Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://modelcontextprotocol.io/introduction",
+          "label": "Model Context Protocol",
+          "type": "docs"
+        }
+      ],
+      "webSearchEnabled": false
+    },
+    "agents/mcp-integrated/rag-agent": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/mcp-integrated/rag-agent.json",
+      "installPath": "agents/rag-agent.json",
+      "changelog": null,
+      "references": [
+        {
+          "url": "https://docs.anthropic.com/en/docs/claude-code/mcp",
+          "label": "Claude Code MCP Documentation",
+          "type": "docs"
+        },
+        {
+          "url": "https://modelcontextprotocol.io/introduction",
+          "label": "Model Context Protocol",
+          "type": "docs"
+        }
+      ],
+      "webSearchEnabled": false
+    },
     "agents/mcp-integrated/security-reviewer": {
       "type": "agent",
       "version": "1.0.0",

@@ -1,12 +1,12 @@
 ---
 skill_name: Documentation
-description: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use when documenting code, generating docs, or improving project documentation.
+description: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use when documenting code, generating docs, improving project documentation, adding docstrings, writing README files, creating API specifications, generating changelogs, or writing architecture decision records. Triggers on 'add docs', 'document this', 'write README', 'API spec', 'add docstrings', 'generate documentation'.
 category: Documentation
 priority: P1
 argument-hint: '[target] | api | hello | hello ID'
 allowed-tools: Read, Write, Edit, Grep, Glob
 agent: documentation-expert
-version: 1.1.0
+version: 1.2.0
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -79,6 +79,42 @@ def calculate_overall_score(experts: dict, weights: dict | None = None) -> float
         >>> print(score)
         7.6
     """
+```
+
+### Go Doc Comments
+
+```go
+// CalculateOverallScore calculates the weighted average score across all expert dimensions.
+//
+// If weights is nil, all experts are weighted equally. Returns the weighted average
+// rounded to 1 decimal place. Returns an error if any score is outside the 0-10 range.
+func CalculateOverallScore(experts map[string]ExpertData, weights map[string]float64) (float64, error) {
+```
+
+### Rust Doc Comments
+
+```rust
+/// Calculates the weighted average score across all expert dimensions.
+///
+/// # Arguments
+/// * `experts` - Map of expert key to score data
+/// * `weights` - Optional weight overrides per expert (default: equal weight)
+///
+/// # Returns
+/// Weighted average rounded to 1 decimal place
+///
+/// # Errors
+/// Returns `ValidationError` if any score is outside 0-10 range
+///
+/// # Examples
+/// ```
+/// let score = calculate_overall_score(&experts, None)?;
+/// assert_eq!(score, 7.6);
+/// ```
+pub fn calculate_overall_score(
+    experts: &HashMap<String, ExpertData>,
+    weights: Option<&HashMap<String, f64>>,
+) -> Result<f64, ValidationError> {
 ```
 
 ### Inline Comments
@@ -207,11 +243,11 @@ components:
 
 ### `hello`
 Respond with:
-> 👋 Hello! I'm **Documentation** v1.1.0. Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use `/documentation hello ID` for the full guide.
+> 👋 Hello! I'm **Documentation** v1.2.0. Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use `/documentation hello ID` for the full guide.
 
 ### `hello ID`
 Respond with complete skill information:
-- **Name**: Documentation v1.1.0
+- **Name**: Documentation v1.2.0
 - **Description**: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use when documenting code, generating docs, or improving project documentation.
 - **How to invoke**: `/documentation [target]` or `/documentation api`
 - **Available arguments**: `[target] | api | hello | hello ID`
@@ -219,6 +255,10 @@ Respond with complete skill information:
 - **License**: Apache-2.0
 
 ## Changelog
+
+### 1.2.0 (2026-03-15)
+- Improved description for better trigger accuracy
+- Added Go and Rust documentation examples
 
 ### 1.1.0 (2026-03-14)
 - Merged `api-documentation` skill into unified `/documentation api` subcommand
