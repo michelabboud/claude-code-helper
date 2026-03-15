@@ -3,7 +3,8 @@
 # RAG MCP Server Management Script
 # Usage: ./rag-server.sh {start|stop|restart|status|logs}
 
-SERVER_DIR="/home/michel/projects/claude-code-helper/mcp-servers/rag-mcp"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SERVER_DIR="$SCRIPT_DIR"
 PID_FILE="$SERVER_DIR/rag-mcp.pid"
 LOG_FILE="$SERVER_DIR/rag-mcp.log"
 

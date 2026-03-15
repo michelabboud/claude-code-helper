@@ -11,7 +11,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "node /home/michel/projects/claude-code-helper/hooks/mcp-trigger-dispatcher.js before \"$TOOL_NAME\" \"$TOOL_INPUT\""
+          "command": "node ~/.claude/hooks/mcp-trigger-dispatcher.js before \"$TOOL_NAME\" \"$TOOL_INPUT\""
         }
       ]
     },
@@ -23,7 +23,7 @@
       "hooks": [
         {
           "type": "command",
-          "command": "node /home/michel/projects/claude-code-helper/hooks/mcp-trigger-dispatcher.js after \"$TOOL_NAME\" \"$TOOL_OUTPUT\""
+          "command": "node ~/.claude/hooks/mcp-trigger-dispatcher.js after \"$TOOL_NAME\" \"$TOOL_OUTPUT\""
         }
       ]
     }
