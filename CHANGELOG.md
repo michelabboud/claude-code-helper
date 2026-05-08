@@ -15,6 +15,33 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.0] - 2026-05-08 — LSP + Complexity-Aware Model Routing (A+B+C)
+
+### Added
+
+- **New skill `route-language-task`**: central source of truth for complexity-based model selection. Holds per-language rubrics (Rust, Go, Python, Node/TS, Java, Ruby, PHP, Laravel, React/Next, Vue/Nuxt, Svelte, Angular, Android x2, iOS, Flutter/RN, WordPress), routing thresholds (1-3 haiku · 4-6 sonnet · 7-10 opus), and tie-breaking rules.
+- **`LSP` tool grant** to all 17 language/framework agents — enables prefer-LSP-over-Grep for symbol resolution (rust-analyzer, gopls, pyright, tsserver, JDT.LS, ruby-lsp, Intelephense, Volar, Svelte LS, Angular LS, Kotlin LSP, SourceKit-LSP, Dart Analysis Server).
+- **Complexity Self-Assessment Protocol** (Pattern C) added to every language agent: agent scores task 1-10 at invocation, halts and requests escalation if score exceeds invocation model band.
+- **Description-encoded routing rubric** (Pattern A) on every language agent — dispatcher reads model recommendation directly from `description:` field.
+- **Modern Workflows (2026)** section in `rust-expert`: LSP-vs-Bash decision tree, `cargo-nextest` + Miri + Loom + Shuttle decision tree (with parallel-Miri-since-2025 note), `AsyncFn*` async-closures patterns (Rust 1.85+), edition 2024 patterns (if-let chains, let-else, `#[diagnostic::do_not_recommend]`), Axum 0.8 migration notes, Tokio LTS table (1.47/1.51/2.0), cargo tooling cheat sheet.
+
+### Changed
+
+- **Bumped 17 language agents to v2.0.0** (rust, go, python-backend, nodejs-typescript-backend, java-spring-boot, ruby-rails, php, laravel, react-nextjs, vue-nuxt, svelte, angular, android-expert, android-dev, ios-development, flutter-react-native, wordpress).
+- **`rust-expert` v1.0.0 → v2.0.0**: full body refresh — Axum example migrated to 0.8 path syntax (`/users/{id}` not `/users/:id`); MSRV note Rust 1.75+ → Rust 1.85+ / Edition 2024; references include rust-analyzer book, 2024 edition guide, cargo-nextest; triggers expanded with `rust-analyzer`, `nextest`, `miri`, `loom`, `shuttle`, `rust-toolchain*`; Hello Protocol response refreshed.
+- **`component-versions.json`**: `repoVersion` 2.10.0 → 2.11.0; 17 agents bumped; new `skills/route-language-task` entry registered.
+
+### Routing Design (A+B+C)
+
+Three patterns layered for defense in depth:
+- **A — Description-encoded rubric**: dispatcher reads `description:` to pick a model fast.
+- **B — Routing skill**: dispatcher invokes `/route-language-task <lang> <task>` for deliberate scoring with full rubric and tie-breakers.
+- **C — Self-assessment**: agent runs the rubric internally at invocation time and halts/escalates if its score exceeds the invocation model band.
+
+The model is locked at invocation time, so C is a circuit breaker — not a router. A and B move the routing decision *up* to the caller; C catches cases where A and B both underestimated complexity.
+
+---
+
 ## [2.10.0] - 2026-03-15 — Agent Audit & Skills 2.0
 
 ### Added

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "repoVersion": "2.9.1",
-  "generatedAt": "2026-02-21T21:31:22.922Z",
+  "repoVersion": "2.11.0",
+  "generatedAt": "2026-05-08T13:43:46.258Z",
   "components": {
     "agents/domain-experts/accessibility-expert": {
       "type": "agent",
@@ -30,7 +30,7 @@
     },
     "agents/domain-experts/android-dev": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/android-dev.md",
       "installPath": "agents/android-dev.md",
       "changelog": "agents/domain-experts/android-dev.md#changelog",
@@ -55,7 +55,7 @@
     },
     "agents/domain-experts/android-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/android-expert.md",
       "installPath": "agents/android-expert.md",
       "changelog": "agents/domain-experts/android-expert.md#changelog",
@@ -80,7 +80,7 @@
     },
     "agents/domain-experts/angular-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/angular-expert.md",
       "installPath": "agents/angular-expert.md",
       "changelog": "agents/domain-experts/angular-expert.md#changelog",
@@ -297,7 +297,7 @@
     },
     "agents/domain-experts/flutter-react-native-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/flutter-react-native-expert.md",
       "installPath": "agents/flutter-react-native-expert.md",
       "changelog": "agents/domain-experts/flutter-react-native-expert.md#changelog",
@@ -396,7 +396,7 @@
     },
     "agents/domain-experts/go-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/go-expert.md",
       "installPath": "agents/go-expert.md",
       "changelog": "agents/domain-experts/go-expert.md#changelog",
@@ -471,7 +471,7 @@
     },
     "agents/domain-experts/ios-development-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/ios-development-expert.md",
       "installPath": "agents/ios-development-expert.md",
       "changelog": "agents/domain-experts/ios-development-expert.md#changelog",
@@ -521,7 +521,7 @@
     },
     "agents/domain-experts/java-spring-boot-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/java-spring-boot-expert.md",
       "installPath": "agents/java-spring-boot-expert.md",
       "changelog": "agents/domain-experts/java-spring-boot-expert.md#changelog",
@@ -551,7 +551,7 @@
     },
     "agents/domain-experts/laravel-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/laravel-expert.md",
       "installPath": "agents/laravel-expert.md",
       "changelog": "agents/domain-experts/laravel-expert.md#changelog",
@@ -634,7 +634,7 @@
     },
     "agents/domain-experts/nodejs-typescript-backend-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/nodejs-typescript-backend-expert.md",
       "installPath": "agents/nodejs-typescript-backend-expert.md",
       "changelog": "agents/domain-experts/nodejs-typescript-backend-expert.md#changelog",
@@ -714,7 +714,7 @@
     },
     "agents/domain-experts/php-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/php-expert.md",
       "installPath": "agents/php-expert.md",
       "changelog": "agents/domain-experts/php-expert.md#changelog",
@@ -781,7 +781,7 @@
     },
     "agents/domain-experts/python-backend-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/python-backend-expert.md",
       "installPath": "agents/python-backend-expert.md",
       "changelog": "agents/domain-experts/python-backend-expert.md#changelog",
@@ -836,7 +836,7 @@
     },
     "agents/domain-experts/react-nextjs-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/react-nextjs-expert.md",
       "installPath": "agents/react-nextjs-expert.md",
       "changelog": "agents/domain-experts/react-nextjs-expert.md#changelog",
@@ -885,7 +885,7 @@
     },
     "agents/domain-experts/ruby-rails-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/ruby-rails-expert.md",
       "installPath": "agents/ruby-rails-expert.md",
       "changelog": "agents/domain-experts/ruby-rails-expert.md#changelog",
@@ -909,7 +909,7 @@
     },
     "agents/domain-experts/rust-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/rust-expert.md",
       "installPath": "agents/rust-expert.md",
       "changelog": "agents/domain-experts/rust-expert.md#changelog",
@@ -984,7 +984,7 @@
     },
     "agents/domain-experts/svelte-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/svelte-expert.md",
       "installPath": "agents/svelte-expert.md",
       "changelog": "agents/domain-experts/svelte-expert.md#changelog",
@@ -1044,7 +1044,7 @@
     },
     "agents/domain-experts/vue-nuxt-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/vue-nuxt-expert.md",
       "installPath": "agents/vue-nuxt-expert.md",
       "changelog": "agents/domain-experts/vue-nuxt-expert.md#changelog",
@@ -1069,7 +1069,7 @@
     },
     "agents/domain-experts/wordpress-expert": {
       "type": "agent",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "file": "agents/domain-experts/wordpress-expert.md",
       "installPath": "agents/wordpress-expert.md",
       "changelog": "agents/domain-experts/wordpress-expert.md#changelog",
@@ -1619,6 +1619,15 @@
       "file": "skills/update-check/SKILL.md",
       "installPath": "skills/update-check/",
       "changelog": "skills/update-check/SKILL.md#changelog"
+    },
+    "skills/route-language-task": {
+      "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/route-language-task/SKILL.md",
+      "installPath": "skills/route-language-task/SKILL.md",
+      "changelog": "skills/route-language-task/SKILL.md#changelog",
+      "references": [],
+      "userInvocable": true
     }
   }
 }
