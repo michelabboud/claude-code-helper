@@ -4,7 +4,7 @@
 
 Version: v2.8.0
 Last Updated: 2026-02-21
-Total: 68 MCP tools • 55 agents • 13 skills • 7 commands
+Total: 68 MCP tools • 60 agents • 13 skills • 7 commands
 
 ---
 
