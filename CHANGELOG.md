@@ -15,6 +15,16 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.4] - 2026-06-24
+
+### Added
+
+- Saved a refreshed UI/UX skills deep-search report under `docs/reports/`, covering current GitHub adoption metrics, inspected local-first candidates, and the confirmed `ui-ux-pro-max` Codex install.
+
+### Changed
+
+- Bumped repository metadata to `2.11.4` and regenerated `component-versions.json`.
+
 ## [2.11.3] - 2026-06-23
 
 ### Added
