@@ -15,6 +15,18 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.3] - 2026-06-23
+
+### Added
+
+- Saved the Codex LSP compatibility and installation report under `docs/reports/`, covering `codex-lsp`, the converted language-agent skills, installed language servers, verification evidence, and remaining runtime gaps.
+- Saved the UI/UX skill deep-search report under `docs/reports/`, comparing local-first UI/UX skills and recording the selected `ui-ux-pro-max` Codex skill install.
+- Added the root `VERSION` checkpoint file required by the global repository rules.
+
+### Changed
+
+- Bumped repository metadata to `2.11.3` and regenerated `component-versions.json`.
+
 ## [2.11.2] - 2026-06-23
 
 ### Changed
