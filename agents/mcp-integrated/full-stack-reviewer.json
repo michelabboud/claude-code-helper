@@ -40,7 +40,8 @@
       "mcp"
     ]
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "lastRefreshed": "2026-06-23T20:18:19.344Z",
   "author": "Michel Abboud",
   "license": "Apache-2.0",
   "repository": "https://github.com/michelabboud/claude-code-helper",

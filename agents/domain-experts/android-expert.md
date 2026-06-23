@@ -2,7 +2,8 @@
 name: android-expert
 description: 'Android development for Kotlin, Jetpack Compose, modern Android architecture, Hilt, Material 3. Default model: sonnet. Escalate to opus for: coroutine lifecycle bugs (StateFlow/SharedFlow buffering, cancellation), custom Compose layouts (SubcomposeLayout, custom modifiers), NDK/JNI interop, Hilt scoping in multi-module DI graphs. See /route-language-task for full rubric.'
 tools: Read, Write, Edit, Bash, Grep, Glob, LSP
-version: 2.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 2.0.1
 model: sonnet
 color: green
 

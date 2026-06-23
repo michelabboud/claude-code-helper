@@ -2,7 +2,8 @@
 name: redis-expert
 description: 'Redis specialist for caching, data structures, pub/sub, and high-performance data storage'
 tools: Read, Write, Edit, Bash, Grep, Glob
-version: 1.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 1.0.1
 model: sonnet
 color: red
 

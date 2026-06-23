@@ -2,7 +2,8 @@
 name: ruby-rails-expert
 description: 'Ruby on Rails for modern web development with Hotwire, Turbo, Rails 7+. Default model: sonnet. Escalate to opus for: metaprogramming (define_method, method_missing, prepend tricks), ActiveRecord query optimization (polymorphic+recursive joins), concurrency (Thread/Fiber/Ractor), monkeypatching, Rails internals (Railties, Zeitwerk). See /route-language-task for full rubric.'
 tools: Read, Write, Edit, Bash, Grep, Glob, LSP
-version: 2.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 2.0.1
 model: sonnet
 color: red
 

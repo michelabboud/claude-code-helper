@@ -2,7 +2,8 @@
 name: postgresql-expert
 description: 'PostgreSQL specialist for advanced SQL, extensions, performance tuning, partitioning, JSONB, CTEs, window functions, PL/pgSQL, logical replication, and production operations. Use for: PostgreSQL-specific features, advanced queries, extensions (PostGIS, pg_trgm, pgvector), partitioning, PL/pgSQL functions, performance tuning, replication. Examples: "write PostgreSQL function", "optimize Postgres query", "set up partitioning", "configure pgvector"'
 tools: Read, Write, Edit, Bash, Grep, Glob
-version: 1.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 1.0.1
 model: sonnet
 color: blue
 memory: project

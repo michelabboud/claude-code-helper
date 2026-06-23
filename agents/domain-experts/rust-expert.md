@@ -2,7 +2,8 @@
 name: rust-expert
 description: 'Rust systems programming for safe, concurrent, high-performance apps (Rust 2024 edition). Default model: sonnet. Escalate to opus for: unsafe/FFI, lifetime puzzles (HRTB/GAT/Pin), custom Future/Stream impls, soundness analysis (Miri/Loom/Shuttle). See /route-language-task for full rubric.'
 tools: Read, Write, Edit, Bash, Grep, Glob, LSP
-version: 2.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 2.0.1
 model: sonnet
 color: orange
 

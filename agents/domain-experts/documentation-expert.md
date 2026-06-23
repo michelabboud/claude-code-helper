@@ -42,7 +42,8 @@ references:
   - url: "https://developers.google.com/style"
     label: "Google Developer Documentation Style Guide"
     type: docs
-version: 1.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 1.0.1
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

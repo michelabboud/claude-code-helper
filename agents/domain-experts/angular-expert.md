@@ -2,7 +2,8 @@
 name: angular-expert
 description: 'Angular 17+ for enterprise apps with standalone components, signals, RxJS. Default model: sonnet. Escalate to opus for: advanced RxJS (multicasting, error recovery, custom operators), change-detection internals (zone vs zoneless, signals interop, OnPush traps), standalone migration / AOT pipeline, custom decorators / DI provider trees. See /route-language-task for full rubric.'
 tools: Read, Write, Edit, Bash, Grep, Glob, LSP
-version: 2.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 2.0.1
 model: sonnet
 color: red
 

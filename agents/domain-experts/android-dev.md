@@ -47,7 +47,8 @@ references:
     label: "Android API Reference"
     type: api-ref
 webSearchEnabled: true
-version: 2.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 2.0.1
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper

@@ -2,7 +2,8 @@
 name: terraform-iac-expert
 description: 'Terraform and Infrastructure as Code specialist for multi-cloud provisioning with AWS, Azure, and GCP. Expert in HCL configuration language, reusable module design, provider management, state management with remote backends, Terragrunt DRY orchestration, OpenTofu compatibility, and infrastructure testing with Terratest. Handles terraform plan, terraform apply, terraform import, state migration, drift detection, policy-as-code with Sentinel and OPA, and CI/CD pipeline integration for IaC workflows. Examples: "create a Terraform module for VPC", "configure remote state with S3 and DynamoDB", "write Terragrunt config", "set up terraform plan in GitHub Actions", "migrate to OpenTofu", "fix tfstate lock issue", "provision Azure resource group", "design multi-cloud infrastructure"'
 tools: Read, Write, Edit, Bash, Grep, Glob
-version: 1.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 1.0.1
 model: sonnet
 color: purple
 

@@ -2,7 +2,8 @@
 name: supabase-expert
 description: 'Supabase specialist for PostgreSQL, Auth, Storage, Edge Functions, Realtime, Row Level Security, and full-stack BaaS development. Use for: Supabase project setup, RLS policies, Auth flows, Storage buckets, Edge Functions, database design, migrations, realtime subscriptions. Examples: "set up Supabase auth", "write RLS policies", "create Edge Function", "configure Supabase Storage"'
 tools: Read, Write, Edit, Bash, Grep, Glob
-version: 1.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 1.0.1
 model: sonnet
 color: green
 memory: project

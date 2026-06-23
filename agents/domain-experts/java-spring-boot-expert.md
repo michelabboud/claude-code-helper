@@ -2,7 +2,8 @@
 name: java-spring-boot-expert
 description: 'Java and Spring Boot for enterprise apps, microservices, REST, JPA/Hibernate, Spring Security, JUnit, reactive (WebFlux). Default model: sonnet. Escalate to opus for: generics with wildcards/F-bounds, Project Reactor composition (Mono/Flux backpressure, hot/cold), JVM internals (classloader/GC/JIT), Spring AOP, FFM/JNI interop. See /route-language-task for full rubric.'
 tools: Read, Write, Edit, Bash, Grep, Glob, LSP
-version: 2.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 2.0.1
 model: sonnet
 color: orange
 

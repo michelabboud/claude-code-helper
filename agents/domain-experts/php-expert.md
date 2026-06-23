@@ -2,7 +2,8 @@
 name: php-expert
 description: 'PHP for modern PHP 8.2+, Composer, PSR standards, design patterns. Default model: sonnet. Escalate to opus for: trait conflict resolution + late static binding, PHP 8+ attributes/enums-with-interfaces/asymmetric-visibility, fiber-based async (Amphp/ReactPHP), reflection-based codegen, opcache/JIT internals. For Laravel-specific work, see laravel-expert instead. See /route-language-task for full rubric.'
 tools: Read, Write, Edit, Bash, Grep, Glob, LSP
-version: 2.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 2.0.1
 model: sonnet
 color: purple
 

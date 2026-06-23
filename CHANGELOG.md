@@ -15,6 +15,13 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.2] - 2026-06-23
+
+### Changed
+
+- Added `lastRefreshed` timestamps to all 57 refresh-managed agents.
+- Bumped affected agent patch versions and regenerated `component-versions.json`.
+
 ## [2.11.1] - 2026-06-23
 
 ### Added

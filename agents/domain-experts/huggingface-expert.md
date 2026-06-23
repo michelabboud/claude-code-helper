@@ -3,7 +3,8 @@ name: huggingface-expert
 description: 'Hugging Face specialist for transformers, fine-tuning, inference, and model deployment'
 tools:
   - '*'
-version: 1.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 1.0.1
 model: sonnet
 color: yellow
 

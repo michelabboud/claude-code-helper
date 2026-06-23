@@ -2,7 +2,8 @@
 name: svelte-expert
 description: 'Svelte 5 and SvelteKit for modern reactive web apps — runes ($state/$derived/$effect/$props/$bindable), SSR/SSG, form actions, load functions, stores, transitions, adapters, hooks. Default model: sonnet. Escalate to opus for: runes-based reactivity in libraries (cross-component invariants), SSR + form-action + progressive-enhancement coordination, complex transition orchestration (crossfade/custom), adapter customization. See /route-language-task for full rubric.'
 tools: Read, Write, Edit, Bash, Grep, Glob, LSP
-version: 2.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 2.0.1
 model: sonnet
 color: red
 

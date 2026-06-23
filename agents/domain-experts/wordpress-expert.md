@@ -2,7 +2,8 @@
 name: wordpress-expert
 description: 'WordPress for theme/plugin development, custom post types, Gutenberg, WooCommerce, REST API. Default model: sonnet. Escalate to opus for: complex hook interactions / action-filter dependency cycles, multisite/network admin, custom REST endpoints with auth+capability checks, WooCommerce internals (cart/checkout/order pipeline). See /route-language-task for full rubric.'
 tools: Read, Write, Edit, Bash, Grep, Glob, LSP
-version: 2.0.0
+lastRefreshed: "2026-06-23T20:18:19.344Z"
+version: 2.0.1
 model: sonnet
 color: blue
 
