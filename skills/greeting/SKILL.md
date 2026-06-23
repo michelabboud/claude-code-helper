@@ -4,6 +4,8 @@ skill_name: greeting
 version: 1.0.0
 description: Greet all installed tools and generate a health report
 argument-hint: '[ID] | hello | hello ID'
+author: Michel Abboud
+license: Apache-2.0
 ---
 
 # Greeting Skill

@@ -1,6 +1,6 @@
 {
   "name": "claude-code-helper",
-  "version": "2.9.2",
+  "version": "2.11.1",
   "private": true,
   "description": "Comprehensive toolkit and learning resource for mastering Claude Code",
   "workspaces": [
@@ -27,7 +27,7 @@
     "test:mcp-shared": "npm test -w mcp-shared",
     "test:all": "npm run build:shared && npm test --workspaces --if-present",
     "generate:versions": "node scripts/generate-version-index.mjs",
-    "test:scripts": "node --test scripts/__tests__/generate-version-index.test.mjs && bash scripts/__tests__/manifest-helper.test.sh && bash scripts/__tests__/update-component.test.sh",
+    "test:scripts": "node --test scripts/__tests__/version-metadata-consistency.test.mjs && node --test scripts/__tests__/generate-version-index.test.mjs && bash scripts/__tests__/manifest-helper.test.sh && bash scripts/__tests__/update-component.test.sh",
     "dashboard": "npm run build -w project-oversight-mcp && npm run dashboard -w project-oversight-mcp",
     "benchmark": "node scripts/benchmark-startup.mjs",
     "prepare": "husky || true"

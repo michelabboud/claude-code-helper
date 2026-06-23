@@ -16,7 +16,7 @@
  */
 
 import { readdir, readFile } from 'node:fs/promises';
-import { join, basename, relative } from 'node:path';
+import { join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
 

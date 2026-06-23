@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "repoVersion": "2.11.0",
-  "generatedAt": "2026-05-08T13:43:46.258Z",
+  "repoVersion": "2.11.1",
+  "generatedAt": "2026-06-23T19:43:01.849Z",
   "components": {
     "agents/domain-experts/accessibility-expert": {
       "type": "agent",
@@ -539,7 +539,7 @@
         {
           "url": "https://www.baeldung.com/spring-boot",
           "label": "Baeldung Spring Tutorials",
-          "type": "tutorial"
+          "type": "docs"
         },
         {
           "url": "https://docs.oracle.com/en/java/",
@@ -920,6 +920,11 @@
           "type": "docs"
         },
         {
+          "url": "https://doc.rust-lang.org/edition-guide/rust-2024/",
+          "label": "Rust 2024 Edition Guide",
+          "type": "docs"
+        },
+        {
           "url": "https://doc.rust-lang.org/std/",
           "label": "Rust Standard Library Reference",
           "type": "api-ref"
@@ -928,6 +933,16 @@
           "url": "https://blog.rust-lang.org/",
           "label": "Rust Blog (Releases)",
           "type": "release-notes"
+        },
+        {
+          "url": "https://rust-analyzer.github.io/book/features.html",
+          "label": "rust-analyzer Features",
+          "type": "docs"
+        },
+        {
+          "url": "https://nexte.st/",
+          "label": "cargo-nextest",
+          "type": "docs"
         }
       ],
       "webSearchEnabled": true
@@ -1248,7 +1263,7 @@
       "version": "1.0.0",
       "file": "agents/mcp-integrated/project-oversight-agent.json",
       "installPath": "agents/project-oversight-agent.json",
-      "changelog": null,
+      "changelog": "agents/mcp-integrated/project-oversight-agent.json#changelog",
       "references": [
         {
           "url": "https://docs.anthropic.com/en/docs/claude-code/mcp",
@@ -1260,15 +1275,14 @@
           "label": "Model Context Protocol",
           "type": "docs"
         }
-      ],
-      "webSearchEnabled": false
+      ]
     },
     "agents/mcp-integrated/rag-agent": {
       "type": "agent",
       "version": "1.0.0",
       "file": "agents/mcp-integrated/rag-agent.json",
       "installPath": "agents/rag-agent.json",
-      "changelog": null,
+      "changelog": "agents/mcp-integrated/rag-agent.json#changelog",
       "references": [
         {
           "url": "https://docs.anthropic.com/en/docs/claude-code/mcp",
@@ -1280,8 +1294,7 @@
           "label": "Model Context Protocol",
           "type": "docs"
         }
-      ],
-      "webSearchEnabled": false
+      ]
     },
     "agents/mcp-integrated/security-reviewer": {
       "type": "agent",
@@ -1552,7 +1565,7 @@
     },
     "skills/documentation": {
       "type": "skill",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "file": "skills/documentation/SKILL.md",
       "installPath": "skills/documentation/",
       "changelog": "skills/documentation/SKILL.md#changelog"
@@ -1587,7 +1600,7 @@
     },
     "skills/refactoring-strategy": {
       "type": "skill",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "file": "skills/refactoring-strategy.md",
       "installPath": "skills/refactoring-strategy.md",
       "changelog": "skills/refactoring-strategy.md#changelog"
@@ -1606,9 +1619,16 @@
       "installPath": "skills/release-management.md",
       "changelog": "skills/release-management.md#changelog"
     },
-    "skills/testing": {
-      "version": "2.0.0",
+    "skills/route-language-task": {
       "type": "skill",
+      "version": "1.0.0",
+      "file": "skills/route-language-task/SKILL.md",
+      "installPath": "skills/route-language-task/",
+      "changelog": "skills/route-language-task/SKILL.md#changelog"
+    },
+    "skills/testing": {
+      "type": "skill",
+      "version": "2.0.0",
       "file": "skills/testing/SKILL.md",
       "installPath": "skills/testing/",
       "changelog": "skills/testing/SKILL.md#changelog"
@@ -1619,15 +1639,6 @@
       "file": "skills/update-check/SKILL.md",
       "installPath": "skills/update-check/",
       "changelog": "skills/update-check/SKILL.md#changelog"
-    },
-    "skills/route-language-task": {
-      "type": "skill",
-      "version": "1.0.0",
-      "file": "skills/route-language-task/SKILL.md",
-      "installPath": "skills/route-language-task/SKILL.md",
-      "changelog": "skills/route-language-task/SKILL.md#changelog",
-      "references": [],
-      "userInvocable": true
     }
   }
 }

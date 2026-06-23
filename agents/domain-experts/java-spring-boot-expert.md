@@ -50,7 +50,7 @@ references:
     type: docs
   - url: "https://www.baeldung.com/spring-boot"
     label: "Baeldung Spring Tutorials"
-    type: tutorial
+    type: docs
   - url: "https://docs.oracle.com/en/java/"
     label: "Java SE Documentation"
     type: api-ref

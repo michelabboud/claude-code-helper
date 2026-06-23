@@ -15,6 +15,18 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.1] - 2026-06-23
+
+### Added
+
+- Saved a focused inventory report for skills, plugin docs, MCP packages/configs, and agents under `docs/reports/`.
+- Added a script test that prevents root `package.json` and `component-versions.json` repo-version drift.
+
+### Fixed
+
+- Aligned root package metadata and regenerated `component-versions.json` so the current repository metadata agrees on `2.11.1`.
+- Fixed frontmatter and lint hygiene issues that blocked a clean validation run.
+
 ## [2.11.0] - 2026-05-08 — LSP + Complexity-Aware Model Routing (A+B+C)
 
 ### Added
