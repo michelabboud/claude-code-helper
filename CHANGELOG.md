@@ -15,6 +15,21 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.5] - 2026-07-10
+
+### Added
+- **Skill-by-skill / plugin-by-plugin review plan** (`docs/plans/2026-07-10-skill-plugin-review-plan.md`
+  + raw appendix) — a read-only review of every skill, plugin, and MCP server (20 units, **120
+  findings**: 22 high / 44 medium / 54 low). Ranked, phased fix plan (Phase 0 = same-day one-liners).
+  Headline themes: the **missing-`allowed-tools`** class (greeting, model-mode, refresh, update-check
+  declare none despite driving Bash/curl/git/WebFetch); **plugins/skill-docs advertise components that
+  don't exist** (no `commands/` dir; flat `skills/*.md` aren't runtime-loadable); the **update-check
+  scanner blind spots** (3 core agents + JSON hook configs never versioned — disk 60 agents vs manifest
+  57, confirmed); **license drift** (MIT vs Apache-2.0 in plugin README + MCP `hello` handshakes); and
+  **two NO-FAKES violations** (`uiux-review-mcp` returns hardcoded scores + a `Math.random()` A/B winner;
+  `dependency-management` fabricates sizes/versions via `Math.random()`, defaults unknown licenses to
+  MIT) shipping behind "Production Ready" badges. No code changed — plan only.
+
 ## [2.11.4] - 2026-06-24
 
 ### Added
