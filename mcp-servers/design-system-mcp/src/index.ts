@@ -21,6 +21,7 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import { JSDOM } from "jsdom";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
+import { calculateContrastRatio } from "./color.js";
 
 const SERVER_NAME = "design-system-mcp";
 const SERVER_VERSION = "1.0.0";
@@ -44,7 +45,6 @@ const CheckComponentSchema = z.object({
     "token_usage",
     "accessibility",
     "responsive_design",
-    "component_api",
   ])).optional().describe("Checks to perform"),
 });
 
@@ -145,10 +145,15 @@ function validateColorContrast(tokens: DesignTokens, result: ValidationResult): 
   const bgColors = Object.entries(colors).filter(([key]) => key.includes("bg") || key.includes("background"));
   
   let contrastIssues = 0;
-  
+  let checkedPairs = 0;
+
   for (const [textKey, textColor] of textColors) {
     for (const [bgKey, bgColor] of bgColors) {
       const ratio = calculateContrastRatio(textColor, bgColor);
+      if (ratio === null) {
+        continue; // non-hex token value (rgb()/var()/named) — cannot assess here
+      }
+      checkedPairs++;
       if (ratio < 4.5) { // WCAG AA for normal text
         contrastIssues++;
         result.warnings.push({
@@ -158,8 +163,8 @@ function validateColorContrast(tokens: DesignTokens, result: ValidationResult): 
       }
     }
   }
-  
-  result.stats.colorPairs = textColors.length * bgColors.length;
+
+  result.stats.colorPairs = checkedPairs;
   result.stats.contrastIssues = contrastIssues;
 }
 
@@ -366,17 +371,20 @@ async function validateColorPalette(
         const [, color1] = colorEntries[i];
         const [, color2] = colorEntries[j];
         const ratio = calculateContrastRatio(color1 as string, color2 as string);
-        
+        if (ratio === null) {
+          continue; // non-hex color value — cannot compute a ratio
+        }
         totalPairs++;
         if (ratio >= minRatio) {
           passingPairs++;
         }
       }
     }
-    
+
     result.stats.totalColorPairs = totalPairs;
     result.stats.wcagCompliantPairs = passingPairs;
-    result.stats.compliancePercentage = ((passingPairs / totalPairs) * 100).toFixed(1);
+    result.stats.compliancePercentage =
+      totalPairs > 0 ? ((passingPairs / totalPairs) * 100).toFixed(1) : "N/A";
     
     return result;
   } catch (error: unknown) {
@@ -458,21 +466,6 @@ function getAllKeys(obj: Record<string, unknown>, prefix: string = ""): string[]
     }
   }
   return keys;
-}
-
-function calculateContrastRatio(color1: string, color2: string): number {
-  // Simplified contrast calculation (proper implementation would use relative luminance)
-  const hex1 = color1.replace("#", "");
-  const hex2 = color2.replace("#", "");
-  
-  const lum1 = parseInt(hex1, 16);
-  const lum2 = parseInt(hex2, 16);
-  
-  const lighter = Math.max(lum1, lum2);
-  const darker = Math.min(lum1, lum2);
-  
-  // Simplified ratio calculation
-  return ((lighter + 0.05) / (darker + 0.05));
 }
 
 function findBaseUnit(values: number[]): number {
@@ -641,7 +634,7 @@ runServer({ name: "design-system-mcp", version: "1.0.0" }, (instance) => {
                 type: "array",
                 items: {
                   type: "string",
-                  enum: ["token_usage", "accessibility", "responsive_design", "component_api"]
+                  enum: ["token_usage", "accessibility", "responsive_design"]
                 },
                 description: "Checks to perform"
               },

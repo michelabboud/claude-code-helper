@@ -142,7 +142,7 @@ Add to `.claude-code/config.json`:
   "args": {
     "componentPath": "./src/Button.tsx",
     "designSystemPath": "./design-tokens.json",
-    "checks": ["token_usage", "accessibility", "responsive_design", "component_api"]
+    "checks": ["token_usage", "accessibility", "responsive_design"]
   }
 }
 ```
@@ -151,7 +151,6 @@ Add to `.claude-code/config.json`:
 - **token_usage** - Verifies component uses design tokens instead of hardcoded values
 - **accessibility** - ARIA attributes, keyboard navigation, focus management
 - **responsive_design** - Media queries, flexible units, breakpoint consistency
-- **component_api** - Props naming, TypeScript types, prop consistency
 
 **Output:**
 ```json
@@ -177,16 +176,11 @@ Add to `.claude-code/config.json`:
     "responsive_design": {
       "passed": true,
       "breakpoints": ["mobile", "tablet", "desktop"]
-    },
-    "component_api": {
-      "passed": true,
-      "props": 8,
-      "typeSafe": true
     }
   },
   "summary": {
-    "totalChecks": 4,
-    "passed": 3,
+    "totalChecks": 3,
+    "passed": 2,
     "failed": 1,
     "overallScore": 75
   }

@@ -38,7 +38,6 @@ const CheckComponentSchema = z.object({
     "token_usage",
     "accessibility",
     "responsive_design",
-    "component_api",
   ])).optional().describe("Checks to perform"),
 });
 
@@ -193,12 +192,12 @@ describe("CheckComponentSchema", () => {
     const input = {
       componentPath: "/src/Card.vue",
       designSystemPath: "/design/system.json",
-      checks: ["token_usage", "accessibility", "responsive_design", "component_api"],
+      checks: ["token_usage", "accessibility", "responsive_design"],
     };
     const result = CheckComponentSchema.safeParse(input);
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.checks).toHaveLength(4);
+      expect(result.data.checks).toHaveLength(3);
     }
   });
 
@@ -269,7 +268,6 @@ describe("CheckComponentSchema", () => {
       "token_usage",
       "accessibility",
       "responsive_design",
-      "component_api",
     ] as const) {
       const result = CheckComponentSchema.safeParse({
         componentPath: "/src/Component.tsx",
