@@ -682,7 +682,10 @@ runServer({
       switch (name) {
         case "index_codebase": {
           const validated = IndexCodebaseSchema.parse(args);
-          const safePath = sanitizePath(validated.rootPath, process.cwd());
+          // Indexing is meant to target any project the user names (the README
+          // shows absolute paths like /path/to/project), so we do NOT restrict
+          // to cwd — sanitizePath still rejects empty paths and null bytes.
+          const safePath = sanitizePath(validated.rootPath);
           const result = await indexCodebase({ ...validated, rootPath: safePath });
           response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
           break;
@@ -690,7 +693,9 @@ runServer({
 
         case "index_file": {
           const validated = IndexFileSchema.parse(args);
-          const safePath = sanitizePath(validated.filePath, process.cwd());
+          // Same as index_codebase: the user names the file to index, which may
+          // live anywhere; keep the null-byte/empty guards without a cwd jail.
+          const safePath = sanitizePath(validated.filePath);
           const result = await indexFile({ ...validated, filePath: safePath });
           response = { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
           break;
