@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "repoVersion": "2.11.4",
+  "repoVersion": "2.11.6",
   "generatedAt": "2026-06-23T22:05:38.094Z",
   "components": {
     "agents/domain-experts/accessibility-expert": {

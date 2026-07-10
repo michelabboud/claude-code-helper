@@ -3,6 +3,7 @@ skill_name: Release Management
 description: Semantic versioning, release planning, deployment strategies, and rollback procedures
 category: DevOps & Deployment
 priority: P1
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 agent: devops-infrastructure-expert
 context: fork
 version: 1.0.0

@@ -6,6 +6,7 @@ description: Greet all installed tools and generate a health report
 argument-hint: '[ID] | hello | hello ID'
 author: Michel Abboud
 license: Apache-2.0
+allowed-tools: Glob, Read, mcp__code-review__hello, mcp__testing__hello, mcp__design-system__hello, mcp__api-specialist__hello, mcp__uiux-review__hello, mcp__database-operations__hello, mcp__dependency-management__hello, mcp__cicd-pipeline__hello, mcp__n8n-automation__hello, mcp__rag__hello, mcp__project-oversight__hello
 ---
 
 # Greeting Skill
@@ -43,7 +44,7 @@ Call `hello {}` on each of the following MCP servers by using their `hello` tool
 | cicd-pipeline | `mcp__cicd-pipeline__hello` with `{}` |
 | n8n-automation | `mcp__n8n-automation__hello` with `{}` |
 | rag-mcp | `mcp__rag__hello` with `{}` |
-| project-oversight-mcp | `mcp__claude_ai_Vercel__search_vercel_documentation` is NOT this server — skip. Use the hello tool if available. |
+| project-oversight-mcp | `mcp__project-oversight__hello` with `{}` |
 
 Show each server's greeting response, prefixed with ✅ (responded) or ❌ (failed).
 
@@ -94,7 +95,7 @@ Output a formatted summary block:
 📊  Greeting Report — [current date/time]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-MCP Servers   X / 10  online
+MCP Servers   X / 11  online
 Agents        X       installed
 Skills        X       installed
 

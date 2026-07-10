@@ -20,7 +20,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 - [Example Agents (27 Agents)](#example-agents-27-agents)
   - [MCP Agents](#mcp-agents-9-agents)
   - [Sub-Agents - Domain Specialists](#sub-agents---domain-specialists-18-agents)
-- [Skills (13 Workflow Skills)](#skills-14-workflow-skills)
+- [Skills (14 Workflow Skills)](#skills-14-workflow-skills)
   - [Core Workflow Skills](#core-workflow-skills)
 - [Commands (5 Slash Commands)](#commands-5-slash-commands)
 - [Hooks (4 Automation Hooks)](#hooks-4-automation-hooks)
@@ -44,7 +44,7 @@ This comprehensive index catalogs every tool, agent, skill, command, hook, plugi
 |----------|-------|-------------|
 | **MCP Servers** | 11 | Production-ready TypeScript servers with 47+ tools |
 | **MCP Tools** | 80+ | Individual automation tools across all servers (incl. 11 hello tools) |
-| **Agents** | 54 | MCP agents, sub-agents, and technology specialists |
+| **Agents** | 60 | MCP agents, sub-agents, and technology specialists |
 | **Skills** | 14 | Workflow, testing, tooling, and documentation skills |
 | **Commands** | 5 | Slash commands for common workflows |
 | **Hooks** | 4 | Event-driven automation hooks |
@@ -296,7 +296,7 @@ Specialized agents for specific technology domains.
 
 ---
 
-## Skills (13 Workflow Skills)
+## Skills (14 Workflow Skills)
 
 **Location:** [`skills/`](skills/)
 

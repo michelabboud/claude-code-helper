@@ -27,7 +27,7 @@
 
 - **60 Agents** (43 domain experts + 14 MCP-integrated + 3 core)
 - **68 MCP Tools** across 10 servers (38 production + 30 experimental)
-- **13 Skills** (workflows, testing, scaffolding, documentation, RAG, update-check, refresh, model-mode, greeting, and more)
+- **14 Skills** (workflows, testing, scaffolding, documentation, RAG, update-check, refresh, model-mode, greeting, and more)
 - **Comprehensive guides, templates, and integration examples**
 
 ---
@@ -39,7 +39,7 @@ This repository contains everything you need to become productive with Claude Co
 | Component | Description | Best For |
 |-----------|-------------|----------|
 | **[Agents](#-agents)** | 60 agents (43 domain experts, 14 MCP-integrated, 3 core) | Specialized AI assistance |
-| **[Skills](#-skills)** | 13 reusable workflow skills | Workflows, patterns & actions |
+| **[Skills](#-skills)** | 14 reusable workflow skills | Workflows, patterns & actions |
 | **[Guides](#-guides)** | Complete learning paths from zero to hero | Learning & Reference |
 | **[MCP Servers](#-mcp-servers)** | 10 specialized servers for code quality & automation | Automation & CI/CD |
 | **[Templates](#-templates)** | Starter templates for creating your own | Building Custom Tools |
@@ -265,7 +265,7 @@ cp agents/mcp-integrated/*.json ~/.claude/agents/
 
 **[📁 Navigate to Skills →](./skills/)**
 
-13 reusable skills for development workflows, testing, and project scaffolding.
+14 reusable skills for development workflows, testing, and project scaffolding.
 
 ### Available Skills
 - **Testing:** `/testing` — unified skill with subcommands: tdd, e2e, bdd, contract, mutation, visual
@@ -462,7 +462,7 @@ claude-code-helper/
 │   └── README.md
 │
 ├── skills/                   # PRIMARY: Skills distribution
-│   └── [13 skill files/dirs]
+│   └── [14 skill files/dirs]
 │
 ├── hooks/                    # PRIMARY: Hooks distribution
 │   └── [5 hook files]
@@ -706,7 +706,7 @@ export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=true
 ### ✅ Production-Ready Tools
 - 5 MCP servers (30 tools)
 - 26+ agent examples (all major tech stacks)
-- 13 skills (workflows, testing, architecture)
+- 14 skills (workflows, testing, architecture)
 - Commands, hooks, complete plugins
 
 ### ✅ Automation & Quality

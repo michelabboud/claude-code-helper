@@ -7,6 +7,7 @@ author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
 issues: https://github.com/michelabboud/claude-code-helper/issues
+allowed-tools: Read, Write, Edit, Bash
 ---
 
 # Update Check

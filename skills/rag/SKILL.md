@@ -6,7 +6,7 @@ author: Michel Abboud
 repository: https://github.com/michelabboud/claude-code-helper
 license: Apache-2.0
 tags: [rag, search, indexing, semantic, codebase, redis, qdrant, chromadb, vector]
-allowed-tools: ["mcp__rag__index_codebase", "mcp__rag__index_file", "mcp__rag__list_collections", "mcp__rag__get_collection_stats", "mcp__rag__semantic_search", "mcp__rag__find_similar_code", "mcp__rag__get_relevant_context", "mcp__rag__delete_collection", "mcp__rag__hello", "Bash", "Read", "Write", "Edit"]
+allowed-tools: ["mcp__rag__index_codebase", "mcp__rag__index_file", "mcp__rag__list_collections", "mcp__rag__get_collection_stats", "mcp__rag__semantic_search", "mcp__rag__find_similar_code", "mcp__rag__get_relevant_context", "mcp__rag__delete_collection", "mcp__rag__hello", "Bash", "Read", "Write", "Edit", "AskUserQuestion"]
 ---
 
 # RAG — Semantic Codebase Search & Configuration
@@ -404,7 +404,7 @@ Run a connectivity check via Bash:
 
 - **Redis:** `redis-cli -h localhost -p 6379 ping` → expect `PONG`
 - **Qdrant:** `curl -s http://localhost:6333/healthz` → expect `ok` or JSON
-- **ChromaDB:** `curl -s http://localhost:8000/api/v1/heartbeat` → expect JSON
+- **ChromaDB:** `curl -s http://localhost:8000/api/v2/heartbeat` → expect JSON
 
 If the check fails:
 - Show the error

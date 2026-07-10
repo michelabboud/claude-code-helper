@@ -15,6 +15,31 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.6] - 2026-07-10
+
+Remediation Phase 0 — same-day one-liners from the 2026-07-10 review plan. Near-zero-risk fixes
+clearing the two High-severity greeting bugs, the entire in-repo missing-`allowed-tools` class, the
+plugin-README license theme, and all top-level count drift.
+
+### Fixed
+- **`skills/greeting`** — corrupted `project-oversight-mcp` row (pointed at a Vercel doc tool and said
+  "skip") now calls the real `mcp__project-oversight__hello`; online denominator `X / 10` → `X / 11`
+  to match the 11-server table.
+- **Missing `allowed-tools`** added to the skills that drive tools without declaring them:
+  `greeting` (Glob, Read + the 11 `mcp__<server>__hello` tools), `update-check` (Read, Write, Edit,
+  Bash), `refresh` (Read, Edit, Glob, WebFetch, WebSearch), `model-mode` (Read, Edit, Write),
+  `release-management` and `ci-best-practices` (Read, Write, Edit, Grep, Glob, Bash). `rag` gains
+  `AskUserQuestion` (driven in 5 places, previously undeclared).
+- **`skills/rag`** — ChromaDB heartbeat probe updated from the removed `/api/v1/heartbeat` (HTTP 410 on
+  current images) to `/api/v2/heartbeat`.
+- **License drift** — `plugins/README.md` credited the repo as MIT; corrected to Apache-2.0 (the repo's
+  actual license and every plugin's frontmatter).
+- **Count drift** — `README.md` (5 sites) and `CLAUDE.md` now say **14 skills** (was 13);
+  `TOOLS-INDEX.md` now says **60 agents** (was 54) and "14 Workflow Skills" (was 13); `CLAUDE.md` agent
+  inventory now reads **60 agent files** (43 domain-experts + 14 MCP-integrated + 3 core), was 57.
+- **Version spine reconciled** — `package.json` and `component-versions.json` (2.11.4) realigned with
+  `VERSION`; all three now read 2.11.6.
+
 ## [2.11.5] - 2026-07-10
 
 ### Added
