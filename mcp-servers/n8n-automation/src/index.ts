@@ -12,7 +12,7 @@ import { z } from "zod";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, errorResponse } from "mcp-shared";
 
 const SERVER_NAME = "n8n-automation-mcp";
-const SERVER_VERSION = "1.0.0";
+const SERVER_VERSION = "1.0.1";
 const SERVER_COLOR_EMOJI = "🟠";
 
 // Interfaces for n8n workflow types

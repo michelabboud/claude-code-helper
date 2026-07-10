@@ -14,7 +14,7 @@ import * as yaml from "js-yaml";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
 const SERVER_NAME = "cicd-pipeline-mcp";
-const SERVER_VERSION = "1.0.0";
+const SERVER_VERSION = "1.0.1";
 const SERVER_COLOR_EMOJI = "🟠";
 
 // Type definitions for pipeline structures

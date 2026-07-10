@@ -72,7 +72,7 @@ interface TestAnalysis {
 const execFileAsync = promisify(execFile);
 
 const SERVER_NAME = "testing-mcp";
-const SERVER_VERSION = "1.0.0";
+const SERVER_VERSION = "1.0.1";
 const SERVER_COLOR_EMOJI = "🔴";
 
 // Tool input schemas

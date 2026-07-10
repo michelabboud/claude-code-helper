@@ -13,7 +13,7 @@ import * as fs from "fs/promises";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, sanitizeString, errorResponse } from "mcp-shared";
 
 const SERVER_NAME = "database-operations";
-const SERVER_VERSION = "1.0.0";
+const SERVER_VERSION = "1.0.1";
 const SERVER_COLOR_EMOJI = "🔵";
 
 // Type definitions

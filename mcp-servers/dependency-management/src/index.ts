@@ -14,7 +14,7 @@ import * as path from "path";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
 const SERVER_NAME = "dependency-management-mcp";
-const SERVER_VERSION = "1.0.0";
+const SERVER_VERSION = "1.0.1";
 const SERVER_COLOR_EMOJI = "🟠";
 
 // Tool input schemas

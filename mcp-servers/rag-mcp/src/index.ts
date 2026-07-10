@@ -24,7 +24,7 @@ import { createVectorDatabase, type VectorDatabase, type VectorDocument } from "
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
 
 const SERVER_NAME = "rag-mcp";
-const SERVER_VERSION = "1.0.0";
+const SERVER_VERSION = "1.1.1";
 const SERVER_COLOR_EMOJI = "🟣";
 
 // Load environment variables

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "repoVersion": "2.11.9",
-  "generatedAt": "2026-07-10T06:58:19.690Z",
+  "repoVersion": "2.11.10",
+  "generatedAt": "2026-07-10T07:34:13.277Z",
   "components": {
     "agents/code-reviewer": {
       "type": "agent",
@@ -1463,7 +1463,7 @@
     },
     "mcp-servers/api-specialist-mcp": {
       "type": "mcp-server",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "mcp-servers/api-specialist-mcp/package.json",
       "installPath": "mcp-servers/api-specialist-mcp/",
       "changelog": "mcp-servers/api-specialist-mcp/CHANGELOG.md",
@@ -1471,7 +1471,7 @@
     },
     "mcp-servers/cicd-pipeline": {
       "type": "mcp-server",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "mcp-servers/cicd-pipeline/package.json",
       "installPath": "mcp-servers/cicd-pipeline/",
       "changelog": "mcp-servers/cicd-pipeline/CHANGELOG.md",
@@ -1487,7 +1487,7 @@
     },
     "mcp-servers/database-operations": {
       "type": "mcp-server",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "mcp-servers/database-operations/package.json",
       "installPath": "mcp-servers/database-operations/",
       "changelog": "mcp-servers/database-operations/CHANGELOG.md",
@@ -1495,7 +1495,7 @@
     },
     "mcp-servers/dependency-management": {
       "type": "mcp-server",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "mcp-servers/dependency-management/package.json",
       "installPath": "mcp-servers/dependency-management/",
       "changelog": "mcp-servers/dependency-management/CHANGELOG.md",
@@ -1503,7 +1503,7 @@
     },
     "mcp-servers/design-system-mcp": {
       "type": "mcp-server",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "mcp-servers/design-system-mcp/package.json",
       "installPath": "mcp-servers/design-system-mcp/",
       "changelog": "mcp-servers/design-system-mcp/CHANGELOG.md",
@@ -1511,7 +1511,7 @@
     },
     "mcp-servers/n8n-automation": {
       "type": "mcp-server",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "mcp-servers/n8n-automation/package.json",
       "installPath": "mcp-servers/n8n-automation/",
       "changelog": "mcp-servers/n8n-automation/CHANGELOG.md",
@@ -1519,7 +1519,7 @@
     },
     "mcp-servers/project-oversight-mcp": {
       "type": "mcp-server",
-      "version": "1.2.0",
+      "version": "1.2.1",
       "file": "mcp-servers/project-oversight-mcp/package.json",
       "installPath": "mcp-servers/project-oversight-mcp/",
       "changelog": "mcp-servers/project-oversight-mcp/CHANGELOG.md",
@@ -1527,7 +1527,7 @@
     },
     "mcp-servers/rag-mcp": {
       "type": "mcp-server",
-      "version": "1.0.0",
+      "version": "1.1.1",
       "file": "mcp-servers/rag-mcp/package.json",
       "installPath": "mcp-servers/rag-mcp/",
       "changelog": "mcp-servers/rag-mcp/CHANGELOG.md",
@@ -1535,7 +1535,7 @@
     },
     "mcp-servers/testing-mcp": {
       "type": "mcp-server",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "mcp-servers/testing-mcp/package.json",
       "installPath": "mcp-servers/testing-mcp/",
       "changelog": "mcp-servers/testing-mcp/CHANGELOG.md",
@@ -1543,7 +1543,7 @@
     },
     "mcp-servers/uiux-review-mcp": {
       "type": "mcp-server",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "mcp-servers/uiux-review-mcp/package.json",
       "installPath": "mcp-servers/uiux-review-mcp/",
       "changelog": "mcp-servers/uiux-review-mcp/CHANGELOG.md",

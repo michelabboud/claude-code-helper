@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.1 - 2026-07-10
 ### Fixed (NO-FAKES)
 - Removed all `Math.random()`-fabricated output that was presented as real analysis:
   package `size_estimate`/`last_updated` in `analyze_dependencies`, the random patch

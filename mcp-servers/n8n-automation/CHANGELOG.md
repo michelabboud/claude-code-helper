@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.1 - 2026-07-10
 ### Fixed
 - `generate_workflow` ignored `workflow_type`: only `trigger === "webhook"|"cron"|"schedule"`
   produced a trigger node, so an `event-driven` workflow_type (or any other trigger string)

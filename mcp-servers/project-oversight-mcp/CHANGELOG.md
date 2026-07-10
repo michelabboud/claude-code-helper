@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.1 - 2026-07-10
+
+### Fixed
+- `source=session` resolved to `~/.claude/projects/<sessionId>` (a directory), and
+  `readLogLines` swallowed the resulting EISDIR, so session logs **always** returned
+  empty. Session transcripts live under a per-project subdirectory; added
+  `findSessionLog()` (testable `logs.ts`) which scans for the real
+  `<sessionId>.jsonl` and throws a clear error if absent. `readLogLines` now
+  surfaces non-ENOENT errors instead of silently returning empty.
+- `open_dashboard` used `new URL(import.meta.url).pathname` (yields `/C:/...` on
+  Windows); switched to `fileURLToPath`.
+
 ## 1.2.0 (2026-02-20)
 
 ### Security

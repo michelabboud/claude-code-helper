@@ -1,6 +1,6 @@
 {
   "name": "project-oversight-mcp",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "MCP server for multi-project oversight — dashboard aggregation, health comparison, and log streaming",
   "type": "module",
   "bin": {

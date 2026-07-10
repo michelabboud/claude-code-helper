@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.1 - 2026-07-10
 - Fix: `run_tests`/`get_coverage` invoked node-based test frameworks (`jest`, `mocha`, `vitest`) as bare command names, which fails with ENOENT for the normal case of a framework installed as a local `devDependency` (binary lives in `node_modules/.bin`, not on `PATH`). Now resolved via `npx --no-install <framework>` (falls back to global install; `--no-install` avoids a hanging/network install attempt), invoked with `cwd` explicitly set to the project root. `pytest` continues to be invoked directly (it's a Python executable, not an npm package).
 - Fix: `run_tests` accepted `watch: true`, which would spawn a test process that never exits -- since MCP tool calls run synchronously over stdio, this silently hung the call until the 5-minute timeout instead of erroring immediately. `watch: true` is now rejected up front with a clear, actionable error; watch mode is not supported over MCP stdio.
 - Fix: `get_coverage` read the jest-style `coverage/coverage-final.json` path for every framework, including `pytest`, whose `--cov-report=json` actually writes `coverage.json`. Coverage JSON is now read from the correct per-framework default path.

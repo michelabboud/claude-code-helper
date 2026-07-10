@@ -24,7 +24,7 @@ import { runServer, registerTrackedToolHandler, generateRequestId, measureDurati
 import { calculateContrastRatio } from "./color.js";
 
 const SERVER_NAME = "design-system-mcp";
-const SERVER_VERSION = "1.0.0";
+const SERVER_VERSION = "1.0.1";
 const SERVER_COLOR_EMOJI = "🟣";
 
 // Tool input schemas

@@ -1,6 +1,6 @@
 {
   "name": "dependency-management-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for dependency analysis, vulnerability scanning, and update recommendations",
   "type": "module",
   "bin": {

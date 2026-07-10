@@ -42,7 +42,7 @@ type ToolContentBlock = { type: "text"; text: string } | ImageContentBlock;
 type ToolResponse = { content: ToolContentBlock[] };
 
 const SERVER_NAME = "uiux-review-mcp";
-const SERVER_VERSION = "1.0.0";
+const SERVER_VERSION = "1.0.1";
 const SERVER_COLOR_EMOJI = "🟣";
 
 // Tool input schemas

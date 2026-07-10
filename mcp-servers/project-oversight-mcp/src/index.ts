@@ -37,7 +37,7 @@ import type { ActivityEntry } from "mcp-shared";
 import { findSessionLog } from "./logs.js";
 
 const SERVER_NAME = "project-oversight-mcp";
-const SERVER_VERSION = "1.2.0";
+const SERVER_VERSION = "1.2.1";
 const SERVER_COLOR_EMOJI = "🔵";
 
 // ---------------------------------------------------------------------------

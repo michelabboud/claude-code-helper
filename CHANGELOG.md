@@ -15,6 +15,46 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.10] - 2026-07-10
+
+Remediation Phase 4 — MCP correctness & NO-FAKES. The highest-severity phase: real engineering across
+all 10 MCP servers, including the two outright fabrication violations. Every server builds; the full
+suite (1217 tests) passes. Each changed server bumped a patch (project-oversight 1.2.0→1.2.1, rag
+1.0.0→1.1.1 correcting its version history, the rest 1.0.0→1.0.1) with its own changelog entry.
+
+### Fixed — NO-FAKES violations
+- **`uiux-review-mcp`** read the screenshot only to confirm it existed, then returned hardcoded scores
+  (8/7/9…) and fabricated findings identical regardless of the image; `compare_designs` picked an A/B
+  winner with `Math.random()`. Redesigned so the 6 analysis tools + `compare_designs` return the **real
+  image as an MCP image content block** plus a WCAG/Nielsen evaluation rubric for the calling vision
+  model to analyze — the server computes no scores. Architectural decision recorded in
+  [ADR 0001](docs/adr/0001-uiux-review-image-rubric.md).
+- **`dependency-management`** fabricated package sizes, dates, update targets, duplicates, and unused
+  packages via `Math.random()`, and defaulted unknown licenses to `MIT` (a compliance false-negative).
+  All `Math.random()` removed; undeterminable values now report `unknown`/flag the limitation; unknown
+  licenses report `UNKNOWN`. Removed dead code.
+- **`design-system-mcp`** "WCAG contrast" parsed the whole hex as one integer (white→black ≈ 3.35e8:1,
+  not 21:1). Reimplemented with real sRGB linearization + relative luminance (tested against known
+  reference ratios).
+
+### Fixed — honesty / correctness
+- **`cicd-pipeline`** README sold GitLab/Jenkins/CircleCI as "Production Ready" (only GitHub Actions is
+  implemented); scoped honestly, `features` now honored, security-scan labels match emitted config.
+- **`database-operations`** README claimed live DB execution (the tools are driverless stubs); rewritten
+  as advisory/SQL-generation only, stubbed tools now say so in their responses.
+- **`testing-mcp`** resolves local test binaries via `npx --no-install`, rejects `watch:true` instead of
+  hanging to timeout, uses per-framework coverage paths, rejects PDF instead of returning markdown.
+- **`api-specialist-mcp`** gained YAML spec support (`js-yaml`), dropped the unimplemented `xss` check,
+  and no longer emits `NaN`/`Infinity` on a total load-test failure.
+- **`project-oversight-mcp`** `source=session` always returned empty (resolved to a directory, EISDIR
+  swallowed) — now finds the real per-project `<sessionId>.jsonl`; `open_dashboard` Windows path fixed.
+- **`n8n-automation`** `generate_workflow` no longer emits an invalid trigger-less workflow for
+  `event-driven`; **`rag-mcp`** `index_codebase`/`index_file` accept the absolute paths the README documents.
+
+### Housekeeping
+- License drift (MIT→Apache-2.0) already swept in Phase 2 now covers the rewritten servers; ADR log
+  created at `docs/adr/`. Version spine → 2.11.10; manifest regenerated.
+
 ## [2.11.9] - 2026-07-10
 
 Remediation Phase 3 — plugin honesty pass. Every one of the 6 plugin docs advertised components or

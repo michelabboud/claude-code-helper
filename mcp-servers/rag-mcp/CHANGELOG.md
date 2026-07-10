@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.1 - 2026-07-10
 ### Fixed
 - `index_codebase` / `index_file` restricted the target path to the current working
   directory (`sanitizePath(path, process.cwd())`), which rejected the absolute paths
