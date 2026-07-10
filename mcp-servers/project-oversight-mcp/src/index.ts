@@ -19,6 +19,7 @@ import {
 import { z } from "zod";
 import { homedir } from "os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { readdir, readFile, mkdir, copyFile, stat } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import {
@@ -33,6 +34,7 @@ import {
   ACTIVITY_LOG_PATH,
 } from "mcp-shared";
 import type { ActivityEntry } from "mcp-shared";
+import { findSessionLog } from "./logs.js";
 
 const SERVER_NAME = "project-oversight-mcp";
 const SERVER_VERSION = "1.2.0";
@@ -225,13 +227,11 @@ function resolveLogPath(source: string, sessionId?: string): string {
       // Default: latest debug log will be found by caller
       return path.join(CLAUDE_DIR, "debug");
     }
-    case "session": {
-      if (!sessionId) throw new Error("sessionId is required for source=session");
-      return sanitizePath(
-        path.join(CLAUDE_DIR, "projects", sessionId),
-        path.join(CLAUDE_DIR, "projects")
-      );
-    }
+    case "session":
+      // Session transcripts live under a per-project subdirectory, so they are
+      // resolved asynchronously via resolveSessionLogPath() before this function
+      // is reached. Reaching here means a caller bypassed that path.
+      throw new Error("source=session must be resolved via resolveSessionLogPath");
     default:
       throw new Error(`Unknown log source: ${source}`);
   }
@@ -262,8 +262,15 @@ async function readLogLines(
     }
 
     return { lines: allLines, totalLines, filePath };
-  } catch {
-    return { lines: [], totalLines: 0, filePath };
+  } catch (err: unknown) {
+    const code = (err as NodeJS.ErrnoException)?.code;
+    if (code === "ENOENT") {
+      // File legitimately absent — an empty result, not an error.
+      return { lines: [], totalLines: 0, filePath };
+    }
+    // Surface real failures (e.g. EISDIR when a path resolves to a directory,
+    // EACCES) instead of silently returning empty.
+    throw err instanceof Error ? err : new Error(String(err));
   }
 }
 
@@ -285,6 +292,17 @@ async function findLatestFile(dirPath: string): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+/**
+ * Locate a Claude Code session transcript by session id. Session logs live
+ * under a per-project subdirectory of ~/.claude/projects/, so this scans for a
+ * matching `<sessionId>.jsonl` (see findSessionLog). Throws if none is found —
+ * the old code pointed at ~/.claude/projects/<sessionId> (a directory) and the
+ * read silently returned empty.
+ */
+async function resolveSessionLogPath(sessionId: string): Promise<string> {
+  return findSessionLog(path.join(CLAUDE_DIR, "projects"), sessionId);
 }
 
 /** Read and parse activity log entries */
@@ -925,7 +943,10 @@ runServer(
 
             let logPath: string;
 
-            if (source === "debug" && !sessionId) {
+            if (source === "session") {
+              if (!sessionId) throw new Error("sessionId is required for source=session");
+              logPath = await resolveSessionLogPath(sessionId);
+            } else if (source === "debug" && !sessionId) {
               // Find latest debug log
               const debugDir = path.join(CLAUDE_DIR, "debug");
               const latest = await findLatestFile(debugDir);
@@ -961,7 +982,10 @@ runServer(
 
             let logPath: string;
 
-            if (source === "debug" && !sessionId) {
+            if (source === "session") {
+              if (!sessionId) throw new Error("sessionId is required for source=session");
+              logPath = await resolveSessionLogPath(sessionId);
+            } else if (source === "debug" && !sessionId) {
               const debugDir = path.join(CLAUDE_DIR, "debug");
               const latest = await findLatestFile(debugDir);
               if (!latest) throw new Error("No debug logs found");
@@ -1003,9 +1027,11 @@ runServer(
             const serverPort = port ?? 3120;
             const timeoutMin = timeout ?? 120;
 
-            // Find the serve.js script (sibling to this file in build/)
+            // Find the serve.js script (sibling to this file in build/).
+            // fileURLToPath handles Windows drive paths correctly, unlike
+            // new URL(...).pathname which yields "/C:/..." there.
             const serveScript = path.join(
-              path.dirname(new URL(import.meta.url).pathname),
+              path.dirname(fileURLToPath(import.meta.url)),
               "serve.js"
             );
 
