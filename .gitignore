@@ -79,3 +79,6 @@ demo/*
 !demo/docs/
 !demo/prisma/
 !demo/src/
+
+# Superpowers SDD scratch (progress ledger, review packages)
+.superpowers/
