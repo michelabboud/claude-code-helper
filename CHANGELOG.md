@@ -15,6 +15,25 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.12] - 2026-07-10
+
+Remediation close-out — dependency audit (rule 16).
+
+### Security
+- Bumped `js-yaml` `4.1.0` → `4.3.0` in the two servers that added it in Phase 4
+  (`api-specialist-mcp`, `cicd-pipeline`): the resolved 4.1.1 was in the affected
+  range of a moderate quadratic-complexity DoS advisory (GHSA-h67p-54hq-rp68).
+  Both servers rebuild and pass.
+
+### Known issues (pre-existing, flagged for a dedicated pass)
+- `npm audit` reports 20 vulnerabilities (1 critical, 13 high, 6 moderate) in
+  **pre-existing transitive dependencies** not introduced by this remediation —
+  chiefly the dashboard's `hono` / `chromadb-default-embed` → `onnxruntime-web` →
+  `protobufjs` chain, `gray-matter`'s nested `js-yaml` 3.x, and tooling
+  (`tar`, `undici`, `minimatch`, `ws`, `path-to-regexp`). Resolving these requires
+  major-version bumps that risk breaking the dashboard / rag-mcp and should be a
+  scoped dependency-hardening task, not a release-time blind bump.
+
 ## [2.11.11] - 2026-07-10
 
 Remediation Phase 5 — content & doc polish (the low-severity tail). Skill/reference documentation
