@@ -531,7 +531,7 @@ function frameworkHealthCheck(framework: Framework): HealthCheck {
 // Start server
 runServer({
   name: "testing-mcp",
-  version: "1.0.0",
+  version: SERVER_VERSION,
   healthChecks: [
     frameworkHealthCheck("jest"),
     frameworkHealthCheck("pytest"),

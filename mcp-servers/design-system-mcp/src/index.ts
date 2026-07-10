@@ -592,7 +592,7 @@ function buildHelloVerbose(): string {
 }
 
 // Start server with runServer factory
-runServer({ name: "design-system-mcp", version: "1.0.0" }, (instance) => {
+runServer({ name: "design-system-mcp", version: SERVER_VERSION }, (instance) => {
   const { server, logger } = instance;
   // Tool handlers
   server.setRequestHandler(ListToolsRequestSchema, async () => {

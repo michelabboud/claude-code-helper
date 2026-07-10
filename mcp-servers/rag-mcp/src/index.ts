@@ -154,7 +154,7 @@ function buildHelloVerbose(): string {
 
 runServer({
   name: "rag-mcp",
-  version: "1.0.0",
+  version: SERVER_VERSION,
   healthChecks: [{
     name: `${dbType}-connection`,
     check: () => vectorDB.healthCheck(),

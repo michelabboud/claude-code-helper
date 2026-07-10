@@ -432,7 +432,7 @@ function buildHelloVerbose(): string {
 }
 
 // MCP Server
-runServer({ name: "uiux-review-mcp", version: "1.0.0" }, (instance) => {
+runServer({ name: "uiux-review-mcp", version: SERVER_VERSION }, (instance) => {
 const { server, logger } = instance;
 
 // Tool handlers

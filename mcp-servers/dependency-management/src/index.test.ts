@@ -349,11 +349,13 @@ function estimateBundleSize(packageName: string, version?: string): BundleSizeRe
     size,
     alternatives: alternatives.length > 0 ? alternatives : undefined,
     tree_shakeable: ["react", "vue", "lodash-es"].includes(packageName),
-    recommendation: known
-      ? (parseInt(size.gzipped) > 50
+    recommendation: !known
+      ? "Bundle size unknown — check bundlephobia.com or bundle locally to measure"
+      : Number.isNaN(parseInt(size.gzipped))
+        ? "Bundle size not applicable for this package (e.g. server-side only)"
+        : parseInt(size.gzipped) > 50
           ? "Consider using lighter alternative or tree-shaking"
-          : "Bundle size is acceptable")
-      : "Bundle size unknown — check bundlephobia.com or bundle locally to measure",
+          : "Bundle size is acceptable",
   };
 }
 
@@ -1388,6 +1390,8 @@ describe("estimateBundleSize", () => {
     const result = estimateBundleSize("express");
     expect(result.size.minified).toBe("N/A (server)");
     expect(result.size.gzipped).toBe("N/A (server)");
+    // A non-numeric size must NOT be reported as "acceptable" (NaN > 50 = false).
+    expect(result.recommendation).toMatch(/not applicable/i);
   });
 });
 

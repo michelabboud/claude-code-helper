@@ -379,11 +379,13 @@ function estimateBundleSize(packageName: string, version?: string): BundleSizeRe
     size,
     alternatives: alternatives.length > 0 ? alternatives : undefined,
     tree_shakeable: ["react", "vue", "lodash-es"].includes(packageName),
-    recommendation: known
-      ? (parseInt(size.gzipped) > 50
+    recommendation: !known
+      ? "Bundle size unknown — check bundlephobia.com or bundle locally to measure"
+      : Number.isNaN(parseInt(size.gzipped))
+        ? "Bundle size not applicable for this package (e.g. server-side only)"
+        : parseInt(size.gzipped) > 50
           ? "Consider using lighter alternative or tree-shaking"
-          : "Bundle size is acceptable")
-      : "Bundle size unknown — check bundlephobia.com or bundle locally to measure",
+          : "Bundle size is acceptable",
   };
 }
 
@@ -442,7 +444,7 @@ function generateSBOM(deps: Record<string, string>, devDeps: Record<string, stri
       version: 1,
       metadata: {
         timestamp: new Date().toISOString(),
-        tools: [{ vendor: "dependency-management-mcp", name: "sbom-generator", version: "1.0.0" }]
+        tools: [{ vendor: "dependency-management-mcp", name: "sbom-generator", version: SERVER_VERSION }]
       },
       components: [...components, ...devComponents]
     };
@@ -508,7 +510,7 @@ function buildHelloVerbose(): string {
 }
 
 // MCP Server
-runServer({ name: "dependency-management-mcp", version: "1.0.0" }, (instance) => {
+runServer({ name: "dependency-management-mcp", version: SERVER_VERSION }, (instance) => {
 const { server, logger } = instance;
 
 // Tool handlers

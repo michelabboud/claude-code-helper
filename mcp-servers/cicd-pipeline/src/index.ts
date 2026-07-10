@@ -683,7 +683,7 @@ function buildHelloVerbose(): string {
   ].join("\n");
 }
 
-runServer({ name: "cicd-pipeline-mcp", version: "1.0.0" }, (instance) => {
+runServer({ name: "cicd-pipeline-mcp", version: SERVER_VERSION }, (instance) => {
 const { server, logger } = instance;
 
 // Tool handlers

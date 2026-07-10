@@ -15,6 +15,21 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.13] - 2026-07-10
+
+Fixes from the final whole-branch code review.
+
+### Fixed
+- **Version drift reintroduced by the Phase 4 bump** — the Phase 4 `SERVER_VERSION` bump did not
+  update the separate hardcoded `version:` literal in each server's `runServer({...})` call, so all
+  10 bumped servers reported the new version in `hello` output but the *old* version over the MCP
+  handshake (the exact drift class Phase 2 fixed). Replaced every `runServer` version literal with the
+  `SERVER_VERSION` constant across all 11 servers (and the `dependency-management` SBOM generator-tool
+  version) so the constant is the single source of truth — future bumps can't desync again.
+- **`dependency-management` bundle-size** reported "Bundle size is acceptable" for server-side packages
+  like `express` whose size is `"N/A (server)"` (`parseInt` → `NaN`, `NaN > 50` → false). Non-numeric
+  sizes now report "not applicable" instead of an unbacked verdict.
+
 ## [2.11.12] - 2026-07-10
 
 Remediation close-out — dependency audit (rule 16).

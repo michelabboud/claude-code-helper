@@ -190,7 +190,7 @@ function buildHelloVerbose(): string {
 // Start server
 runServer({
   name: "code-review-mcp",
-  version: "1.0.0",
+  version: SERVER_VERSION,
   healthChecks: [
     commandHealthCheck("eslint"),
   ],

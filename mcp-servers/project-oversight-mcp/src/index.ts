@@ -473,7 +473,7 @@ function buildHelloVerbose(): string {
 runServer(
   {
     name: "project-oversight-mcp",
-    version: "1.2.0",
+    version: SERVER_VERSION,
   },
   (instance) => {
     const { server, logger } = instance;

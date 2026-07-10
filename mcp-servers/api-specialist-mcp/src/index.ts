@@ -1123,7 +1123,7 @@ function buildHelloVerbose(): string {
 }
 
 // Start server
-runServer({ name: "api-specialist-mcp", version: "1.0.0" }, (instance) => {
+runServer({ name: "api-specialist-mcp", version: SERVER_VERSION }, (instance) => {
   const { server, logger } = instance;
 
 // Tool handlers
