@@ -1,5 +1,5 @@
 ---
-skill_name: update-check
+name: update-check
 description: Check if your claude-code-helper installation is up to date and apply updates. Reads the local manifest and compares against the latest component-versions index on GitHub. Supports checking all components, a single component by name, and applying updates with automatic backup.
 version: 3.0.0
 argument-hint: '[component] | update [component] | hello | hello ID'
@@ -311,6 +311,7 @@ Same as Mode 3 Step 4, but for a single component.
 
 ### `hello`
 Respond with:
+<!-- Maintainer: the version string below must match the frontmatter `version:` — bump both together on release. -->
 > 👋 Hello! I'm **update-check** v3.0.0. Check and update your claude-code-helper installation. Use `/update-check hello ID` for the full guide.
 
 ### `hello ID`

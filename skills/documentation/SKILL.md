@@ -1,6 +1,7 @@
 ---
+name: documentation
 skill_name: Documentation
-description: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use when documenting code, generating docs, improving project documentation, adding docstrings, writing README files, creating API specifications, generating changelogs, or writing architecture decision records. Triggers on 'add docs', 'document this', 'write README', 'API spec', 'add docstrings', 'generate documentation'.
+description: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use when documenting code, generating docs, improving project documentation, adding docstrings, writing README files, or creating API specifications. Triggers on 'add docs', 'document this', 'write README', 'API spec', 'add docstrings', 'generate documentation'.
 category: Documentation
 priority: P1
 argument-hint: '[target] | api | hello | hello ID'
@@ -24,6 +25,8 @@ Systematic approach to adding comprehensive, maintainable documentation to any c
 /documentation src/services/
 /documentation                     # Document current changes
 /documentation api                 # Generate OpenAPI 3.0 API docs
+/documentation hello               # Quick greeting + availability check
+/documentation hello ID            # Full skill profile
 ```
 
 ## Workflow
@@ -248,7 +251,7 @@ Respond with:
 ### `hello ID`
 Respond with complete skill information:
 - **Name**: Documentation v1.2.0
-- **Description**: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use when documenting code, generating docs, or improving project documentation.
+- **Description**: Add comprehensive documentation including JSDoc/TSDoc, inline comments, README updates, and OpenAPI 3.0 API docs. Use when documenting code, generating docs, improving project documentation, adding docstrings, writing README files, or creating API specifications.
 - **How to invoke**: `/documentation [target]` or `/documentation api`
 - **Available arguments**: `[target] | api | hello | hello ID`
 - **Author**: Michel Abboud — https://github.com/michelabboud/claude-code-helper

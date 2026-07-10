@@ -184,7 +184,7 @@ jobs:
         run: npm test -- --coverage --maxWorkers=4
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         with:
           files: ./coverage/coverage-final.json
 

@@ -15,6 +15,35 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.11] - 2026-07-10
+
+Remediation Phase 5 — content & doc polish (the low-severity tail). Skill/reference documentation
+corrections; no runtime code changed.
+
+### Fixed
+- **`route-language-task`**: the flagship Rust example was arithmetically inconsistent — it listed
+  "Pin/Unpin/custom Future" and "async runtime internals" as separate `+2` drivers (the same rubric
+  line, a double-count) and scored cross-crate refactor at `+2` where the rubric says `+1`.
+  Recomputed honestly so each rubric concept is counted once and the drivers sum to the score. Added a
+  "count each concept once" instruction; tie-break rule #2 reworded as band-ceiling escalation (scores
+  are integers, so "round up/down" was a category error). Dispatch wording made harness-robust (the
+  per-call `model` mechanism is real here; other harnesses may set model via agent frontmatter).
+- **`model-mode`**: reported success even when `~/.claude/CLAUDE.md` had no `MODEL_MODE:` line (a silent
+  no-op) — now inserts the block when absent and confirms only after verifying the write. Dropped stale
+  hardcoded "Opus 4.6"/"Sonnet 4.6" (also in `docs/reference/hello-protocol.md`).
+- **`documentation`**: description advertised changelog/ADR generation the body never delivered — trimmed
+  to match; aligned the divergent `hello ID` description with the frontmatter; added `hello` to Usage.
+- **`project-scaffolding`**: trigger-rich description for auto-invoke; documented the `--turborepo`/`--nx`
+  monorepo flags and the `crud`/`auth`/`api-route` pattern generators; added explicit `.scaffoldrc.json`
+  read + `{{var}}` substitution instructions (previously described but never applied).
+- **`rag`**: default config now includes `collections: []`; noted that ChromaDB's default server computes
+  embeddings itself so the local/OpenAI choice mainly matters for Redis/Qdrant.
+- **Name normalization**: every skill now declares a lowercase `name:` matching its directory (was
+  `skill_name:` only on 7, uppercase `RAG` on one, redundant on `greeting`).
+- **Misc**: `ci-best-practices` `codecov-action@v3` → `@v5`; maintainer sync-notes on the hardcoded
+  `update-check`/`testing` hello versions; `rag-mcp` v1.1.0 history folded into its main changelog
+  (Phase 4).
+
 ## [2.11.10] - 2026-07-10
 
 Remediation Phase 4 — MCP correctness & NO-FAKES. The highest-severity phase: real engineering across

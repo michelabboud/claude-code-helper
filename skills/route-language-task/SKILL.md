@@ -1,4 +1,5 @@
 ---
+name: route-language-task
 skill_name: Route Language Task
 description: 'Score a coding task by complexity (1-10) and recommend the right model (haiku/sonnet/opus) before invoking a language agent. Holds the per-language rubric for all language/framework experts.'
 argument-hint: '<language> <task description> | hello | hello ID'
@@ -29,9 +30,11 @@ The skill returns:
 ```
 Score: 8/10
 Model: opus
-Drivers: +2 Pin/Unpin/custom Future, +2 lifetime puzzle (self-referential), +2 async runtime internals, +2 cross-crate refactor
-Recommendation: Invoke rust-expert with model: opus.
+Drivers: base 1 +2 unsafe (Pin projection) +2 self-referential lifetime puzzle +2 async stream internals (custom Stream/Pin) +1 cross-crate refactor = 8
+Recommendation: Invoke rust-expert on model opus.
 ```
+
+(Each driver is a distinct rubric concept counted once; `cross-crate refactor` is `+1` per the rubric; the numbers sum to the score.)
 
 ## Routing Thresholds (universal)
 
@@ -48,9 +51,9 @@ Recommendation: Invoke rust-expert with model: opus.
 **As a dispatcher (main Claude or `Agent` caller):**
 1. Identify the target language (file extension, keywords, or user mention).
 2. Read the rubric for that language below.
-3. Add up modifiers that match the task. Default to base 1 if nothing matches.
+3. Add up modifiers that match the task, **counting each distinct concept once** — if a task matches two rubric lines describing the same underlying concept (e.g. `Pin` appears under both the lifetime line and the async line), score it once, at the higher value. Default to base 1 if nothing matches.
 4. Map the score to a model.
-5. Invoke the agent with `Agent({subagent_type: "<lang>-expert", model: "<chosen>", ...})`.
+5. Dispatch the `<lang>-expert` agent on the chosen model. Where the sub-agent tool accepts a per-call model (this harness's `Task`/`Agent` tool does — pass `model: "<chosen>"` alongside `subagent_type: "<lang>-expert"`), the model is locked at invocation. If your harness sets a sub-agent's model only via its frontmatter, surface the recommended model to the user instead of forcing a lower tier.
 
 **As an agent (Self-Assessment, Pattern C):**
 At the start of every task, run the rubric internally. If your score exceeds the band of the model you're running on, **stop** and respond:
@@ -209,7 +212,7 @@ Do not proceed without explicit user override. This is a circuit breaker, not a 
 ## Tie-Breaking Rules
 
 1. **Multi-language tasks**: Score against each language and take the **maximum**.
-2. **Score on a boundary** (3, 6): round up if any +2 modifier applies, else round down.
+2. **Score at a band ceiling** (exactly 3 = top of haiku, exactly 6 = top of sonnet): if any `+2` modifier contributed, escalate to the next band (3 → sonnet, 6 → opus). Scores are integers, so this is a band-ceiling escalation, not rounding.
 3. **Production / safety-critical context**: bump one band up (sonnet → opus, haiku → sonnet).
 4. **User explicitly requested a model**: user wins; record the override and proceed.
 5. **Unknown / out-of-scope language**: default to sonnet, log "rubric not defined".

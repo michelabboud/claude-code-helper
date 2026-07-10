@@ -1,5 +1,5 @@
 ---
-skill_name: refresh
+name: refresh
 description: Refresh agent knowledge from official reference URLs. Fetches latest documentation, release notes, and changelogs to keep agents current. Supports refreshing a single agent, all agents, or checking refresh status.
 version: 1.1.0
 argument-hint: 'status | <agent-name> | all | hello | hello ID'

@@ -1,6 +1,5 @@
 ---
 name: greeting
-skill_name: greeting
 version: 1.0.0
 description: Greet all installed tools and generate a health report
 argument-hint: '[ID] | hello | hello ID'

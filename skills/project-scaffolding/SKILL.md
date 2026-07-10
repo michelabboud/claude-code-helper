@@ -1,6 +1,7 @@
 ---
+name: project-scaffolding
 skill_name: Project Scaffolding
-description: Generate project scaffolding, boilerplate code, and project structure for React, Next.js, Express, NestJS, FastAPI, Django, and more
+description: Generate project scaffolding, boilerplate code, and project structure for React, Next.js, Express, NestJS, FastAPI, Django, and more. Use when starting a new project, generating boilerplate, or setting up project structure. Triggers on 'scaffold', 'create project', 'new app', 'bootstrap', 'boilerplate', 'starter template', 'project structure', 'monorepo'.
 category: Development
 priority: P1
 argument-hint: '<project-type> [name] [options] | hello | hello ID'
@@ -93,6 +94,10 @@ my-app/
 - `--docker` - Include Docker configuration
 - `--ci` - Include CI/CD workflow
 - `--tailwind` - Include Tailwind CSS
+
+### Monorepo Flags (with `project-type: monorepo`)
+- `--turborepo` - Scaffold the workspace with a Turborepo pipeline (`turbo.json`)
+- `--nx` - Scaffold the workspace with an Nx toolchain instead of Turborepo
 - `--shadcn` - Include shadcn/ui components
 
 ### Package Manager
@@ -156,6 +161,11 @@ my-app/
 ```
 
 ### Generate Specific Patterns
+
+Besides whole-project types, these **pattern generators** scaffold a single feature
+into the current project (not a new project): `crud <resource>`, `auth <strategy>`,
+and `api-route <path>`.
+
 ```bash
 /project-scaffolding crud users        # CRUD operations for 'users'
 /project-scaffolding auth jwt          # JWT authentication setup
@@ -186,7 +196,9 @@ my-app/
 
 ## Customization
 
-Create `.scaffoldrc.json` in your home directory:
+Before scaffolding, **read `~/.scaffoldrc.json` if it exists** and apply its
+preferences as defaults (a flag passed on the command line always overrides the
+config file):
 
 ```json
 {
@@ -196,9 +208,16 @@ Create `.scaffoldrc.json` in your home directory:
 }
 ```
 
+If the file is absent, use the built-in defaults and proceed.
+
 ## Template Variables
 
-Templates support variables:
+When generating files, **substitute these placeholders** with real values —
+`{{projectName}}` from the `[name]` argument, `{{author}}` from `git config
+user.name`, `{{description}}` from the user (ask if unspecified), and `{{license}}`
+from the chosen/default license. Never leave a `{{…}}` placeholder in a generated
+file.
+
 - `{{projectName}}` - Project name
 - `{{author}}` - Author name (from git config)
 - `{{description}}` - Project description

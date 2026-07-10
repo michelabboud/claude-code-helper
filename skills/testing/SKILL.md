@@ -1,5 +1,5 @@
 ---
-skill_name: testing
+name: testing
 description: "Comprehensive testing skill covering TDD, E2E, BDD, contract testing, mutation testing, and visual regression. Use when writing tests, designing test strategy, adding test coverage, fixing flaky tests, mocking services, setting up testing frameworks, or any testing task. Triggers on 'write tests', 'add test coverage', 'test strategy', 'fix flaky test', 'mock', 'E2E test', 'unit test', 'integration test'."
 category: Testing
 priority: P1
@@ -423,6 +423,7 @@ Write stories with `chromatic: { viewports: [320, 768, 1200] }` parameter. Run `
 
 ### `hello`
 Respond with:
+<!-- Maintainer: the version string below must match the frontmatter `version:` — bump both together on release. -->
 > Hello! I'm **Testing** v2.0.0. Comprehensive testing skill covering test generation, TDD, E2E, BDD, contract testing, mutation testing, and visual regression. Use `/testing hello ID` for the full guide.
 
 ### `hello ID`

@@ -1,4 +1,5 @@
 ---
+name: model-mode
 skill_name: Model Mode
 description: 'Switch between model modes or check current mode. Use /model-mode status to see current setting, /model-mode opus-only to always use Opus, /model-mode default for auto-switching.'
 argument-hint: '[status|default|opus-only|sonnet-only|haiku-only|custom] | hello | hello ID'
@@ -20,8 +21,8 @@ Switch the `MODEL_MODE` setting in `~/.claude/CLAUDE.md` without manual file edi
 ```
 /model-mode status          → Show current MODEL_MODE and custom model settings
 /model-mode default         → Auto-switch: opus for planning, sonnet for coding, haiku for quick
-/model-mode opus-only       → Always use Claude Opus 4.6 (MAX plan — best quality everywhere)
-/model-mode sonnet-only     → Always use Claude Sonnet 4.6 (fast + capable)
+/model-mode opus-only       → Always use Claude Opus (MAX plan — best quality everywhere)
+/model-mode sonnet-only     → Always use Claude Sonnet (fast + capable)
 /model-mode haiku-only      → Always use Claude Haiku (fastest, cheapest)
 /model-mode custom          → Use PLAN_MODEL / CODE_MODEL / QUICK_MODEL from CLAUDE.md
 ```
@@ -31,8 +32,8 @@ Switch the `MODEL_MODE` setting in `~/.claude/CLAUDE.md` without manual file edi
 | Mode | Description | Best For |
 |------|-------------|----------|
 | `default` | Auto-switches between opus/sonnet/haiku by task type | Most users |
-| `opus-only` | Always uses Claude Opus 4.6 | MAX plan users wanting max quality |
-| `sonnet-only` | Always uses Claude Sonnet 4.6 | Pro plan users, speed + capability |
+| `opus-only` | Always uses Claude Opus | MAX plan users wanting max quality |
+| `sonnet-only` | Always uses Claude Sonnet | Pro plan users, speed + capability |
 | `haiku-only` | Always uses Claude Haiku | Fastest responses, lowest cost |
 | `custom` | Uses PLAN_MODEL / CODE_MODEL / QUICK_MODEL settings | Fine-grained control |
 
@@ -61,11 +62,21 @@ Read `~/.claude/CLAUDE.md` and report:
   ```
 
 ### `default`, `opus-only`, `sonnet-only`, `haiku-only`, `custom`
-1. Read `~/.claude/CLAUDE.md`
-2. Find the line that starts with `MODEL_MODE:`
-3. Replace it with `MODEL_MODE: <new-value>`
-4. Write the file back
-5. Confirm: "Model mode updated to `<new-value>`. Changes take effect in the next session."
+1. Read `~/.claude/CLAUDE.md` (if the file does not exist, create it).
+2. Look for a line that starts with `MODEL_MODE:`.
+   - **If found**: replace that line with `MODEL_MODE: <new-value>`.
+   - **If NOT found** (a fresh CLAUDE.md, or one that never had the setting): append a
+     Model Mode block so the setting actually exists — do **not** report success
+     without writing it:
+     ```
+     ## Model Mode
+     MODEL_MODE: <new-value>
+     ```
+3. Write the file back, then re-read it and confirm a `MODEL_MODE: <new-value>` line is
+   present.
+4. Only after that confirmation: "Model mode updated to `<new-value>`. Changes take
+   effect in the next session." If the line could not be written, report the failure
+   instead of success.
 
 ### Invalid argument
 If argument is not one of the above values, show usage help and list valid options.

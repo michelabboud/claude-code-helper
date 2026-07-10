@@ -1,5 +1,5 @@
 ---
-name: RAG
+name: rag
 version: 2.0.0
 description: Manage the RAG MCP server — index codebases, search semantically, configure backends (ChromaDB/Redis/Qdrant)
 author: Michel Abboud
@@ -46,6 +46,7 @@ This file is the **single source of truth** for RAG settings. It persists across
   "embeddingType": "local",
   "modelVariant": "default",
   "defaultCollection": "codebase",
+  "collections": [],
   "persistence": {
     "enabled": false,
     "mode": "none",
@@ -428,6 +429,12 @@ options:
 ```
 
 If **OpenAI**: check if `OPENAI_API_KEY` is set. If not, warn and ask the user to set it before proceeding.
+
+> Note: with **ChromaDB** run as its default server, ChromaDB computes embeddings
+> with its own built-in function, so the `local` vs `OpenAI` choice mainly matters
+> for Redis/Qdrant (where rag-mcp computes embeddings client-side) or when you point
+> ChromaDB at an external embedding function. For a simple ChromaDB setup, `Local`
+> is the right default and no API key is needed.
 
 #### Step 6: Register MCP server
 

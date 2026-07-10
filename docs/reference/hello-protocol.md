@@ -174,8 +174,8 @@ Every skill handles `hello` and `hello ID` as arguments.
 **Available arguments**:
   - `status` — Show current MODEL_MODE and custom model settings
   - `default` — Auto-switch: opus for planning, sonnet for coding, haiku for quick
-  - `opus-only` — Always use Claude Opus 4.6 (MAX plan)
-  - `sonnet-only` — Always use Claude Sonnet 4.6
+  - `opus-only` — Always use Claude Opus (MAX plan)
+  - `sonnet-only` — Always use Claude Sonnet
   - `haiku-only` — Always use Claude Haiku (fastest)
   - `custom` — Use PLAN_MODEL / CODE_MODEL / QUICK_MODEL from CLAUDE.md
   - `hello` — Quick greeting + availability check
