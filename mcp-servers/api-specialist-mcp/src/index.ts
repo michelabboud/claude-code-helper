@@ -19,6 +19,7 @@ import {
 import { z } from "zod";
 import * as fs from "fs/promises";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, sanitizeUrl, errorResponse } from "mcp-shared";
+import { loadSpec, computeResponseTimeStats } from "./lib.js";
 
 const SERVER_NAME = "api-specialist-mcp";
 const SERVER_VERSION = "1.0.0";
@@ -119,7 +120,6 @@ const CheckAPISecuritySchema = z.object({
     "https",
     "headers",
     "sql_injection",
-    "xss",
   ])).optional().describe("Security checks to perform"),
 });
 
@@ -178,18 +178,7 @@ async function validateOpenAPI(
 ): Promise<string> {
   try {
     const spec = await fs.readFile(specPath, "utf-8");
-    let parsed: Record<string, unknown>;
-
-    // Parse YAML or JSON
-    if (specPath.endsWith(".yaml") || specPath.endsWith(".yml")) {
-      // For production, use yaml parser: const yaml = require('js-yaml');
-      // parsed = yaml.load(spec);
-      return JSON.stringify({
-        error: "YAML parsing requires js-yaml package. Please use JSON format or install js-yaml.",
-      }, null, 2);
-    } else {
-      parsed = JSON.parse(spec) as Record<string, unknown>;
-    }
+    const parsed = loadSpec(spec, specPath);
 
     const issues: ValidationIssue[] = [];
     const warnings: ValidationIssue[] = [];
@@ -519,7 +508,7 @@ async function analyzeAPIStructure(
   standards: string[] = ["rest_naming", "http_methods", "status_codes"]
 ): Promise<string> {
   try {
-    const spec = JSON.parse(await fs.readFile(specPath, "utf-8")) as Record<string, unknown>;
+    const spec = loadSpec(await fs.readFile(specPath, "utf-8"), specPath);
     const issues: ValidationIssue[] = [];
     const suggestions: ValidationIssue[] = [];
 
@@ -720,12 +709,8 @@ async function loadTest(
 
     await Promise.all(workers);
 
-    // Calculate statistics
-    const responseTimes = results.responseTimes.sort((a, b) => a - b);
-    const avgResponseTime = responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length;
-    const p50 = responseTimes[Math.floor(responseTimes.length * 0.5)];
-    const p95 = responseTimes[Math.floor(responseTimes.length * 0.95)];
-    const p99 = responseTimes[Math.floor(responseTimes.length * 0.99)];
+    // Calculate statistics (guards the all-requests-failed case — see computeResponseTimeStats)
+    const responseTimeStats = computeResponseTimeStats(results.responseTimes);
 
     return JSON.stringify({
       duration: `${duration}s`,
@@ -733,15 +718,8 @@ async function loadTest(
       totalRequests: results.totalRequests,
       successful: results.successful,
       failed: results.failed,
-      requestsPerSecond: (results.totalRequests / duration).toFixed(2),
-      responseTimes: {
-        min: Math.min(...responseTimes),
-        max: Math.max(...responseTimes),
-        avg: avgResponseTime.toFixed(2),
-        p50,
-        p95,
-        p99,
-      },
+      requestsPerSecond: results.totalRequests > 0 ? (results.totalRequests / duration).toFixed(2) : "0.00",
+      responseTimes: responseTimeStats,
       errors: results.errors.length > 0 ? results.errors : undefined,
     }, null, 2);
   } catch (error: unknown) {
@@ -757,7 +735,7 @@ async function generateAPIDocs(
   _includeExamples: boolean = true
 ): Promise<string> {
   try {
-    const spec = JSON.parse(await fs.readFile(specPath, "utf-8")) as Record<string, unknown>;
+    const spec = loadSpec(await fs.readFile(specPath, "utf-8"), specPath);
     const specInfo = spec.info as Record<string, unknown>;
     const specPaths = (spec.paths || {}) as Record<string, Record<string, unknown>>;
 
@@ -883,7 +861,7 @@ async function suggestImprovements(
   focusAreas: string[] = ["performance", "security", "design", "documentation"]
 ): Promise<string> {
   try {
-    const spec = JSON.parse(await fs.readFile(specPath, "utf-8")) as Record<string, unknown>;
+    const spec = loadSpec(await fs.readFile(specPath, "utf-8"), specPath);
     const improvements: ImprovementSuggestion[] = [];
 
     // Performance improvements
@@ -1230,7 +1208,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "check_api_security",
-        description: "Comprehensive security audit of API endpoints. Checks HTTPS usage, CORS configuration, security headers, authentication, rate limiting, and common vulnerabilities (SQL injection, XSS).",
+        description: "Comprehensive security audit of API endpoints. Checks HTTPS usage, CORS configuration, security headers, authentication, rate limiting, and basic SQL injection probing.",
         inputSchema: {
           type: "object",
           properties: {
@@ -1247,7 +1225,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               type: "array",
               items: {
                 type: "string",
-                enum: ["authentication", "cors", "rate_limiting", "https", "headers", "sql_injection", "xss"]
+                enum: ["authentication", "cors", "rate_limiting", "https", "headers", "sql_injection"]
               },
               description: "Security checks to perform"
             },

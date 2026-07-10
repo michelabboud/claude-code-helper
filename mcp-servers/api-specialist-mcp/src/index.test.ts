@@ -20,6 +20,7 @@ import {
   errorResponse,
   successResponse,
 } from "mcp-shared";
+import { loadSpec, computeResponseTimeStats } from "./lib.js";
 
 // ---------------------------------------------------------------------------
 // Re-created Zod schemas (mirrors index.ts exactly)
@@ -62,7 +63,6 @@ const CheckAPISecuritySchema = z.object({
         "https",
         "headers",
         "sql_injection",
-        "xss",
       ])
     )
     .optional()
@@ -223,6 +223,15 @@ describe("Zod schema validation", () => {
         CheckAPISecuritySchema.parse({
           apiUrl: "https://api.example.com",
           checks: ["nonexistent"],
+        })
+      ).toThrow();
+    });
+
+    it("rejects 'xss' as a check — removed because it was never implemented", () => {
+      expect(() =>
+        CheckAPISecuritySchema.parse({
+          apiUrl: "https://api.example.com",
+          checks: ["xss"],
         })
       ).toThrow();
     });
@@ -553,5 +562,120 @@ describe("schema parse -> sanitize pipeline", () => {
       format: "markdown",
     });
     expect(() => sanitizePath(parsed.specPath)).toThrow(SanitizationError);
+  });
+});
+
+// ===========================================================================
+// loadSpec: JSON + YAML OpenAPI/Swagger spec parsing (src/lib.ts)
+// ===========================================================================
+
+describe("loadSpec", () => {
+  it("parses a valid JSON spec", () => {
+    const json = JSON.stringify({
+      openapi: "3.0.0",
+      info: { title: "Test API", version: "1.0.0" },
+      paths: { "/users": { get: { responses: { "200": { description: "OK" } } } } },
+    });
+    const result = loadSpec(json);
+    expect(result.openapi).toBe("3.0.0");
+    expect((result.info as Record<string, unknown>).title).toBe("Test API");
+  });
+
+  it("parses a valid YAML spec", () => {
+    const yamlSpec = [
+      "openapi: 3.0.0",
+      "info:",
+      "  title: Test API",
+      "  version: 1.0.0",
+      "paths:",
+      "  /users:",
+      "    get:",
+      "      responses:",
+      "        '200':",
+      "          description: OK",
+      "",
+    ].join("\n");
+    const result = loadSpec(yamlSpec);
+    expect(result.openapi).toBe("3.0.0");
+    expect((result.info as Record<string, unknown>).title).toBe("Test API");
+    const paths = result.paths as Record<string, unknown>;
+    expect(paths).toHaveProperty("/users");
+  });
+
+  it("parses a YAML spec using Swagger 2.0 flow-style mappings", () => {
+    const yamlSpec = "swagger: '2.0'\ninfo: {title: Flow API, version: '2.0'}\npaths: {}\n";
+    const result = loadSpec(yamlSpec);
+    expect(result.swagger).toBe("2.0");
+    expect((result.info as Record<string, unknown>).title).toBe("Flow API");
+  });
+
+  it("throws a clear error for content that is neither valid JSON nor valid YAML", () => {
+    // A single unquoted colon-less "{" is invalid JSON, and unbalanced flow
+    // mapping syntax is also invalid YAML.
+    const garbage = "{ this is not: valid: json: or: yaml: [[[";
+    expect(() => loadSpec(garbage)).toThrow(/Failed to parse spec/);
+    expect(() => loadSpec(garbage)).toThrow(/JSON error/);
+    expect(() => loadSpec(garbage)).toThrow(/YAML error/);
+  });
+
+  it("throws a clear error for empty content", () => {
+    expect(() => loadSpec("")).toThrow(/empty/);
+    expect(() => loadSpec("   \n  ")).toThrow(/empty/);
+  });
+
+  it("includes the source label in the error message when provided", () => {
+    expect(() => loadSpec("{ broken", "openapi.yaml")).toThrow(/openapi\.yaml/);
+  });
+
+  it("rejects YAML that parses to a scalar instead of an object", () => {
+    // "true" is valid YAML (parses to boolean `true`) but not a usable spec object.
+    expect(() => loadSpec("true")).toThrow(/Failed to parse spec/);
+  });
+
+  it("rejects a top-level JSON array (valid JSON, not a usable spec object)", () => {
+    expect(() => loadSpec("[1, 2, 3]")).toThrow(/Failed to parse spec/);
+  });
+
+  it("rejects a top-level YAML array (valid YAML, not a usable spec object)", () => {
+    expect(() => loadSpec("- one\n- two\n- three\n")).toThrow(/Failed to parse spec/);
+  });
+});
+
+// ===========================================================================
+// computeResponseTimeStats: load_test statistics (src/lib.ts)
+// ===========================================================================
+
+describe("computeResponseTimeStats", () => {
+  it("computes min/max/avg/percentiles for a normal set of response times", () => {
+    const stats = computeResponseTimeStats([100, 200, 300, 400, 500]);
+    expect(stats).not.toHaveProperty("note");
+    const typed = stats as { min: number; max: number; avg: string; p50: number; p95: number; p99: number };
+    expect(typed.min).toBe(100);
+    expect(typed.max).toBe(500);
+    expect(typed.avg).toBe("300.00");
+    expect(typed.p50).toBe(300);
+  });
+
+  it("returns a 'no data' note instead of NaN/Infinity when all requests failed (empty response times)", () => {
+    const stats = computeResponseTimeStats([]);
+    expect(stats).toEqual({
+      note: "All requests failed before a response was received — no response time data available.",
+    });
+    // Explicitly assert the historical bug (NaN/Infinity) cannot resurface:
+    expect(JSON.stringify(stats)).not.toMatch(/NaN|Infinity/);
+  });
+
+  it("does not mutate the input array", () => {
+    const input = [300, 100, 200];
+    computeResponseTimeStats(input);
+    expect(input).toEqual([300, 100, 200]);
+  });
+
+  it("handles a single response time without division errors", () => {
+    const stats = computeResponseTimeStats([42]);
+    const typed = stats as { min: number; max: number; avg: string };
+    expect(typed.min).toBe(42);
+    expect(typed.max).toBe(42);
+    expect(typed.avg).toBe("42.00");
   });
 });

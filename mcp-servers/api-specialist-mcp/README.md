@@ -204,7 +204,6 @@ Add to `.claude-code/config.json`:
 - ✅ Authentication requirement
 - ✅ Rate limiting
 - ✅ SQL injection vulnerabilities
-- ✅ XSS protection
 
 **Output:**
 ```json
@@ -576,10 +575,7 @@ fi
 
 **Required:**
 - Node.js 18+ (fetch API)
-- OpenAPI specification file (JSON format)
-
-**Optional:**
-- YAML parser for .yaml specs: `npm install js-yaml`
+- OpenAPI specification file (JSON or YAML format — parsed via `js-yaml`, bundled as a dependency)
 
 ---
 
@@ -613,7 +609,6 @@ Example minimal spec:
 
 ## 🚨 Limitations
 
-- YAML specs require js-yaml package
 - Load testing limited by single machine resources
 - SQL injection checks are basic (not a replacement for dedicated tools)
 - Certificate validation follows Node.js defaults
