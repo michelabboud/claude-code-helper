@@ -312,11 +312,11 @@ Specialized agents for specific technology domains.
 | RAG | [`rag/SKILL.md`](skills/rag/SKILL.md) | Setup wizard (`/rag init`), index codebases, semantic search, configure backends, two-layer auto-discovery, multi-repo |
 | Testing | [`testing/SKILL.md`](skills/testing/SKILL.md) | Unified testing skill with subcommands: `tdd`, `e2e`, `bdd`, `contract`, `mutation`, `visual` |
 | Documentation | [`documentation/SKILL.md`](skills/documentation/SKILL.md) | Generate comprehensive documentation (subcommand: `api` for API docs) |
-| API Design Patterns | [`api-design-patterns.md`](skills/api-design-patterns.md) | REST API design best practices, versioning, error handling |
-| CI Best Practices | [`ci-best-practices.md`](skills/ci-best-practices.md) | CI/CD pipeline configuration and optimization |
-| Database Design Patterns | [`database-design-patterns.md`](skills/database-design-patterns.md) | Schema design, normalization, indexing strategies |
-| Refactoring Strategy | [`refactoring-strategy.md`](skills/refactoring-strategy.md) | Code refactoring techniques and patterns |
-| Release Management | [`release-management.md`](skills/release-management.md) | Release and deployment workflows |
+| API Design Patterns | [`api-design-patterns/SKILL.md`](skills/api-design-patterns/SKILL.md) | REST API design best practices, versioning, error handling |
+| CI Best Practices | [`ci-best-practices/SKILL.md`](skills/ci-best-practices/SKILL.md) | CI/CD pipeline configuration and optimization |
+| Database Design Patterns | [`database-design-patterns/SKILL.md`](skills/database-design-patterns/SKILL.md) | Schema design, normalization, indexing strategies |
+| Refactoring Strategy | [`refactoring-strategy/SKILL.md`](skills/refactoring-strategy/SKILL.md) | Code refactoring techniques and patterns |
+| Release Management | [`release-management/SKILL.md`](skills/release-management/SKILL.md) | Release and deployment workflows |
 
 ---
 
@@ -329,7 +329,7 @@ Slash commands for common development workflows.
 | Command | File | Usage | Description |
 |---------|------|-------|-------------|
 | Document | [`documentation/SKILL.md`](skills/documentation/SKILL.md) | `/document` | Generate comprehensive documentation (use `/document api` for API docs) |
-| Refactor | [`refactoring-strategy.md`](skills/refactoring-strategy.md) | `/refactor` | Code refactoring workflow |
+| Refactor | [`refactoring-strategy/SKILL.md`](skills/refactoring-strategy/SKILL.md) | `/refactoring-strategy` | Code refactoring workflow |
 | Review | [`code-reviewer.md`](agents/domain-experts/code-reviewer.md) | `@code-reviewer` | Code review (use the code-reviewer agent) |
 | Scaffold | [`project-scaffolding/SKILL.md`](skills/project-scaffolding/SKILL.md) | `/scaffold` | Project scaffolding |
 | Test Generate | [`testing/SKILL.md`](skills/testing/SKILL.md) | `/testing` | Generate and manage tests (subcommands: `tdd`, `e2e`, `bdd`, `contract`, `mutation`, `visual`) |
@@ -586,7 +586,7 @@ Additional MCP server concepts and documentation (not yet implemented as servers
 | [`CLAUDE.md`](CLAUDE.md) | Project-specific Claude Code instructions |
 | [`CHANGELOG.md`](CHANGELOG.md) | Version history and updates |
 | [`TOOLS-INDEX.md`](TOOLS-INDEX.md) | This file - complete catalog of all tools |
-| [`LICENSE`](LICENSE) | MIT license |
+| [`LICENSE`](LICENSE) | Apache-2.0 license |
 | [`docs/TODO.md`](docs/TODO.md) | Project roadmap and tasks |
 
 ---
@@ -680,5 +680,5 @@ When adding new tools:
 
 **Author**: Michel Abboud (https://github.com/michelabboud)
 **AI Assistance**: Created with Claude Code (Anthropic)
-**License**: MIT
+**License**: Apache-2.0
 **Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)

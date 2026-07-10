@@ -8,7 +8,7 @@ Eleven specialized MCP (Model Context Protocol) servers that work together to cr
 
 [![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/typescript-5.7.2-blue.svg)](https://www.typescriptlang.org)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 ---
 
@@ -639,4 +639,4 @@ Happy coding! 🚀
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 
-This project is open source under the MIT License. Free to use for personal and commercial projects.
+This project is open source under the Apache-2.0 License. Free to use for personal and commercial projects.

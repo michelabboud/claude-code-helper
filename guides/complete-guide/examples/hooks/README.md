@@ -14,4 +14,4 @@ Add these to your `.claude/settings.json` file.
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 
-This project is open source under the MIT License. Free to use for personal and commercial projects.
+This project is open source under the Apache-2.0 License. Free to use for personal and commercial projects.

@@ -351,7 +351,7 @@
 
 **Educational Value**: Professional API design, versioning strategies, documentation best practices
 
-**Location**: `skills/api-design-patterns.md`
+**Location**: `skills/api-design-patterns/SKILL.md`
 
 ---
 
@@ -410,7 +410,7 @@
 
 **Educational Value**: Professional release process, deployment strategies, version management
 
-**Location**: `skills/release-management.md`
+**Location**: `skills/release-management/SKILL.md`
 
 ---
 
@@ -453,7 +453,7 @@
 
 **Educational Value**: CI/CD best practices, pipeline optimization, automated quality gates
 
-**Location**: `skills/ci-best-practices.md`
+**Location**: `skills/ci-best-practices/SKILL.md`
 
 ---
 
@@ -1221,5 +1221,5 @@ All remaining items
 
 **Author**: Michel Abboud (https://github.com/michelabboud)
 **AI Assistance**: Created with Claude Code (Anthropic)
-**License**: MIT
+**License**: Apache-2.0
 **Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)

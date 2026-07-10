@@ -607,7 +607,7 @@ claude --agent api-specialist
 
 ```
 claude-code-helper/
-├── mcp-servers/           # 9 MCP servers (all built)
+├── mcp-servers/           # 11 MCP servers (all built)
 │   ├── Production (5):
 │   │   ├── api-specialist-mcp/    ✅ 8 tools
 │   │   ├── code-review-mcp/       ✅ 4 tools
@@ -640,7 +640,7 @@ claude-code-helper/
 
 ### What You Installed
 
-✅ **9 MCP Servers** (30+ tools) - All built and ready
+✅ **11 MCP Servers** (30+ tools) - All built and ready
 ✅ **12 Agent Configurations** - Production + experimental
 ✅ **Configuration Bundle** - Settings, hooks, utilities
 ✅ **Example Sub-Agents** - Advanced patterns

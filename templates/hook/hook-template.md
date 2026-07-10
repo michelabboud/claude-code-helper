@@ -214,5 +214,5 @@ Test your hook before deployment:
 
 **Author**: Michel Abboud (https://github.com/michelabboud)
 **AI Assistance**: Created with Claude Code (Anthropic)
-**License**: MIT
+**License**: Apache-2.0
 **Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)

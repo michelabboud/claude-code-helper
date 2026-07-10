@@ -430,7 +430,7 @@ npm test -- --grep "[test-pattern]"
 
 ## License
 
-[License Type - typically MIT]
+[License Type - typically Apache-2.0]
 
 ## Acknowledgments
 
@@ -455,5 +455,5 @@ npm test -- --grep "[test-pattern]"
 
 **Author**: Michel Abboud (https://github.com/michelabboud)
 **AI Assistance**: Created with Claude Code (Anthropic)
-**License**: MIT
+**License**: Apache-2.0
 **Repository**: [claude-code-helper](https://github.com/michelabboud/claude-code-helper)

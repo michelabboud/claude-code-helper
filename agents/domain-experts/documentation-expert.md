@@ -253,7 +253,7 @@ class DataValidator:
 
 [![CI](https://github.com/org/project/actions/workflows/ci.yml/badge.svg)][ci]
 [![npm version](https://img.shields.io/npm/v/project-name.svg)][npm]
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-yellow.svg)](LICENSE)
 
 > One-line description of what the project does and why it matters.
 

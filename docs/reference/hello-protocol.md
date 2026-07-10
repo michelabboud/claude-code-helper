@@ -62,7 +62,7 @@ security_scan {targetPath, scanner} → Run security analysis
 
 ## Author
 Michel Abboud — https://github.com/michelabboud/claude-code-helper
-License: MIT
+License: Apache-2.0
 ```
 
 ### How to add to a new MCP server
@@ -100,7 +100,7 @@ function buildHelloVerbose(): string {
     ``,
     `## Author`,
     `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
-    `License: MIT`,
+    `License: Apache-2.0`,
   ].join("\n");
 }
 ```

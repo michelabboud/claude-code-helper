@@ -76,7 +76,7 @@ This package contains everything you need to master Claude Code from zero to her
 
 ## 📝 License
 
-This guide is provided as educational material. Examples are MIT licensed unless otherwise specified.
+This guide is provided as educational material. Examples are Apache-2.0 licensed unless otherwise specified.
 
 ## 🤝 Contributing
 
@@ -101,4 +101,4 @@ For questions:
 **Author:** [Michel Abboud](https://github.com/michelabboud)
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 
-This project is open source under the MIT License. Free to use for personal and commercial projects.
+This project is open source under the Apache-2.0 License. Free to use for personal and commercial projects.

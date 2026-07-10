@@ -3,7 +3,7 @@
 **Purpose:** Validate that all installed components work correctly
 **Version:** v1.3.0
 **Date:** 2026-01-11
-**Components to Test:** 9 MCP servers (60 tools), 48 agents, 10 skills, 7 commands
+**Components to Test:** 11 MCP servers (68 tools), 60 agents, 14 skills
 
 ---
 

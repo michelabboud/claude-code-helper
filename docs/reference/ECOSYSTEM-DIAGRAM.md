@@ -560,7 +560,7 @@ Path 2: INTERMEDIATE (Add MCP Servers)
 
 Path 3: ADVANCED (Full Installation)
 ┌──────────────────────────────────┐
-│ 1. Install all 9 MCP servers     │
+│ 1. Install all 11 MCP servers     │
 │ 2. Install all 48 agents         │
 │ 3. Run TESTING-GUIDE.md tests    │
 │ 4. Build custom workflows        │

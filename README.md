@@ -792,7 +792,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## 📝 License
 
-**MIT License** - Free for personal and commercial use
+**Apache-2.0 License** - Free for personal and commercial use
 
 See the [LICENSE](./LICENSE) file for complete details.
 
@@ -818,7 +818,7 @@ I believe in being open about AI assistance in software development. This projec
 
 ### Free to Use
 
-This is open source software under the MIT License. You are free to:
+This is open source software under the Apache-2.0 License. You are free to:
 - ✅ Use for personal projects
 - ✅ Use for commercial projects
 - ✅ Modify and adapt the code

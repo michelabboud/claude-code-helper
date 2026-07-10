@@ -17,7 +17,7 @@ All resources (skills, agents, MCP servers, guides) should include a credits sec
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 **License:** Apache-2.0
 
-💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 14+ skills, 11 MCP servers, and comprehensive guides.
 ```
 
 ---
@@ -56,7 +56,7 @@ Place credits **at the very end** of the file, after all content:
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 **License:** Apache-2.0
 
-💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 14+ skills, 11 MCP servers, and comprehensive guides.
 ```
 
 ### For TypeScript/JavaScript Files (.ts, .js)
@@ -95,7 +95,7 @@ Description and content...
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 **License:** Apache-2.0
 
-💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 14+ skills, 11 MCP servers, and comprehensive guides.
 ```
 
 ### Agent Example
@@ -118,7 +118,7 @@ Agent content...
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 **License:** Apache-2.0
 
-💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 14+ skills, 11 MCP servers, and comprehensive guides.
 ```
 
 ### MCP Server README Example
@@ -140,7 +140,7 @@ Server description and documentation...
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 **License:** Apache-2.0
 
-💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 14+ skills, 11 MCP servers, and comprehensive guides.
 ```
 
 ---
@@ -160,7 +160,7 @@ If you're contributing to the repository, use this format with your own informat
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 **License:** Apache-2.0
 
-💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 14+ skills, 11 MCP servers, and comprehensive guides.
 ```
 
 ### For Co-Authored Work
@@ -177,7 +177,7 @@ If you're contributing to the repository, use this format with your own informat
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 **License:** Apache-2.0
 
-💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 14+ skills, 11 MCP servers, and comprehensive guides.
 ```
 
 ---

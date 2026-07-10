@@ -195,8 +195,8 @@ Pre-configured specialized agents for common workflows:
 - Individual .gitignore in each server
 - Excludes: node_modules, build artifacts, logs
 
-#### `LICENSE` (MIT License)
-- Open source MIT license
+#### `LICENSE` (Apache-2.0 License)
+- Open source Apache-2.0 license
 - Free to use, modify, distribute
 
 ---
@@ -210,7 +210,7 @@ mcp-multi-agent-system/
 ├── QUICKGUIDE.md                      # Quick start guide
 ├── ARCHITECTURE.md                    # Technical documentation
 ├── CONTRIBUTING.md                    # Customization guide
-├── LICENSE                            # MIT License
+├── LICENSE                            # Apache-2.0 License
 ├── install-all.sh                     # Automated installer
 ├── .gitignore                         # Git ignore rules
 │
@@ -402,7 +402,7 @@ See CONTRIBUTING.md for:
 
 ## 📄 License
 
-MIT License - See LICENSE file for details
+Apache-2.0 License - See LICENSE file for details
 
 Free to use, modify, and distribute.
 

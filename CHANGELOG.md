@@ -15,6 +15,26 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.14] - 2026-07-10
+
+Repo-wide documentation consistency sweep (beyond the plan's scope — every guide/doc, not just the
+reviewed skills/plugins/MCP). No code changed.
+
+### Fixed
+- **License drift across all docs (MIT → Apache-2.0).** The main `README.md`, `TOOLS-INDEX.md`,
+  `mcp-servers/README.md`, `CONTRIBUTING.md`, `PACKAGE_CONTENTS.md`, every guide README, the templates,
+  several agent READMEs/badges, and `hello-protocol.md` still said MIT — the repo is Apache-2.0.
+  Corrected ~40 files (left genuinely-historical mentions intact: `CHANGELOG`, `docs/plans`,
+  `docs/releases`, `docs/reports`, `JOBS.md`'s "changed from MIT" note, ADRs, test-result snapshots,
+  and `allowed_licenses` example data).
+- **Stale counts:** "9 MCP servers" → 11, "13/13+/10 skills" → 14, "54/57 agents" → 60, and the
+  "7 commands" references (no `commands/` dir exists) removed, across `TOOLS-CHEATSHEET.md`,
+  `TESTING-GUIDE.md`, `INSTALLATION.md`, `ECOSYSTEM-DIAGRAM.md`, `CLAUDE-CODE-BUILDING-BLOCKS.md`, and
+  the MCP "Want more?" footers.
+- **Stale skill paths:** `TOOLS-INDEX.md` and `docs/TODO.md` linked the pre-relocation flat
+  `skills/<name>.md`; updated to the directory form `skills/<name>/SKILL.md`. The `/refactor` command
+  reference corrected to the real `/refactoring-strategy` skill.
+
 ## [2.11.13] - 2026-07-10
 
 Fixes from the final whole-branch code review.

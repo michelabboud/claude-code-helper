@@ -652,7 +652,7 @@ claude plugin add github.com/team/code-quality-plugin
 ## Further Reading
 
 - [Agents README](../agents/README.md) — Full agent catalog
-- [Skills README](../skills/README.md) — All 13 skills
+- [Skills README](../skills/README.md) — All 14 skills
 - [MCP Servers README](../mcp-servers/README.md) — 10 servers, 68+ tools
 - [Agent Triggers](../docs/reference/agent-triggers-schema.md) — Automatic agent dispatch
 - [Hello Protocol](../docs/reference/hello-protocol.md) — Universal tool handshake

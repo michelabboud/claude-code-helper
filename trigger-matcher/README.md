@@ -4,7 +4,7 @@
 
 [![npm version](https://img.shields.io/badge/version-1.0.0-blue.svg)](package.json)
 [![tests](https://img.shields.io/badge/tests-200%20passing-brightgreen.svg)](#testing)
-[![license](https://img.shields.io/badge/license-MIT-green.svg)](../LICENSE)
+[![license](https://img.shields.io/badge/license-Apache--2.0-green.svg)](../LICENSE)
 
 ---
 
