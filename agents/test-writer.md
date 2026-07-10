@@ -1,5 +1,6 @@
 ---
 name: test-writer
+version: 1.0.0
 description: Specialist in writing comprehensive test suites
 tools: Read, Write, Edit
 model: sonnet

@@ -1,5 +1,6 @@
 ---
 name: rag-coder
+version: 1.0.0
 description: Context-aware coder that grounds all code generation in actual codebase using RAG to eliminate hallucinations
 tools:
   - mcp__rag__index_codebase

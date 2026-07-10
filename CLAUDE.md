@@ -50,7 +50,7 @@ claude-code-helper/
 │   └── [14 skill files/dirs]
 │
 ├── hooks/                    # PRIMARY: Hooks distribution
-│   └── [5 hook files]
+│   └── [10 hook files]
 │
 ├── plugins/                  # PRIMARY: Plugins distribution
 │   └── [7 plugin files]

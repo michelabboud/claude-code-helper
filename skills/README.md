@@ -37,17 +37,12 @@ Skills are knowledge modules that enhance Claude's capabilities in specific doma
 
 ### Install All Skills (Global)
 
+Every skill ships as a directory containing a `SKILL.md`. Copy all skill
+directories at once (the wildcard skips this `README.md`):
+
 ```bash
 mkdir -p ~/.claude/skills
-cp -r *.md ~/.claude/skills/
-cp -r documentation ~/.claude/skills/
-cp -r testing ~/.claude/skills/
-cp -r project-scaffolding ~/.claude/skills/
-cp -r model-mode ~/.claude/skills/
-cp -r update-check ~/.claude/skills/
-cp -r greeting ~/.claude/skills/
-cp -r rag ~/.claude/skills/
-cp -r refresh ~/.claude/skills/
+cp -r */ ~/.claude/skills/
 ```
 
 ### Install All Skills (Project-Specific)
@@ -59,33 +54,45 @@ cp -r /path/to/skills/* .claude/skills/
 
 ### Install Single Skill
 
-```bash
-# Skills with subdirectories (SKILL.md format)
-cp -r documentation ~/.claude/skills/
-
-# Standalone skill files
-cp refactoring-strategy.md ~/.claude/skills/
-```
-
-### Quick Install via curl
+Every skill is a directory with a `SKILL.md`. Copy the whole directory:
 
 ```bash
-mkdir -p ~/.claude/skills
-
-# Install a specific skill
-curl -sO ~/.claude/skills/refactoring-strategy.md \
-  https://raw.githubusercontent.com/michelabboud/claude-code-helper/main/skills/refactoring-strategy.md
+cp -r refactoring-strategy ~/.claude/skills/
 ```
 
-## Skill Formats
+### Quick Install via curl / update-check
 
-### Format 1: Standalone Markdown
+Directory-based skills are best installed with the repo's own tooling, which
+downloads every file in the skill directory:
 
-Single `.md` file with frontmatter:
+```bash
+# Preferred: use the update-check skill (handles multi-file skill dirs)
+/update-check update skills/refactoring-strategy
+
+# Or clone the repo and copy the directory
+cp -r skills/refactoring-strategy ~/.claude/skills/
+```
+
+## Skill Format
+
+### Directory with SKILL.md
+
+Claude Code loads a skill from `~/.claude/skills/<name>/SKILL.md`. The skill
+name is the directory name (and the `name:` frontmatter field). Additional
+resources (templates, examples) live beside `SKILL.md` in the same directory:
+
+```
+skill-name/
+├── SKILL.md          # Main skill content (required)
+├── templates/        # Optional templates
+└── examples/         # Optional examples
+```
+
+Minimal `SKILL.md` frontmatter:
 
 ```markdown
 ---
-skill_name: My Skill
+name: skill-name
 description: When to activate this skill
 category: Development
 ---
@@ -93,19 +100,6 @@ category: Development
 # Skill Content
 
 Knowledge, patterns, examples...
-```
-
-**Location**: `~/.claude/skills/my-skill.md`
-
-### Format 2: Directory with SKILL.md
-
-For skills with multiple resources:
-
-```
-skill-name/
-├── SKILL.md          # Main skill content
-├── templates/        # Optional templates
-└── examples/         # Optional examples
 ```
 
 **Location**: `~/.claude/skills/skill-name/SKILL.md`

@@ -1,4 +1,5 @@
 ---
+name: refactoring-strategy
 skill_name: Refactoring Strategy
 description: Interactive refactoring workflow with safety checks, testing, and rollback support. Use when cleaning up code, simplifying functions, extracting methods or classes, renaming across a project, reducing complexity, modernizing syntax, eliminating code smells, managing technical debt, or improving code structure. Triggers on "refactor", "clean up", "simplify", "extract method", "rename", "reduce complexity", "code smells", "technical debt", "modernize code".
 category: Development

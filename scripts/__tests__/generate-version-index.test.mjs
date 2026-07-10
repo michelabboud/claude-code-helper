@@ -10,10 +10,25 @@
 import { test, describe, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { readFile, access } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { readFile, access, readdir } from 'node:fs/promises';
+import { join, dirname, relative, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
+
+/** Recursively list every file under `dir` (absolute paths). */
+async function walkFiles(dir) {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const out = [];
+  for (const e of entries) {
+    const full = join(dir, e.name);
+    if (e.isDirectory()) {
+      out.push(...(await walkFiles(full)));
+    } else if (e.isFile()) {
+      out.push(full);
+    }
+  }
+  return out;
+}
 
 const execFileAsync = promisify(execFile);
 
@@ -264,6 +279,84 @@ describe('Component type coverage', () => {
       assert.ok(count >= 1, `expected at least 1 "${requiredType}", found ${count}`);
     });
   }
+});
+
+// ---------------------------------------------------------------------------
+// Agent completeness — every agent file on disk must be in the manifest
+// ---------------------------------------------------------------------------
+
+describe('Agent completeness', () => {
+  // Every distributable agent file under agents/ (any depth) must have a
+  // manifest entry. This is the regression guard for the historical blind
+  // spot where top-level core agents (agents/code-reviewer.md, rag-coder.md,
+  // test-writer.md) were never scanned, leaving disk (60) > manifest (57).
+  test('every agents/** file has a manifest entry', async () => {
+    const agentsDir = join(REPO_ROOT, 'agents');
+    const files = await walkFiles(agentsDir);
+
+    const distributable = files.filter((f) => {
+      const base = f.split('/').pop();
+      if (base === 'README.md') return false;
+      const ext = extname(f);
+      return ext === '.md' || ext === '.json';
+    });
+
+    const missing = [];
+    for (const f of distributable) {
+      const rel = relative(REPO_ROOT, f);
+      const key = rel.replace(extname(rel), '');
+      const entry = outputData.components[key];
+      if (!entry) {
+        missing.push(`${rel} (expected key: ${key})`);
+      } else if (entry.type !== 'agent') {
+        missing.push(`${rel} present but type=${entry.type}, expected agent`);
+      }
+    }
+
+    assert.deepEqual(
+      missing,
+      [],
+      `agent files absent from manifest:\n${missing.join('\n')}`,
+    );
+  });
+
+  test('the three core agents are present as agent components', () => {
+    for (const key of [
+      'agents/code-reviewer',
+      'agents/rag-coder',
+      'agents/test-writer',
+    ]) {
+      const entry = outputData.components[key];
+      assert.ok(entry, `missing core agent manifest entry: ${key}`);
+      assert.equal(entry.type, 'agent', `${key} should have type "agent"`);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Hook completeness — JSON hook configs must be in the manifest
+// ---------------------------------------------------------------------------
+
+describe('Hook completeness', () => {
+  test('every hooks/*.json config (except package.json) has a manifest entry', async () => {
+    const hooksDir = join(REPO_ROOT, 'hooks');
+    const files = await readdir(hooksDir, { withFileTypes: true });
+
+    const jsonConfigs = files
+      .filter((e) => e.isFile() && e.name.endsWith('.json') && e.name !== 'package.json')
+      .map((e) => `hooks/${e.name.replace(extname(e.name), '')}`);
+
+    const missing = jsonConfigs.filter((key) => {
+      const entry = outputData.components[key];
+      return !entry || entry.type !== 'hook';
+    });
+
+    assert.deepEqual(
+      missing,
+      [],
+      `JSON hook configs absent from manifest: ${missing.join(', ')}`,
+    );
+  });
 });
 
 // ---------------------------------------------------------------------------

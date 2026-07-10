@@ -1,4 +1,5 @@
 ---
+name: api-design-patterns
 skill_name: API Design Patterns
 description: "REST API design, GraphQL patterns, API versioning, and documentation best practices. Use when designing APIs, building REST endpoints, structuring GraphQL schemas, handling API errors, setting up authentication, or configuring rate limiting. Triggers on 'design API', 'REST endpoint', 'API versioning', 'rate limiting', 'API authentication', 'OpenAPI', 'API error handling'."
 category: Architecture

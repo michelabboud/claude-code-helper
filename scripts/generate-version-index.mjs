@@ -175,6 +175,42 @@ async function scanMcpAgents() {
   return components;
 }
 
+/**
+ * Scan the top-level core agents (agents/*.md, excluding README.md).
+ * These are distributed agents that live at the root of agents/ rather than
+ * in the domain-experts/ or mcp-integrated/ subdirectories. Without this
+ * scanner they are invisible to the manifest and therefore to /update-check.
+ */
+async function scanCoreAgents() {
+  const dir = join(REPO_ROOT, 'agents');
+  // listFiles is non-recursive and excludes README.md, so this yields only
+  // the top-level core agent .md files, not the subdirectory agents.
+  const files = await listFiles(dir, '.md');
+  const components = {};
+
+  for (const filePath of files) {
+    const content = await readFile(filePath, 'utf-8');
+    const fm = extractFrontmatter(content);
+    const version = fm ? extractYamlValue(fm, 'version') : null;
+    const references = fm ? extractReferences(fm) : null;
+    const webSearchEnabled = fm ? extractWebSearchEnabled(fm) : null;
+    const rel = relative(REPO_ROOT, filePath);
+    const key = componentKey(rel);
+
+    const entry = {
+      type: 'agent',
+      version: version || null,
+      file: rel,
+      installPath: `agents/${basename(filePath)}`,
+      changelog: `${rel}#changelog`,
+    };
+    if (references) entry.references = references;
+    if (webSearchEnabled) entry.webSearchEnabled = true;
+    components[key] = entry;
+  }
+  return components;
+}
+
 /** Scan skills — both flat .md files and subdirectory/SKILL.md */
 async function scanSkills() {
   const dir = join(REPO_ROOT, 'skills');
@@ -225,13 +261,18 @@ async function scanSkills() {
   return components;
 }
 
-/** Scan hooks/*.md (excluding README.md) */
+/**
+ * Scan hooks — both markdown docs (hooks/*.md) and JSON hook configs
+ * (hooks/*.json, excluding package.json). Markdown versions come from YAML
+ * frontmatter; JSON versions from the top-level `version` field.
+ */
 async function scanHooks() {
   const dir = join(REPO_ROOT, 'hooks');
-  const files = await listFiles(dir, '.md');
   const components = {};
 
-  for (const filePath of files) {
+  // Markdown hook docs — version from frontmatter.
+  const mdFiles = await listFiles(dir, '.md');
+  for (const filePath of mdFiles) {
     const content = await readFile(filePath, 'utf-8');
     const fm = extractFrontmatter(content);
     const version = fm ? extractYamlValue(fm, 'version') : null;
@@ -246,6 +287,32 @@ async function scanHooks() {
       changelog: `${rel}#changelog`,
     };
   }
+
+  // JSON hook configs — version from the top-level `version` field.
+  // package.json is a workspace manifest, not a distributable hook config.
+  const jsonFiles = await listFiles(dir, '.json');
+  for (const filePath of jsonFiles) {
+    if (basename(filePath) === 'package.json') continue;
+
+    const content = await readFile(filePath, 'utf-8');
+    let json;
+    try {
+      json = JSON.parse(content);
+    } catch {
+      json = {};
+    }
+    const rel = relative(REPO_ROOT, filePath);
+    const key = componentKey(rel);
+
+    components[key] = {
+      type: 'hook',
+      version: json.version || null,
+      file: rel,
+      installPath: `hooks/${basename(filePath)}`,
+      changelog: `${rel}#changelog`,
+    };
+  }
+
   return components;
 }
 
@@ -348,6 +415,7 @@ async function main() {
 
   // Run all scanners
   const [
+    coreAgents,
     domainExperts,
     mcpAgents,
     skills,
@@ -356,6 +424,7 @@ async function main() {
     integrations,
     mcpServers,
   ] = await Promise.all([
+    scanCoreAgents(),
     scanDomainExperts(),
     scanMcpAgents(),
     scanSkills(),
@@ -367,6 +436,7 @@ async function main() {
 
   // Merge all components (keys are unique by construction)
   const components = {
+    ...coreAgents,
     ...domainExperts,
     ...mcpAgents,
     ...skills,

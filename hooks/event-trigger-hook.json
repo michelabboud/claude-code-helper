@@ -1,6 +1,7 @@
 {
   "name": "event-trigger-hook",
   "description": "Dispatches events to matching agent triggers based on tool operations and git events",
+  "version": "1.0.0",
   "hooks": {
     "PreToolUse": [
       {

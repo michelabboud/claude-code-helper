@@ -15,6 +15,42 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.7] - 2026-07-10
+
+Remediation Phase 1 — scanner + manifest correctness. Closes the `/update-check` blind spots that
+made whole classes of components permanently undetectable, and makes the 5 standalone-markdown skills
+actually loadable by Claude Code.
+
+### Fixed
+- **Manifest generator missed the 3 core agents.** `scripts/generate-version-index.mjs` scanned only
+  `agents/domain-experts/` and `agents/mcp-integrated/`, never the top-level `agents/*.md` core agents
+  (`code-reviewer`, `rag-coder`, `test-writer`). Disk had 60 agents; the manifest listed 57 — so those
+  three could never be seen or updated by `/update-check`. Added a dedicated `scanCoreAgents()` scanner;
+  manifest now reports **60 agents**.
+- **JSON hook configs were never versioned.** `scanHooks()` read `.md` only, so the 4 JSON trigger
+  configs (`event-trigger-hook`, `file-trigger-hook`, `lint-on-save`, `mcp-trigger-hook`) never entered
+  the manifest. Extended `scanHooks()` to also scan `hooks/*.json` (excluding `package.json`); manifest
+  now reports **7 hook components**.
+- **5 standalone-markdown skills were not runtime-loadable.** Claude Code loads skills only from
+  `skills/<name>/SKILL.md`; the flat `skills/*.md` files (`api-design-patterns`, `ci-best-practices`,
+  `database-design-patterns`, `refactoring-strategy`, `release-management`) were never registered.
+  Relocated each to `skills/<name>/SKILL.md` and added the canonical lowercase `name:` field. The
+  generator's subdirectory scanner now emits the correct `skills/<name>/` install path automatically.
+
+### Added
+- `version: 1.0.0` to the 3 core agents and the 3 previously version-less JSON hook configs, so
+  `/update-check` can diff them.
+- Regression tests in `scripts/__tests__/generate-version-index.test.mjs`: **every `agents/**` file has
+  a manifest entry**, the 3 core agents are present, and every `hooks/*.json` config is registered —
+  guarding against reintroducing either blind spot.
+
+### Changed
+- `skills/README.md` rewritten: removed the false "Format 1: Standalone Markdown" section and the
+  `cp -r *.md` / flat-file `curl` install recipes; documented the single directory-based skill format.
+- `README.md` / `CLAUDE.md` hook counts reconciled to reality (7 hook components / 10 hook files),
+  replacing the three mutually-contradictory prior claims (6 / 8 / 5).
+- Version spine bumped to 2.11.7; manifest regenerated via `npm run generate:versions`.
+
 ## [2.11.6] - 2026-07-10
 
 Remediation Phase 0 — same-day one-liners from the 2026-07-10 review plan. Near-zero-risk fixes

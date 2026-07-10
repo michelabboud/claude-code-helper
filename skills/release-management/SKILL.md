@@ -1,4 +1,5 @@
 ---
+name: release-management
 skill_name: Release Management
 description: Semantic versioning, release planning, deployment strategies, and rollback procedures
 category: DevOps & Deployment

@@ -64,7 +64,7 @@ claude
 
 The install script installs:
 - 60 agents (43 domain experts, 14 MCP-integrated, 3 core)
-- 6 hook configurations (file, event, MCP triggers)
+- 7 hook components (3 markdown gate docs + 4 JSON trigger configs)
 - Triggers configuration (triggers.json + schema)
 - Skills and status lines
 
@@ -288,7 +288,7 @@ cp -r skills/* ~/.claude/skills/
 
 **[📁 Hooks →](./hooks/)** | **[📁 Plugins →](./plugins/)** | **[📁 Integrations →](./integrations/)**
 
-### Hooks (8 files)
+### Hooks (10 files)
 Event-driven automation for PreToolUse, PostToolUse, SessionStart, SessionEnd.
 
 ### Plugins (7 files)
@@ -465,7 +465,7 @@ claude-code-helper/
 │   └── [14 skill files/dirs]
 │
 ├── hooks/                    # PRIMARY: Hooks distribution
-│   └── [5 hook files]
+│   └── [10 hook files]
 │
 ├── plugins/                  # PRIMARY: Plugins distribution
 │   └── [7 plugin files]

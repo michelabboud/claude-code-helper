@@ -1,8 +1,15 @@
 {
   "schemaVersion": 2,
-  "repoVersion": "2.11.6",
-  "generatedAt": "2026-06-23T22:05:38.094Z",
+  "repoVersion": "2.11.7",
+  "generatedAt": "2026-07-10T06:35:29.555Z",
   "components": {
+    "agents/code-reviewer": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/code-reviewer.md",
+      "installPath": "agents/code-reviewer.md",
+      "changelog": "agents/code-reviewer.md#changelog"
+    },
     "agents/domain-experts/accessibility-expert": {
       "type": "agent",
       "version": "1.0.1",
@@ -1377,6 +1384,20 @@
         }
       ]
     },
+    "agents/rag-coder": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/rag-coder.md",
+      "installPath": "agents/rag-coder.md",
+      "changelog": "agents/rag-coder.md#changelog"
+    },
+    "agents/test-writer": {
+      "type": "agent",
+      "version": "1.0.0",
+      "file": "agents/test-writer.md",
+      "installPath": "agents/test-writer.md",
+      "changelog": "agents/test-writer.md#changelog"
+    },
     "hooks/build-validation": {
       "type": "hook",
       "version": "1.0.0",
@@ -1390,6 +1411,34 @@
       "file": "hooks/code-quality-gate.md",
       "installPath": "hooks/code-quality-gate.md",
       "changelog": "hooks/code-quality-gate.md#changelog"
+    },
+    "hooks/event-trigger-hook": {
+      "type": "hook",
+      "version": "1.0.0",
+      "file": "hooks/event-trigger-hook.json",
+      "installPath": "hooks/event-trigger-hook.json",
+      "changelog": "hooks/event-trigger-hook.json#changelog"
+    },
+    "hooks/file-trigger-hook": {
+      "type": "hook",
+      "version": "1.0.0",
+      "file": "hooks/file-trigger-hook.json",
+      "installPath": "hooks/file-trigger-hook.json",
+      "changelog": "hooks/file-trigger-hook.json#changelog"
+    },
+    "hooks/lint-on-save": {
+      "type": "hook",
+      "version": "1.0.0",
+      "file": "hooks/lint-on-save.json",
+      "installPath": "hooks/lint-on-save.json",
+      "changelog": "hooks/lint-on-save.json#changelog"
+    },
+    "hooks/mcp-trigger-hook": {
+      "type": "hook",
+      "version": "1.0.0",
+      "file": "hooks/mcp-trigger-hook.json",
+      "installPath": "hooks/mcp-trigger-hook.json",
+      "changelog": "hooks/mcp-trigger-hook.json#changelog"
     },
     "hooks/security-scan": {
       "type": "hook",
@@ -1545,23 +1594,23 @@
     "skills/api-design-patterns": {
       "type": "skill",
       "version": "1.0.0",
-      "file": "skills/api-design-patterns.md",
-      "installPath": "skills/api-design-patterns.md",
-      "changelog": "skills/api-design-patterns.md#changelog"
+      "file": "skills/api-design-patterns/SKILL.md",
+      "installPath": "skills/api-design-patterns/",
+      "changelog": "skills/api-design-patterns/SKILL.md#changelog"
     },
     "skills/ci-best-practices": {
       "type": "skill",
       "version": "1.0.0",
-      "file": "skills/ci-best-practices.md",
-      "installPath": "skills/ci-best-practices.md",
-      "changelog": "skills/ci-best-practices.md#changelog"
+      "file": "skills/ci-best-practices/SKILL.md",
+      "installPath": "skills/ci-best-practices/",
+      "changelog": "skills/ci-best-practices/SKILL.md#changelog"
     },
     "skills/database-design-patterns": {
       "type": "skill",
       "version": "1.0.0",
-      "file": "skills/database-design-patterns.md",
-      "installPath": "skills/database-design-patterns.md",
-      "changelog": "skills/database-design-patterns.md#changelog"
+      "file": "skills/database-design-patterns/SKILL.md",
+      "installPath": "skills/database-design-patterns/",
+      "changelog": "skills/database-design-patterns/SKILL.md#changelog"
     },
     "skills/documentation": {
       "type": "skill",
@@ -1601,9 +1650,9 @@
     "skills/refactoring-strategy": {
       "type": "skill",
       "version": "1.1.0",
-      "file": "skills/refactoring-strategy.md",
-      "installPath": "skills/refactoring-strategy.md",
-      "changelog": "skills/refactoring-strategy.md#changelog"
+      "file": "skills/refactoring-strategy/SKILL.md",
+      "installPath": "skills/refactoring-strategy/",
+      "changelog": "skills/refactoring-strategy/SKILL.md#changelog"
     },
     "skills/refresh": {
       "type": "skill",
@@ -1615,9 +1664,9 @@
     "skills/release-management": {
       "type": "skill",
       "version": "1.0.0",
-      "file": "skills/release-management.md",
-      "installPath": "skills/release-management.md",
-      "changelog": "skills/release-management.md#changelog"
+      "file": "skills/release-management/SKILL.md",
+      "installPath": "skills/release-management/",
+      "changelog": "skills/release-management/SKILL.md#changelog"
     },
     "skills/route-language-task": {
       "type": "skill",

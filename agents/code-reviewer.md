@@ -1,5 +1,6 @@
 ---
 name: code-reviewer
+version: 1.0.0
 description: Expert code reviewer focusing on security, quality, and best practices
 tools: Read, Grep, Glob
 model: sonnet

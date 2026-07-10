@@ -1,6 +1,7 @@
 {
   "name": "file-trigger-hook",
   "description": "Intercepts Read/Edit/Write/NotebookEdit operations to match against agent file triggers",
+  "version": "1.0.0",
   "hooks": {
     "PreToolUse": [
       {
