@@ -10,10 +10,10 @@ Comprehensive test execution, coverage analysis, quality metrics, and reporting 
 
 | Tool | Purpose | Key Features |
 |------|---------|--------------|
-| **run_tests** | Execute tests | Jest, Pytest, Mocha, Vitest with pattern matching and watch mode |
-| **get_coverage** | Coverage analysis | Configurable thresholds, multiple formats (JSON, HTML, text) |
+| **run_tests** | Execute tests | Jest, Pytest, Mocha, Vitest with pattern matching (watch mode is not supported, see below) |
+| **get_coverage** | Coverage analysis | Jest, Pytest, Vitest; configurable thresholds, multiple formats (JSON, HTML, text) |
 | **analyze_test_quality** | Test quality metrics | Assertions, mocks, async patterns, flakiness detection |
-| **generate_test_report** | Comprehensive reports | Markdown, HTML, PDF with flaky test analysis |
+| **generate_test_report** | Comprehensive reports | Markdown, HTML with flaky test analysis (PDF is accepted as a format value but not implemented) |
 
 ---
 
@@ -77,8 +77,7 @@ Add to `.claude-code/config.json`:
   "args": {
     "testPath": "./tests",
     "framework": "jest",
-    "pattern": "should handle errors",
-    "watch": false
+    "pattern": "should handle errors"
   }
 }
 ```
@@ -91,7 +90,9 @@ Add to `.claude-code/config.json`:
 
 **Pattern Matching:** Filter tests by name (e.g., `"should handle errors"`)
 
-**Watch Mode:** Set `watch: true` for continuous test execution
+**Watch Mode is NOT supported.** MCP tool calls run synchronously over stdio and must return a single result; a watch-mode process runs indefinitely, so `watch: true` is rejected with an error instead of hanging the call until the 5-minute timeout. Run your framework's watch mode directly in a terminal for interactive development.
+
+**Local devDependencies:** Node-based frameworks (`jest`, `mocha`, `vitest`) are resolved via `npx --no-install <framework>`, which finds a project-local install in `node_modules/.bin` before falling back to a global install — the common case of a framework listed only in `devDependencies` works without any extra PATH setup. `pytest` is invoked directly and must be on `PATH` (e.g. inside an activated virtualenv).
 
 **Output:**
 ```json
@@ -256,7 +257,7 @@ Add to `.claude-code/config.json`:
 **Formats:**
 - **markdown** - GitHub-friendly reports
 - **html** - Interactive web reports
-- **pdf** - Printable reports
+- **pdf** - NOT implemented. `format: "pdf"` is accepted by the schema for forward-compatibility but always returns an error (`PDF report generation is not implemented`) rather than silently substituting another format. Real PDF export would need an additional rendering dependency (e.g. puppeteer or md-to-pdf) that hasn't been added/vetted yet.
 
 **Flaky Test Analysis:** Set `includeFlaky: true` to include detailed flaky test detection
 
@@ -313,7 +314,7 @@ npm install --save-dev mocha chai
 npm install --save-dev vitest @vitest/ui
 ```
 
-**Note:** The MCP server will detect which frameworks are available and provide helpful guidance if a requested framework isn't installed.
+**Note:** There is no framework auto-detection. You must pick the correct `framework` value for your project; the server does not inspect `package.json`/`pyproject.toml` to guess which one is in use. `jest`/`mocha`/`vitest` are resolved via `npx --no-install <framework>` (so a local `devDependency` install works without extra PATH setup); if the chosen framework still can't be resolved (locally or globally), the tool call returns the underlying OS-level error (e.g. `npm error could not determine executable to run`) rather than a friendly suggestion.
 
 ---
 
@@ -388,11 +389,11 @@ Provide prioritized improvement list"
 
 ## 🚨 Limitations
 
-- Test frameworks must be installed and configured in the project
-- Coverage reports depend on framework-specific coverage tools
+- Test frameworks must be installed and configured in the project (no framework auto-detection)
+- Coverage reports depend on framework-specific coverage tools; `mocha` has no built-in coverage support and is not accepted by `get_coverage`
 - Flaky test detection is heuristic-based (not guaranteed to catch all cases)
-- Watch mode may require manual termination
-- PDF generation requires additional dependencies (e.g., puppeteer)
+- Watch mode is not supported at all — `run_tests` rejects `watch: true` with an error (MCP tool calls run synchronously over stdio and can't stream an indefinitely-running watch process)
+- PDF generation is not implemented — `generate_test_report` rejects `format: "pdf"` with an error; use `markdown` or `html`
 
 ---
 

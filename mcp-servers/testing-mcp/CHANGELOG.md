@@ -1,4 +1,13 @@
 # Changelog
 
+## Unreleased
+- Fix: `run_tests`/`get_coverage` invoked node-based test frameworks (`jest`, `mocha`, `vitest`) as bare command names, which fails with ENOENT for the normal case of a framework installed as a local `devDependency` (binary lives in `node_modules/.bin`, not on `PATH`). Now resolved via `npx --no-install <framework>` (falls back to global install; `--no-install` avoids a hanging/network install attempt), invoked with `cwd` explicitly set to the project root. `pytest` continues to be invoked directly (it's a Python executable, not an npm package).
+- Fix: `run_tests` accepted `watch: true`, which would spawn a test process that never exits -- since MCP tool calls run synchronously over stdio, this silently hung the call until the 5-minute timeout instead of erroring immediately. `watch: true` is now rejected up front with a clear, actionable error; watch mode is not supported over MCP stdio.
+- Fix: `get_coverage` read the jest-style `coverage/coverage-final.json` path for every framework, including `pytest`, whose `--cov-report=json` actually writes `coverage.json`. Coverage JSON is now read from the correct per-framework default path.
+- Fix: `generate_test_report` claimed to support `format: "pdf"` but silently generated a markdown report instead (mislabeled, with only a buried disclaimer string). `format: "pdf"` now returns a clear error ("PDF report generation is not implemented") instead of a fake substitute. Real PDF export is left as a tracked TODO -- it needs an additional rendering dependency that hasn't been added/vetted.
+- Fix: `run_tests` and `get_coverage` tool annotations claimed `readOnlyHint: true` despite spawning subprocesses and writing result/coverage files to disk; corrected to `readOnlyHint: false`.
+- Fix: startup health check probed `npx` generically (a command the server didn't actually invoke), which was both uninformative and, after the fixes above, insufficiently specific. Replaced with one health check per test framework (`jest`, `pytest`, `mocha`, `vitest`) that resolves each framework the same way the tool handlers do (i.e. via `npx --no-install` for node-based frameworks), so a misconfigured `PATH`/missing local install is caught and logged (as a non-fatal startup warning) for the framework that's actually going to be used.
+- Docs: README corrected to drop the "watch mode" and "PDF" feature claims and the "auto-detects available frameworks" claim (no such detection exists); documents the `npx --no-install` resolution behavior and lists `get_coverage`'s real per-framework coverage-path/support limitations (no `mocha` coverage support).
+
 ## 1.0.0 (2026-02-20)
 - Initial release

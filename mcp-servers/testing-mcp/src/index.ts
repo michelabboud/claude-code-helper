@@ -21,7 +21,12 @@ import { execFile } from "child_process";
 import { promisify } from "util";
 import * as fs from "fs/promises";
 import * as path from "path";
-import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse, commandHealthCheck } from "mcp-shared";
+import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse, type HealthCheck } from "mcp-shared";
+
+// The test frameworks this server can drive. Kept as a standalone type (rather
+// than reusing the zod enums below) so it can be shared between the tool
+// handlers and the startup health checks.
+type Framework = "jest" | "pytest" | "mocha" | "vitest";
 
 // Interfaces for test analysis data structures
 interface TestSummary {
@@ -75,7 +80,7 @@ const RunTestsSchema = z.object({
   testPath: z.string().describe("Path to test file or directory"),
   framework: z.enum(["jest", "pytest", "mocha", "vitest"]).describe("Test framework to use"),
   pattern: z.string().optional().describe("Test name pattern to match (e.g., 'should handle errors')"),
-  watch: z.boolean().optional().describe("Run in watch mode"),
+  watch: z.boolean().optional().describe("NOT SUPPORTED: MCP tool calls run synchronously over stdio and must return a single result, so watch mode (which never exits) cannot work here. Omit this field or pass false; passing true returns an error."),
 });
 
 const GetCoverageSchema = z.object({
@@ -93,27 +98,60 @@ const AnalyzeTestQualitySchema = z.object({
 
 const GenerateTestReportSchema = z.object({
   resultsPath: z.string().describe("Path to test results JSON"),
-  format: z.enum(["markdown", "html", "pdf"]).describe("Report format"),
+  format: z.enum(["markdown", "html", "pdf"]).describe("Report format. 'pdf' is accepted for forward-compatibility but is NOT implemented -- it returns an error. Use 'markdown' or 'html'."),
   includeFlaky: z.boolean().optional().describe("Include flaky test analysis"),
 });
 
 // Helper functions
+
+/**
+ * Resolve the actual OS command + args needed to invoke a test framework.
+ *
+ * jest/mocha/vitest are normally installed as local devDependencies whose
+ * binaries live in `node_modules/.bin`, a directory that is NOT on PATH.
+ * Invoking the bare command name (e.g. `execFile("jest", ...)`) fails with
+ * ENOENT in that (the normal) case. `npx` resolves local binaries before
+ * falling back to a global install; `--no-install` stops npx from silently
+ * attempting to download the package over the network when it can't be
+ * resolved locally or globally, so a missing framework fails fast instead of
+ * hanging or prompting.
+ *
+ * pytest is a Python executable (installed via pip/venv), not an npm
+ * package, so it is invoked directly rather than through npx.
+ */
+function buildFrameworkCommand(framework: Framework, args: string[]): { cmd: string; args: string[] } {
+  if (framework === "pytest") {
+    return { cmd: "pytest", args };
+  }
+  return { cmd: "npx", args: ["--no-install", framework, ...args] };
+}
+
 async function runTests(
   testPath: string,
   framework: string,
   pattern?: string,
   watch: boolean = false
 ): Promise<string> {
+  if (watch) {
+    throw new Error(
+      "watch:true is not supported. MCP tool calls execute synchronously over stdio and must " +
+      "return a single result, but watch mode runs indefinitely -- this call would block until " +
+      "the 5 minute timeout instead of streaming results. Omit `watch` (or set it to false) and " +
+      "run the framework's watch mode directly in a terminal for interactive development."
+    );
+  }
+
   try {
-    const commands: Record<string, { cmd: string; args: string[] }> = {
-      jest: { cmd: "jest", args: [testPath, ...(pattern ? ["-t", pattern] : []), ...(watch ? ["--watch"] : []), "--json"] },
-      pytest: { cmd: "pytest", args: [testPath, ...(pattern ? ["-k", pattern] : []), "--json-report", "--json-report-file=test-results.json"] },
-      mocha: { cmd: "mocha", args: [testPath, ...(pattern ? ["--grep", pattern] : []), "--reporter", "json"] },
-      vitest: { cmd: "vitest", args: ["run", testPath, "--reporter", "json"] },
+    const frameworkArgs: Record<Framework, string[]> = {
+      jest: [testPath, ...(pattern ? ["-t", pattern] : []), "--json"],
+      pytest: [testPath, ...(pattern ? ["-k", pattern] : []), "--json-report", "--json-report-file=test-results.json"],
+      mocha: [testPath, ...(pattern ? ["--grep", pattern] : []), "--reporter", "json"],
+      vitest: ["run", testPath, "--reporter", "json"],
     };
 
-    const { cmd, args } = commands[framework];
+    const { cmd, args } = buildFrameworkCommand(framework as Framework, frameworkArgs[framework as Framework]);
     const { stdout, stderr } = await execFileAsync(cmd, args, {
+      cwd: process.cwd(), // resolve node_modules/.bin (via npx) relative to the project root
       timeout: 300000, // 5 minute timeout
     });
 
@@ -162,19 +200,26 @@ async function getCoverage(
   format: string = "json"
 ): Promise<string> {
   try {
-    const commands: Record<string, { cmd: string; args: string[] }> = {
-      jest: { cmd: "jest", args: [testPath, "--coverage", `--coverageReporters=${format}`, `--coverageThreshold={"global":{"lines":${threshold}}}`] },
-      pytest: { cmd: "pytest", args: [testPath, "--cov", `--cov-report=${format}`] },
-      vitest: { cmd: "vitest", args: ["run", testPath, "--coverage", `--coverage.reporter=${format}`] },
+    // Note: coverage is only supported for jest/pytest/vitest (mocha has no
+    // built-in coverage tool and is intentionally excluded from this schema).
+    const frameworkArgs: Record<"jest" | "pytest" | "vitest", string[]> = {
+      jest: [testPath, "--coverage", `--coverageReporters=${format}`, `--coverageThreshold={"global":{"lines":${threshold}}}`],
+      pytest: [testPath, "--cov", `--cov-report=${format}`],
+      vitest: ["run", testPath, "--coverage", `--coverage.reporter=${format}`],
     };
 
-    const { cmd, args } = commands[framework];
-    const { stdout, stderr } = await execFileAsync(cmd, args);
+    const { cmd, args } = buildFrameworkCommand(framework as Framework, frameworkArgs[framework as "jest" | "pytest" | "vitest"]);
+    const { stdout, stderr } = await execFileAsync(cmd, args, {
+      cwd: process.cwd(), // resolve node_modules/.bin (via npx) relative to the project root
+    });
 
-    // Read coverage report
+    // Read coverage report. Each framework's coverage tool writes JSON to a
+    // different default location -- there is no single shared path.
     let coverageData: Record<string, unknown>;
     if (format === "json") {
-      const coveragePath = path.join(process.cwd(), "coverage", "coverage-final.json");
+      const coveragePath = framework === "pytest"
+        ? path.join(process.cwd(), "coverage.json") // pytest-cov's `--cov-report=json` default output file
+        : path.join(process.cwd(), "coverage", "coverage-final.json"); // jest/vitest istanbul-style output
       try {
         const coverageFile = await fs.readFile(coveragePath, "utf-8");
         coverageData = JSON.parse(coverageFile) as Record<string, unknown>;
@@ -251,6 +296,15 @@ async function generateTestReport(
   includeFlaky: boolean = false
 ): Promise<string> {
   try {
+    if (format === "pdf") {
+      // NO FAKES: do not silently substitute markdown for a requested PDF.
+      // TODO(pdf-export): real PDF rendering needs an additional dependency
+      // (e.g. puppeteer or md-to-pdf) that hasn't been vetted/added yet.
+      throw new Error(
+        'PDF report generation is not implemented. Use format: "markdown" or "html" instead.'
+      );
+    }
+
     const results = JSON.parse(await fs.readFile(resultsPath, "utf-8")) as TestResults;
 
     let report = "";
@@ -259,9 +313,6 @@ async function generateTestReport(
       report = generateMarkdownReport(results, includeFlaky);
     } else if (format === "html") {
       report = generateHTMLReport(results, includeFlaky);
-    } else if (format === "pdf") {
-      report = "PDF generation requires additional setup. Generating markdown instead.";
-      report += "\n\n" + generateMarkdownReport(results, includeFlaky);
     }
 
     return report;
@@ -430,7 +481,7 @@ function buildHelloVerbose(): string {
     `| \`run_tests\` | Execute tests with Jest, Pytest, Mocha, or Vitest |`,
     `| \`get_coverage\` | Generate code coverage reports with threshold checking |`,
     `| \`analyze_test_quality\` | Analyze assertion counts, mock usage, and flakiness |`,
-    `| \`generate_test_report\` | Generate Markdown/HTML/PDF test reports |`,
+    `| \`generate_test_report\` | Generate Markdown/HTML test reports (PDF is accepted but not implemented) |`,
     `| \`hello\` | Handshake check — verify server is online |`,
     ``,
     `## Usage`,
@@ -450,12 +501,42 @@ function buildHelloVerbose(): string {
   ].join("\n");
 }
 
+/**
+ * Build a startup health check that probes a specific test framework using
+ * the same resolution path `runTests`/`getCoverage` use at runtime (i.e. via
+ * `buildFrameworkCommand`), rather than a generic `which <cmd>` check. A
+ * plain `which jest` would false-negative for the (normal) case where jest
+ * is only installed as a local devDependency in node_modules/.bin and is
+ * only reachable through npx -- exactly the bug this fix addresses.
+ *
+ * Health check failures are non-fatal (the server logs a warning and starts
+ * anyway -- see mcp-shared's runStartupHealthChecks/createMCPServer), so it's
+ * safe to probe every framework even though most projects only use one.
+ */
+function frameworkHealthCheck(framework: Framework): HealthCheck {
+  return {
+    name: `framework-${framework}`,
+    check: async () => {
+      const { cmd, args } = buildFrameworkCommand(framework, ["--version"]);
+      try {
+        await execFileAsync(cmd, args, { cwd: process.cwd(), timeout: 5000 });
+        return true;
+      } catch {
+        return false;
+      }
+    },
+  };
+}
+
 // Start server
 runServer({
   name: "testing-mcp",
   version: "1.0.0",
   healthChecks: [
-    commandHealthCheck("npx"),
+    frameworkHealthCheck("jest"),
+    frameworkHealthCheck("pytest"),
+    frameworkHealthCheck("mocha"),
+    frameworkHealthCheck("vitest"),
   ],
 }, (instance) => {
   const { server, logger } = instance;
@@ -465,7 +546,7 @@ runServer({
       tools: [
         {
           name: "run_tests",
-          description: "Execute tests using various frameworks (Jest, Pytest, Mocha, Vitest). Returns detailed test results including pass/fail status.",
+          description: "Execute tests using various frameworks (Jest, Pytest, Mocha, Vitest). Returns detailed test results including pass/fail status. Watch mode is NOT supported over MCP stdio.",
           inputSchema: {
             type: "object",
             properties: {
@@ -476,19 +557,19 @@ runServer({
                 description: "Test framework to use"
               },
               pattern: { type: "string", description: "Test name pattern to match" },
-              watch: { type: "boolean", description: "Run in watch mode" },
+              watch: { type: "boolean", description: "NOT SUPPORTED: passing true returns an error (see description)" },
             },
             required: ["testPath", "framework"],
           },
           annotations: {
-            readOnlyHint: true,
+            readOnlyHint: false, // spawns a test-runner process and may write result/report files (e.g. pytest --json-report)
             destructiveHint: false,
-            idempotentHint: false, // Watch mode makes this non-idempotent
+            idempotentHint: false,
           },
         },
         {
           name: "get_coverage",
-          description: "Generate code coverage reports with configurable thresholds. Supports multiple output formats (JSON, HTML, text).",
+          description: "Generate code coverage reports with configurable thresholds. Supports multiple output formats (JSON, HTML, text). Supported frameworks: jest, pytest, vitest (mocha has no built-in coverage tool).",
           inputSchema: {
             type: "object",
             properties: {
@@ -508,7 +589,7 @@ runServer({
             required: ["testPath", "framework"],
           },
           annotations: {
-            readOnlyHint: true,
+            readOnlyHint: false, // spawns a coverage-instrumented test run and writes coverage report files to disk
             destructiveHint: false,
             idempotentHint: true,
           },
@@ -539,7 +620,7 @@ runServer({
         },
         {
           name: "generate_test_report",
-          description: "Generate comprehensive test reports in various formats (Markdown, HTML, PDF) with optional flaky test analysis.",
+          description: "Generate comprehensive test reports in Markdown or HTML with optional flaky test analysis. 'pdf' is accepted as a format value but is NOT implemented and returns an error.",
           inputSchema: {
             type: "object",
             properties: {
@@ -547,7 +628,7 @@ runServer({
               format: {
                 type: "string",
                 enum: ["markdown", "html", "pdf"],
-                description: "Report format"
+                description: "Report format. 'pdf' is accepted but not implemented -- it returns an error; use 'markdown' or 'html'."
               },
               includeFlaky: { type: "boolean", description: "Include flaky test analysis" },
             },

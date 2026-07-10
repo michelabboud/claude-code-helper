@@ -11,6 +11,7 @@
  * - Tool name registration (ListTools handler coverage)
  */
 
+import path from "node:path";
 import { z } from "zod";
 import {
   sanitizePath,
@@ -206,6 +207,55 @@ function generateHTMLReport(results: TestResults, _includeFlaky: boolean): strin
   </ul>
 </body>
 </html>`;
+}
+
+// ---------------------------------------------------------------------------
+// Regression coverage for the correctness fixes below (mirrors src/index.ts
+// -- not exported from there, since importing index.ts would start the MCP
+// server via its top-level runServer() call):
+//   1. Node-based frameworks (jest/mocha/vitest) must be invoked through
+//      `npx --no-install` so a local devDependency in node_modules/.bin
+//      resolves; pytest is invoked directly since it's a Python executable.
+//   2. `watch: true` is rejected with a clear error instead of hanging the
+//      MCP stdio call until the 5-minute timeout.
+//   3. Each framework's coverage JSON is read from its own real default
+//      output path, not a jest-only path applied to every framework.
+//   4. `format: "pdf"` is rejected with a clear error instead of silently
+//      generating markdown while claiming a PDF was produced.
+// ---------------------------------------------------------------------------
+
+type Framework = "jest" | "pytest" | "mocha" | "vitest";
+
+function buildFrameworkCommand(framework: Framework, args: string[]): { cmd: string; args: string[] } {
+  if (framework === "pytest") {
+    return { cmd: "pytest", args };
+  }
+  return { cmd: "npx", args: ["--no-install", framework, ...args] };
+}
+
+function getCoveragePath(framework: string, cwd: string): string {
+  return framework === "pytest"
+    ? path.join(cwd, "coverage.json")
+    : path.join(cwd, "coverage", "coverage-final.json");
+}
+
+function assertWatchSupported(watch: boolean): void {
+  if (watch) {
+    throw new Error(
+      "watch:true is not supported. MCP tool calls execute synchronously over stdio and must " +
+      "return a single result, but watch mode runs indefinitely -- this call would block until " +
+      "the 5 minute timeout instead of streaming results. Omit `watch` (or set it to false) and " +
+      "run the framework's watch mode directly in a terminal for interactive development."
+    );
+  }
+}
+
+function assertReportFormatSupported(format: string): void {
+  if (format === "pdf") {
+    throw new Error(
+      'PDF report generation is not implemented. Use format: "markdown" or "html" instead.'
+    );
+  }
 }
 
 // =========================================================================
@@ -1212,7 +1262,114 @@ describe("generateHTMLReport", () => {
 });
 
 // =========================================================================
-// 15. Schema edge cases
+// 15. buildFrameworkCommand -- local devDependency resolution (finding 1)
+// =========================================================================
+
+describe("buildFrameworkCommand", () => {
+  it("resolves pytest as a direct command, not through npx", () => {
+    const result = buildFrameworkCommand("pytest", ["tests/", "--cov"]);
+    expect(result).toEqual({ cmd: "pytest", args: ["tests/", "--cov"] });
+  });
+
+  it("resolves jest via npx --no-install", () => {
+    const result = buildFrameworkCommand("jest", ["tests/", "--json"]);
+    expect(result).toEqual({ cmd: "npx", args: ["--no-install", "jest", "tests/", "--json"] });
+  });
+
+  it("resolves mocha via npx --no-install", () => {
+    const result = buildFrameworkCommand("mocha", ["tests/", "--reporter", "json"]);
+    expect(result).toEqual({
+      cmd: "npx",
+      args: ["--no-install", "mocha", "tests/", "--reporter", "json"],
+    });
+  });
+
+  it("resolves vitest via npx --no-install", () => {
+    const result = buildFrameworkCommand("vitest", ["run", "tests/"]);
+    expect(result).toEqual({ cmd: "npx", args: ["--no-install", "vitest", "run", "tests/"] });
+  });
+
+  it("preserves argument order and handles an empty args array", () => {
+    const result = buildFrameworkCommand("jest", []);
+    expect(result).toEqual({ cmd: "npx", args: ["--no-install", "jest"] });
+  });
+
+  it("never resolves a node-based framework as a bare command name (the original bug)", () => {
+    for (const framework of ["jest", "mocha", "vitest"] as const) {
+      const result = buildFrameworkCommand(framework, ["x"]);
+      expect(result.cmd).not.toBe(framework);
+      expect(result.cmd).toBe("npx");
+    }
+  });
+});
+
+// =========================================================================
+// 16. getCoveragePath -- per-framework coverage output location (finding 3a)
+// =========================================================================
+
+describe("getCoveragePath", () => {
+  it("uses pytest-cov's coverage.json default path for pytest", () => {
+    const result = getCoveragePath("pytest", "/project");
+    expect(result).toBe(path.join("/project", "coverage.json"));
+  });
+
+  it("uses the istanbul-style coverage/coverage-final.json path for jest", () => {
+    const result = getCoveragePath("jest", "/project");
+    expect(result).toBe(path.join("/project", "coverage", "coverage-final.json"));
+  });
+
+  it("uses the istanbul-style coverage/coverage-final.json path for vitest", () => {
+    const result = getCoveragePath("vitest", "/project");
+    expect(result).toBe(path.join("/project", "coverage", "coverage-final.json"));
+  });
+
+  it("does not use the same path for pytest as for jest/vitest", () => {
+    const pytestPath = getCoveragePath("pytest", "/project");
+    const jestPath = getCoveragePath("jest", "/project");
+    expect(pytestPath).not.toBe(jestPath);
+  });
+});
+
+// =========================================================================
+// 17. assertWatchSupported -- watch mode is rejected, not silently hung (finding 2)
+// =========================================================================
+
+describe("assertWatchSupported", () => {
+  it("throws a clear, actionable error when watch is true", () => {
+    expect(() => assertWatchSupported(true)).toThrow(/watch:true is not supported/);
+  });
+
+  it("explains the stdio/synchronous constraint in the error message", () => {
+    expect(() => assertWatchSupported(true)).toThrow(/stdio/);
+  });
+
+  it("does not throw when watch is false", () => {
+    expect(() => assertWatchSupported(false)).not.toThrow();
+  });
+});
+
+// =========================================================================
+// 18. assertReportFormatSupported -- PDF is rejected, not silently faked (finding 3b)
+// =========================================================================
+
+describe("assertReportFormatSupported", () => {
+  it("throws a clear error for pdf format instead of silently substituting markdown", () => {
+    expect(() => assertReportFormatSupported("pdf")).toThrow(
+      'PDF report generation is not implemented. Use format: "markdown" or "html" instead.'
+    );
+  });
+
+  it("does not throw for markdown format", () => {
+    expect(() => assertReportFormatSupported("markdown")).not.toThrow();
+  });
+
+  it("does not throw for html format", () => {
+    expect(() => assertReportFormatSupported("html")).not.toThrow();
+  });
+});
+
+// =========================================================================
+// 19. Schema edge cases
 // =========================================================================
 
 describe("Schema edge cases", () => {
