@@ -1,92 +1,92 @@
 # Database Operations MCP Server
 
-Production-ready MCP server for database operations, migrations, schema inspection, and query optimization.
+Advisory MCP server for SQL generation, schema-planning, migration authoring, and query-optimization guidance.
 
 ## Overview
 
-This MCP server provides comprehensive database tools for PostgreSQL, MySQL, SQLite, and MongoDB. It enables safe database operations, migration management, and query optimization directly from Claude Code.
+This MCP server helps you **write and reason about** database work — generating migration files, linting migration safety, formatting SQL previews, producing fake seed data, and suggesting query optimizations. It has **no database driver** (no `pg`, `mysql2`, `sqlite3`, or `mongodb` dependency) and **never connects to, executes against, or reads from a live database**. Every tool either does pure text/SQL generation or returns an explicit "no live connection" advisory response. Treat its output as a starting point to copy into your own database client (`psql`, `mysql`, `sqlite3`, `mongosh`), migration runner, or backup tooling — not as a report of real query results, real schema state, or a real backup having been taken.
 
 ## Tools Provided
 
-### 1. `run_query`
-Execute SQL queries with proper parameter binding and result formatting.
+### 1. `run_query` — ADVISORY ONLY, no execution
+Formats and previews a SQL query with parameter binding substituted in. Does not connect to any database; no rows are ever returned.
 
 **Parameters**:
-- `query` (string): SQL query to execute
-- `params` (array): Query parameters for safe binding
-- `database` (string): Database name/connection
-- `dry_run` (boolean): Preview query without execution
+- `query` (string): SQL query to preview
+- `params` (array): Parameters to substitute into the preview
+- `database` (string): Label only — no connection is made
+- `dry_run` (boolean): Accepted for interface compatibility; every call behaves like a dry run regardless of this flag
 
-**Returns**: Query results with row count and execution time
+**Returns**: The formatted query text and an explicit note that no execution occurred.
 
-### 2. `inspect_schema`
-Get detailed schema information including tables, columns, indexes, and foreign keys.
+### 2. `inspect_schema` — ADVISORY ONLY, no real schema
+Echoes back the inspection request. Cannot list real tables, columns, indexes, or foreign keys because it has no connection to any database.
 
 **Parameters**:
-- `database` (string): Database to inspect
-- `table` (string, optional): Specific table to inspect
-- `include_indexes` (boolean): Include index information
-- `include_constraints` (boolean): Include constraint information
+- `database` (string): Label only — no connection is made
+- `table` (string, optional): Echoed back, not looked up
+- `include_indexes` (boolean): Echoed back, not looked up
+- `include_constraints` (boolean): Echoed back, not looked up
 
-**Returns**: Complete schema structure
+**Returns**: A receipt of the request plus a note directing you to a real database client for actual schema data.
 
 ### 3. `generate_migration`
-Create migration files from schema changes with rollback support.
+Generates up/down migration SQL text from a description of schema changes (add/modify/drop columns, add indexes). Pure text generation — writes no files to disk and does not apply anything to a database.
 
 **Parameters**:
 - `description` (string): Migration description
-- `changes` (object): Schema changes to apply
+- `changes` (object): Schema changes to express as SQL
 - `migration_type` (string): up/down migration type
 
-**Returns**: Generated migration file path and content
+**Returns**: Generated migration SQL (as text in the response, not written to disk) plus a safety validation summary.
 
 ### 4. `validate_migration`
-Check migration safety for breaking changes and performance impact.
+Reads a migration file from disk (this is real file I/O, not a database operation) and runs static heuristic checks — looks for `DROP TABLE`, `DROP COLUMN`, `TRUNCATE`, `NOT NULL` without `DEFAULT`, and type changes.
 
 **Parameters**:
-- `migration_file` (string): Path to migration file
-- `database` (string): Target database
+- `migration_file` (string): Path to migration file on disk
+- `database` (string): Label only — no connection is made
 
-**Returns**: Validation results with warnings and recommendations
+**Returns**: Warnings and a safe/unsafe recommendation based on static text analysis of the SQL, not a real database's actual state.
 
 ### 5. `seed_data`
-Generate realistic test data for development and testing.
+Generates realistic-looking fake data in memory (names, emails, UUIDs, dates, etc.) and formats it as `INSERT` statements. Does not insert anything into a database.
 
 **Parameters**:
-- `table` (string): Table to seed
-- `count` (number): Number of records
-- `schema` (object): Data generation rules
+- `table` (string): Table name to reference in generated `INSERT` statements
+- `count` (number): Number of records to generate (capped at 100 in the response preview)
+- `schema` (object): Data generation rules per column
 
-**Returns**: Generated seed data
+**Returns**: Generated sample records and `INSERT` SQL text you can run yourself.
 
 ### 6. `explain_query`
-Get query execution plans for optimization analysis.
+Runs static heuristic analysis on the query text (`SELECT *`, missing `WHERE`, leading-wildcard `LIKE`, JOIN count, unbounded `ORDER BY`, etc.). This is **not** a real `EXPLAIN`/`EXPLAIN ANALYZE` execution plan from a database engine — it is pattern matching on the SQL string.
 
 **Parameters**:
-- `query` (string): Query to analyze
-- `database` (string): Database connection
-- `format` (string): Output format (text/json/yaml)
+- `query` (string): Query text to analyze
+- `database` (string): Label only — no connection is made
+- `format` (string): Output format (text/json/yaml) — currently only affects the echoed `format` field, not the actual response shape
 
-**Returns**: Execution plan with cost analysis
+**Returns**: Heuristic findings and a rough complexity/cost estimate, explicitly noted as requiring a real database connection for an actual execution plan.
 
 ### 7. `optimize_query`
-Suggest query optimizations based on execution plan analysis.
+Runs the same static heuristic analysis as `explain_query` and reformats it as optimization suggestions.
 
 **Parameters**:
-- `query` (string): Query to optimize
-- `database` (string): Database connection
+- `query` (string): Query text to analyze
+- `database` (string): Label only — no connection is made
 
-**Returns**: Optimization suggestions with examples
+**Returns**: Optimization suggestions derived from pattern matching, not from a real query planner.
 
-### 8. `backup_database`
-Create database backups with compression and verification.
+### 8. `backup_database` — ADVISORY ONLY, no backup taken
+Generates the shell command (`pg_dump`, `mysqldump`, `sqlite3 .backup`, or `mongodump`) appropriate for common database engines. Does not connect to any database and does not create a backup file.
 
 **Parameters**:
-- `database` (string): Database to backup
-- `output_path` (string): Backup file location
-- `compress` (boolean): Enable compression
+- `database` (string): Database name to substitute into the generated command
+- `output_path` (string): Path to substitute into the generated command
+- `compress` (boolean): Whether to append gzip piping to the generated command
 
-**Returns**: Backup file path and size
+**Returns**: Generated backup commands for PostgreSQL, MySQL, SQLite, and MongoDB, plus an explicit note that no backup was performed — you must run the command yourself.
 
 ## Installation
 
@@ -99,29 +99,6 @@ Create database backups with compression and verification.
 cd mcp-servers/database-operations
 npm install
 npm run build
-```
-
-### Configuration
-
-Create `.env` file (optional, for database connections):
-
-```env
-# PostgreSQL
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=your_user
-POSTGRES_PASSWORD=your_password
-POSTGRES_DB=your_database
-
-# MySQL
-MYSQL_HOST=localhost
-MYSQL_PORT=3306
-MYSQL_USER=your_user
-MYSQL_PASSWORD=your_password
-MYSQL_DB=your_database
-
-# MongoDB
-MONGODB_URI=mongodb://localhost:27017/your_database
 ```
 
 ### Register with Claude Code
@@ -140,37 +117,34 @@ Add to `~/.claude/config/mcp.json`:
 }
 ```
 
+No environment variables or connection strings are required or used — this server never opens a database connection.
+
 ## Usage Examples
 
-### Execute Safe Query
+### Preview a Query (not executed)
 
 ```javascript
-// Using parameterized query (safe from SQL injection)
+// Formats the query with parameters substituted; nothing is run
 await mcp.call('run_query', {
   query: 'SELECT * FROM users WHERE email = $1',
   params: ['user@example.com'],
   database: 'production'
 })
+// => { executed: false, query: "...", note: "This tool does not connect to a live database..." }
 ```
 
-### Inspect Database Schema
+### Request a Schema "Inspection" (echoes the request only)
 
 ```javascript
-// Get complete schema information
 await mcp.call('inspect_schema', {
   database: 'production',
   include_indexes: true,
   include_constraints: true
 })
-
-// Inspect specific table
-await mcp.call('inspect_schema', {
-  database: 'production',
-  table: 'users'
-})
+// => { connected: false, note: "This tool does not connect to a live database..." }
 ```
 
-### Generate Migration
+### Generate a Migration
 
 ```javascript
 await mcp.call('generate_migration', {
@@ -187,22 +161,23 @@ await mcp.call('generate_migration', {
     ]
   }
 })
+// Returns generated SQL text (not written to disk, not applied to any database)
 ```
 
-### Validate Migration Safety
+### Validate Migration Safety (static analysis of a file already on disk)
 
 ```javascript
 await mcp.call('validate_migration', {
   migration_file: './migrations/20260110_add_email_verified.sql',
   database: 'staging'
 })
-// Returns warnings about potential issues:
-// - Breaking changes
-// - Performance impact
-// - Missing indexes
+// Returns heuristic warnings based on the SQL text:
+// - Breaking changes (DROP TABLE / DROP COLUMN / TRUNCATE)
+// - NOT NULL without DEFAULT
+// - Type changes
 ```
 
-### Optimize Query
+### Optimize Query (static heuristics, not a real query planner)
 
 ```javascript
 await mcp.call('optimize_query', {
@@ -215,113 +190,31 @@ await mcp.call('optimize_query', {
   `,
   database: 'production'
 })
-// Returns optimization suggestions:
+// Returns pattern-matched suggestions:
 // - Add index on users.created_at
 // - Consider materialized view
 // - Optimize JOIN strategy
 ```
 
-## Security Best Practices
+## What This Server Does NOT Do
 
-### Query Execution
-- ✅ **Always use parameterized queries** to prevent SQL injection
-- ✅ **Validate user input** before query execution
-- ✅ **Use read-only connections** when possible
-- ✅ **Implement query timeouts** to prevent long-running queries
-- ✅ **Log all queries** for audit trail
+- It does **not** ship or depend on any database driver (no `pg`, `mysql2`, `sqlite3`, `mongodb`).
+- It does **not** open a network or file-based connection to any database.
+- `run_query` never executes SQL against anything — it only formats/echoes the query text.
+- `inspect_schema` never reads a real schema — it only echoes the request.
+- `backup_database` never creates a backup file — it only generates the shell command you would run yourself.
+- `explain_query` / `optimize_query` never obtain a real execution plan from a query planner — they run static pattern matching on the query string.
+- `generate_migration` / `seed_data` never write to or modify a database — they generate SQL/text you can review and run yourself.
 
-### Migration Safety
-- ✅ **Test migrations** on staging first
-- ✅ **Always create rollback migrations**
-- ✅ **Backup before migrations** in production
-- ✅ **Use transactions** for atomic changes
-- ✅ **Validate data integrity** after migration
-
-### Access Control
-- ✅ **Use least privilege** database users
-- ✅ **Separate credentials** for different environments
-- ✅ **Encrypt connections** with TLS/SSL
-- ✅ **Rotate credentials** regularly
-- ✅ **Audit database access** logs
-
-## Error Handling
-
-All tools include comprehensive error handling:
-
-```javascript
-try {
-  const result = await mcp.call('run_query', {
-    query: 'SELECT * FROM nonexistent_table',
-    database: 'production'
-  })
-} catch (error) {
-  if (error.code === 'TABLE_NOT_FOUND') {
-    console.log('Table does not exist')
-  } else if (error.code === 'CONNECTION_ERROR') {
-    console.log('Database connection failed')
-  } else {
-    console.log('Unknown error:', error.message)
-  }
-}
-```
-
-## Performance Considerations
-
-### Query Optimization
-- Use `EXPLAIN ANALYZE` for execution plan analysis
-- Monitor slow query logs
-- Implement connection pooling
-- Cache frequently accessed queries
-- Use appropriate indexes
-
-### Migration Performance
-- Avoid table locks during peak hours
-- Use concurrent indexes when possible
-- Batch large data migrations
-- Monitor replication lag
-- Test on production-sized datasets
+If you need real query execution, live schema introspection, or an actual database backup, use a proper database client, migration runner, or backup tool — this server is a text/SQL generation and planning aid only.
 
 ## Testing
 
 ```bash
-# Run unit tests
 npm test
-
-# Run integration tests
-npm run test:integration
-
-# Test specific database
-npm run test:postgres
-npm run test:mysql
-npm run test:mongodb
 ```
 
-## Monitoring
-
-The server logs all operations with:
-- Query execution time
-- Error rates
-- Connection pool status
-- Migration history
-- Backup status
-
-## Troubleshooting
-
-### Connection Issues
-```bash
-# Test database connection
-node scripts/test-connection.js postgres
-node scripts/test-connection.js mysql
-```
-
-### Migration Issues
-```bash
-# Validate migration syntax
-node scripts/validate-migration.js path/to/migration.sql
-
-# Dry run migration
-node scripts/run-migration.js --dry-run path/to/migration.sql
-```
+Tests cover Zod schema validation, the static-analysis helper functions (`analyzeQueryForOptimization`, `validateMigrationSafety`, `generateMigrationSQL`, `generateFakeData`), path/string sanitization, error formatting, and tool registration. There is no database to mock because no tool connects to one.
 
 ## API Reference
 
@@ -338,11 +231,8 @@ Apache-2.0 - see [LICENSE](../../LICENSE) for details.
 ---
 
 **Version**: 1.0.0
-**Status**: Production Ready ✅
-**Support**: PostgreSQL, MySQL, SQLite, MongoDB
-
----
-
+**Status**: Advisory / SQL-generation only — no live database execution
+**Covers**: PostgreSQL, MySQL, SQLite, MongoDB (command/SQL generation only; no drivers)
 
 ---
 

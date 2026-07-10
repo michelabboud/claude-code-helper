@@ -73,10 +73,11 @@ interface MigrationSafetyResult {
 }
 
 interface SchemaInfo {
+  connected: false;
   database: string;
-  inspected_at: string;
-  tables: string[];
-  message: string;
+  requested_at: string;
+  requested_table: string | null;
+  note: string;
   indexes_included?: boolean;
   constraints_included?: boolean;
 }
@@ -393,20 +394,22 @@ function buildHelloVerbose(): string {
   return [
     `${SERVER_COLOR_EMOJI} # ${SERVER_NAME} v${SERVER_VERSION}`,
     ``,
-    `**Database operations** — queries, schema inspection, migrations, data seeding, query optimization, backups for Claude Code.`,
+    `**Database advisory toolkit** — SQL preview/formatting, schema-inspection stubs, migration file generation, migration safety linting, fake data seeding, and query-optimization suggestions for Claude Code.`,
+    ``,
+    `**IMPORTANT: this server has no database driver and never connects to a live database.** \`run_query\`, \`inspect_schema\`, and \`backup_database\` are advisory-only stubs — they format SQL, echo requests, and generate shell commands, but never execute a query, read a real schema, or write a backup file. Everything else (migration generation/validation, seed data, query analysis) is pure text/SQL generation that never touches a database either.`,
     ``,
     `## Available Tools`,
     ``,
     `| Tool | Description |`,
     `|------|-------------|`,
-    `| \`run_query\` | Execute SQL queries with parameter binding and dry-run mode |`,
-    `| \`inspect_schema\` | Get schema info: tables, columns, indexes, constraints |`,
+    `| \`run_query\` | ADVISORY ONLY — formats/previews SQL with parameter binding; never executes |`,
+    `| \`inspect_schema\` | ADVISORY ONLY — echoes the request; never reads a real schema |`,
     `| \`generate_migration\` | Create migration files with up/down rollback support |`,
     `| \`validate_migration\` | Check migration safety for breaking changes |`,
-    `| \`seed_data\` | Generate realistic test data for development |`,
-    `| \`explain_query\` | Get query execution plan and bottleneck analysis |`,
-    `| \`optimize_query\` | Suggest optimizations based on execution plan |`,
-    `| \`backup_database\` | Create database backups with optional compression |`,
+    `| \`seed_data\` | Generate realistic fake test data (in-memory, not inserted anywhere) |`,
+    `| \`explain_query\` | Static heuristic analysis of a query string (no real execution plan) |`,
+    `| \`optimize_query\` | Suggest optimizations based on static heuristic analysis |`,
+    `| \`backup_database\` | ADVISORY ONLY — generates the backup command; never runs it |`,
     `| \`hello\` | Handshake check — verify server is online |`,
     ``,
     `## Usage`,
@@ -414,14 +417,14 @@ function buildHelloVerbose(): string {
     `\`\`\``,
     `hello {}                                                        → Quick greeting + status check`,
     `hello {"verbose": true}                                         → Full server info and tool catalog`,
-    `run_query {"query": "SELECT 1", "database": "mydb"}            → Execute SQL query`,
-    `inspect_schema {"database": "mydb"}                            → Inspect schema`,
+    `run_query {"query": "SELECT 1", "database": "mydb"}            → Preview formatted SQL (not executed)`,
+    `inspect_schema {"database": "mydb"}                            → Echo schema-inspection request (no real schema)`,
     `generate_migration {"description": "add users table", "changes": {"table": "users"}}  → Generate migration`,
     `validate_migration {"migration_file": "migration.sql", "database": "mydb"}  → Validate migration`,
     `seed_data {"table": "users", "count": 10, "schema": {"email": {"type": "email"}}}  → Seed data`,
     `explain_query {"query": "SELECT * FROM users", "database": "mydb"}  → Explain query`,
     `optimize_query {"query": "SELECT * FROM users", "database": "mydb"} → Optimize query`,
-    `backup_database {"database": "mydb", "output_path": "/backups/mydb.sql"}  → Backup database`,
+    `backup_database {"database": "mydb", "output_path": "/backups/mydb.sql"}  → Generate backup command (not run)`,
     `\`\`\``,
     ``,
     `## Author`,
@@ -440,30 +443,30 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "run_query",
-        description: "Execute SQL queries with parameter binding. Supports dry-run mode for query preview. Use for safe database queries with proper parameterization.",
+        description: "ADVISORY ONLY — does not connect to or execute against a live database. Formats and previews SQL queries with parameter binding so you can copy them into your own database client. There is no query engine behind this tool: no rows are ever actually returned.",
         inputSchema: {
           type: "object",
           properties: {
-            query: { type: "string", description: "SQL query to execute" },
+            query: { type: "string", description: "SQL query to preview (not executed)" },
             params: {
               type: "array",
               items: { type: "string" },
-              description: "Query parameters for safe binding"
+              description: "Query parameters for safe binding in the preview"
             },
-            database: { type: "string", description: "Database connection name or path" },
-            dry_run: { type: "boolean", description: "Preview query without execution" },
+            database: { type: "string", description: "Database connection name or path (used only as a label in the preview output; no connection is made)" },
+            dry_run: { type: "boolean", description: "Accepted for interface compatibility — this tool never executes, so every call behaves like a dry run" },
           },
           required: ["query", "database"],
         },
         annotations: {
-          readOnlyHint: false,
-          destructiveHint: true,
-          idempotentHint: false,
+          readOnlyHint: true,
+          destructiveHint: false,
+          idempotentHint: true,
         },
       },
       {
         name: "inspect_schema",
-        description: "Get detailed schema information including tables, columns, indexes, and foreign keys. Essential for understanding database structure.",
+        description: "ADVISORY ONLY — does not connect to any database. This tool cannot list real tables, columns, indexes, or foreign keys; it only echoes back the request and explains that a live connection would be required to inspect an actual schema.",
         inputSchema: {
           type: "object",
           properties: {
@@ -626,7 +629,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "backup_database",
-        description: "Create database backups with optional compression. Supports various database engines and provides verification of backup integrity.",
+        description: "ADVISORY ONLY — does not connect to any database and does not create a backup file. Generates the shell command (pg_dump, mysqldump, sqlite3, mongodump) you would run yourself to perform the backup.",
         inputSchema: {
           type: "object",
           properties: {
@@ -678,44 +681,28 @@ registerTrackedToolHandler(instance, async (request) => {
         const query = sanitizeString(parsed.query);
         const params = parsed.params;
         const database = sanitizePath(parsed.database, process.cwd());
-        const dry_run = parsed.dry_run;
+        // parsed.dry_run is intentionally unused: this tool never executes
+        // against a live database regardless of the flag (see note below).
 
-        if (dry_run) {
-          let previewQuery = query;
-          if (params) {
-            params.forEach((param, i) => {
-              previewQuery = previewQuery.replace(`$${i + 1}`, JSON.stringify(param));
-            });
-          }
-          response = {
-            content: [{
-              type: "text",
-              text: JSON.stringify({
-                dry_run: true,
-                query: previewQuery,
-                database,
-                params: params || [],
-                message: "Query preview - not executed"
-              }, null, 2),
-            }],
-          };
-          break;
+        // This server has no database driver and never connects to a live
+        // database. Every call — dry_run or not — only formats and returns
+        // the query text; it is never sent anywhere and no rows are ever
+        // returned. dry_run is accepted for interface compatibility only.
+        let previewQuery = query;
+        if (params) {
+          params.forEach((param, i) => {
+            previewQuery = previewQuery.replace(`$${i + 1}`, JSON.stringify(param));
+          });
         }
-
-        // In production, this would execute against actual database
         response = {
           content: [{
             type: "text",
             text: JSON.stringify({
-              success: true,
+              executed: false,
               database,
-              query,
+              query: previewQuery,
               params: params || [],
-              result: {
-                rows_affected: 0,
-                execution_time_ms: 0,
-                message: "Query execution requires database connection configuration. Set up connection in environment variables."
-              }
+              note: "This tool does not connect to a live database; it returns the formatted/previewed SQL only. No query was run and no rows were returned. Execute this query yourself against your database client to get real results."
             }, null, 2),
           }],
         };
@@ -729,12 +716,15 @@ registerTrackedToolHandler(instance, async (request) => {
         const include_indexes = parsed.include_indexes;
         const include_constraints = parsed.include_constraints;
 
-        // Return schema inspection result (mock for demo)
+        // This tool does not connect to a live database; it never inspects
+        // a real schema and cannot return real tables, columns, indexes, or
+        // foreign keys. It only echoes back the request as a receipt.
         const schemaInfo: SchemaInfo = {
+          connected: false,
           database,
-          inspected_at: new Date().toISOString(),
-          tables: table ? [table] : ["Configure database connection to list tables"],
-          message: "Schema inspection requires database connection. Configure connection in environment."
+          requested_at: new Date().toISOString(),
+          requested_table: table ?? null,
+          note: "This tool does not connect to a live database; it returns no real schema data. Use a database client (psql, mysql, sqlite3, mongosh) or a real schema-inspection tool to get actual tables, columns, indexes, and constraints."
         };
 
         if (include_indexes) {
@@ -922,19 +912,22 @@ registerTrackedToolHandler(instance, async (request) => {
         const output_path = sanitizePath(parsed.output_path, process.cwd());
         const compress = parsed.compress;
 
+        // This tool does not connect to any database and does not create a
+        // backup file. It only generates the shell command you would need
+        // to run yourself, for the engine of your choice.
         const backupInfo = {
+          backup_created: false,
           database,
           output_path,
           compressed: compress || false,
-          timestamp: new Date().toISOString(),
-          status: "pending",
+          requested_at: new Date().toISOString(),
           commands: {
             postgresql: `pg_dump ${database} ${compress ? "| gzip" : ""} > ${output_path}${compress ? ".gz" : ""}`,
             mysql: `mysqldump ${database} ${compress ? "| gzip" : ""} > ${output_path}${compress ? ".gz" : ""}`,
             sqlite: `sqlite3 ${database} ".backup '${output_path}'"`,
             mongodb: `mongodump --db ${database} --out ${output_path}`
           },
-          message: "Execute appropriate command for your database engine"
+          note: "This tool does not connect to a live database; it returns a generated backup command only. No backup file was created. Run the appropriate command above yourself to perform a real backup."
         };
 
         response = {
