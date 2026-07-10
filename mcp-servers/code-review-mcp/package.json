@@ -14,7 +14,7 @@
     "inspector": "npx @modelcontextprotocol/inspector build/index.js"
   },
   "keywords": ["mcp", "code-review", "linting", "security"],
-  "author": "",
+  "author": "Claude Code Helper",
   "license": "Apache-2.0",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",

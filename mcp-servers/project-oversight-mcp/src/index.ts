@@ -35,7 +35,7 @@ import {
 import type { ActivityEntry } from "mcp-shared";
 
 const SERVER_NAME = "project-oversight-mcp";
-const SERVER_VERSION = "1.0.0";
+const SERVER_VERSION = "1.2.0";
 const SERVER_COLOR_EMOJI = "🔵";
 
 // ---------------------------------------------------------------------------
@@ -444,7 +444,7 @@ function buildHelloVerbose(): string {
     ``,
     `## Author`,
     `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
-    `License: MIT`,
+    `License: Apache-2.0`,
   ].join("\n");
 }
 
@@ -455,7 +455,7 @@ function buildHelloVerbose(): string {
 runServer(
   {
     name: "project-oversight-mcp",
-    version: "1.0.0",
+    version: "1.2.0",
   },
   (instance) => {
     const { server, logger } = instance;

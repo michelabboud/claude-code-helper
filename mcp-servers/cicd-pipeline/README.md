@@ -562,4 +562,4 @@ env:
 **AI Assistance:** Created with the help of Claude Code (Anthropic)
 **License:** Apache-2.0
 
-💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 9 MCP servers, and comprehensive guides.
+💡 **Want more?** Explore [claude-code-helper](https://github.com/michelabboud/claude-code-helper) for 30+ agents, 13+ skills, 11 MCP servers, and comprehensive guides.

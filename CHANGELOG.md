@@ -15,6 +15,30 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.8] - 2026-07-10
+
+Remediation Phase 2 — license / version / metadata drift sweep across the MCP layer. Mechanical,
+no behavior change; all 11 servers still build and 1200+ MCP tests pass.
+
+### Fixed
+- **License drift (MIT → Apache-2.0) in every MCP server's runtime output.** The `hello` handshake
+  (`License: MIT`) and the `@license MIT` source headers reported MIT while the repo, every
+  `package.json`, and the `LICENSE` file are Apache-2.0. This is the license users see at runtime.
+  Corrected across all 11 servers' `src/index.ts` and the `database-operations` README `## License`
+  section. **The `dependency-management` third-party license *data* (`react: "MIT"`, the compatibility
+  matrix) was deliberately left intact** — those are facts about other packages, not this repo's license.
+- **`project-oversight-mcp` reported v1.0.0** in its hello output and MCP registration while its
+  `package.json` and the manifest are v1.2.0. Bumped `SERVER_VERSION` and the `runServer` version
+  literal to `1.2.0` (matching the established per-server hardcoded-version pattern).
+- **`npm run test:all` was broken** — it invoked a non-existent `build:shared` script (the real one is
+  `build-shared`), so the aggregate MCP test command failed immediately. Corrected the reference.
+
+### Changed
+- Stale "9 MCP servers" footer in all 10 server READMEs updated to "11 MCP servers".
+- Empty `author` fields in `api-specialist-mcp` and `code-review-mcp` set to "Claude Code Helper"
+  (matching the other servers); added `author` + `license: Apache-2.0` to `mcp-shared/package.json`.
+- Version spine bumped to 2.11.8; manifest regenerated.
+
 ## [2.11.7] - 2026-07-10
 
 Remediation Phase 1 — scanner + manifest correctness. Closes the `/update-check` blind spots that

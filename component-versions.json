@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "repoVersion": "2.11.7",
-  "generatedAt": "2026-07-10T06:35:29.555Z",
+  "repoVersion": "2.11.8",
+  "generatedAt": "2026-07-10T06:41:20.602Z",
   "components": {
     "agents/code-reviewer": {
       "type": "agent",

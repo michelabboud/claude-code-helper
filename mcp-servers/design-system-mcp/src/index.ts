@@ -7,7 +7,7 @@
  * through the Model Context Protocol.
  *
  * @author Michel Abboud (https://github.com/michelabboud)
- * @license MIT
+ * @license Apache-2.0
  * @see https://github.com/michelabboud/claude-code-helper
  *
  * Created with assistance from Claude Code (Anthropic)
@@ -594,7 +594,7 @@ function buildHelloVerbose(): string {
     ``,
     `## Author`,
     `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
-    `License: MIT`,
+    `License: Apache-2.0`,
   ].join("\n");
 }
 

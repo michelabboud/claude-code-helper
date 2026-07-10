@@ -667,7 +667,7 @@ function buildHelloVerbose(): string {
     ``,
     `## Author`,
     `Michel Abboud — https://github.com/michelabboud/claude-code-helper`,
-    `License: MIT`,
+    `License: Apache-2.0`,
   ].join("\n");
 }
 
