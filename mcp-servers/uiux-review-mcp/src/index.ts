@@ -3,8 +3,13 @@
 /**
  * UI/UX Review MCP Server
  *
- * Quality checks UI/UX designs from screenshots with expert feedback and wireframe suggestions
- * for Claude Code through the Model Context Protocol.
+ * Screenshot-grounded UI/UX review for Claude Code through the Model Context
+ * Protocol. This server does NOT compute scores or perform image analysis
+ * itself — it has no vision model. Instead, each review tool reads the real
+ * screenshot bytes, attaches them as an MCP image content block, and returns
+ * a structured evaluation rubric addressed to the calling model (Claude),
+ * which has vision and can genuinely evaluate what's in the image. See
+ * `src/rubrics.ts` for the rubric content and image-loading helper.
  *
  * @author Michel Abboud (https://github.com/michelabboud)
  * @license Apache-2.0
@@ -17,130 +22,28 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import * as fs from "fs/promises";
 import { runServer, registerTrackedToolHandler, generateRequestId, measureDuration, sanitizePath, errorResponse } from "mcp-shared";
+import {
+  imageContentBlock,
+  buildDesignRubric,
+  buildAccessibilityRubric,
+  buildTypographyRubric,
+  buildSpacingRubric,
+  buildColorRubric,
+  buildUsabilityRubric,
+  buildComparisonRubric,
+  buildImprovementsRubric,
+} from "./rubrics.js";
+import type { ImageContentBlock } from "./rubrics.js";
+
+/** An MCP tool-result content block: either text or an image. */
+type ToolContentBlock = { type: "text"; text: string } | ImageContentBlock;
+/** The shape of every tool response this server returns. */
+type ToolResponse = { content: ToolContentBlock[] };
 
 const SERVER_NAME = "uiux-review-mcp";
 const SERVER_VERSION = "1.0.0";
 const SERVER_COLOR_EMOJI = "🟣";
-
-// Shared interfaces for design analysis data structures
-interface DesignFinding {
-  category: string;
-  score: number;
-  observations: string[];
-  issues: string[];
-  priority?: string;
-}
-
-interface DesignRecommendation {
-  priority: string;
-  category: string;
-  issue: string;
-  suggestion: string;
-  impact: string;
-}
-
-interface AccessibilityIssue {
-  check: string;
-  wcagCriterion: string;
-  level: string;
-  status: string;
-  findings?: Record<string, unknown>[];
-  notes?: string;
-}
-
-interface TypographyFinding {
-  aspect: string;
-  score: number;
-  observations: string[];
-  issues: string[];
-}
-
-interface TypographyRecommendation {
-  priority: string;
-  suggestion: string;
-  reasoning: string;
-  implementation: string;
-}
-
-interface SpacingFinding {
-  element: string;
-  spacing: string;
-  compliant: boolean;
-  note: string;
-}
-
-interface SpacingIssue {
-  element: string;
-  current: string;
-  suggested: string;
-  reasoning: string;
-}
-
-interface ColorPaletteEntry {
-  color: string;
-  usage: string;
-  percentage: number;
-}
-
-interface ColorFinding {
-  check: string;
-  status: string;
-  details?: Record<string, unknown>[];
-  observations?: string[];
-  brandColorsUsed?: number;
-  brandColorsTotal?: number;
-}
-
-interface ColorIssue {
-  issue: string;
-  recommendation: string;
-}
-
-interface Improvement {
-  priority: string;
-  category: string;
-  title: string;
-  problem: string;
-  solution: string;
-  impact: string;
-  effort: string;
-}
-
-interface DesignDifference {
-  aspect: string;
-  versionA: string;
-  versionB: string;
-  winner: string;
-}
-
-interface HeuristicScore {
-  heuristic: string;
-  score: number;
-  observations: string[];
-  issues: string[];
-}
-
-interface UsabilityRecommendation {
-  priority: string;
-  heuristic: string;
-  suggestion: string;
-  impact: string;
-}
-
-interface WireframeDescription {
-  type: string;
-  format: string;
-  improvements: string[];
-  layout: string;
-}
-
-interface ActionPlan {
-  phase1: { title: string; items: Improvement[] };
-  phase2: { title: string; items: Improvement[] };
-  phase3: { title: string; items: Improvement[] };
-}
 
 // Tool input schemas
 const AnalyzeDesignSchema = z.object({
@@ -251,727 +154,11 @@ const CheckUsabilitySchema = z.object({
   ])).optional().describe("Usability heuristics to check"),
 });
 
-// Helper functions
-async function analyzeDesign(
-  imagePath: string,
-  designType?: string,
-  checkpoints?: string[],
-  includeWireframe: boolean = false
-): Promise<string> {
-  try {
-    // Read and encode image
-    await fs.readFile(imagePath);
-
-    const analysis = {
-      designType: designType || "unknown",
-      overallScore: 0,
-      findings: [] as DesignFinding[],
-      recommendations: [] as DesignRecommendation[],
-      wireframe: null as WireframeDescription | null,
-    };
-
-    // This is a framework - in production, Claude would analyze the actual image
-    // For now, we provide the structure and guidelines
-    
-    const checks = checkpoints || [
-      "visual_hierarchy",
-      "spacing",
-      "typography",
-      "color",
-      "accessibility",
-      "usability",
-      "consistency",
-    ];
-
-    // Visual Hierarchy
-    if (checks.includes("visual_hierarchy")) {
-      analysis.findings.push({
-        category: "visual_hierarchy",
-        score: 8,
-        observations: [
-          "Primary CTA needs more visual weight",
-          "Heading hierarchy is clear",
-          "Important information is prominently placed",
-        ],
-        issues: [
-          "Secondary actions compete with primary CTA",
-          "Information density is high in some areas",
-        ],
-      });
-    }
-
-    // Spacing
-    if (checks.includes("spacing")) {
-      analysis.findings.push({
-        category: "spacing",
-        score: 7,
-        observations: [
-          "Consistent 8px base unit detected",
-          "Good vertical rhythm",
-        ],
-        issues: [
-          "Inconsistent margins around cards",
-          "Padding in header could be more generous",
-        ],
-      });
-    }
-
-    // Typography
-    if (checks.includes("typography")) {
-      analysis.findings.push({
-        category: "typography",
-        score: 9,
-        observations: [
-          "Clear type scale",
-          "Good readability with sufficient contrast",
-          "Appropriate font pairing",
-        ],
-        issues: [
-          "Body text line-height could be increased to 1.6",
-        ],
-      });
-    }
-
-    // Color
-    if (checks.includes("color")) {
-      analysis.findings.push({
-        category: "color",
-        score: 8,
-        observations: [
-          "Cohesive color palette",
-          "Good use of brand colors",
-        ],
-        issues: [
-          "Some text-background combinations below WCAG AA",
-          "Consider more color differentiation for states",
-        ],
-      });
-    }
-
-    // Accessibility
-    if (checks.includes("accessibility")) {
-      analysis.findings.push({
-        category: "accessibility",
-        score: 6,
-        observations: [
-          "Touch targets appear adequate (44x44px minimum)",
-        ],
-        issues: [
-          "Low contrast on secondary text (3.2:1, needs 4.5:1)",
-          "Focus indicators not visible",
-          "Form inputs missing visible labels",
-        ],
-        priority: "critical",
-      });
-    }
-
-    // Usability
-    if (checks.includes("usability")) {
-      analysis.findings.push({
-        category: "usability",
-        score: 7,
-        observations: [
-          "Clear call-to-action",
-          "Intuitive navigation structure",
-        ],
-        issues: [
-          "Search bar not prominently placed",
-          "Back button could be more obvious",
-        ],
-      });
-    }
-
-    // Consistency
-    if (checks.includes("consistency")) {
-      analysis.findings.push({
-        category: "consistency",
-        score: 9,
-        observations: [
-          "Consistent button styles",
-          "Uniform card layouts",
-          "Standardized spacing",
-        ],
-        issues: [
-          "Icon sizes vary slightly",
-        ],
-      });
-    }
-
-    // Calculate overall score
-    const scores = analysis.findings.map(f => f.score);
-    analysis.overallScore = Math.round(
-      scores.reduce((a, b) => a + b, 0) / scores.length
-    );
-
-    // Generate recommendations
-    analysis.recommendations = [
-      {
-        priority: "critical",
-        category: "accessibility",
-        issue: "Contrast ratio below WCAG AA",
-        suggestion: "Increase text color to #2C3E50 for 4.5:1 contrast",
-        impact: "Improves readability for users with visual impairments",
-      },
-      {
-        priority: "high",
-        category: "visual_hierarchy",
-        issue: "Primary CTA lacks emphasis",
-        suggestion: "Increase button size, use stronger color, add subtle shadow",
-        impact: "Improves conversion rate",
-      },
-      {
-        priority: "medium",
-        category: "spacing",
-        issue: "Inconsistent card margins",
-        suggestion: "Standardize to 16px margin on all sides",
-        impact: "Creates more polished, professional appearance",
-      },
-      {
-        priority: "medium",
-        category: "usability",
-        issue: "Search not prominent",
-        suggestion: "Move search to top-right header position",
-        impact: "Reduces time to find content",
-      },
-    ];
-
-    // Generate wireframe if requested
-    if (includeWireframe) {
-      analysis.wireframe = generateImprovedWireframe(designType || "desktop");
-    }
-
-    return JSON.stringify({
-      image: imagePath,
-      designType: analysis.designType,
-      overallScore: analysis.overallScore,
-      grade: getGrade(analysis.overallScore),
-      findings: analysis.findings,
-      recommendations: analysis.recommendations,
-      wireframe: analysis.wireframe,
-      summary: `Design scores ${analysis.overallScore}/10. ${
-        analysis.recommendations.filter(r => r.priority === "critical").length
-      } critical issues, ${
-        analysis.recommendations.filter(r => r.priority === "high").length
-      } high priority improvements.`,
-    }, null, 2);
-  } catch (error: unknown) {
-    return JSON.stringify({
-      error: `Design analysis failed: ${error instanceof Error ? error.message : String(error)}`,
-    }, null, 2);
-  }
-}
-
-async function checkAccessibility(
-  imagePath: string,
-  wcagLevel: string = "AA",
-  checks?: string[]
-): Promise<string> {
-  try {
-    const results = {
-      wcagLevel,
-      conformance: "partial",
-      criticalIssues: [] as AccessibilityIssue[],
-      warnings: [] as AccessibilityIssue[],
-      passed: [] as AccessibilityIssue[],
-    };
-
-    const checksToRun = checks || [
-      "color_contrast",
-      "text_size",
-      "touch_targets",
-      "focus_indicators",
-    ];
-
-    // Color Contrast
-    if (checksToRun.includes("color_contrast")) {
-      results.criticalIssues.push({
-        check: "color_contrast",
-        wcagCriterion: "1.4.3 Contrast (Minimum)",
-        level: "AA",
-        status: "fail",
-        findings: [
-          {
-            element: "Secondary text",
-            contrast: "3.2:1",
-            required: "4.5:1",
-            suggestion: "Change color from #999999 to #595959",
-          },
-          {
-            element: "Button text on blue background",
-            contrast: "3.8:1",
-            required: "4.5:1",
-            suggestion: "Use white text (#FFFFFF) instead of light blue",
-          },
-        ],
-      });
-    }
-
-    // Text Size
-    if (checksToRun.includes("text_size")) {
-      results.passed.push({
-        check: "text_size",
-        wcagCriterion: "1.4.4 Resize Text",
-        level: "AA",
-        status: "pass",
-        notes: "Body text is 16px, meets minimum requirement",
-      });
-    }
-
-    // Touch Targets
-    if (checksToRun.includes("touch_targets")) {
-      results.warnings.push({
-        check: "touch_targets",
-        wcagCriterion: "2.5.5 Target Size",
-        level: "AAA",
-        status: "warning",
-        findings: [
-          {
-            element: "Close icon buttons",
-            size: "32x32px",
-            recommended: "44x44px",
-            suggestion: "Increase tap area to 44x44px minimum",
-          },
-        ],
-      });
-    }
-
-    // Focus Indicators
-    if (checksToRun.includes("focus_indicators")) {
-      results.criticalIssues.push({
-        check: "focus_indicators",
-        wcagCriterion: "2.4.7 Focus Visible",
-        level: "AA",
-        status: "fail",
-        findings: [
-          {
-            element: "Interactive elements",
-            issue: "No visible focus indicator",
-            suggestion: "Add 2px outline with 3:1 contrast ratio",
-          },
-        ],
-      });
-    }
-
-    const totalChecks = results.criticalIssues.length + results.warnings.length + results.passed.length;
-    const passedChecks = results.passed.length;
-    const conformancePercentage = Math.round((passedChecks / totalChecks) * 100);
-
-    results.conformance = conformancePercentage >= 90 ? "full" : 
-                         conformancePercentage >= 70 ? "partial" : "minimal";
-
-    return JSON.stringify({
-      wcagLevel,
-      conformance: results.conformance,
-      conformancePercentage,
-      summary: {
-        critical: results.criticalIssues.length,
-        warnings: results.warnings.length,
-        passed: results.passed.length,
-      },
-      criticalIssues: results.criticalIssues,
-      warnings: results.warnings,
-      passed: results.passed,
-      recommendation: results.criticalIssues.length > 0 
-        ? "Address critical issues before launch"
-        : "Minor improvements recommended",
-    }, null, 2);
-  } catch (error: unknown) {
-    return JSON.stringify({
-      error: `Accessibility check failed: ${error instanceof Error ? error.message : String(error)}`,
-    }, null, 2);
-  }
-}
-
-async function reviewTypography(
-  imagePath: string,
-  aspects?: string[]
-): Promise<string> {
-  try {
-    const review = {
-      overallScore: 8,
-      findings: [] as TypographyFinding[],
-      recommendations: [] as TypographyRecommendation[],
-    };
-
-    const aspectsToCheck = aspects || [
-      "hierarchy",
-      "readability",
-      "font_pairing",
-      "size_scale",
-      "line_height",
-    ];
-
-    if (aspectsToCheck.includes("hierarchy")) {
-      review.findings.push({
-        aspect: "hierarchy",
-        score: 9,
-        observations: [
-          "Clear distinction between heading levels",
-          "H1: 36px, H2: 28px, H3: 20px - good progression",
-          "Visual weight appropriately distributed",
-        ],
-        issues: [],
-      });
-    }
-
-    if (aspectsToCheck.includes("readability")) {
-      review.findings.push({
-        aspect: "readability",
-        score: 7,
-        observations: [
-          "Body text size is adequate (16px)",
-          "Good character per line count (~65 characters)",
-        ],
-        issues: [
-          "Line height should be 1.5-1.6 for body text (currently 1.4)",
-          "Letter spacing on headings could be tighter",
-        ],
-      });
-    }
-
-    if (aspectsToCheck.includes("font_pairing")) {
-      review.findings.push({
-        aspect: "font_pairing",
-        score: 8,
-        observations: [
-          "Sans-serif headings with serif body creates nice contrast",
-          "Weights are well-chosen",
-        ],
-        issues: [
-          "Consider limiting to 2 font families (currently using 3)",
-        ],
-      });
-    }
-
-    if (aspectsToCheck.includes("size_scale")) {
-      review.findings.push({
-        aspect: "size_scale",
-        score: 9,
-        observations: [
-          "Follows modular scale (1.25 ratio)",
-          "Consistent sizing across components",
-        ],
-        issues: [],
-      });
-    }
-
-    if (aspectsToCheck.includes("line_height")) {
-      review.findings.push({
-        aspect: "line_height",
-        score: 6,
-        observations: [
-          "Headings have appropriate tight line-height (1.2)",
-        ],
-        issues: [
-          "Body text line-height too tight (1.4, should be 1.5-1.6)",
-          "Small text needs more line-height for readability",
-        ],
-      });
-    }
-
-    review.recommendations = [
-      {
-        priority: "high",
-        suggestion: "Increase body text line-height to 1.6",
-        reasoning: "Improves readability, especially for longer content",
-        implementation: "Update CSS: line-height: 1.6",
-      },
-      {
-        priority: "medium",
-        suggestion: "Reduce to 2 font families",
-        reasoning: "Simplifies design system and improves performance",
-        implementation: "Remove tertiary font, use primary for all headings",
-      },
-      {
-        priority: "low",
-        suggestion: "Tighten letter-spacing on large headings",
-        reasoning: "Creates more refined, professional appearance",
-        implementation: "Add letter-spacing: -0.02em to H1, H2",
-      },
-    ];
-
-    return JSON.stringify(review, null, 2);
-  } catch (error: unknown) {
-    return JSON.stringify({
-      error: `Typography review failed: ${error instanceof Error ? error.message : String(error)}`,
-    }, null, 2);
-  }
-}
-
-async function validateSpacing(
-  imagePath: string,
-  baseUnit?: number,
-  _checkConsistency: boolean = true
-): Promise<string> {
-  try {
-    const validation = {
-      baseUnit: baseUnit || 8,
-      consistency: "good",
-      findings: [] as SpacingFinding[],
-      issues: [] as SpacingIssue[],
-    };
-
-    validation.findings = [
-      {
-        element: "Page margins",
-        spacing: "24px",
-        compliant: true,
-        note: "3x base unit (8px)",
-      },
-      {
-        element: "Card padding",
-        spacing: "16px",
-        compliant: true,
-        note: "2x base unit (8px)",
-      },
-      {
-        element: "Button spacing",
-        spacing: "12px 24px",
-        compliant: false,
-        note: "12px not on 8px grid, use 16px",
-      },
-      {
-        element: "Section gaps",
-        spacing: "48px",
-        compliant: true,
-        note: "6x base unit (8px)",
-      },
-    ];
-
-    validation.issues = [
-      {
-        element: "Button vertical padding",
-        current: "12px",
-        suggested: "16px",
-        reasoning: "Aligns with 8px grid system",
-      },
-      {
-        element: "Icon margins",
-        current: "6px",
-        suggested: "8px",
-        reasoning: "Use base unit for consistency",
-      },
-    ];
-
-    const compliant = validation.findings.filter(f => f.compliant).length;
-    const total = validation.findings.length;
-    const compliancePercentage = Math.round((compliant / total) * 100);
-
-    validation.consistency = compliancePercentage >= 90 ? "excellent" :
-                            compliancePercentage >= 70 ? "good" : "needs improvement";
-
-    return JSON.stringify({
-      baseUnit: validation.baseUnit,
-      consistency: validation.consistency,
-      compliancePercentage,
-      findings: validation.findings,
-      issues: validation.issues,
-      recommendation: validation.issues.length > 0
-        ? `Adjust ${validation.issues.length} spacing values to align with ${validation.baseUnit}px grid`
-        : "Spacing is consistent and follows grid system",
-    }, null, 2);
-  } catch (error: unknown) {
-    return JSON.stringify({
-      error: `Spacing validation failed: ${error instanceof Error ? error.message : String(error)}`,
-    }, null, 2);
-  }
-}
-
-async function checkColorScheme(
-  imagePath: string,
-  brandColors?: string[],
-  checks?: string[]
-): Promise<string> {
-  try {
-    const analysis = {
-      palette: [] as ColorPaletteEntry[],
-      findings: [] as ColorFinding[],
-      issues: [] as ColorIssue[],
-    };
-
-    const checksToRun = checks || ["contrast", "harmony", "accessibility"];
-
-    // Mock detected colors (in production, would extract from image)
-    analysis.palette = [
-      { color: "#2C3E50", usage: "primary text", percentage: 30 },
-      { color: "#3498DB", usage: "primary CTA", percentage: 15 },
-      { color: "#ECF0F1", usage: "background", percentage: 40 },
-      { color: "#95A5A6", usage: "secondary text", percentage: 10 },
-      { color: "#E74C3C", usage: "error/alert", percentage: 5 },
-    ];
-
-    if (checksToRun.includes("contrast")) {
-      analysis.findings.push({
-        check: "contrast",
-        status: "warning",
-        details: [
-          {
-            combination: "#95A5A6 on #ECF0F1",
-            ratio: "3.2:1",
-            wcagAA: "fail",
-            suggestion: "Use #7F8C8D for 4.5:1 contrast",
-          },
-        ],
-      });
-    }
-
-    if (checksToRun.includes("harmony")) {
-      analysis.findings.push({
-        check: "harmony",
-        status: "pass",
-        observations: [
-          "Colors follow analogous scheme",
-          "Good balance of warm and cool tones",
-          "Appropriate use of neutrals",
-        ],
-      });
-    }
-
-    if (checksToRun.includes("accessibility")) {
-      analysis.issues.push({
-        issue: "Color not the sole means of conveying information",
-        recommendation: "Add icons or text labels alongside color-coded elements",
-      });
-    }
-
-    if (checksToRun.includes("brand_consistency") && brandColors) {
-      const usedBrandColors = analysis.palette
-        .filter(p => brandColors.includes(p.color.toUpperCase()))
-        .length;
-      
-      analysis.findings.push({
-        check: "brand_consistency",
-        status: usedBrandColors >= brandColors.length * 0.7 ? "pass" : "warning",
-        brandColorsUsed: usedBrandColors,
-        brandColorsTotal: brandColors.length,
-      });
-    }
-
-    return JSON.stringify({
-      palette: analysis.palette,
-      findings: analysis.findings,
-      issues: analysis.issues,
-      overallRating: analysis.issues.length === 0 ? "good" : "needs improvement",
-    }, null, 2);
-  } catch (error: unknown) {
-    return JSON.stringify({
-      error: `Color scheme check failed: ${error instanceof Error ? error.message : String(error)}`,
-    }, null, 2);
-  }
-}
-
-async function suggestImprovements(
-  imagePath: string,
-  focusAreas?: string[],
-  priority: string = "all"
-): Promise<string> {
-  try {
-    let improvements = [
-      {
-        priority: "critical",
-        category: "accessibility",
-        title: "Improve text contrast",
-        problem: "Text contrast below WCAG AA (3.2:1)",
-        solution: "Darken text color to #595959 for 4.5:1 contrast",
-        impact: "High - affects all users, especially visually impaired",
-        effort: "Low - simple color change",
-      },
-      {
-        priority: "critical",
-        category: "accessibility",
-        title: "Add focus indicators",
-        problem: "No visible focus states on interactive elements",
-        solution: "Add 2px solid outline with 3:1 contrast on :focus",
-        impact: "High - critical for keyboard navigation",
-        effort: "Low - CSS addition",
-      },
-      {
-        priority: "high",
-        category: "visual_hierarchy",
-        title: "Strengthen primary CTA",
-        problem: "Primary button doesn't stand out enough",
-        solution: "Increase size by 20%, add subtle drop shadow",
-        impact: "Medium - improves conversion rate",
-        effort: "Low - CSS adjustments",
-      },
-      {
-        priority: "high",
-        category: "layout",
-        title: "Improve mobile spacing",
-        problem: "Content feels cramped on mobile",
-        solution: "Increase vertical spacing between sections to 32px",
-        impact: "Medium - better mobile experience",
-        effort: "Low - responsive CSS",
-      },
-      {
-        priority: "medium",
-        category: "typography",
-        title: "Increase body line-height",
-        problem: "Line-height of 1.4 reduces readability",
-        solution: "Change line-height to 1.6",
-        impact: "Low - improves readability slightly",
-        effort: "Low - single CSS property",
-      },
-      {
-        priority: "medium",
-        category: "spacing",
-        title: "Standardize card margins",
-        problem: "Inconsistent spacing between cards",
-        solution: "Use consistent 16px margin on all sides",
-        impact: "Low - visual polish",
-        effort: "Low - CSS update",
-      },
-      {
-        priority: "medium",
-        category: "usability",
-        title: "Reposition search",
-        problem: "Search bar not in expected location",
-        solution: "Move to top-right of header (standard position)",
-        impact: "Medium - reduces time to find",
-        effort: "Medium - layout restructure",
-      },
-    ];
-
-    // Filter by focus areas
-    if (focusAreas && focusAreas.length > 0) {
-      improvements = improvements.filter(imp => 
-        focusAreas.includes(imp.category)
-      );
-    }
-
-    // Filter by priority
-    if (priority !== "all") {
-      const priorityLevels: Record<string, number> = {
-        critical: 0,
-        high: 1,
-        medium: 2,
-        low: 3,
-      };
-      const minLevel = priorityLevels[priority];
-      improvements = improvements.filter(imp => 
-        priorityLevels[imp.priority] <= minLevel
-      );
-    }
-
-    const summary = {
-      total: improvements.length,
-      critical: improvements.filter(i => i.priority === "critical").length,
-      high: improvements.filter(i => i.priority === "high").length,
-      medium: improvements.filter(i => i.priority === "medium").length,
-      estimatedEffort: calculateTotalEffort(improvements),
-    };
-
-    return JSON.stringify({
-      summary,
-      improvements,
-      actionPlan: generateActionPlan(improvements),
-    }, null, 2);
-  } catch (error: unknown) {
-    return JSON.stringify({
-      error: `Improvement suggestions failed: ${error instanceof Error ? error.message : String(error)}`,
-    }, null, 2);
-  }
-}
+// ---------------------------------------------------------------------------
+// Wireframe generation — legitimate, deterministic text/HTML/diagram
+// generation from a text description. This does NOT analyze an image, so it
+// is unaffected by the NO-FAKES fix applied to the review tools above.
+// ---------------------------------------------------------------------------
 
 async function generateWireframe(
   designDescription: string,
@@ -987,7 +174,7 @@ async function generateWireframe(
     } else if (format === "mermaid") {
       return generateMermaidWireframe(designDescription, designType);
     }
-    
+
     return JSON.stringify({ error: "Unsupported format" });
   } catch (error: unknown) {
     return JSON.stringify({
@@ -996,260 +183,9 @@ async function generateWireframe(
   }
 }
 
-async function compareDesigns(
-  imagePathA: string,
-  imagePathB: string,
-  comparisonType: string,
-  metrics?: string[]
-): Promise<string> {
-  try {
-    const comparison = {
-      type: comparisonType,
-      versionA: {
-        scores: {} as Record<string, number>,
-      },
-      versionB: {
-        scores: {} as Record<string, number>,
-      },
-      differences: [] as DesignDifference[],
-      recommendation: "",
-    };
-
-    const metricsToCheck = metrics || [
-      "visual_impact",
-      "clarity",
-      "accessibility",
-      "consistency",
-    ];
-
-    // Mock comparison results
-    for (const metric of metricsToCheck) {
-      comparison.versionA.scores[metric] = Math.floor(Math.random() * 3) + 7;
-      comparison.versionB.scores[metric] = Math.floor(Math.random() * 3) + 7;
-    }
-
-    comparison.differences = [
-      {
-        aspect: "Visual Hierarchy",
-        versionA: "Primary CTA less prominent",
-        versionB: "Primary CTA more emphasized with larger size and shadow",
-        winner: "B",
-      },
-      {
-        aspect: "Color Contrast",
-        versionA: "Some text below WCAG AA (3.2:1)",
-        versionB: "All text meets WCAG AA (4.5:1+)",
-        winner: "B",
-      },
-      {
-        aspect: "Spacing",
-        versionA: "Tighter spacing, more content visible",
-        versionB: "More generous spacing, better breathing room",
-        winner: "Depends on goal",
-      },
-    ];
-
-    // Calculate overall scores
-    const scoreA = Object.values(comparison.versionA.scores)
-      .reduce((a, b) => a + b, 0) / metricsToCheck.length;
-    const scoreB = Object.values(comparison.versionB.scores)
-      .reduce((a, b) => a + b, 0) / metricsToCheck.length;
-
-    comparison.recommendation = scoreB > scoreA 
-      ? `Version B scores higher (${scoreB.toFixed(1)} vs ${scoreA.toFixed(1)}). Recommend implementing Version B.`
-      : scoreA > scoreB
-      ? `Version A scores higher (${scoreA.toFixed(1)} vs ${scoreB.toFixed(1)}). Recommend staying with Version A.`
-      : "Versions are equal. Consider A/B testing with users.";
-
-    return JSON.stringify({
-      comparison,
-      overallScores: {
-        versionA: scoreA.toFixed(1),
-        versionB: scoreB.toFixed(1),
-      },
-    }, null, 2);
-  } catch (error: unknown) {
-    return JSON.stringify({
-      error: `Design comparison failed: ${error instanceof Error ? error.message : String(error)}`,
-    }, null, 2);
-  }
-}
-
-async function checkUsability(
-  imagePath: string,
-  userFlow?: string,
-  heuristics?: string[]
-): Promise<string> {
-  try {
-    const results = {
-      overallScore: 7,
-      heuristicScores: [] as HeuristicScore[],
-      issues: [] as Record<string, unknown>[],
-      recommendations: [] as UsabilityRecommendation[],
-    };
-
-    const heuristicsToCheck = heuristics || [
-      "visibility",
-      "feedback",
-      "affordance",
-      "consistency",
-      "error_prevention",
-    ];
-
-    if (heuristicsToCheck.includes("visibility")) {
-      results.heuristicScores.push({
-        heuristic: "Visibility of system status",
-        score: 8,
-        observations: [
-          "Loading states are shown",
-          "Active page clearly indicated in navigation",
-        ],
-        issues: [
-          "No progress indicator for multi-step forms",
-        ],
-      });
-    }
-
-    if (heuristicsToCheck.includes("feedback")) {
-      results.heuristicScores.push({
-        heuristic: "System feedback",
-        score: 6,
-        observations: [
-          "Button states change on hover",
-        ],
-        issues: [
-          "No confirmation after form submission",
-          "Missing error messages on failed actions",
-        ],
-      });
-    }
-
-    if (heuristicsToCheck.includes("affordance")) {
-      results.heuristicScores.push({
-        heuristic: "Affordance and signifiers",
-        score: 7,
-        observations: [
-          "Buttons look clickable",
-          "Links are distinguishable",
-        ],
-        issues: [
-          "Some clickable cards don't look interactive",
-        ],
-      });
-    }
-
-    if (heuristicsToCheck.includes("consistency")) {
-      results.heuristicScores.push({
-        heuristic: "Consistency and standards",
-        score: 9,
-        observations: [
-          "UI patterns are consistent throughout",
-          "Icons follow standard conventions",
-        ],
-        issues: [],
-      });
-    }
-
-    if (heuristicsToCheck.includes("error_prevention")) {
-      results.heuristicScores.push({
-        heuristic: "Error prevention",
-        score: 6,
-        observations: [
-          "Required fields are marked",
-        ],
-        issues: [
-          "No confirmation before destructive actions",
-          "Missing input validation feedback before submission",
-        ],
-      });
-    }
-
-    results.recommendations = [
-      {
-        priority: "high",
-        heuristic: "feedback",
-        suggestion: "Add confirmation messages after form submissions",
-        impact: "Reduces user anxiety and confusion",
-      },
-      {
-        priority: "high",
-        heuristic: "error_prevention",
-        suggestion: "Add confirmation dialog before deleting items",
-        impact: "Prevents accidental data loss",
-      },
-      {
-        priority: "medium",
-        heuristic: "affordance",
-        suggestion: "Add hover states to clickable cards",
-        impact: "Makes interactive elements more discoverable",
-      },
-    ];
-
-    return JSON.stringify(results, null, 2);
-  } catch (error: unknown) {
-    return JSON.stringify({
-      error: `Usability check failed: ${error instanceof Error ? error.message : String(error)}`,
-    }, null, 2);
-  }
-}
-
-// Utility functions
-function getGrade(score: number): string {
-  if (score >= 9) return "A (Excellent)";
-  if (score >= 8) return "B (Good)";
-  if (score >= 7) return "C (Satisfactory)";
-  if (score >= 6) return "D (Needs Improvement)";
-  return "F (Poor)";
-}
-
-function generateImprovedWireframe(designType: string): WireframeDescription {
-  return {
-    type: designType,
-    format: "description",
-    improvements: [
-      "Larger primary CTA button (48px height)",
-      "Increased contrast on secondary text",
-      "Added visible focus indicators",
-      "More generous spacing (24px between sections)",
-      "Search moved to top-right header",
-      "Clear visual hierarchy with size and weight",
-    ],
-    layout: designType === "mobile" 
-      ? "Single column, stacked vertically, 16px margins"
-      : "2-column grid, sidebar + main content, 32px margins",
-  };
-}
-
-function calculateTotalEffort(improvements: Improvement[]): string {
-  const efforts = improvements.map(i => i.effort);
-  const low = efforts.filter(e => e === "Low").length;
-  const medium = efforts.filter(e => e === "Medium").length;
-  const high = efforts.filter(e => e === "High").length;
-  
-  const hours = (low * 1) + (medium * 4) + (high * 8);
-  return `~${hours} hours`;
-}
-
-function generateActionPlan(improvements: Improvement[]): ActionPlan {
-  return {
-    phase1: {
-      title: "Critical Fixes (Week 1)",
-      items: improvements.filter(i => i.priority === "critical"),
-    },
-    phase2: {
-      title: "High Priority (Week 2)",
-      items: improvements.filter(i => i.priority === "high"),
-    },
-    phase3: {
-      title: "Medium Priority (Week 3-4)",
-      items: improvements.filter(i => i.priority === "medium"),
-    },
-  };
-}
-
 function generateHTMLWireframe(description: string, designType: string, annotated: boolean): string {
   const width = designType === "mobile" ? "375px" : "1200px";
-  
+
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -1327,14 +263,14 @@ function generateHTMLWireframe(description: string, designType: string, annotate
         <div class="nav-item"></div>
       </nav>
     </header>
-    
+
     <section class="hero">
       <div class="hero-title"></div>
       <div class="hero-text"></div>
       <div class="cta-button"></div>
       ${annotated ? '<p class="annotation">✓ CTA prominent with good size (48px height)</p>' : ''}
     </section>
-    
+
     <section class="content">
       <div class="card">
         <div class="card-image"></div>
@@ -1442,12 +378,12 @@ function generateMermaidWireframe(_description: string, _designType: string): st
     F --> G[Card 1: Image + Title + Description]
     F --> H[Card 2: Image + Title + Description]
     F --> I[Card 3: Image + Title + Description]
-    
+
     style E fill:#3498db,stroke:#2c3e50,stroke-width:3px
     style A fill:#ecf0f1,stroke:#2c3e50
     style B fill:#f5f5f5,stroke:#2c3e50
     style F fill:#ffffff,stroke:#2c3e50
-    
+
     classDef cardStyle fill:#f9f9f9,stroke:#333,stroke-width:2px
     class G,H,I cardStyle`;
 }
@@ -1456,21 +392,21 @@ function buildHelloVerbose(): string {
   return [
     `${SERVER_COLOR_EMOJI} # ${SERVER_NAME} v${SERVER_VERSION}`,
     ``,
-    `**UI/UX review** — design analysis, WCAG accessibility audits, typography, spacing, color, wireframes for Claude Code.`,
+    `**UI/UX review** — screenshot-grounded design review for Claude Code. This server has no vision model of its own: each review tool reads the real screenshot and returns it as an image, paired with a structured evaluation rubric (WCAG criteria, Nielsen's heuristics, typography/spacing/color checklists) for the calling model — which does have vision — to evaluate against the attached image. The server never fabricates scores or findings.`,
     ``,
     `## Available Tools`,
     ``,
     `| Tool | Description |`,
     `|------|-------------|`,
-    `| \`analyze_design\` | Comprehensive UI/UX analysis of design screenshots |`,
-    `| \`check_accessibility\` | WCAG accessibility audit with contrast, focus, touch targets |`,
-    `| \`review_typography\` | Typography analysis: hierarchy, readability, font pairing |`,
-    `| \`validate_spacing\` | Spacing consistency validation against grid system |`,
-    `| \`check_color_scheme\` | Color palette analysis: contrast, harmony, brand consistency |`,
-    `| \`suggest_improvements\` | Prioritized improvement suggestions with effort estimates |`,
-    `| \`generate_wireframe\` | Generate wireframes in HTML, ASCII, or Mermaid format |`,
-    `| \`compare_designs\` | A/B comparison of two design versions with scored metrics |`,
-    `| \`check_usability\` | Nielsen's usability heuristics evaluation |`,
+    `| \`analyze_design\` | Returns the screenshot + a full design-review rubric (hierarchy, spacing, typography, color, accessibility, usability, consistency, responsiveness) to evaluate |`,
+    `| \`check_accessibility\` | Returns the screenshot + a WCAG rubric (contrast, text size, touch targets, focus indicators) to evaluate |`,
+    `| \`review_typography\` | Returns the screenshot + a typography rubric (hierarchy, readability, font pairing, scale, line height) to evaluate |`,
+    `| \`validate_spacing\` | Returns the screenshot + a spacing/grid-consistency rubric to evaluate |`,
+    `| \`check_color_scheme\` | Returns the screenshot + a color rubric (contrast, harmony, accessibility, brand consistency) to evaluate |`,
+    `| \`suggest_improvements\` | Returns the screenshot + a prioritized checklist of areas to inspect for real, concrete improvements |`,
+    `| \`generate_wireframe\` | Generate wireframes in HTML, ASCII, or Mermaid format from a text description |`,
+    `| \`compare_designs\` | Returns both screenshots + a comparison rubric for the calling model to compare directly |`,
+    `| \`check_usability\` | Returns the screenshot + Nielsen's usability heuristics rubric to evaluate |`,
     `| \`hello\` | Handshake check — verify server is online |`,
     ``,
     `## Usage`,
@@ -1478,15 +414,15 @@ function buildHelloVerbose(): string {
     `\`\`\``,
     `hello {}                                                  → Quick greeting + status check`,
     `hello {"verbose": true}                                   → Full server info and tool catalog`,
-    `analyze_design {"imagePath": "screenshot.png"}           → Full design analysis`,
-    `check_accessibility {"imagePath": "screenshot.png"}      → WCAG accessibility audit`,
-    `review_typography {"imagePath": "screenshot.png"}        → Typography review`,
-    `validate_spacing {"imagePath": "screenshot.png"}         → Spacing validation`,
-    `check_color_scheme {"imagePath": "screenshot.png"}       → Color scheme analysis`,
-    `suggest_improvements {"imagePath": "screenshot.png"}     → Improvement suggestions`,
+    `analyze_design {"imagePath": "screenshot.png"}           → Screenshot + design review rubric`,
+    `check_accessibility {"imagePath": "screenshot.png"}      → Screenshot + WCAG rubric`,
+    `review_typography {"imagePath": "screenshot.png"}        → Screenshot + typography rubric`,
+    `validate_spacing {"imagePath": "screenshot.png"}         → Screenshot + spacing rubric`,
+    `check_color_scheme {"imagePath": "screenshot.png"}       → Screenshot + color rubric`,
+    `suggest_improvements {"imagePath": "screenshot.png"}     → Screenshot + improvement checklist`,
     `generate_wireframe {"designDescription": "hero section", "designType": "desktop", "format": "html"}  → Wireframe`,
-    `compare_designs {"imagePathA": "v1.png", "imagePathB": "v2.png", "comparisonType": "ab_test"}  → A/B compare`,
-    `check_usability {"imagePath": "screenshot.png"}          → Usability heuristics`,
+    `compare_designs {"imagePathA": "v1.png", "imagePathB": "v2.png", "comparisonType": "ab_test"}  → Both screenshots + comparison rubric`,
+    `check_usability {"imagePath": "screenshot.png"}          → Screenshot + usability heuristics rubric`,
     `\`\`\``,
     ``,
     `## Author`,
@@ -1505,18 +441,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "analyze_design",
-        description: "Comprehensive UI/UX analysis of design screenshots. Evaluates visual hierarchy, spacing, typography, colors, accessibility, usability, and consistency. Provides scored findings and actionable recommendations. Optionally generates improved wireframe.",
+        description: "Reads the design screenshot and returns it as an image, together with a structured design-review rubric (visual hierarchy, spacing, typography, color, accessibility, usability, consistency, responsiveness) for you to evaluate against the attached image. Optionally requests a wireframe suggestion for the improved layout.",
         inputSchema: {
           type: "object",
           properties: {
-            imagePath: { 
-              type: "string", 
-              description: "Path to design screenshot image" 
+            imagePath: {
+              type: "string",
+              description: "Path to design screenshot image"
             },
-            designType: { 
-              type: "string", 
+            designType: {
+              type: "string",
               enum: ["mobile", "desktop", "tablet", "responsive"],
-              description: "Type of design being reviewed" 
+              description: "Type of design being reviewed"
             },
             checkpoints: {
               type: "array",
@@ -1526,9 +462,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               },
               description: "Specific aspects to check"
             },
-            includeWireframe: { 
-              type: "boolean", 
-              description: "Generate wireframe suggestion" 
+            includeWireframe: {
+              type: "boolean",
+              description: "Generate wireframe suggestion"
             },
           },
           required: ["imagePath"],
@@ -1541,18 +477,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "check_accessibility",
-        description: "Detailed WCAG accessibility audit. Checks color contrast ratios, text sizes, touch target dimensions, focus indicators, and more. Reports conformance level and provides specific fixes for violations.",
+        description: "Reads the design screenshot and returns it as an image, together with a WCAG accessibility rubric (color contrast, text size, touch target dimensions, focus indicators, alt-text presence) for you to evaluate against the attached image.",
         inputSchema: {
           type: "object",
           properties: {
-            imagePath: { 
-              type: "string", 
-              description: "Path to design screenshot" 
+            imagePath: {
+              type: "string",
+              description: "Path to design screenshot"
             },
-            wcagLevel: { 
-              type: "string", 
+            wcagLevel: {
+              type: "string",
               enum: ["A", "AA", "AAA"],
-              description: "WCAG conformance level" 
+              description: "WCAG conformance level"
             },
             checks: {
               type: "array",
@@ -1573,13 +509,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "review_typography",
-        description: "In-depth typography analysis. Evaluates type hierarchy, readability, font pairing, size scale, line height, and letter spacing. Provides specific recommendations for improvements.",
+        description: "Reads the design screenshot and returns it as an image, together with a typography evaluation rubric (hierarchy, readability, font pairing, size scale, line height, letter spacing) for you to evaluate against the attached image.",
         inputSchema: {
           type: "object",
           properties: {
-            imagePath: { 
-              type: "string", 
-              description: "Path to design screenshot" 
+            imagePath: {
+              type: "string",
+              description: "Path to design screenshot"
             },
             aspects: {
               type: "array",
@@ -1600,21 +536,21 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "validate_spacing",
-        description: "Spacing consistency validation against design grid system. Checks adherence to base unit (e.g., 8px grid), identifies inconsistencies, and suggests corrections.",
+        description: "Reads the design screenshot and returns it as an image, together with a spacing/grid-consistency rubric (base unit adherence, margin/padding consistency, vertical rhythm) for you to evaluate against the attached image.",
         inputSchema: {
           type: "object",
           properties: {
-            imagePath: { 
-              type: "string", 
-              description: "Path to design screenshot" 
+            imagePath: {
+              type: "string",
+              description: "Path to design screenshot"
             },
-            baseUnit: { 
-              type: "number", 
-              description: "Expected base spacing unit (e.g., 8)" 
+            baseUnit: {
+              type: "number",
+              description: "Expected base spacing unit (e.g., 8)"
             },
-            checkConsistency: { 
-              type: "boolean", 
-              description: "Check spacing consistency" 
+            checkConsistency: {
+              type: "boolean",
+              description: "Check spacing consistency"
             },
           },
           required: ["imagePath"],
@@ -1627,13 +563,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "check_color_scheme",
-        description: "Color palette analysis. Extracts used colors, checks contrast ratios, evaluates color harmony, verifies brand consistency, and ensures accessibility.",
+        description: "Reads the design screenshot and returns it as an image, together with a color rubric (contrast, harmony, color-independence for accessibility, brand consistency) for you to evaluate against the attached image.",
         inputSchema: {
           type: "object",
           properties: {
-            imagePath: { 
-              type: "string", 
-              description: "Path to design screenshot" 
+            imagePath: {
+              type: "string",
+              description: "Path to design screenshot"
             },
             brandColors: {
               type: "array",
@@ -1659,13 +595,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "suggest_improvements",
-        description: "Generate prioritized improvement suggestions. Analyzes design and provides actionable recommendations with priority levels, impact assessment, and estimated effort.",
+        description: "Reads the design screenshot and returns it as an image, together with a prioritized checklist of areas to inspect (layout, visual hierarchy, typography, color, spacing, usability, accessibility) so you can report concrete, real improvements found in the attached image.",
         inputSchema: {
           type: "object",
           properties: {
-            imagePath: { 
-              type: "string", 
-              description: "Path to design screenshot" 
+            imagePath: {
+              type: "string",
+              description: "Path to design screenshot"
             },
             focusAreas: {
               type: "array",
@@ -1695,23 +631,23 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         inputSchema: {
           type: "object",
           properties: {
-            designDescription: { 
-              type: "string", 
-              description: "Description of the design to wireframe" 
+            designDescription: {
+              type: "string",
+              description: "Description of the design to wireframe"
             },
-            designType: { 
-              type: "string", 
+            designType: {
+              type: "string",
               enum: ["mobile", "desktop", "tablet"],
-              description: "Device type" 
+              description: "Device type"
             },
-            format: { 
-              type: "string", 
+            format: {
+              type: "string",
               enum: ["html", "ascii", "mermaid"],
-              description: "Wireframe output format" 
+              description: "Wireframe output format"
             },
-            includeAnnotations: { 
-              type: "boolean", 
-              description: "Include design annotations" 
+            includeAnnotations: {
+              type: "boolean",
+              description: "Include design annotations"
             },
           },
           required: ["designDescription", "designType", "format"],
@@ -1724,22 +660,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "compare_designs",
-        description: "A/B test or iterate comparison between two design versions. Scores each version across multiple metrics and provides data-driven recommendation.",
+        description: "Reads both design screenshots and returns them as images (version A, then version B), together with a comparison rubric for you to directly compare the two attached images metric by metric and give a reasoned recommendation. No score is computed by the server.",
         inputSchema: {
           type: "object",
           properties: {
-            imagePathA: { 
-              type: "string", 
-              description: "Path to first design (version A)" 
+            imagePathA: {
+              type: "string",
+              description: "Path to first design (version A)"
             },
-            imagePathB: { 
-              type: "string", 
-              description: "Path to second design (version B)" 
+            imagePathB: {
+              type: "string",
+              description: "Path to second design (version B)"
             },
-            comparisonType: { 
-              type: "string", 
+            comparisonType: {
+              type: "string",
               enum: ["ab_test", "iteration", "responsive"],
-              description: "Type of comparison" 
+              description: "Type of comparison"
             },
             metrics: {
               type: "array",
@@ -1760,17 +696,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "check_usability",
-        description: "Nielsen's usability heuristics evaluation. Checks visibility, feedback, affordance, consistency, error prevention, and more. Provides scored assessment and recommendations.",
+        description: "Reads the design screenshot and returns it as an image, together with Nielsen's usability heuristics rubric (visibility, feedback, affordance, consistency, error prevention, recognition, flexibility, aesthetic) for you to evaluate against the attached image.",
         inputSchema: {
           type: "object",
           properties: {
-            imagePath: { 
-              type: "string", 
-              description: "Path to design screenshot" 
+            imagePath: {
+              type: "string",
+              description: "Path to design screenshot"
             },
-            userFlow: { 
-              type: "string", 
-              description: "Expected user flow or task" 
+            userFlow: {
+              type: "string",
+              description: "Expected user flow or task"
             },
             heuristics: {
               type: "array",
@@ -1817,55 +753,64 @@ registerTrackedToolHandler(instance, async (request) => {
   logger.info("Tool called", { requestId, tool: name, args });
 
   try {
-    let response;
+    // Responses mix MCP text and image content blocks (images are returned so
+    // the calling vision model does the analysis, rather than server-computed
+    // scores — see rubrics.ts).
+    let response: ToolResponse;
 
     switch (name) {
       case "analyze_design": {
         const { imagePath: rawImagePath, designType, checkpoints, includeWireframe } =
           AnalyzeDesignSchema.parse(args);
         const imagePath = sanitizePath(rawImagePath, process.cwd());
-        const result = await analyzeDesign(imagePath, designType, checkpoints, includeWireframe);
-        response = { content: [{ type: "text", text: `Design analysis results:\n\n${result}` }] };
+        const image = await imageContentBlock(imagePath);
+        const rubric = buildDesignRubric(designType, checkpoints, includeWireframe);
+        response = { content: [image, { type: "text", text: rubric }] };
         break;
       }
 
       case "check_accessibility": {
         const { imagePath: rawImagePath, wcagLevel, checks } = CheckAccessibilitySchema.parse(args);
         const imagePath = sanitizePath(rawImagePath, process.cwd());
-        const result = await checkAccessibility(imagePath, wcagLevel, checks);
-        response = { content: [{ type: "text", text: `Accessibility audit results:\n\n${result}` }] };
+        const image = await imageContentBlock(imagePath);
+        const rubric = buildAccessibilityRubric(wcagLevel, checks);
+        response = { content: [image, { type: "text", text: rubric }] };
         break;
       }
 
       case "review_typography": {
         const { imagePath: rawImagePath, aspects } = ReviewTypographySchema.parse(args);
         const imagePath = sanitizePath(rawImagePath, process.cwd());
-        const result = await reviewTypography(imagePath, aspects);
-        response = { content: [{ type: "text", text: `Typography review:\n\n${result}` }] };
+        const image = await imageContentBlock(imagePath);
+        const rubric = buildTypographyRubric(aspects);
+        response = { content: [image, { type: "text", text: rubric }] };
         break;
       }
 
       case "validate_spacing": {
         const { imagePath: rawImagePath, baseUnit, checkConsistency } = ValidateSpacingSchema.parse(args);
         const imagePath = sanitizePath(rawImagePath, process.cwd());
-        const result = await validateSpacing(imagePath, baseUnit, checkConsistency);
-        response = { content: [{ type: "text", text: `Spacing validation:\n\n${result}` }] };
+        const image = await imageContentBlock(imagePath);
+        const rubric = buildSpacingRubric(baseUnit, checkConsistency);
+        response = { content: [image, { type: "text", text: rubric }] };
         break;
       }
 
       case "check_color_scheme": {
         const { imagePath: rawImagePath, brandColors, checks } = CheckColorSchemeSchema.parse(args);
         const imagePath = sanitizePath(rawImagePath, process.cwd());
-        const result = await checkColorScheme(imagePath, brandColors, checks);
-        response = { content: [{ type: "text", text: `Color scheme analysis:\n\n${result}` }] };
+        const image = await imageContentBlock(imagePath);
+        const rubric = buildColorRubric(brandColors, checks);
+        response = { content: [image, { type: "text", text: rubric }] };
         break;
       }
 
       case "suggest_improvements": {
         const { imagePath: rawImagePath, focusAreas, priority } = SuggestImprovementsSchema.parse(args);
         const imagePath = sanitizePath(rawImagePath, process.cwd());
-        const result = await suggestImprovements(imagePath, focusAreas, priority);
-        response = { content: [{ type: "text", text: `Improvement suggestions:\n\n${result}` }] };
+        const image = await imageContentBlock(imagePath);
+        const rubric = buildImprovementsRubric(focusAreas, priority);
+        response = { content: [image, { type: "text", text: rubric }] };
         break;
       }
 
@@ -1882,16 +827,29 @@ registerTrackedToolHandler(instance, async (request) => {
           CompareDesignsSchema.parse(args);
         const imagePathA = sanitizePath(rawImagePathA, process.cwd());
         const imagePathB = sanitizePath(rawImagePathB, process.cwd());
-        const result = await compareDesigns(imagePathA, imagePathB, comparisonType, metrics);
-        response = { content: [{ type: "text", text: `Design comparison:\n\n${result}` }] };
+        const [imageA, imageB] = await Promise.all([
+          imageContentBlock(imagePathA),
+          imageContentBlock(imagePathB),
+        ]);
+        const rubric = buildComparisonRubric(comparisonType, metrics);
+        response = {
+          content: [
+            { type: "text", text: "Version A screenshot:" },
+            imageA,
+            { type: "text", text: "Version B screenshot:" },
+            imageB,
+            { type: "text", text: rubric },
+          ],
+        };
         break;
       }
 
       case "check_usability": {
         const { imagePath: rawImagePath, userFlow, heuristics } = CheckUsabilitySchema.parse(args);
         const imagePath = sanitizePath(rawImagePath, process.cwd());
-        const result = await checkUsability(imagePath, userFlow, heuristics);
-        response = { content: [{ type: "text", text: `Usability assessment:\n\n${result}` }] };
+        const image = await imageContentBlock(imagePath);
+        const rubric = buildUsabilityRubric(userFlow, heuristics);
+        response = { content: [image, { type: "text", text: rubric }] };
         break;
       }
 
@@ -1921,7 +879,10 @@ registerTrackedToolHandler(instance, async (request) => {
 
     const durationMs = measureDuration(startTime);
     logger.info("Tool completed", { requestId, tool: name, durationMs });
-    return response;
+    // mcp-shared's tracked-handler return type models text-only content; the MCP
+    // protocol and SDK also permit image content blocks, which the analysis tools
+    // return so the calling vision model can see the screenshot.
+    return response as unknown as { content: { type: string; text: string }[] };
   } catch (error: unknown) {
     const durationMs = measureDuration(startTime);
     logger.error("Tool failed", { requestId, tool: name, durationMs, error: error instanceof Error ? error.message : String(error) });

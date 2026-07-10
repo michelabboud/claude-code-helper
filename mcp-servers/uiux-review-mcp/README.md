@@ -1,6 +1,6 @@
 # UI/UX Review MCP Server
 
-Expert UI/UX design review from screenshots with accessibility audits, typography analysis, and wireframe generation.
+Screenshot-grounded UI/UX design review for Claude Code — WCAG accessibility rubrics, typography checklists, spacing/color/usability rubrics, and wireframe generation.
 
 ---
 
@@ -10,27 +10,33 @@ Expert UI/UX design review from screenshots with accessibility audits, typograph
 
 | Tool | Purpose |
 |------|---------|
-| **analyze_design** | Comprehensive design review with scored findings |
-| **check_accessibility** | WCAG conformance audit with specific fixes |
-| **review_typography** | Typography hierarchy and readability analysis |
-| **validate_spacing** | Grid system and spacing consistency check |
-| **check_color_scheme** | Color palette analysis and contrast validation |
-| **suggest_improvements** | Prioritized recommendations with impact/effort |
-| **generate_wireframe** | Create improved wireframes (HTML/ASCII/Mermaid) |
-| **compare_designs** | A/B test comparison with data-driven recommendation |
-| **check_usability** | Nielsen's heuristics evaluation |
+| **analyze_design** | Screenshot + full design-review rubric (hierarchy, spacing, typography, color, accessibility, usability, consistency, responsiveness) |
+| **check_accessibility** | Screenshot + WCAG rubric (contrast, text size, touch targets, focus, alt text) |
+| **review_typography** | Screenshot + typography rubric (hierarchy, readability, font pairing, scale, line height) |
+| **validate_spacing** | Screenshot + grid/spacing-consistency rubric |
+| **check_color_scheme** | Screenshot + color rubric (contrast, harmony, accessibility, brand consistency) |
+| **suggest_improvements** | Screenshot + prioritized checklist of areas to inspect for real issues |
+| **generate_wireframe** | Create wireframes (HTML/ASCII/Mermaid) from a text description |
+| **compare_designs** | Both screenshots + comparison rubric for a direct side-by-side evaluation |
+| **check_usability** | Screenshot + Nielsen's usability heuristics rubric |
 
 ---
 
 ## 📸 How It Works
 
-**Input:** Design screenshots (PNG, JPG, WebP)
+**This server has no vision model of its own.** It cannot look at an image and compute a score — and it doesn't pretend to. Instead, every review tool:
 
-**Output:** 
-- Scored analysis (0-10 scale with letter grade)
-- Specific issues with line-by-line feedback
-- Actionable recommendations (priority + effort)
-- Optional wireframe showing improvements
+1. Reads the real screenshot bytes off disk and attaches them to the response as an **MCP image content block**.
+2. Returns a structured **evaluation rubric** — the real WCAG success criteria, Nielsen's heuristics, typography/spacing/color checklists — addressed as instructions to the calling model.
+
+The calling model (Claude, which *does* have vision) is the one that actually looks at the attached screenshot and evaluates it against the rubric. This server's job is to make sure the right image and the right checklist reach the model together — not to fabricate findings about an image it never analyzed.
+
+**Input:** Design screenshots (PNG, JPG, WebP, GIF)
+
+**Output:**
+- The screenshot itself, as an MCP image content block, so the calling model can see it
+- A structured rubric of what to evaluate (specific WCAG criteria, heuristics, checklists) — not a pre-computed verdict
+- For `compare_designs`, both screenshots plus a rubric for comparing them directly
 
 ---
 
@@ -46,40 +52,27 @@ Expert UI/UX design review from screenshots with accessibility audits, typograph
 - Generate wireframe showing improvements"
 ```
 
-**What you get:**
-```json
-{
-  "overallScore": 7,
-  "grade": "C (Satisfactory)",
-  "findings": [
-    {
-      "category": "accessibility",
-      "score": 6,
-      "issues": [
-        "Low contrast on secondary text (3.2:1, needs 4.5:1)",
-        "Focus indicators not visible",
-        "Form inputs missing visible labels"
-      ]
-    }
-  ],
-  "recommendations": [
-    {
-      "priority": "critical",
-      "issue": "Contrast ratio below WCAG AA",
-      "suggestion": "Change color from #999 to #595959",
-      "impact": "Improves readability for visually impaired users"
-    }
-  ],
-  "wireframe": {
-    "improvements": [
-      "Larger primary CTA (48px height)",
-      "Increased contrast on secondary text",
-      "Visible focus indicators",
-      "More generous spacing"
-    ]
-  }
-}
+**What you get back from the tool:** the screenshot (as an image block) plus a rubric like:
+
 ```
+# Design Review Rubric — mobile design
+
+An image is attached to this response. Evaluate the ATTACHED SCREENSHOT
+directly — cite concrete, visible details rather than generic statements...
+
+## Visual hierarchy
+- Does the primary call-to-action stand out clearly (size, color, contrast,
+  position) from secondary actions?
+- Do heading levels show a consistent, legible size/weight progression?
+...
+
+## Accessibility
+- Are interactive elements large enough to tap/click reliably (~44x44px)?
+- Do text/background pairs look like they meet WCAG AA contrast?
+...
+```
+
+Claude (the calling model) then evaluates the attached screenshot against each section and reports what it actually observes.
 
 ---
 
@@ -93,27 +86,7 @@ Expert UI/UX design review from screenshots with accessibility audits, typograph
 - Focus indicators"
 ```
 
-**Output:**
-```json
-{
-  "wcagLevel": "AA",
-  "conformance": "partial",
-  "conformancePercentage": 65,
-  "criticalIssues": [
-    {
-      "wcagCriterion": "1.4.3 Contrast (Minimum)",
-      "findings": [
-        {
-          "element": "Secondary text",
-          "contrast": "3.2:1",
-          "required": "4.5:1",
-          "suggestion": "Change from #999999 to #595959"
-        }
-      ]
-    }
-  ]
-}
-```
+**What you get back:** the screenshot plus a rubric citing the real WCAG success criteria (1.4.3 Contrast, 1.4.4 Resize Text, 2.5.8 Target Size, 2.4.7 Focus Visible) for Claude to check against the attached image, with reporting instructions ("pass / fail / not-verifiable-from-image, with the specific element and reasoning").
 
 ---
 
@@ -127,36 +100,7 @@ Expert UI/UX design review from screenshots with accessibility audits, typograph
 - Line height"
 ```
 
-**Feedback:**
-```json
-{
-  "overallScore": 8,
-  "findings": [
-    {
-      "aspect": "hierarchy",
-      "score": 9,
-      "observations": [
-        "Clear distinction between heading levels",
-        "Good progression: H1: 36px, H2: 28px, H3: 20px"
-      ]
-    },
-    {
-      "aspect": "line_height",
-      "score": 6,
-      "issues": [
-        "Body text too tight (1.4, should be 1.5-1.6)"
-      ]
-    }
-  ],
-  "recommendations": [
-    {
-      "priority": "high",
-      "suggestion": "Increase body line-height to 1.6",
-      "impact": "Significantly improves readability"
-    }
-  ]
-}
-```
+**What you get back:** the screenshot plus a rubric covering hierarchy, readability (line length, line-height), font pairing, and size scale — for Claude to evaluate against what it actually sees.
 
 ---
 
@@ -177,6 +121,8 @@ Format: HTML with annotations"
 - Proper spacing annotations
 - Touch target sizes marked
 - Accessibility notes included
+
+This tool generates a wireframe from your text description — it doesn't analyze an existing image, so there's nothing to fabricate here.
 
 ---
 
@@ -204,6 +150,8 @@ Compare: visual impact, clarity, accessibility
 Recommend which version to launch"
 ```
 
+`compare_designs` returns both screenshots (labeled Version A / Version B) plus a comparison rubric. Claude compares the two attached images directly — no coin flip, no server-side scoring.
+
 ### Iteration Review
 ```
 "Review this iteration:
@@ -226,60 +174,63 @@ Report all violations with specific fixes"
 
 ---
 
-## 🎯 What Gets Checked
+## 🎯 What Gets Evaluated
 
-### Visual Hierarchy (Score 0-10)
-- ✅ Primary CTA prominence
-- ✅ Heading size progression
-- ✅ Information importance alignment
-- ✅ Visual weight distribution
-- ❌ Competing elements
-- ❌ Unclear focal points
+Each rubric below is real domain knowledge (WCAG criteria, Nielsen's heuristics, typography/spacing conventions) that the *calling model* applies to the attached screenshot. The server does not score these itself.
 
-### Spacing (Score 0-10)
-- ✅ Grid system adherence (e.g., 8px base)
-- ✅ Consistent margins/padding
-- ✅ Vertical rhythm
-- ❌ Inconsistent spacing
-- ❌ Cramped layouts
+### Visual Hierarchy
+- Primary CTA prominence
+- Heading size progression
+- Information importance alignment
+- Visual weight distribution
+- Competing elements
+- Unclear focal points
 
-### Typography (Score 0-10)
-- ✅ Clear hierarchy
-- ✅ Readable font sizes (min 16px body)
-- ✅ Appropriate line-height (1.5-1.6)
-- ✅ Good font pairing
-- ❌ Too many fonts (>2 families)
-- ❌ Poor contrast
+### Spacing
+- Grid system adherence (e.g., 8px base)
+- Consistent margins/padding
+- Vertical rhythm
+- Inconsistent spacing
+- Cramped layouts
 
-### Color (Score 0-10)
-- ✅ Cohesive palette
-- ✅ Brand consistency
-- ✅ WCAG contrast ratios
-- ❌ Color-only information
-- ❌ Clashing combinations
+### Typography
+- Clear hierarchy
+- Readable font sizes (min 16px body)
+- Appropriate line-height (1.5-1.6)
+- Good font pairing
+- Too many fonts (>2 families)
+- Poor contrast
 
-### Accessibility (Score 0-10)
-- ✅ 4.5:1 text contrast (WCAG AA)
-- ✅ 44x44px touch targets (mobile)
-- ✅ Visible focus indicators
-- ✅ Form labels present
-- ❌ Missing alt text
-- ❌ Poor contrast
+### Color
+- Cohesive palette
+- Brand consistency
+- WCAG contrast ratios
+- Color-only information
+- Clashing combinations
 
-### Usability (Score 0-10)
-- ✅ Clear CTAs
-- ✅ Intuitive navigation
-- ✅ Feedback on actions
-- ✅ Error prevention
-- ❌ Hidden functionality
-- ❌ No confirmation dialogs
+### Accessibility (WCAG)
+- 4.5:1 text contrast (WCAG AA, 1.4.3)
+- 44x44px touch targets on mobile (2.5.5/2.5.8)
+- Visible focus indicators (2.4.7)
+- Form labels present
+- Missing alt text (flagged as not verifiable from a screenshot alone — needs code/markup review)
 
-### Consistency (Score 0-10)
-- ✅ Uniform button styles
-- ✅ Standardized spacing
-- ✅ Consistent iconography
-- ❌ Pattern variations
-- ❌ Mixed styling
+### Usability (Nielsen's Heuristics)
+- Visibility of system status
+- Feedback on actions
+- Affordance and signifiers
+- Consistency and standards
+- Error prevention
+- Recognition vs. recall
+- Flexibility and efficiency
+- Aesthetic and minimalist design
+
+### Consistency
+- Uniform button styles
+- Standardized spacing
+- Consistent iconography
+- Pattern variations
+- Mixed styling
 
 ---
 
@@ -358,12 +309,15 @@ Create `uiux-reviewer-agent.json`:
   "instructions": "You are a senior UI/UX designer and accessibility expert.
 
 **Review Process:**
-1. **analyze_design** - comprehensive review
-2. **check_accessibility** - WCAG audit (critical priority)
-3. **review_typography** - type analysis
-4. **validate_spacing** - grid consistency
-5. **check_usability** - heuristics evaluation
-6. **suggest_improvements** - prioritized recommendations
+1. **analyze_design** - get the screenshot + full-design rubric
+2. **check_accessibility** - get the screenshot + WCAG rubric (critical priority)
+3. **review_typography** - get the screenshot + type rubric
+4. **validate_spacing** - get the screenshot + grid-consistency rubric
+5. **check_usability** - get the screenshot + heuristics rubric
+6. **suggest_improvements** - get the screenshot + prioritized inspection checklist
+
+Each tool call returns the screenshot plus a rubric — YOU (this model) perform the
+actual evaluation against the attached image. The server never computes a score.
 
 **Standards:**
 - Accessibility is non-negotiable (WCAG AA minimum)
@@ -373,8 +327,8 @@ Create `uiux-reviewer-agent.json`:
 - Touch targets min 44x44px
 
 **Always:**
-- Provide specific, actionable feedback
-- Include exact values (colors, sizes, ratios)
+- Base every observation on what you actually see in the attached screenshot
+- Include exact values you observe (colors, sizes, ratios) — never invented ones
 - Prioritize: critical > high > medium
 - Generate wireframes showing improvements",
   "mcp_servers": ["uiux-review"],
@@ -392,30 +346,22 @@ Create `uiux-reviewer-agent.json`:
 - WebP (.webp)
 - GIF (.gif)
 
-### Analysis Capabilities
-- Visual element detection
-- Color extraction and analysis
-- Text contrast calculation
-- Spacing measurement
-- Layout structure analysis
-- Component identification
+Unknown extensions default to `image/png` as the MCP content-block mimeType.
+
+### What This Server Does
+- Reads the screenshot bytes from disk (path-sanitized against traversal) and returns them as a real MCP image content block
+- Returns a structured rubric (real WCAG criteria, Nielsen's heuristics, typography/spacing/color checklists) for the calling model to apply
+- Generates wireframes (HTML/ASCII/Mermaid) directly from a text description
+
+### What This Server Does NOT Do
+- It does not run computer vision, OCR, or color extraction on the image
+- It does not compute a numeric score, grade, or pass/fail verdict
+- It does not pick an A/B winner — `compare_designs` never uses randomness or a coin flip; the calling model makes the call based on what it sees
 
 ### WCAG Coverage
 - **Level A:** Basic accessibility
 - **Level AA:** Industry standard (recommended)
 - **Level AAA:** Enhanced accessibility
-
----
-
-## 📝 Scoring System
-
-| Score | Grade | Meaning |
-|-------|-------|---------|
-| 9-10 | A | Excellent - professional quality |
-| 8-9 | B | Good - minor improvements needed |
-| 7-8 | C | Satisfactory - several improvements |
-| 6-7 | D | Needs work - significant issues |
-| 0-6 | F | Poor - major redesign needed |
 
 ---
 
@@ -496,28 +442,6 @@ Interactive HTML wireframe with:
 - Accessibility requirements
 - Component annotations"
 ```
-
----
-
-## 🚨 Common Issues Fixed
-
-### Critical (Fix Immediately)
-- ❌ Contrast below WCAG AA (3.2:1 → 4.5:1)
-- ❌ Missing focus indicators
-- ❌ Touch targets too small (<44px)
-- ❌ No form labels
-
-### High Priority (This Week)
-- ❌ Weak visual hierarchy
-- ❌ Inconsistent spacing
-- ❌ Poor typography scale
-- ❌ Missing hover states
-
-### Medium Priority (This Sprint)
-- ❌ Color harmony issues
-- ❌ Line-height too tight
-- ❌ Icon size inconsistency
-- ❌ CTA not prominent enough
 
 ---
 

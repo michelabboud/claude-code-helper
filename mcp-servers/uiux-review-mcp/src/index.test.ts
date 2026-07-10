@@ -8,6 +8,9 @@
  * - Tool name registration (ListTools handler coverage)
  */
 
+import * as fs from "fs";
+import * as path from "path";
+import { fileURLToPath } from "url";
 import { z } from "zod";
 import {
   sanitizePath,
@@ -1170,5 +1173,71 @@ describe("Schema edge cases", () => {
       aspects: "hierarchy",
     });
     expect(result.success).toBe(false);
+  });
+});
+
+// =========================================================================
+// 14. NO-FAKES regression guard
+//
+// index.ts cannot be imported directly in tests: importing it executes
+// runServer() at module scope (it connects a stdio transport), which would
+// hang the Jest process. Instead these tests statically scan the source for
+// the specific fabrication patterns this file was fixed to remove:
+// Math.random()-based "scoring", and hardcoded numeric `score:` fields
+// presented as if they came from real image analysis. The genuine
+// image + rubric behavior is exercised directly in rubrics.test.ts, which
+// index.ts's tool handlers delegate to.
+// =========================================================================
+
+describe("NO-FAKES regression guard (src/index.ts)", () => {
+  const currentDir = path.dirname(fileURLToPath(import.meta.url));
+  const indexSource = fs.readFileSync(path.join(currentDir, "index.ts"), "utf-8");
+
+  it("never uses Math.random() to fabricate a comparison outcome", () => {
+    expect(indexSource).not.toContain("Math.random");
+  });
+
+  it("never assigns a hardcoded numeric `score:` field", () => {
+    expect(indexSource).not.toMatch(/\bscore:\s*\d/);
+  });
+
+  it("never assigns a hardcoded `overallScore:` field", () => {
+    expect(indexSource).not.toMatch(/overallScore\s*[:=]\s*\d/);
+  });
+
+  it("does not read an image only to discard it (no fs.readFile without using the bytes)", () => {
+    // The original defect called `await fs.readFile(imagePath);` as a
+    // standalone statement purely to confirm the file existed, then never
+    // used the returned buffer. Every image read must now flow through
+    // imageContentBlock(), which base64-encodes and returns the bytes.
+    expect(indexSource).not.toMatch(/await fs\.readFile\([^)]*\);\s*\n/);
+  });
+
+  it("routes every screenshot-based tool through imageContentBlock()", () => {
+    const imageTools = [
+      "analyze_design",
+      "check_accessibility",
+      "review_typography",
+      "validate_spacing",
+      "check_color_scheme",
+      "suggest_improvements",
+      "check_usability",
+    ];
+    for (const tool of imageTools) {
+      const caseIndex = indexSource.indexOf(`case "${tool}":`);
+      expect(caseIndex).toBeGreaterThan(-1);
+      const nextCaseIndex = indexSource.indexOf("case \"", caseIndex + 1);
+      const block = indexSource.slice(caseIndex, nextCaseIndex === -1 ? undefined : nextCaseIndex);
+      expect(block).toContain("imageContentBlock(");
+    }
+  });
+
+  it("compare_designs reads both real images instead of inventing scores", () => {
+    const caseIndex = indexSource.indexOf('case "compare_designs":');
+    const nextCaseIndex = indexSource.indexOf("case \"", caseIndex + 1);
+    const block = indexSource.slice(caseIndex, nextCaseIndex);
+    const imageCalls = block.match(/imageContentBlock\(/g) ?? [];
+    expect(imageCalls.length).toBeGreaterThanOrEqual(2);
+    expect(block).not.toContain("Math.random");
   });
 });
