@@ -18,7 +18,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.3.0",
     "mcp-shared": "*",
     "zod": "^3.23.8"
   },
