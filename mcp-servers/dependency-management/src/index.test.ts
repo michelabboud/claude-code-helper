@@ -176,8 +176,6 @@ interface DependencyInfo {
   name: string;
   version: string;
   type: string;
-  size_estimate: string;
-  last_updated?: string;
   required_by?: string;
 }
 
@@ -189,20 +187,11 @@ function analyzeDependencyTree(deps: Record<string, string>, includeTransitive: 
       name,
       version: version.replace(/^[\^~]/, ""),
       type: "direct",
-      size_estimate: `${Math.floor(Math.random() * 500 + 50)}KB`,
-      last_updated: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
     });
   }
 
-  if (includeTransitive) {
-    result.push({
-      name: "inherits",
-      version: "2.0.4",
-      type: "transitive",
-      required_by: result[0]?.name || "unknown",
-      size_estimate: "10KB"
-    });
-  }
+  // Transitive deps / sizes / dates require the lockfile or registry; not fabricated.
+  void includeTransitive;
 
   return result;
 }
@@ -225,7 +214,7 @@ function suggestUpdates(deps: Record<string, string>, updateType: string): Updat
 
     switch (updateType) {
       case "patch":
-        suggested = { ...current, patch: current.patch + Math.floor(Math.random() * 5) + 1 };
+        suggested = { ...current, patch: current.patch + 1 };
         break;
       case "minor":
         suggested = { ...current, minor: current.minor + 1, patch: 0 };
@@ -283,16 +272,19 @@ function checkLicenseCompliance(deps: Record<string, string>, allowedLicenses: s
   };
 
   for (const [name] of Object.entries(deps)) {
-    const license = packageLicenses[name] || "MIT";
+    const known = packageLicenses[name];
+    const license = known ?? "UNKNOWN";
 
-    if (allowedLicenses.includes(license)) {
+    if (known && allowedLicenses.includes(license)) {
       compliant.push(name);
     } else {
       issues.push({
         package: name,
         license,
         allowed: allowedLicenses,
-        action_required: "Review package license or add to allowed list"
+        action_required: known
+          ? "License not in the allowed list — review or add to allowed list"
+          : "License could not be determined from local data — verify the package's license manually",
       });
     }
   }
@@ -339,10 +331,8 @@ function estimateBundleSize(packageName: string, version?: string): BundleSizeRe
     "express": { minified: "N/A (server)", gzipped: "N/A (server)" }
   };
 
-  const size = bundleSizes[packageName] || {
-    minified: `${Math.floor(Math.random() * 100 + 10)}KB`,
-    gzipped: `${Math.floor(Math.random() * 30 + 5)}KB`
-  };
+  const known = bundleSizes[packageName];
+  const size = known ?? { minified: "unknown", gzipped: "unknown" };
 
   const alternatives: BundleAlternative[] = [];
   if (packageName === "moment") {
@@ -359,8 +349,11 @@ function estimateBundleSize(packageName: string, version?: string): BundleSizeRe
     size,
     alternatives: alternatives.length > 0 ? alternatives : undefined,
     tree_shakeable: ["react", "vue", "lodash-es"].includes(packageName),
-    recommendation: size.gzipped && parseInt(size.gzipped) > 50 ?
-      "Consider using lighter alternative or tree-shaking" : "Bundle size is acceptable"
+    recommendation: known
+      ? (parseInt(size.gzipped) > 50
+          ? "Consider using lighter alternative or tree-shaking"
+          : "Bundle size is acceptable")
+      : "Bundle size unknown — check bundlephobia.com or bundle locally to measure",
   };
 }
 
@@ -1137,27 +1130,26 @@ describe("checkVulnerabilities", () => {
 // =========================================================================
 
 describe("analyzeDependencyTree", () => {
-  it("returns direct dependencies with correct fields", () => {
+  it("returns direct dependencies with correct fields and no fabricated data", () => {
     const deps = { "react": "^18.2.0", "lodash": "^4.17.21" };
     const result = analyzeDependencyTree(deps, false);
     expect(result.length).toBe(2);
     expect(result[0].name).toBe("react");
     expect(result[0].version).toBe("18.2.0");
     expect(result[0].type).toBe("direct");
-    expect(result[0].size_estimate).toMatch(/\d+KB$/);
-    expect(result[0].last_updated).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    // NO fabricated size/date fields — those require the registry, which this
+    // tool does not query.
+    expect(result[0]).not.toHaveProperty("size_estimate");
+    expect(result[0]).not.toHaveProperty("last_updated");
   });
 
-  it("adds a transitive dependency when includeTransitive is true", () => {
+  it("does NOT fabricate transitive dependencies when includeTransitive is true", () => {
     const deps = { "react": "^18.2.0" };
     const result = analyzeDependencyTree(deps, true);
-    expect(result.length).toBe(2);
-    const transitive = result.find(d => d.type === "transitive");
-    expect(transitive).toBeDefined();
-    expect(transitive!.name).toBe("inherits");
-    expect(transitive!.version).toBe("2.0.4");
-    expect(transitive!.required_by).toBe("react");
-    expect(transitive!.size_estimate).toBe("10KB");
+    // Transitive deps require the lockfile; the tool must not invent them.
+    expect(result.length).toBe(1);
+    expect(result.every(d => d.type === "direct")).toBe(true);
+    expect(result.find(d => d.type === "transitive")).toBeUndefined();
   });
 
   it("does not add transitive dependencies when includeTransitive is false", () => {
@@ -1172,11 +1164,9 @@ describe("analyzeDependencyTree", () => {
     expect(result.length).toBe(0);
   });
 
-  it("returns only transitive for empty deps with includeTransitive", () => {
+  it("returns empty array for empty deps even with includeTransitive", () => {
     const result = analyzeDependencyTree({}, true);
-    expect(result.length).toBe(1);
-    expect(result[0].type).toBe("transitive");
-    expect(result[0].required_by).toBe("unknown");
+    expect(result.length).toBe(0);
   });
 
   it("strips tilde from version", () => {
@@ -1278,18 +1268,21 @@ describe("checkLicenseCompliance", () => {
     expect(result.recommendation).toBe("Review flagged packages before deployment");
   });
 
-  it("defaults unknown packages to MIT license", () => {
+  it("flags unknown packages as UNKNOWN (never silently passes them as MIT)", () => {
     const deps = { "my-unknown-pkg": "1.0.0" };
     const result = checkLicenseCompliance(deps, ["MIT"]);
-    expect(result.compliant_count).toBe(1);
-    expect(result.issues_count).toBe(0);
+    // An undeterminable license must NOT be assumed permissive/compliant.
+    expect(result.compliant_count).toBe(0);
+    expect(result.issues_count).toBe(1);
+    expect(result.issues[0].license).toBe("UNKNOWN");
+    expect(result.issues[0].action_required).toMatch(/could not be determined/i);
   });
 
-  it("defaults unknown packages to MIT and flags when MIT not allowed", () => {
+  it("flags an unknown license regardless of the allowed list", () => {
     const deps = { "my-unknown-pkg": "1.0.0" };
     const result = checkLicenseCompliance(deps, ["Apache-2.0"]);
     expect(result.issues_count).toBe(1);
-    expect(result.issues[0].license).toBe("MIT");
+    expect(result.issues[0].license).toBe("UNKNOWN");
   });
 
   it("handles empty deps", () => {
@@ -1309,7 +1302,7 @@ describe("checkLicenseCompliance", () => {
   it("issues contain correct action_required message", () => {
     const deps = { "typescript": "5.0.0" };
     const result = checkLicenseCompliance(deps, ["MIT"]);
-    expect(result.issues[0].action_required).toBe("Review package license or add to allowed list");
+    expect(result.issues[0].action_required).toBe("License not in the allowed list — review or add to allowed list");
   });
 
   it("issues contain the allowed_licenses list", () => {
@@ -1382,10 +1375,12 @@ describe("estimateBundleSize", () => {
     expect(result.recommendation).toBe("Bundle size is acceptable");
   });
 
-  it("returns generated size for unknown packages", () => {
+  it("reports unknown (never a fabricated size) for packages not in the known table", () => {
     const result = estimateBundleSize("some-unknown-pkg");
-    expect(result.size.minified).toMatch(/\d+KB$/);
-    expect(result.size.gzipped).toMatch(/\d+KB$/);
+    // Must NOT invent a size — real sizes come from a bundler/bundlephobia.
+    expect(result.size.minified).toBe("unknown");
+    expect(result.size.gzipped).toBe("unknown");
+    expect(result.recommendation).toMatch(/unknown/i);
     expect(result.alternatives).toBeUndefined();
   });
 

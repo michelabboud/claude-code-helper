@@ -72,7 +72,10 @@ interface VulnerabilityRecord {
   description: string;
 }
 
-// Known vulnerabilities database (mock for demo)
+// Curated set of real, well-known advisories (real CVE IDs and affected ranges).
+// This is a small built-in list, NOT a live feed — for comprehensive results,
+// run `npm audit` / query the OSV or GitHub Advisory database. The handler
+// surfaces this scope to callers.
 const knownVulnerabilities: Record<string, VulnerabilityRecord[]> = {
   "lodash": [
     { version: "<4.17.21", cve: "CVE-2021-23337", severity: "high", description: "Command Injection" },
@@ -92,14 +95,6 @@ const knownVulnerabilities: Record<string, VulnerabilityRecord[]> = {
   ]
 };
 
-// License compatibility matrix (kept for future reference/use)
-const _licenseCompatibility: Record<string, string[]> = {
-  "MIT": ["MIT", "ISC", "BSD-2-Clause", "BSD-3-Clause", "Apache-2.0", "Unlicense", "CC0-1.0"],
-  "Apache-2.0": ["Apache-2.0", "MIT", "ISC", "BSD-2-Clause", "BSD-3-Clause"],
-  "GPL-3.0": ["GPL-3.0", "LGPL-3.0", "AGPL-3.0"],
-  "BSD-3-Clause": ["BSD-3-Clause", "BSD-2-Clause", "MIT", "ISC"],
-};
-
 // Helper functions
 interface PackageJson {
   dependencies?: Record<string, string>;
@@ -113,15 +108,6 @@ async function readPackageJson(projectPath: string): Promise<PackageJson | null>
     return JSON.parse(content) as PackageJson;
   } catch {
     return null;
-  }
-}
-
-async function _readRequirementsTxt(projectPath: string): Promise<string[]> {
-  try {
-    const content = await fs.readFile(path.join(projectPath, "requirements.txt"), "utf-8");
-    return content.split("\n").filter(line => line.trim() && !line.startsWith("#"));
-  } catch {
-    return [];
   }
 }
 
@@ -149,8 +135,6 @@ interface DependencyInfo {
   name: string;
   version: string;
   type: string;
-  size_estimate: string;
-  last_updated?: string;
   required_by?: string;
 }
 
@@ -162,21 +146,13 @@ function analyzeDependencyTree(deps: Record<string, string>, includeTransitive: 
       name,
       version: version.replace(/^[\^~]/, ""),
       type: "direct",
-      size_estimate: `${Math.floor(Math.random() * 500 + 50)}KB`,
-      last_updated: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
     });
   }
 
-  if (includeTransitive) {
-    // Add mock transitive dependencies
-    result.push({
-      name: "inherits",
-      version: "2.0.4",
-      type: "transitive",
-      required_by: result[0]?.name || "unknown",
-      size_estimate: "10KB"
-    });
-  }
+  // Transitive dependencies (and package sizes / publish dates) require reading
+  // the lockfile or querying the registry, which this tool does not do. We do
+  // not fabricate them — the handler surfaces this limitation to the caller.
+  void includeTransitive;
 
   return result;
 }
@@ -239,9 +215,12 @@ function suggestUpdates(deps: Record<string, string>, updateType: string): Updat
     const current = parseVersion(version);
     let suggested: { major: number; minor: number; patch: number } | undefined;
 
+    // NOTE: without a registry query we cannot know the actual latest published
+    // version, so these are deterministic next-increment targets, not
+    // guaranteed-available releases (run `npm outdated` to confirm real latest).
     switch (updateType) {
       case "patch":
-        suggested = { ...current, patch: current.patch + Math.floor(Math.random() * 5) + 1 };
+        suggested = { ...current, patch: current.patch + 1 };
         break;
       case "minor":
         suggested = { ...current, minor: current.minor + 1, patch: 0 };
@@ -285,7 +264,9 @@ function checkLicenseCompliance(deps: Record<string, string>, allowedLicenses: s
   const issues: LicenseIssue[] = [];
   const compliant: string[] = [];
 
-  // Mock license data for common packages
+  // Known license data for common packages. Packages NOT in this table have an
+  // UNKNOWN license here — we must NOT assume MIT, since silently defaulting to a
+  // permissive license would turn a real compliance gap into a false pass.
   const packageLicenses: Record<string, string> = {
     "react": "MIT",
     "express": "MIT",
@@ -300,16 +281,19 @@ function checkLicenseCompliance(deps: Record<string, string>, allowedLicenses: s
   };
 
   for (const [name] of Object.entries(deps)) {
-    const license = packageLicenses[name] || "MIT"; // Default to MIT
+    const known = packageLicenses[name];
+    const license = known ?? "UNKNOWN";
 
-    if (allowedLicenses.includes(license)) {
+    if (known && allowedLicenses.includes(license)) {
       compliant.push(name);
     } else {
       issues.push({
         package: name,
         license,
         allowed: allowedLicenses,
-        action_required: "Review package license or add to allowed list"
+        action_required: known
+          ? "License not in the allowed list — review or add to allowed list"
+          : "License could not be determined from local data — verify the package's license manually",
       });
     }
   }
@@ -332,27 +316,13 @@ interface DuplicateInfo {
 }
 
 function findDuplicateDependencies(deps: Record<string, string>): DuplicateInfo[] {
-  // Mock duplicate detection
-  const duplicates: DuplicateInfo[] = [];
-
-  // Common packages that might have version conflicts
-  const potentialDuplicates = ["lodash", "underscore", "moment", "dayjs", "axios", "node-fetch"];
-
-  for (const name of potentialDuplicates) {
-    if (deps[name]) {
-      // Simulate finding transitive duplicates
-      if (Math.random() > 0.7) {
-        duplicates.push({
-          package: name,
-          versions: [deps[name].replace(/^[\^~]/, ""), `${parseVersion(deps[name]).major - 1}.0.0`],
-          locations: ["direct dependency", "transitive via react-scripts"],
-          resolution: `npm dedupe or update ${name} in all dependents`
-        });
-      }
-    }
-  }
-
-  return duplicates;
+  // Detecting packages resolved at multiple versions requires the lockfile
+  // (package-lock.json / yarn.lock), which lists the full resolved tree.
+  // package.json alone declares one range per dependency, so it cannot reveal
+  // duplicates. Rather than fabricate, we return none and the handler reports
+  // that a real check needs `npm ls --all` / a lockfile.
+  void deps;
+  return [];
 }
 
 interface BundleSizeInfo {
@@ -388,10 +358,11 @@ function estimateBundleSize(packageName: string, version?: string): BundleSizeRe
     "express": { minified: "N/A (server)", gzipped: "N/A (server)" }
   };
 
-  const size = bundleSizes[packageName] || {
-    minified: `${Math.floor(Math.random() * 100 + 10)}KB`,
-    gzipped: `${Math.floor(Math.random() * 30 + 5)}KB`
-  };
+  // Only report sizes we actually know (the table above holds real published
+  // figures for common packages). For anything else, say "unknown" rather than
+  // inventing a number — real sizes come from a bundler or bundlephobia.
+  const known = bundleSizes[packageName];
+  const size = known ?? { minified: "unknown", gzipped: "unknown" };
 
   const alternatives: BundleAlternative[] = [];
   if (packageName === "moment") {
@@ -408,8 +379,11 @@ function estimateBundleSize(packageName: string, version?: string): BundleSizeRe
     size,
     alternatives: alternatives.length > 0 ? alternatives : undefined,
     tree_shakeable: ["react", "vue", "lodash-es"].includes(packageName),
-    recommendation: size.gzipped && parseInt(size.gzipped) > 50 ?
-      "Consider using lighter alternative or tree-shaking" : "Bundle size is acceptable"
+    recommendation: known
+      ? (parseInt(size.gzipped) > 50
+          ? "Consider using lighter alternative or tree-shaking"
+          : "Bundle size is acceptable")
+      : "Bundle size unknown — check bundlephobia.com or bundle locally to measure",
   };
 }
 
@@ -429,29 +403,18 @@ interface UnusedDependenciesResult {
 }
 
 function findUnusedDependencies(deps: Record<string, string>, _devDeps: Record<string, string>): UnusedDependenciesResult {
-  // Mock unused dependency detection
-  const unused: UnusedDependencyInfo[] = [];
-  const devUnused: UnusedDependencyInfo[] = [];
-
-  // Simulate finding some unused packages
-  const allDeps = Object.keys(deps);
-  for (const dep of allDeps) {
-    if (Math.random() > 0.85) {
-      unused.push({
-        package: dep,
-        version: deps[dep],
-        suggestion: "Remove if not used",
-        command: `npm uninstall ${dep}`
-      });
-    }
-  }
-
+  // Determining whether a dependency is unused requires scanning the project's
+  // source for imports/requires of each package (as tools like `depcheck` do).
+  // This server does not scan source, so we do not guess — returning fabricated
+  // "unused" packages would risk telling users to uninstall packages they need.
+  void deps;
+  void _devDeps;
   return {
-    production_unused: unused,
-    dev_unused: devUnused,
-    total_unused: unused.length + devUnused.length,
-    potential_savings: `${(unused.length * 50 + devUnused.length * 20)}KB`,
-    verification: "Run tests after removal to verify"
+    production_unused: [],
+    dev_unused: [],
+    total_unused: 0,
+    potential_savings: "unknown",
+    verification: "Unused-dependency detection requires a source-import scan (e.g. `npx depcheck`); this server does not perform one.",
   };
 }
 
@@ -807,6 +770,9 @@ registerTrackedToolHandler(instance, async (request) => {
                 total_dependencies: Object.keys(deps).length,
                 total_dev_dependencies: Object.keys(devDeps).length,
                 include_transitive: include_transitive || false,
+                ...(include_transitive
+                  ? { transitive_note: "Transitive dependencies require the lockfile; this server reads package.json only and lists direct dependencies. Run `npm ls --all` for the full tree." }
+                  : {}),
                 dependencies: analysis
               }, null, 2),
             }],
@@ -1021,9 +987,8 @@ registerTrackedToolHandler(instance, async (request) => {
                 duplicates_found: duplicates.length,
                 duplicates,
                 resolution_command: "npm dedupe",
-                recommendation: duplicates.length > 0 ?
-                  "Run npm dedupe to attempt automatic deduplication" :
-                  "No duplicate dependencies detected"
+                note: "Duplicate detection requires the resolved dependency tree (lockfile). This server reads package.json only, which cannot reveal duplicates — run `npm ls --all` / `npm dedupe` (or `pip check`) for an accurate result.",
+                recommendation: "Run `npm ls --all` to inspect the resolved tree, then `npm dedupe` to collapse duplicate versions."
               }, null, 2),
             }],
           };

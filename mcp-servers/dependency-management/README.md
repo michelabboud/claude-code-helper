@@ -1,6 +1,6 @@
 # Dependency Management MCP Server
 
-Production-ready MCP server for dependency analysis, vulnerability scanning, and update recommendations.
+MCP server for dependency analysis, license checks, and update suggestions driven from `package.json`. Results are heuristic/advisory — see **Scope & limitations** below.
 
 ## Overview
 
@@ -129,13 +129,25 @@ await mcp.call('generate_sbom', {
 })
 ```
 
-## Security Features
+## Scope & limitations (read this)
 
-- **CVE Database**: Real-time vulnerability checking
-- **License Scanning**: Automated compliance verification
-- **Audit Logging**: Track all dependency changes
-- **Update Safety**: Test compatibility before suggesting updates
-- **Supply Chain Security**: Verify package integrity
+This server reads `package.json` and applies built-in heuristics. It does **not**
+query package registries, read lockfiles, or scan your source, so several results
+are advisory rather than authoritative:
+
+- **Vulnerabilities**: matched against a small **curated** list of well-known
+  advisories (real CVE IDs), **not** a live feed. Run `npm audit` or query the
+  OSV / GitHub Advisory database for comprehensive coverage.
+- **License checks**: cover a built-in table of common packages; packages not in
+  the table are reported as `UNKNOWN` (never silently assumed to be MIT) and
+  flagged for manual verification.
+- **Bundle sizes**: reported only for packages with known published figures;
+  everything else is `unknown` (measure with a bundler or bundlephobia).
+- **Duplicate / unused detection**: requires a lockfile (`npm ls --all`) or a
+  source-import scan (`npx depcheck`) respectively — this server reports the
+  limitation rather than guessing.
+- **Update suggestions**: deterministic next-increment targets, not guaranteed
+  to be the latest published version (confirm with `npm outdated`).
 
 ## Installation
 
@@ -164,8 +176,8 @@ Add to `~/.claude/config/mcp.json`:
 ---
 
 **Version**: 1.0.0
-**Status**: Production Ready ✅
-**Ecosystems**: npm, pip, maven, gradle, cargo, go modules
+**Status**: Advisory / heuristic — reads `package.json`, no registry/lockfile/source access
+**Ecosystems**: npm (full heuristics); pip, maven, gradle, cargo, go (guidance only)
 
 ---
 
