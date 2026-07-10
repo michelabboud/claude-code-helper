@@ -156,7 +156,7 @@ const TroubleshootFailureSchema = z.object({
 const SecurityScanPipelineSchema = z.object({
   pipeline_file: z.string().describe("Pipeline configuration"),
   scan_types: z.array(z.enum(["sast", "dependency", "container", "secret"])).describe("Types of scans"),
-  tools: z.array(z.string()).optional().describe("Specific tools to use"),
+  tools: z.array(z.string()).optional().describe("Tool hint — only affects SAST (\"semgrep\" vs default CodeQL); dependency/container/secret scans always use Snyk/Trivy/TruffleHog"),
 });
 
 const GenerateDeploymentSchema = z.object({
@@ -423,6 +423,18 @@ function addDeployment(pipeline: GithubActionsPipeline, target: string): GithubA
 
   if (deployJobs[target]) {
     pipeline.jobs.deploy = deployJobs[target];
+  } else {
+    // No template exists for this deployment_target (e.g. gcp, azure,
+    // docker-hub) yet. Emit an explicit placeholder instead of silently
+    // dropping the requested "deploy" feature.
+    pipeline.jobs.deploy = {
+      "runs-on": "ubuntu-latest",
+      needs: ["build"],
+      if: "github.ref == 'refs/heads/main'",
+      steps: [
+        { run: `echo "No deployment template implemented yet for target '${target}' — add your deploy steps here"` }
+      ]
+    };
   }
   return pipeline;
 }
@@ -634,7 +646,7 @@ function buildHelloVerbose(): string {
   return [
     `${SERVER_COLOR_EMOJI} # ${SERVER_NAME} v${SERVER_VERSION}`,
     ``,
-    `**CI/CD pipeline automation** — generate, optimize, validate, and deploy pipelines for GitHub Actions, GitLab CI, Jenkins, CircleCI.`,
+    `**CI/CD pipeline automation** — generate full pipelines for GitHub Actions; optimize, validate, estimate cost, and troubleshoot across GitHub Actions, GitLab CI, Jenkins, CircleCI. GitLab CI/Jenkins/CircleCI pipeline *generation* is scaffold-only (not yet implemented).`,
     ``,
     `## Available Tools`,
     ``,
@@ -680,14 +692,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: "generate_pipeline",
-        description: "Generate CI/CD pipeline configuration for GitHub Actions, GitLab CI, Jenkins, or CircleCI. Creates complete workflows with testing, linting, building, and deployment.",
+        description: "Generate a complete CI/CD workflow for GitHub Actions (testing, linting, building, security scanning, deployment). For gitlab-ci, jenkins, and circleci, this is not yet implemented — it returns a minimal JSON scaffold, not a working pipeline.",
         inputSchema: {
           type: "object",
           properties: {
             platform: {
               type: "string",
               enum: ["github-actions", "gitlab-ci", "jenkins", "circleci"],
-              description: "Target CI/CD platform"
+              description: "Target CI/CD platform. Only github-actions has full template generation; gitlab-ci, jenkins, and circleci return a placeholder scaffold (not yet implemented)."
             },
             project_type: {
               type: "string",
@@ -700,7 +712,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                 type: "string",
                 enum: ["testing", "linting", "build", "deploy", "security-scan"]
               },
-              description: "Pipeline features to include"
+              description: "Pipeline jobs to include (github-actions only). 'linting'/'testing'/'build' each gate the matching job; for go/rust/java/docker the single combined build+test job is kept if either 'build' or 'testing' is requested. 'security-scan' and 'deploy' add extra jobs."
             },
             deployment_target: {
               type: "string",
@@ -822,7 +834,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "security_scan_pipeline",
-        description: "Generate security scanning configuration for existing pipelines. Adds SAST, dependency scanning, container scanning, and secret detection.",
+        description: "Generate security scanning configuration for existing pipelines. Adds SAST (CodeQL, or Semgrep if requested via `tools`), dependency scanning (Snyk), container scanning (Trivy), and secret detection (TruffleHog).",
         inputSchema: {
           type: "object",
           properties: {
@@ -838,7 +850,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             tools: {
               type: "array",
               items: { type: "string" },
-              description: "Specific tools (snyk, trivy, semgrep, trufflehog)"
+              description: "Tool hint — only affects SAST: include \"semgrep\" to generate a Semgrep step instead of the default CodeQL. Dependency/container/secret scans always use Snyk/Trivy/TruffleHog regardless of this list."
             }
           },
           required: ["pipeline_file", "scan_types"]
@@ -947,6 +959,31 @@ registerTrackedToolHandler(instance, async (request) => {
             pipeline = templates.nodejs(options);
           }
 
+          // Honor the requested `features` selection by dropping base-template
+          // jobs whose feature was not requested, instead of silently ignoring
+          // the input. Job names map 1:1 to features ("lint" -> "linting",
+          // "test" -> "testing", "build" -> "build"), except for the
+          // go/rust/java/docker templates, which have no separate lint/test
+          // jobs to split — their single "build" job runs both the build and
+          // test steps, so it is kept if either "build" or "testing" was
+          // requested.
+          const jobFeatureMap: Record<string, "linting" | "testing" | "build"> = {
+            lint: "linting",
+            test: "testing",
+            build: "build",
+          };
+          const hasCombinedBuildTestJob = !["nodejs", "python"].includes(project_type);
+          pipeline.jobs = Object.fromEntries(
+            Object.entries(pipeline.jobs).filter(([jobName]) => {
+              const requiredFeature = jobFeatureMap[jobName];
+              if (!requiredFeature) return true; // unmapped job - keep by default
+              if (jobName === "build" && hasCombinedBuildTestJob) {
+                return features.includes("build") || features.includes("testing");
+              }
+              return features.includes(requiredFeature);
+            })
+          );
+
           // Add security scanning if requested
           if (features.includes("security-scan")) {
             pipeline = addSecurityScan(pipeline, platform);
@@ -957,13 +994,21 @@ registerTrackedToolHandler(instance, async (request) => {
             pipeline = addDeployment(pipeline, deployment_target);
           }
         } else {
-          // Return a generic template for other platforms
+          // GitLab CI, Jenkins, and CircleCI do not have template generation
+          // implemented yet. Say so explicitly instead of returning something
+          // that could be mistaken for a finished pipeline.
+          const platformLabels: Record<string, string> = {
+            "gitlab-ci": "GitLab CI",
+            jenkins: "Jenkins",
+            circleci: "CircleCI",
+          };
+          const label = platformLabels[platform] || platform;
           pipeline = {
             platform,
             project_type,
             features,
-            message: `Generated template for ${platform}`,
-            note: "Customize this template for your specific needs"
+            message: `${label} templates are not yet implemented; returning a minimal scaffold`,
+            note: "Only GitHub Actions has full pipeline template generation in this server today. Treat this as a placeholder and write the actual pipeline configuration by hand."
           };
         }
 
@@ -1122,19 +1167,39 @@ registerTrackedToolHandler(instance, async (request) => {
         const scanSteps: Record<string, ScanStep> = {};
 
         if (scan_types.includes("sast")) {
-          scanSteps.sast = {
-            name: "SAST Scan",
-            tool: tools?.includes("semgrep") ? "semgrep" : "codeql",
-            step: {
-              uses: "github/codeql-action/analyze@v2"
-            }
-          };
+          // "semgrep" is the only SAST tool hint that is actually honored:
+          // it switches the emitted step to the Semgrep CLI. Any other value
+          // (or no hint) falls back to GitHub CodeQL, and the label always
+          // matches whichever step is emitted.
+          if (tools?.includes("semgrep")) {
+            scanSteps.sast = {
+              name: "SAST Scan",
+              tool: "semgrep",
+              step: {
+                run: "python3 -m pip install semgrep\nsemgrep ci",
+                env: { SEMGREP_APP_TOKEN: "${{ secrets.SEMGREP_APP_TOKEN }}" }
+              }
+            };
+          } else {
+            scanSteps.sast = {
+              name: "SAST Scan",
+              tool: "codeql",
+              step: {
+                uses: "github/codeql-action/analyze@v2"
+              }
+            };
+          }
         }
 
         if (scan_types.includes("dependency")) {
+          // Only a Snyk step is implemented today. "dependabot" is a
+          // repo-level GitHub feature configured via .github/dependabot.yml,
+          // not a workflow job, so it cannot be emitted here — the label
+          // always reflects the Snyk step that is actually generated,
+          // regardless of what `tools` requests.
           scanSteps.dependency = {
             name: "Dependency Scan",
-            tool: tools?.includes("snyk") ? "snyk" : "dependabot",
+            tool: "snyk",
             step: {
               uses: "snyk/actions/node@master",
               env: { SNYK_TOKEN: "${{ secrets.SNYK_TOKEN }}" }
@@ -1143,9 +1208,11 @@ registerTrackedToolHandler(instance, async (request) => {
         }
 
         if (scan_types.includes("container")) {
+          // Only a Trivy step is implemented today; the label always
+          // reflects the step that is actually generated.
           scanSteps.container = {
             name: "Container Scan",
-            tool: tools?.includes("trivy") ? "trivy" : "grype",
+            tool: "trivy",
             step: {
               uses: "aquasecurity/trivy-action@master",
               with: { "image-ref": "${{ github.repository }}:latest" }
@@ -1154,9 +1221,11 @@ registerTrackedToolHandler(instance, async (request) => {
         }
 
         if (scan_types.includes("secret")) {
+          // Only a TruffleHog step is implemented today; the label always
+          // reflects the step that is actually generated.
           scanSteps.secret = {
             name: "Secret Scan",
-            tool: tools?.includes("trufflehog") ? "trufflehog" : "gitleaks",
+            tool: "trufflehog",
             step: {
               uses: "trufflesecurity/trufflehog@main",
               with: { path: "./" }

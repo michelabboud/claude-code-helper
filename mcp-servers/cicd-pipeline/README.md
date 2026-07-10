@@ -1,6 +1,6 @@
 # CI/CD Pipeline MCP Server
 
-A comprehensive Model Context Protocol (MCP) server for continuous integration and deployment pipeline generation, optimization, and management across GitHub Actions, GitLab CI, Jenkins, and other platforms.
+A Model Context Protocol (MCP) server for CI/CD pipeline generation, optimization, and management. **Full pipeline generation currently targets GitHub Actions only.** GitLab CI, Jenkins, and CircleCI generation is scaffold-only (not yet implemented) — see [Platform Support](#platform-support) below. Optimization, validation, cost estimation, and troubleshooting tools accept all four platform values and run their (platform-agnostic) heuristics regardless.
 
 ## Overview
 
@@ -8,14 +8,14 @@ This MCP server enables Claude to design, generate, optimize, and troubleshoot C
 
 ## Features
 
-- **Pipeline Generation**: Create CI/CD configs for multiple platforms
+- **Pipeline Generation**: Full CI/CD configs for GitHub Actions; GitLab CI, Jenkins, and CircleCI currently return a minimal scaffold only (not yet implemented)
 - **Pipeline Optimization**: Analyze and improve pipeline performance
 - **Troubleshooting**: Diagnose pipeline failures and suggest fixes
 - **Security Scanning**: Integrate security tools into pipelines
 - **Deployment Strategies**: Implement blue-green, canary, rolling updates
 - **Cost Estimation**: Calculate CI/CD runner costs
 - **Caching Strategies**: Optimize build times with intelligent caching
-- **Matrix Testing**: Multi-version and cross-platform testing
+- **Matrix Testing**: `optimize_pipeline` can *suggest* matrix builds as an optimization; `generate_pipeline` does not emit matrix configuration
 
 ## Installation
 
@@ -32,10 +32,10 @@ npm install @octokit/rest
 Generate CI/CD pipeline configuration for specified platform.
 
 **Parameters**:
-- `platform` (string): Target platform (github-actions, gitlab-ci, jenkins, circle-ci)
+- `platform` (string): Target platform (github-actions, gitlab-ci, jenkins, circleci). **Only `github-actions` has full template generation.** `gitlab-ci`, `jenkins`, and `circleci` return a minimal JSON scaffold with an explicit "not yet implemented" note instead of a working pipeline.
 - `project_type` (string): Project type (nodejs, python, go, rust, java, docker)
-- `features` (array): Features to include (testing, linting, build, deploy, security-scan)
-- `deployment_target` (string): Where to deploy (vercel, aws, gcp, azure, kubernetes)
+- `features` (array): Jobs to include (github-actions only). `linting` → lint job, `testing` → test job, `build` → build job, `deploy` → adds a deployment job (needs `deployment_target`), `security-scan` → adds a Snyk security job. For `go`/`rust`/`java`/`docker` project types, build and test are combined into a single job, which is included if either `build` or `testing` is requested.
+- `deployment_target` (string): Where to deploy (vercel, aws, gcp, azure, kubernetes, docker-hub) — `vercel`, `aws`, and `kubernetes` produce a real deployment job; `gcp`, `azure`, and `docker-hub` are accepted by the schema but have no job template yet, so `generate_pipeline` emits an explicit placeholder deploy step for them instead.
 
 **Example**:
 ```javascript
@@ -368,7 +368,7 @@ Add security scanning tools to existing pipeline.
 **Parameters**:
 - `pipeline_file` (string): Existing pipeline configuration
 - `scan_types` (array): Types of scans (sast, dependency, container, secret)
-- `tools` (array): Specific tools (snyk, trivy, semgrep, trufflehog)
+- `tools` (array): Tool hint — **only `sast` honors this**: include `"semgrep"` to generate a Semgrep CLI step (labeled `semgrep`); otherwise SAST defaults to GitHub CodeQL (labeled `codeql`). `dependency`, `container`, and `secret` scans always use Snyk, Trivy, and TruffleHog respectively — other names in `tools` (e.g. `dependabot`, `grype`, `gitleaks`) are accepted but do not change the generated step.
 
 **Example**:
 ```javascript
@@ -377,6 +377,7 @@ await mcp.call('security_scan_pipeline', {
   scan_types: ['sast', 'dependency', 'secret'],
   tools: ['semgrep', 'snyk', 'trufflehog']
 })
+// -> sast uses Semgrep (tools included "semgrep"); dependency uses Snyk; secret uses TruffleHog
 ```
 
 ### 8. `generate_rollback`
@@ -470,33 +471,21 @@ for (const solution of diagnosis.solutions) {
 
 ## Platform Support
 
-### GitHub Actions
-- Complete workflow generation
-- Matrix testing
-- Reusable workflows
-- Composite actions
-- Environment protection rules
+### GitHub Actions — implemented
 
-### GitLab CI
-- Pipeline generation
-- DAG pipelines
-- Multi-project pipelines
-- Dynamic child pipelines
-- Protected variables
+`generate_pipeline` produces real workflow YAML:
+- Project templates for `nodejs` (lint/test/build jobs), `python` (lint/test jobs), and `go`/`rust`/`java`/`docker` (single combined build+test job)
+- Job selection driven by the `features` input (see `generate_pipeline` above)
+- Optional Snyk-based security job (`security-scan` feature)
+- Optional deployment job for `vercel`, `aws`, or `kubernetes` targets (`deploy` feature); other targets get an explicit placeholder step
 
-### Jenkins
-- Jenkinsfile generation (declarative/scripted)
-- Shared libraries
-- Pipeline parameters
-- Parallel stages
-- Post-build actions
+**Not implemented** by the generator: matrix builds, reusable workflows, composite actions, environment protection rules. (`optimize_pipeline` can *suggest* matrix testing as an optimization, but `generate_pipeline` does not emit it.)
 
-### CircleCI
-- Config generation (.circleci/config.yml)
-- Orbs integration
-- Workflow orchestration
-- Resource classes
-- Contexts and variables
+### GitLab CI, Jenkins, CircleCI — not implemented
+
+`generate_pipeline` has no templates for these platforms yet. Calling it with `platform: "gitlab-ci"`, `"jenkins"`, or `"circleci"` returns a minimal JSON scaffold (platform, project type, features, and an explicit "not yet implemented" note) instead of a working pipeline — use it as a placeholder and write the real configuration by hand.
+
+The other tools — `optimize_pipeline`, `validate_pipeline`, `estimate_cost`, `troubleshoot_failure` — accept these platform values and run their platform-agnostic heuristics against pipeline content you provide (e.g. cost-per-minute lookup, generic keyword checks), but they do not parse GitLab CI/Jenkins/CircleCI syntax specifically.
 
 ## Best Practices
 
@@ -547,9 +536,9 @@ env:
 ---
 
 **Version**: 1.0.0
-**Last Updated**: 2026-01-10
-**Platforms**: GitHub Actions, GitLab CI, Jenkins, CircleCI
-**Status**: Production Ready ✅
+**Last Updated**: 2026-07-10
+**Platforms**: GitHub Actions (full pipeline generation) — GitLab CI, Jenkins, CircleCI (analysis tools only; pipeline generation is scaffold-only, not yet implemented)
+**Status**: GitHub Actions generation, optimization, validation, cost estimation, and troubleshooting are functional. GitLab CI/Jenkins/CircleCI *generation* is not implemented — see [Platform Support](#platform-support).
 
 ---
 
