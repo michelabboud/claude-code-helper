@@ -239,21 +239,24 @@ const nodeTemplates: Record<string, N8nNodeTemplate> = {
 };
 
 // Helper functions
-function generateWorkflowNodes(services: string[], actions: string[], trigger: string): N8nNode[] {
+function generateWorkflowNodes(services: string[], actions: string[], workflowType: string, trigger: string): N8nNode[] {
   const nodes: N8nNode[] = [];
   const position = [250, 300];
 
-  // Add trigger node
-  if (trigger === "webhook") {
-    nodes.push({
-      ...nodeTemplates.webhook,
-      name: "Webhook Trigger",
-      position: [...position]
-    });
-  } else if (trigger === "cron" || trigger === "schedule") {
+  // Add the trigger node. `workflow_type` is authoritative; the free-form
+  // `trigger` string is a secondary hint. Every n8n workflow MUST have a trigger
+  // node, so "event-driven" (and any unrecognised value) defaults to a webhook
+  // entry point rather than producing an invalid trigger-less workflow.
+  if (workflowType === "scheduled" || trigger === "cron" || trigger === "schedule") {
     nodes.push({
       ...nodeTemplates.schedule,
       name: "Schedule Trigger",
+      position: [...position]
+    });
+  } else {
+    nodes.push({
+      ...nodeTemplates.webhook,
+      name: workflowType === "event-driven" ? "Event Webhook Trigger" : "Webhook Trigger",
       position: [...position]
     });
   }
@@ -1029,7 +1032,7 @@ registerTrackedToolHandler(instance, async (request) => {
       case "generate_workflow": {
         const { workflow_type, services, trigger, actions } = GenerateWorkflowSchema.parse(args);
 
-        const nodes = generateWorkflowNodes(services, actions, trigger);
+        const nodes = generateWorkflowNodes(services, actions, workflow_type, trigger);
         const connections = generateConnections(nodes);
 
         const workflow = {
