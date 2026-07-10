@@ -6,22 +6,28 @@ Complete packages that bundle multiple Claude Code components (skills, agents, c
 
 Plugins are curated bundles that combine related Claude Code components to provide comprehensive solutions for specific use cases. Instead of installing individual pieces, plugins give you an integrated experience.
 
-**A plugin typically includes:**
+**A plugin typically bundles some of:**
 - Skills (knowledge and patterns)
 - Agents (specialized assistants)
-- Commands (quick actions)
 - Hooks (automation)
+- MCP servers (tools)
+
+> Note: these plugins are **documentation/reference bundles** — curated lists of
+> real components to install together. This repository does not ship a
+> `commands/` directory, so plugins reference agents, skills, hooks, and MCP
+> servers (invoked via `/skill-name` or natural-language `Ask:` prompts), not
+> standalone slash-commands.
 
 ## Available Plugins
 
 | Plugin | Description | Components |
 |--------|-------------|------------|
-| **code-quality-suite** | Complete QA and testing toolkit | Agent, Skills, Hook |
-| **modern-web-stack** | Modern web development tools | Agents, Skills, Commands |
-| **security-hardening** | Security-focused development | Agent, Skills, Hooks |
-| **cicd-automation** | CI/CD pipeline automation | Skills, Commands, Hooks |
-| **cloud-native** | Cloud infrastructure patterns | Agents, Skills |
-| **python-data-stack** | Python data science toolkit | Agent, Skills |
+| **code-quality-suite** | Complete QA and testing toolkit | Agents, Skills, Hook |
+| **modern-web-stack** | Modern web development tools | Agents, Skills, Hooks, MCP servers |
+| **security-hardening** | Security-focused development | Agents, Hook, MCP server |
+| **cicd-automation** | CI/CD pipeline automation | Agents, Skills, Hook, MCP server |
+| **cloud-native** | Cloud infrastructure patterns | Agents, Skill, MCP server |
+| **python-data-stack** | Python data science toolkit | Agents, Skill, MCP server |
 
 ## Installation
 
@@ -33,21 +39,21 @@ Plugins are documentation/reference bundles. To use them:
 2. **Install the referenced components** from their respective directories
 
 ```bash
-# Example: Installing code-quality-suite plugin components
+# Example: Installing code-quality-suite plugin components (run from repo root)
 
-# 1. Install the referenced skills
-cp -r ../skills/testing ~/.claude/skills/
-cp -r ../skills/refactoring-strategy ~/.claude/skills/
+# 1. Install the referenced skills (each is a directory with SKILL.md)
+cp -r skills/testing ~/.claude/skills/
+cp -r skills/refactoring-strategy ~/.claude/skills/
 
-# 2. Install the referenced agent
-cp ../agents/subagents/qa-testing-expert.md ~/.claude/agents/
+# 2. Install the referenced agents
+cp agents/domain-experts/qa-testing-expert.md ~/.claude/agents/
+cp agents/code-reviewer.md ~/.claude/agents/
 
-# 3. Install the referenced hooks
-cp ../hooks/code-quality-gate.md ~/.claude/hooks/
+# 3. Install the referenced hook
+cp hooks/code-quality-gate.md ~/.claude/hooks/
 
-# 4. Install related commands
-cp ../commands/test-generate.md ~/.claude/commands/
-cp ../commands/refactor.md ~/.claude/commands/
+# 4. (Optional) build + register the referenced MCP servers
+#    cd mcp-servers/code-review-mcp && npm install && npm run build
 ```
 
 ### Quick Reference
@@ -61,10 +67,11 @@ Each plugin file lists its components. Use the plugin as a guide for what to ins
 **Purpose**: Complete code quality and testing toolkit
 
 **Components**:
-- QA/Testing Expert Agent
-- Refactoring Strategy Skill
+- QA/Testing Expert Agent (`agents/domain-experts/qa-testing-expert.md`)
+- Code Reviewer Agent (`agents/code-reviewer.md`)
 - Testing Skill (`/testing` with tdd, e2e, bdd, contract, mutation, visual subcommands)
-- Code Quality Gate Hook
+- Refactoring Strategy Skill (`/refactoring-strategy`)
+- Code Quality Gate Hook (`hooks/code-quality-gate.md`)
 
 **Use Cases**:
 - Test-driven development
@@ -74,11 +81,11 @@ Each plugin file lists its components. Use the plugin as a guide for what to ins
 
 **Example Usage**:
 ```bash
-# Generate tests
-/test-generate src/services/user.ts
+# Generate tests (real skill)
+/testing src/services/user.ts
 
-# Refactor safely
-/refactor extract-method calculateTotal
+# Refactor safely (real skill)
+/refactoring-strategy extract-method calculateTotal
 
 # Review code
 Ask: "Review the code quality of my changes"
@@ -91,10 +98,12 @@ Ask: "Review the code quality of my changes"
 **Purpose**: Modern web development with React, Next.js, and TypeScript
 
 **Components**:
-- React/Next.js Expert Agent
-- CSS/Tailwind Expert Agent
-- API Design Patterns Skill
-- Database Design Patterns Skill
+- React/Next.js Expert Agent (`agents/domain-experts/react-nextjs-expert.md`)
+- Node.js/TypeScript Backend Expert Agent (`agents/domain-experts/nodejs-typescript-backend-expert.md`)
+- Database Expert Agent (`agents/domain-experts/database-expert.md`)
+- Skills: API Design Patterns, Database Design Patterns, Project Scaffolding, Testing, Refactoring Strategy
+- Hooks: Security Scan, Code Quality Gate, Build Validation
+- MCP servers: Database Operations, CI/CD Pipeline
 
 **Use Cases**:
 - Full-stack web development
@@ -118,9 +127,10 @@ Ask: "Design a RESTful API for user management"
 **Purpose**: Security-focused development practices
 
 **Components**:
-- Security Expert Agent
-- Security Scan Hook (PreToolUse)
-- Secure coding skills
+- Security Expert Agent (`agents/domain-experts/security-expert.md`)
+- Security Reviewer Agent (`agents/mcp-integrated/security-reviewer.json`)
+- Security Scan Hook — PreToolUse (`hooks/security-scan.md`)
+- Code Review MCP Server — security scanning tools (`mcp-servers/code-review-mcp`)
 
 **Use Cases**:
 - Secure code development
@@ -144,9 +154,11 @@ Ask: "Review this code for security vulnerabilities"
 **Purpose**: CI/CD pipeline automation and best practices
 
 **Components**:
-- CI Best Practices Skill
-- Release Management Skill
-- Build Validation Hook
+- DevOps Infrastructure Expert Agent (`agents/domain-experts/devops-infrastructure-expert.md`)
+- CI/CD Engineer Agent (`agents/mcp-integrated/cicd-engineer.json`)
+- CI Best Practices Skill, Release Management Skill
+- Build Validation Hook (`hooks/build-validation.md`)
+- CI/CD Pipeline MCP Server (`mcp-servers/cicd-pipeline`)
 
 **Use Cases**:
 - Pipeline setup
@@ -170,14 +182,15 @@ Ask: "Prepare a release with changelog"
 **Purpose**: Cloud infrastructure and Kubernetes patterns
 
 **Components**:
-- DevOps/Infrastructure Expert Agent
-- AWS/Azure/GCP Architect Agents
-- Cloud deployment skills
+- AWS / Azure / GCP Architect Expert Agents (`agents/domain-experts/{aws,azure,gcp}-architect-expert.md`)
+- DevOps/Infrastructure Expert Agent, Terraform/IaC Expert Agent
+- CI Best Practices Skill (`skills/ci-best-practices`)
+- CI/CD Pipeline MCP Server (`mcp-servers/cicd-pipeline`)
 
 **Use Cases**:
 - Cloud architecture
-- Kubernetes deployment
 - Infrastructure as code
+- CI/CD for cloud deployments
 - Multi-cloud patterns
 
 **Example Usage**:
@@ -193,26 +206,28 @@ Ask: "Create Kubernetes manifests for this app"
 
 ### python-data-stack
 
-**Purpose**: Python data science and ML toolkit
+**Purpose**: Python backend and data engineering toolkit
 
 **Components**:
-- ML/AI Expert Agent
-- Data Engineering Expert Agent
-- Python best practices skills
+- Python Backend Expert Agent (`agents/domain-experts/python-backend-expert.md`)
+- Data Engineering Expert Agent (`agents/domain-experts/data-engineering-expert.md`)
+- Database Expert Agent (`agents/domain-experts/database-expert.md`)
+- Database Design Patterns Skill (`skills/database-design-patterns`)
+- Database Operations MCP Server (`mcp-servers/database-operations`)
 
 **Use Cases**:
-- Data analysis
-- Machine learning
-- Data pipelines
-- Model development
+- FastAPI / async Python services
+- Data pipelines and ETL
+- Database schema design and migrations
+- Data modeling and quality
 
 **Example Usage**:
 ```bash
-# Data analysis
-Ask: "Analyze this dataset and create visualizations"
+# Build an async API
+Ask: "Build a FastAPI service with SQLAlchemy models and Alembic migrations"
 
-# ML model
-Ask: "Train a classification model on this data"
+# Design a data pipeline
+Ask: "Design an ETL pipeline with data-quality validation"
 ```
 
 ## Creating Custom Plugins
@@ -274,8 +289,8 @@ List the bundled components:
 
 - [Skills Examples](../skills/) - Individual skills
 - [Agents Examples](../agents/) - Individual agents
-- [Skills Examples](../skills/) - Skills and commands
 - [Hooks Examples](../hooks/) - Individual hooks
+- [MCP Servers](../mcp-servers/) - Tool servers referenced by plugins
 
 ---
 

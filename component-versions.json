@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
-  "repoVersion": "2.11.8",
-  "generatedAt": "2026-07-10T06:41:20.602Z",
+  "repoVersion": "2.11.9",
+  "generatedAt": "2026-07-10T06:58:19.690Z",
   "components": {
     "agents/code-reviewer": {
       "type": "agent",
@@ -1551,42 +1551,42 @@
     },
     "plugins/cicd-automation-plugin": {
       "type": "plugin",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "plugins/cicd-automation-plugin.md",
       "installPath": "plugins/cicd-automation-plugin.md",
       "changelog": "plugins/cicd-automation-plugin.md#changelog"
     },
     "plugins/cloud-native-plugin": {
       "type": "plugin",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "plugins/cloud-native-plugin.md",
       "installPath": "plugins/cloud-native-plugin.md",
       "changelog": "plugins/cloud-native-plugin.md#changelog"
     },
     "plugins/code-quality-suite-plugin": {
       "type": "plugin",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "plugins/code-quality-suite-plugin.md",
       "installPath": "plugins/code-quality-suite-plugin.md",
       "changelog": "plugins/code-quality-suite-plugin.md#changelog"
     },
     "plugins/modern-web-stack-plugin": {
       "type": "plugin",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "plugins/modern-web-stack-plugin.md",
       "installPath": "plugins/modern-web-stack-plugin.md",
       "changelog": "plugins/modern-web-stack-plugin.md#changelog"
     },
     "plugins/python-data-stack-plugin": {
       "type": "plugin",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "plugins/python-data-stack-plugin.md",
       "installPath": "plugins/python-data-stack-plugin.md",
       "changelog": "plugins/python-data-stack-plugin.md#changelog"
     },
     "plugins/security-hardening-plugin": {
       "type": "plugin",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "file": "plugins/security-hardening-plugin.md",
       "installPath": "plugins/security-hardening-plugin.md",
       "changelog": "plugins/security-hardening-plugin.md#changelog"

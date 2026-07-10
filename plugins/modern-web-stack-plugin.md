@@ -2,7 +2,7 @@
 plugin_name: Modern Web Stack Plugin
 description: Complete React/Next.js + Node.js/TypeScript + PostgreSQL development toolkit
 priority: P0
-version: 1.0.0
+version: 1.0.1
 tech_stack: Next.js, NestJS, PostgreSQL, TypeScript, Prisma
 author: Michel Abboud
 license: Apache-2.0
@@ -42,7 +42,7 @@ This plugin provides everything needed to build production-ready web application
 - Query optimization
 - Data modeling patterns
 
-### Skills (4)
+### Skills (5)
 ✅ **API Design Patterns**
 - RESTful API best practices
 - GraphQL integration
@@ -71,27 +71,12 @@ This plugin provides everything needed to build production-ready web application
 - Query optimization
 - Data modeling
 
-### Commands (3)
-✅ **/scaffold**
-- Project scaffolding
-- Component generation
-- API endpoint templates
-- Database schema initialization
-- Test file generation
-
-✅ **/test-generate**
-- Automated test generation
-- Coverage gap analysis
-- Test fixture creation
-- E2E test scaffolding
-- Mock generation
-
-✅ **/api-docs**
-- OpenAPI/Swagger generation
-- API documentation
-- Example generation
-- Postman collection export
-- Interactive API explorer
+✅ **Project Scaffolding** (`/project-scaffolding`)
+- React, Next.js, Express, and NestJS boilerplate generation
+- TypeScript-first project templates
+- Full-stack scaffolds (e.g. `nextjs-app`, `nestjs-api`)
+- Sensible default project structure
+- Interactive mode for guided setup
 
 ### Hooks (3)
 ✅ **Security Scan Hook** (PreToolUse)
@@ -132,22 +117,12 @@ This plugin provides everything needed to build production-ready web application
 
 ## Installation
 
-### Quick Install
-
-```bash
-# Install plugin
-claude-code install modern-web-stack
-
-# Or manually
-cp -r plugins/modern-web-stack ~/.claude/plugins/
-```
-
 ### Manual Setup
 
 1. **Install Sub-Agents**:
 ```bash
 cp agents/domain-experts/react-nextjs-expert.md ~/.claude/agents/
-cp agents/domain-experts/nodejs-typescript-expert.md ~/.claude/agents/
+cp agents/domain-experts/nodejs-typescript-backend-expert.md ~/.claude/agents/
 cp agents/domain-experts/database-expert.md ~/.claude/agents/
 ```
 
@@ -157,23 +132,17 @@ cp -r skills/api-design-patterns ~/.claude/skills/
 cp -r skills/testing ~/.claude/skills/
 cp -r skills/refactoring-strategy ~/.claude/skills/
 cp -r skills/database-design-patterns ~/.claude/skills/
+cp -r skills/project-scaffolding ~/.claude/skills/
 ```
 
-3. **Install Commands**:
-```bash
-cp commands/scaffold.md ~/.claude/commands/
-cp commands/test-generate.md ~/.claude/commands/
-cp commands/api-docs.md ~/.claude/commands/
-```
-
-4. **Install Hooks**:
+3. **Install Hooks**:
 ```bash
 cp hooks/security-scan.md ~/.claude/hooks/
 cp hooks/code-quality-gate.md ~/.claude/hooks/
 cp hooks/build-validation.md ~/.claude/hooks/
 ```
 
-5. **Setup MCP Servers**:
+4. **Setup MCP Servers**:
 ```bash
 cd mcp-servers/database-operations && npm install && npm run build
 cd mcp-servers/cicd-pipeline && npm install && npm run build
@@ -184,9 +153,9 @@ cd mcp-servers/cicd-pipeline && npm install && npm run build
 
 ## Configuration
 
-### Plugin Configuration
+### Suggested Project Configuration
 
-Create `~/.claude/plugins/modern-web-stack/config.json`:
+This plugin is a documentation/reference bundle, not an installed package — there is no `~/.claude/plugins/` directory for Claude Code to read a config from. The JSON below is a reference you can save in your own project (e.g. `web-stack.config.json`) to document your stack choices and share as context when asking the agents/skills above for help:
 
 ```json
 {
@@ -248,14 +217,11 @@ Create `~/.claude/plugins/modern-web-stack/config.json`:
 
 **Project Scaffolding**:
 ```bash
-/scaffold nextjs-nestjs my-app \
-  --typescript \
-  --database postgres \
-  --auth jwt \
-  --testing jest,playwright
+/project-scaffolding nextjs-app my-app-frontend --typescript --tailwind --auth
+/project-scaffolding nestjs-api my-app-backend --typescript
 ```
 
-Generates:
+Typical layout for a Next.js + NestJS full-stack app assembled this way:
 ```
 my-app/
 ├── frontend/           # Next.js application
@@ -354,7 +320,7 @@ app.use(helmet({
 
 **Test Generation**:
 ```bash
-/test-generate src/modules/users
+/testing src/modules/users
 
 # Generates:
 # - Unit tests for services
@@ -474,10 +440,8 @@ jobs:
 
 ```bash
 # 1. Scaffold project
-/scaffold nextjs-nestjs blog-platform \
-  --auth jwt \
-  --database postgres \
-  --features blog,comments,search
+/project-scaffolding nextjs-app blog-platform-frontend --typescript --tailwind --auth
+/project-scaffolding nestjs-api blog-platform-backend --typescript
 
 # 2. Ask for feature implementation
 Ask React Expert: "Build a rich text editor component for blog posts with markdown support"
@@ -487,10 +451,10 @@ Ask Node.js Expert: "Implement blog post API with CRUD operations, draft support
 Ask Database Expert: "Design database schema for blog posts, categories, tags, and comments with full-text search"
 
 # 3. Generate tests
-/test-generate src/modules/posts
+/testing src/modules/posts
 
 # 4. Create API documentation
-/api-docs --format openapi
+/documentation api
 
 # 5. Setup CI/CD
 Ask: "Generate GitHub Actions workflow for testing and deployment"
@@ -500,10 +464,8 @@ Ask: "Generate GitHub Actions workflow for testing and deployment"
 
 ```bash
 # 1. Scaffold with authentication
-/scaffold nextjs-nestjs saas-dashboard \
-  --auth oauth \
-  --database postgres \
-  --features dashboard,analytics,billing
+/project-scaffolding nextjs-app saas-dashboard-frontend --typescript --tailwind --auth
+/project-scaffolding nestjs-api saas-dashboard-backend --typescript
 
 # 2. Build frontend
 Ask React Expert: "Create a dashboard with data visualization using recharts, real-time updates, and responsive layout"
@@ -523,10 +485,8 @@ Ask Security Expert: "Review the multi-tenant implementation for data isolation 
 
 ```bash
 # 1. Full scaffold
-/scaffold nextjs-nestjs ecommerce-store \
-  --auth jwt \
-  --database postgres \
-  --features products,cart,checkout,orders
+/project-scaffolding nextjs-app ecommerce-store-frontend --typescript --tailwind --auth
+/project-scaffolding nestjs-api ecommerce-store-backend --typescript
 
 # 2. Payment integration
 Ask Node.js Expert: "Integrate Stripe for payment processing with webhook handling"
@@ -538,8 +498,8 @@ Ask React Expert: "Build product catalog with filters, search, and pagination"
 Ask React Expert: "Implement shopping cart with Zustand state management and localStorage persistence"
 
 # 5. Testing
-/test-generate src/modules/orders
-/test-generate src/modules/payments
+/testing src/modules/orders
+/testing src/modules/payments
 
 Ask QA Expert: "Create E2E tests for complete checkout flow"
 ```
@@ -551,11 +511,11 @@ Ask QA Expert: "Create E2E tests for complete checkout flow"
 ```
 1. Create feature branch
    ↓
-2. /scaffold component-name (if needed)
+2. /project-scaffolding <type> component-name (if needed)
    ↓
 3. Implement feature with agent assistance
    ↓
-4. /test-generate (automated tests)
+4. /testing (automated tests)
    ↓
 5. Run tests locally
    ↓
@@ -586,7 +546,7 @@ Ask QA Expert: "Create E2E tests for complete checkout flow"
    ↓
 4. Implement fix
    ↓
-5. /test-generate (regression test)
+5. /testing (regression test)
    ↓
 6. Verify fix works
    ↓
@@ -769,12 +729,17 @@ Ask QA Expert: "Create E2E tests for complete checkout flow"
 ---
 
 **Status**: Production Ready ✅
-**Version**: 1.0.0
-**Last Updated**: January 10, 2026
+**Version**: 1.0.1
+**Last Updated**: 2026-07-10
 **Tech Stack**: Next.js 14, NestJS 10, PostgreSQL 15, TypeScript 5
-**License**: MIT
 
 ## Changelog
+
+### 1.0.1 (2026-07-10)
+- Removed fictional `/scaffold`, `/test-generate`, and `/api-docs` slash-commands (no `commands/` directory exists in this repo) — replaced with real skill invocations (`/project-scaffolding`, `/testing`, `/documentation`)
+- Added Project Scaffolding as a declared Skill component with an install path; fixed wrong agent filename `nodejs-typescript-expert.md` → `nodejs-typescript-backend-expert.md`
+- Removed the fake `claude-code install` command and references to the nonexistent `plugins/modern-web-stack/` bundle directory; installation now uses only real `cp`/`cp -r` steps
+- Resolved license inconsistency (previously stated 3 different ways, one incorrectly as MIT) — now Apache-2.0, stated once
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release

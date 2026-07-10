@@ -2,7 +2,7 @@
 plugin_name: Cloud Native Plugin
 description: Complete Kubernetes, Docker, and cloud deployment solution
 priority: P1
-version: 1.0.0
+version: 1.0.1
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -16,56 +16,33 @@ Complete solution for cloud-native development with Kubernetes, Docker, and clou
 ## Components Included
 
 ### Sub-Agents
+- ✅ AWS Architect Expert
+- ✅ Azure Architect Expert
+- ✅ GCP Architect Expert
 - ✅ DevOps/Infrastructure Expert
-- ✅ Observability Expert
+- ✅ Terraform/IaC Expert
 
 ### Skills
-- ✅ GitOps Workflow
-- ✅ CI/CD Best Practices
+- ✅ CI Best Practices
 
 ### MCP Servers
-- ✅ Container/Docker MCP
-- ✅ Cloud Resource Management MCP
-
-### Commands
-- `/deploy` - Deploy to Kubernetes/cloud
-- `/scale` - Scale application resources
-- `/rollback` - Rollback deployment
-
-### Hooks
-- Infrastructure Validation Hook
-- Cost Monitoring Hook
+- ✅ CI/CD Pipeline MCP
 
 ## Installation
 
 ```bash
-# Install the plugin
-claude-code install cloud-native
+# Agents
+cp agents/domain-experts/aws-architect-expert.md ~/.claude/agents/
+cp agents/domain-experts/azure-architect-expert.md ~/.claude/agents/
+cp agents/domain-experts/gcp-architect-expert.md ~/.claude/agents/
+cp agents/domain-experts/devops-infrastructure-expert.md ~/.claude/agents/
+cp agents/domain-experts/terraform-iac-expert.md ~/.claude/agents/
 
-# Or manually
-cp -r plugins/cloud-native ~/.claude/plugins/
-```
+# Skill
+cp -r skills/ci-best-practices ~/.claude/skills/
 
-## Configuration
-
-Create `~/.claude/plugins/cloud-native/config.json`:
-
-```json
-{
-  "cloud_provider": "aws",
-  "kubernetes": {
-    "context": "production",
-    "namespace": "default"
-  },
-  "docker": {
-    "registry": "your-registry.io",
-    "buildkit": true
-  },
-  "monitoring": {
-    "prometheus_url": "http://prometheus:9090",
-    "grafana_url": "http://grafana:3000"
-  }
-}
+# MCP server (build required)
+cd mcp-servers/cicd-pipeline && npm install && npm run build
 ```
 
 ## Features
@@ -88,41 +65,37 @@ Create `~/.claude/plugins/cloud-native/config.json`:
 - Cloud resource optimization
 - Cost monitoring
 
-### 📊 Observability
-- Prometheus metrics
-- Grafana dashboards
-- Distributed tracing
-- Log aggregation
-
-### 🚀 GitOps Workflow
-- ArgoCD integration
-- Flux CD support
-- Automated deployments
-- Rollback capabilities
+### 🚀 CI/CD Pipelines
+- Multi-platform pipeline generation (GitHub Actions, GitLab CI, Jenkins)
+- Pipeline optimization and troubleshooting
+- Deployment strategies (blue-green, canary, rolling)
 
 ## Usage Examples
 
 ### Deploy Application
-```bash
-/deploy my-app --environment production --replicas 3
+```
+Ask: "Generate a Kubernetes deployment manifest for my-app with 3 replicas in production"
 ```
 
 ### Scale Resources
-```bash
-/scale my-app --replicas 5 --cpu 2 --memory 4Gi
+```
+Ask: "Help me configure horizontal pod autoscaling for my-app with CPU and memory targets"
 ```
 
-### Rollback
-```bash
-/rollback my-app --to-version v1.2.3
+### Rollback Strategy
+```
+Ask: "Design a rollback strategy for my-app back to a known-good version"
 ```
 
-### Monitor Resources
-Ask: "Show me the resource usage for my-app"
-- CPU and memory utilization
-- Pod status and health
-- Network traffic
-- Error rates
+### Generate a CI/CD Pipeline
+```
+Ask: "Generate a GitHub Actions pipeline with tests, build, and deploy for this project"
+```
+
+### CI Pipeline Best Practices
+```
+/ci-best-practices
+```
 
 ## Best Practices
 
@@ -138,18 +111,18 @@ Ask: "Show me the resource usage for my-app"
 - ✅ Horizontal Pod Autoscaling
 - ✅ Pod Disruption Budgets
 
-### Observability
-- ✅ Structured logging
-- ✅ Distributed tracing
-- ✅ Metrics collection
-- ✅ Alert configuration
+### CI/CD
+- ✅ Automated testing gates
+- ✅ Caching strategies
+- ✅ Security scanning in pipeline
+- ✅ Rollback-ready deployments
 
 ## What You Get
 
 - **Production-ready** Kubernetes manifests
 - **Optimized** Docker images
 - **Automated** CI/CD pipelines
-- **Complete** observability stack
+- **Multi-cloud** infrastructure guidance (AWS, GCP, Azure)
 - **Cost-optimized** cloud resources
 - **Secure** configurations
 
@@ -159,6 +132,14 @@ Ask: "Show me the resource usage for my-app"
 **Platforms**: AWS, GCP, Azure, Kubernetes
 
 ## Changelog
+
+### 1.0.1 (2026-07-10)
+- Removed fictional bundled components that don't exist in this repo: "GitOps Workflow" skill, Container/Docker MCP, Cloud Resource Management MCP, `/deploy` `/scale` `/rollback` commands, Infrastructure Validation Hook, Cost Monitoring Hook
+- Removed fictional `claude-code install cloud-native` and `cp -r plugins/cloud-native` install steps (no `plugins/<name>/` bundle directory or plugin installer exists in this repo) — replaced with real `cp`/`npm run build` steps for each bundled component
+- Removed the `~/.claude/plugins/cloud-native/config.json` configuration section (no unified plugin config mechanism exists)
+- Reconciled Components to real, verified files only: AWS/Azure/GCP Architect Expert agents, DevOps/Infrastructure Expert agent, Terraform/IaC Expert agent, CI Best Practices skill, CI/CD Pipeline MCP server
+- Fixed skill name: "CI/CD Best Practices" → "CI Best Practices" (`ci-best-practices`)
+- Replaced fictional `/deploy`, `/scale`, `/rollback` command examples with `Ask:` prompts and the real `/ci-best-practices` skill invocation
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release

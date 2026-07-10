@@ -15,6 +15,37 @@ We follow [Semantic Versioning](https://semver.org/) (MAJOR.MINOR.PATCH):
 
 ---
 
+## [2.11.9] - 2026-07-10
+
+Remediation Phase 3 — plugin honesty pass. Every one of the 6 plugin docs advertised components or
+install steps that do not exist, making them non-installable as written. All 6 are now honest and
+installable; each references only real, on-disk components. (Fanned out one fixer per plugin, then
+reconciled `plugins/README.md` centrally.)
+
+### Fixed
+- **Fictional slash-commands removed from all plugins.** This repo has no `commands/` directory, yet
+  the plugins documented runnable `/scaffold`, `/test-generate`, `/refactor`, `/generate-pipeline`,
+  `/release`, `/api-docs`, `/security-audit`, `/migrate`, `/data-quality`, `/deploy`, `/scale`,
+  `/rollback`. Each was removed and replaced with an `Ask:` prompt or a real skill invocation
+  (`/testing`, `/refactoring-strategy`, `/project-scaffolding`, `/documentation`, `/ci-best-practices`,
+  `/release-management`).
+- **Nonexistent bundled components removed.** `cloud-native` listed a GitOps skill, 2 fake MCPs, and
+  2 fake hooks; `python-data-stack` listed a fake "Data Pipeline Patterns" skill, a fake Data Pipeline
+  MCP, and 3 fake hooks; `code-quality-suite` listed "Code Review Workflow" / "TDD Workflow" skills;
+  `security-hardening` listed a "Vulnerability Remediation Skill". None existed — all removed.
+- **Fake install recipes fixed.** Removed fictional `claude-code install <plugin>` commands and
+  `cp -r plugins/<name>` bundle-directory copies (no such bundle dirs exist); replaced with real
+  `cp` steps for the actual component files. Fixed the wrong agent filename
+  (`nodejs-typescript-expert.md` → `nodejs-typescript-backend-expert.md`), skill install paths
+  (directory form), and `plugins/README.md`'s broken example (`agents/subagents/…`, `cp ../commands/*.md`).
+- **`plugins/README.md` reconciled** to the fixed plugins: summary-table component columns, per-plugin
+  Components lists, and Example Usage no longer reference nonexistent commands; the "What Are Plugins"
+  section now states plainly that these are documentation/reference bundles with no `commands/` dir.
+- **License drift** — a lingering MIT reference and 3-way license statements resolved to Apache-2.0.
+
+### Changed
+- All 6 plugin docs bumped to 1.0.1 with changelog entries; version spine → 2.11.9; manifest regenerated.
+
 ## [2.11.8] - 2026-07-10
 
 Remediation Phase 2 — license / version / metadata drift sweep across the MCP layer. Mechanical,

@@ -2,7 +2,7 @@
 plugin_name: Python Data Stack Plugin
 description: Python + FastAPI + PostgreSQL + Data Engineering tools for data-intensive applications
 priority: P1
-version: 1.0.0
+version: 1.0.1
 author: Michel Abboud
 license: Apache-2.0
 repository: https://github.com/michelabboud/claude-code-helper
@@ -15,14 +15,14 @@ A comprehensive plugin bundling Python + FastAPI + PostgreSQL + Data Engineering
 
 ## Overview
 
-This plugin provides a complete toolkit for Python-based data engineering and API development, combining expert agents, skills, commands, hooks, and MCP servers for database-driven applications and data pipelines.
+This plugin provides a complete toolkit for Python-based data engineering and API development, combining expert agents, a skill, and an MCP server for database-driven applications and data pipelines.
 
 ## Plugin Configuration
 
 ```yaml
 ---
 plugin_name: python-data-stack
-version: 1.0.0
+version: 1.0.1
 description: Complete Python + FastAPI + PostgreSQL + Data Engineering toolkit
 category: full-stack-data
 priority: P1
@@ -72,24 +72,10 @@ priority: P1
 
 **When to use**: Database design, query optimization, migration creation
 
-### Skills (4)
+### Skills (1)
 
-#### 1. API Design Patterns
-**Location**: `skills/api-design-patterns.md`
-
-**Provides**:
-- RESTful API design principles
-- GraphQL schema design
-- API versioning strategies
-- Error handling patterns (RFC 7807)
-- Authentication (JWT, API Keys, OAuth 2.0)
-- Rate limiting (Token Bucket algorithm)
-- Pagination (Offset, Cursor-based)
-
-**Use case**: Designing production-ready APIs
-
-#### 2. Database Design Patterns
-**Location**: `skills/database-design-patterns.md`
+#### 1. Database Design Patterns
+**Location**: `skills/database-design-patterns/SKILL.md`
 
 **Provides**:
 - Schema design patterns (normalization, denormalization)
@@ -101,161 +87,7 @@ priority: P1
 
 **Use case**: Designing scalable database schemas
 
-#### 3. Data Pipeline Patterns
-**Location**: `skills/data-pipeline-patterns.md`
-
-**Provides**:
-- ETL vs ELT decision framework
-- Incremental vs full refresh strategies
-- Data validation and quality checks
-- Error handling and retry logic
-- Idempotency patterns
-- Backfill procedures
-- Data lineage tracking
-
-**Use case**: Building reliable data pipelines
-
-#### 4. Testing Strategy
-**Location**: `guides/advanced-patterns/testing-strategy.md`
-
-**Provides**:
-- Test pyramid for Python applications
-- Pytest fixtures and parametrization
-- Database testing strategies
-- API integration testing
-- Mocking external dependencies
-
-**Use case**: Comprehensive testing approach
-
-### Commands (3)
-
-#### 1. /scaffold
-**Location**: `commands/scaffold.md`
-
-**Usage**: `/scaffold fastapi-app` or `/scaffold data-pipeline`
-
-**Generates**:
-- FastAPI project structure
-- Pydantic models
-- SQLAlchemy models
-- Alembic migrations setup
-- pytest configuration
-- Docker setup
-- CI/CD pipeline
-- Data pipeline scaffolding (Airflow DAGs, dbt models)
-
-**Example**:
-```bash
-/scaffold fastapi-app my-api
-
-# Creates:
-# my-api/
-# ├── app/
-# │   ├── __init__.py
-# │   ├── main.py
-# │   ├── models/
-# │   ├── routers/
-# │   ├── schemas/
-# │   └── services/
-# ├── alembic/
-# ├── tests/
-# ├── Dockerfile
-# ├── docker-compose.yml
-# ├── pyproject.toml
-# └── .github/workflows/ci.yml
-```
-
-#### 2. /migrate
-**Location**: `commands/migrate.md`
-
-**Usage**: `/migrate create add_users_table` or `/migrate run`
-
-**Features**:
-- Generate Alembic migrations
-- Validate migration safety
-- Apply migrations with transaction support
-- Rollback procedures
-- Migration testing
-- Zero-downtime migration strategies
-
-**Example**:
-```bash
-# Generate migration
-/migrate create add_email_verification
-
-# Review generated migration
-# migrations/versions/20260110_add_email_verification.py
-
-# Apply migration
-/migrate run
-```
-
-#### 3. /data-quality
-**Location**: `commands/data-quality.md`
-
-**Usage**: `/data-quality check users_table`
-
-**Features**:
-- Define data quality expectations
-- Run validation checks
-- Generate quality reports
-- Track data drift
-- Alert on quality issues
-
-**Example**:
-```python
-# Generated quality check
-@expectation
-def expect_column_values_to_be_unique(self, column: str):
-    """Ensure email addresses are unique"""
-    duplicates = self.df[column].duplicated().sum()
-    assert duplicates == 0, f"Found {duplicates} duplicate values"
-```
-
-### Hooks (3)
-
-#### 1. Database Migration Validation Hook (PreToolUse)
-**Location**: `hooks/migration-validation.md`
-
-**Triggers**: Before Write/Edit tools on migration files
-
-**Checks**:
-- Migration has both `upgrade()` and `downgrade()`
-- No dangerous operations without safeguards
-- Indexes created with CONCURRENTLY (PostgreSQL)
-- NOT NULL columns have DEFAULT values
-- Foreign keys have proper ON DELETE behavior
-
-**Example**:
-```python
-# Hook checks this migration
-def upgrade():
-    # ❌ Missing downgrade() - hook warns
-    op.add_column('users', sa.Column('status', sa.String()))
-```
-
-#### 2. Data Quality Gate Hook (PrePush)
-**Location**: `hooks/data-quality-gate.md`
-
-**Triggers**: Before git push
-
-**Checks**:
-- Run data validation tests
-- Check data freshness
-- Validate schema consistency
-- Ensure no breaking changes to data contracts
-
-#### 3. Test Coverage Hook (PreCommit)
-**Location**: `hooks/test-coverage.md`
-
-**Triggers**: Before git commit
-
-**Checks**:
-- Pytest coverage >= 80%
-- All new functions have tests
-- Integration tests for new API endpoints
-
-### MCP Servers (2)
+### MCP Servers (1)
 
 #### 1. Database Operations MCP
 **Location**: `mcp-servers/database-operations/`
@@ -268,20 +100,9 @@ def upgrade():
 - `explain_query`: Get execution plans
 - `optimize_query`: Suggest optimizations
 - `seed_data`: Generate test data
+- `backup_database`: Create database backups with optional compression
 
 **Use case**: Database operations from Claude
-
-#### 2. Data Pipeline MCP
-**Location**: `mcp-servers/data-pipeline/`
-
-**Tools**:
-- `generate_dag`: Create Airflow DAG
-- `validate_dag`: Check DAG configuration
-- `test_pipeline`: Run pipeline tests
-- `monitor_pipeline`: Check pipeline health
-- `backfill_data`: Run historical loads
-
-**Use case**: Data pipeline management
 
 ## Installation
 
@@ -301,34 +122,44 @@ sudo apt-get install postgresql-15  # Linux
 
 ### Setup
 
-1. **Clone plugin to Claude Code plugins directory**:
+1. **Install the sub-agents**:
 ```bash
-mkdir -p ~/.claude/plugins
-cp -r plugins/python-data-stack ~/.claude/plugins/
+cp agents/domain-experts/python-backend-expert.md ~/.claude/agents/
+cp agents/domain-experts/data-engineering-expert.md ~/.claude/agents/
+cp agents/domain-experts/database-expert.md ~/.claude/agents/
 ```
 
-2. **Configure Claude Code** (`~/.claude/config/plugins.json`):
+2. **Install the skill**:
+```bash
+cp -r skills/database-design-patterns ~/.claude/skills/
+```
+
+3. **Build and register the MCP server**:
+```bash
+cd mcp-servers/database-operations && npm install && npm run build
+# Add to Claude Desktop config — see mcp-servers/README.md for configuration
+```
+
+4. **(Optional) Track installed components** (`~/.claude/config/plugins.json`) — this is a local reference file only; Claude Code does not read a unified plugin config, each component above is installed independently by the steps you just ran:
 ```json
 {
   "plugins": {
     "python-data-stack": {
       "enabled": true,
-      "agents": ["python-backend-expert", "data-engineering-expert"],
-      "skills": ["api-design-patterns", "database-design-patterns", "data-pipeline-patterns"],
-      "commands": ["scaffold", "migrate", "data-quality"],
-      "hooks": ["migration-validation", "data-quality-gate", "test-coverage"],
-      "mcpServers": ["database-operations", "data-pipeline"]
+      "agents": ["python-backend-expert", "data-engineering-expert", "database-expert"],
+      "skills": ["database-design-patterns"],
+      "mcpServers": ["database-operations"]
     }
   }
 }
 ```
 
-3. **Install Python dependencies**:
+5. **Install Python dependencies**:
 ```bash
 pip install fastapi uvicorn sqlalchemy alembic pydantic pytest httpx
 ```
 
-4. **Configure database connection** (`.env`):
+6. **Configure database connection** (`.env`):
 ```env
 DATABASE_URL=postgresql://user:password@localhost:5432/mydb
 REDIS_URL=redis://localhost:6379
@@ -339,22 +170,23 @@ REDIS_URL=redis://localhost:6379
 ### Example 1: FastAPI + PostgreSQL Application
 
 ```bash
-# 1. Scaffold project
-/scaffold fastapi-app user-service
-
-cd user-service
+# 1. Set up project structure
+mkdir user-service && cd user-service
+poetry init
+poetry add fastapi uvicorn sqlalchemy alembic pydantic
+poetry add --group dev pytest httpx
 
 # 2. Design database schema (invoke Database Expert agent)
-"Design a user authentication schema with email verification"
+Ask: "Design a user authentication schema with email verification"
 
-# 3. Generate migration
-/migrate create initial_schema
+# 3. Generate migration (invoke Database Expert agent, or the database-operations MCP's generate_migration tool)
+Ask: "Generate an Alembic migration for the initial schema"
 
 # 4. Apply migration
-/migrate run
+alembic upgrade head
 
 # 5. Generate API endpoints (invoke Python Backend Expert)
-"Create REST API for user CRUD operations with JWT auth"
+Ask: "Create REST API for user CRUD operations with JWT auth"
 
 # 6. Run tests
 pytest tests/ --cov=app --cov-report=html
@@ -366,13 +198,11 @@ uvicorn app.main:app --reload
 ### Example 2: Data Pipeline with Airflow
 
 ```bash
-# 1. Scaffold pipeline
-/scaffold data-pipeline user-analytics
-
-cd user-analytics
+# 1. Set up project structure
+mkdir user-analytics && cd user-analytics
 
 # 2. Design ETL pipeline (invoke Data Engineering Expert)
-"Create an ETL pipeline that:
+Ask: "Create an ETL pipeline that:
 1. Extracts user events from PostgreSQL
 2. Transforms data with aggregations
 3. Loads into BigQuery data warehouse
@@ -392,22 +222,19 @@ airflow dags test user_analytics_dag 2026-01-10
 
 ```bash
 # 1. Design streaming architecture (invoke Data Engineering Expert)
-"Design a real-time pipeline for:
+Ask: "Design a real-time pipeline for:
 - Kafka topic: user_events
 - Process with Flink
 - Sink to PostgreSQL and Redis
 - 1-minute windowing for aggregations"
 
-# 2. Scaffold Flink job
-/scaffold flink-job realtime-analytics
+# 2. Implement processing logic (invoke Data Engineering Expert)
+Ask: "Generate the Flink job for the streaming pipeline described above"
 
-# 3. Implement processing logic
-# (Agent generates Flink job code)
-
-# 4. Test with Docker
+# 3. Test with Docker
 docker-compose up kafka flink postgres
 
-# 5. Deploy
+# 4. Deploy
 kubectl apply -f k8s/flink-deployment.yaml
 ```
 
@@ -415,24 +242,23 @@ kubectl apply -f k8s/flink-deployment.yaml
 
 ### API Development
 ```
-1. /scaffold fastapi-app
+1. Set up project structure and install dependencies
 2. Invoke Database Expert → Design schema
-3. /migrate create
+3. Invoke Database Expert, or the database-operations MCP's generate_migration tool → Create migration
 4. Invoke Python Backend Expert → Create endpoints
-5. Invoke Testing Strategy → Write tests
-6. PreCommit hook → Validates coverage
-7. PrePush hook → Runs integration tests
+5. Write tests with pytest
+6. Run `pytest --cov` locally before committing
+7. Run integration tests before pushing
 ```
 
 ### Data Pipeline Development
 ```
-1. /scaffold data-pipeline
-2. Invoke Data Engineering Expert → Design pipeline
-3. Use MCP: generate_dag → Create Airflow DAG
-4. Invoke Database Expert → Optimize queries
-5. /data-quality check → Validate data
-6. PrePush hook → Run pipeline tests
-7. Deploy with CI/CD
+1. Set up project structure
+2. Invoke Data Engineering Expert → Design pipeline and generate the Airflow DAG
+3. Invoke Database Expert, or the database-operations MCP's optimize_query tool → Optimize queries
+4. Invoke Data Engineering Expert → Define data quality checks (e.g. Great Expectations)
+5. Run pipeline tests before pushing
+6. Deploy with CI/CD
 ```
 
 ## Best Practices
@@ -713,11 +539,19 @@ CREATE INDEX CONCURRENTLY idx_users_email ON users(email);
 - **Testing Strategy Guide**: Comprehensive testing approach
 - **API Design Patterns Skill**: REST API best practices
 
-**Last Updated**: 2026-01-10
+**Last Updated**: 2026-07-10
 **Status**: Production Ready ✅
 **Stack**: Python + FastAPI + PostgreSQL + Airflow + Data Engineering
 
 ## Changelog
+
+### 1.0.1 (2026-07-10)
+- Removed fictional bundled components that don't exist in this repo: `/scaffold`, `/migrate`, `/data-quality` commands, the Migration Validation / Data Quality Gate / Test Coverage hooks, the "Data Pipeline Patterns" skill, and the Data Pipeline MCP server
+- Removed the fictional `cp -r plugins/python-data-stack` install step (no `plugins/<name>/` bundle directory or plugin installer exists in this repo) — replaced with real `cp`/`npm run build` steps for each bundled component
+- Fixed the `~/.claude/config/plugins.json` example to list only real components and added the missing `database-expert` agent; clarified it's a local reference file, not a mechanism Claude Code reads
+- Reconciled Components to real, verified files only: Python Backend Expert, Data Engineering Expert, and Database Expert agents; Database Design Patterns skill; Database Operations MCP server (added the real `backup_database` tool to its tool list)
+- Replaced fictional `/scaffold`, `/migrate` command examples throughout Usage Examples and Typical Workflow with `Ask:` prompts and real CLI/tool steps (Poetry, Alembic, pytest)
+- Fixed "Last Updated" date, which predated this changelog's initial 1.0.0 entry
 
 ### 1.0.0 (2026-02-20)
 - Initial versioned release
